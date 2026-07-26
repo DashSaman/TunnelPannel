@@ -1,0 +1,80 @@
+{
+  "phases": {
+    "01-core-kernel-wireguard": {
+      "state": "SUCCESS",
+      "message": "Detected existing healthy installation.",
+      "updated_at": "2026-07-21T17:59:51.121193+00:00"
+    },
+    "02-ssh-gost": {
+      "state": "SUCCESS",
+      "message": "SSH and GOST execution engines installed and verified.",
+      "updated_at": "2026-07-21T18:17:58.325024+00:00"
+    },
+    "03-openvpn-ipsec-l2tp": {
+      "state": "PENDING",
+      "message": "Engine pack is not embedded in this safe master build.",
+      "updated_at": "2026-07-21T18:00:03.231340+00:00"
+    },
+    "04-frp-rathole-chisel-wstunnel": {
+      "state": "PENDING",
+      "message": "Engine pack is not embedded in this safe master build.",
+      "updated_at": "2026-07-21T18:00:03.263466+00:00"
+    },
+    "05-xray-singbox-modern-proxy": {
+      "state": "PENDING",
+      "message": "Engine pack is not embedded in this safe master build.",
+      "updated_at": "2026-07-21T18:00:03.298955+00:00"
+    },
+    "06-waterwall-paqet": {
+      "state": "PENDING",
+      "message": "Engine pack is not embedded in this safe master build.",
+      "updated_at": "2026-07-21T18:00:03.332825+00:00"
+    },
+    "07-composite-tunnels": {
+      "state": "PENDING",
+      "message": "Engine pack is not embedded in this safe master build.",
+      "updated_at": "2026-07-21T18:00:03.367131+00:00"
+    },
+    "08-repair-delete-health": {
+      "state": "PENDING",
+      "message": "Engine pack is not embedded in this safe master build.",
+      "updated_at": "2026-07-21T18:00:03.400151+00:00"
+    },
+    "03-kcp-benchmark": {
+      "state": "SUCCESS",
+      "message": "KCP engines, platform compatibility checks and bidirectional benchmarks verified healthy.",
+      "updated_at": "2026-07-21T19:03:57.077414+00:00"
+    },
+    "04-reverse-proxies": {
+      "state": "SUCCESS",
+      "message": "FRP, Rathole, Chisel and wstunnel execution engines verified inside the plan_executor container.",
+      "updated_at": "2026-07-21T20:05:49.062981+00:00"
+    },
+    "05-vpn-ipsec": {
+      "state": "SUCCESS",
+      "message": "OpenVPN, IKEv2/IPsec, VTI, VTI6 and guarded L2TP/IPsec engines installed.",
+      "updated_at": "2026-07-21T20:31:29.788718+00:00"
+    },
+    "06-modern-proxies": {
+      "state": "SUCCESS",
+      "message": "Pack 6 startup ordering repaired; 66 engines healthy.",
+      "updated_at": "2026-07-21T20:57:51.156842+00:00"
+    },
+    "06-global-resilience": {
+      "state": "SUCCESS",
+      "message": "Systemd boot recovery, process auto-restart, endpoint tunnel guardian and controller stack guardian enabled.",
+      "updated_at": "2026-07-21T20:57:51.156842+00:00"
+    },
+    "07-final-engines": {
+      "state": "SUCCESS",
+      "message": "All 77 catalog methods have executable engines; WaterWall, Paqet and composite carriers include guardian and benchmark integration.",
+      "updated_at": "2026-07-21T21:47:39.477901+00:00"
+    },
+    "08-multilingual-telegram-bot": {
+      "state": "SUCCESS",
+      "message": "Endpoints, secure endpoint wizard, inventory, prechecks, jobs, all 77 engines, simple plans, execution, live progress and cancellation are available in five Telegram languages.",
+      "updated_at": "2026-07-21T22:23:01.718801+00:00"
+    }
+  },
+  "updated_at": "2026-07-21T22:23:01.718801+00:00"
+}
