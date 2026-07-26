@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TehranNetwork</title>
+  <link rel="stylesheet" href="/assets/panel.css?v=20260721-160237">
+  <link rel="stylesheet" href="/assets/final.css?v=20260723-final">
+  <link rel="stylesheet" href="/assets/workspace-v2.css?v=20260723-21">
+</head>
+<body>
+
+<section id="loginView" class="login-shell hidden">
+  <div class="brand">
+    <div class="logo">⚡</div>
+    <h1>TehranNetwork</h1>
+    <p data-i18n="brand_subtitle"></p>
+  </div>
+
+  <div class="card login-card">
+    <div class="language-row">
+      <select class="language-select" onchange="setLanguage(this.value)">
+        <option value="en">English</option>
+        <option value="fa">فارسی</option>
+        <option value="ru">Русский</option>
+        <option value="zh-CN">简体中文</option>
+        <option value="de">Deutsch</option>
+      </select>
+    </div>
+
+    <h2 data-i18n="login_title"></h2>
+
+    <label for="username" data-i18n="username"></label>
+    <input id="username" autocomplete="username">
+
+    <label for="password" data-i18n="password"></label>
+
+    <div class="secret-field">
+      <input
+        id="password"
+        type="password"
+        autocomplete="current-password"
+      >
+      <button
+        type="button"
+        class="secret-toggle"
+        onclick="togglePassword('password',this)"
+      >👁</button>
+    </div>
+
+    <button
+      id="loginButton"
+      class="btn btn-primary btn-wide"
+      onclick="login()"
+      data-i18n="login"
+    ></button>
+
+    <div id="loginMessage" class="message hidden"></div>
+  </div>
+</section>
+
+<main id="dashboard" class="app-shell hidden">
+  <header class="card topbar">
+    <div>
+      <h1>⚡ TehranNetwork</h1>
+      <small id="accountName"></small>
+    </div>
+
+    <div class="top-actions">
+      <select class="language-select" onchange="setLanguage(this.value)">
+        <option value="en">English</option>
+        <option value="fa">فارسی</option>
+        <option value="ru">Русский</option>
+        <option value="zh-CN">简体中文</option>
+        <option value="de">Deutsch</option>
+      </select>
+
+      <button
+        class="btn btn-danger"
+        onclick="logout()"
+        data-i18n="logout"
+      ></button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <aside class="card sidebar">
+      <button
+        class="nav-btn active"
+        data-section="endpoints"
+        onclick="loadEndpoints()"
+        data-i18n="endpoints"
+      ></button>
+
+      <button
+        class="nav-btn"
+        data-section="precheck"
+          onclick="showPrecheck()"
+        data-i18n="tunnels"
+      ></button>
+
+      <button
+        class="nav-btn"
+        onclick="placeholder('jobs_later')"
+        data-i18n="jobs"
+      ></button>
+
+      <button
+        class="nav-btn"
+        onclick="placeholder('settings_later')"
+        data-i18n="settings"
+      ></button>
+    </aside>
+
+    <section class="content">
+      <div id="endpointsSection" class="card section page-section">
+        <div class="toolbar">
+          <div>
+            <h2 data-i18n="endpoints"></h2>
+            <small data-i18n="endpoint_subtitle"></small>
+          </div>
+
+          <button
+            class="btn btn-primary"
+            onclick="startWizard()"
+            data-i18n="add_endpoint"
+          ></button>
+        </div>
+
+        <div id="endpointList" class="endpoint-list"></div>
+      </div>
+
+      <div
+        id="inventorySection"
+        class="card section page-section hidden"
+      >
+        <div class="toolbar">
+          <div>
+            <h2 data-i18n="inventory_title"></h2>
+            <small data-i18n="inventory_help"></small>
+          </div>
+
+          <button
+            id="inventoryRefreshButton"
+            class="btn btn-primary"
+            onclick="refreshCurrentInventory()"
+            data-i18n="inventory_refresh"
+          ></button>
+        </div>
+
+        <div id="inventoryStatus"></div>
+        <div id="inventorySummary" class="inventory-summary"></div>
+        <div id="inventoryDetails"></div>
+      </div>
+
+      <div id="wizardSection" class="card section page-section hidden">
+        <h2 id="wizardHeading"></h2>
+
+        <div id="wizardProgress" class="wizard-progress"></div>
+
+        <h3 id="wizardTitle"></h3>
+        <p id="wizardHelp" class="muted"></p>
+
+        <div id="wizardField"></div>
+
+        <div class="wizard-actions">
+          <button
+            class="btn"
+            onclick="previousWizardStep()"
+            data-i18n="previous"
+          ></button>
+
+          <button
+            class="btn btn-danger"
+            onclick="cancelWizard()"
+            data-i18n="cancel"
+          ></button>
+
+          <button
+            id="nextButton"
+            class="btn btn-primary"
+            onclick="nextWizardStep()"
+          ></button>
+        </div>
+      </div>
+
+      <div
+        id="precheckSection"
+        class="card section page-section hidden"
+      >
+        <h2 data-i18n="precheck_title"></h2>
+        <p class="muted" data-i18n="precheck_help"></p>
+
+        <div class="precheck-grid">
+          <div>
+            <label data-i18n="endpoint_a"></label>
+            <select id="precheckEndpointA"></select>
+          </div>
+
+          <div>
+            <label data-i18n="endpoint_b"></label>
+            <select id="precheckEndpointB"></select>
+          </div>
+        </div>
+
+        <div
+          id="precheckNotice"
+          class="message hidden"
+        ></div>
+
+        <button
+          id="startPrecheckButton"
+          class="btn btn-primary btn-wide"
+          onclick="startPrecheck()"
+          data-i18n="start_precheck"
+        ></button>
+      </div>
+
+      <div id="jobSection" class="card section page-section hidden">
+        <div class="job-head">
+          <div>
+            <h2 data-i18n="running_operation"></h2>
+            <small data-i18n="live_real_steps"></small>
+          </div>
+
+          <div>
+            <span id="jobStatus" class="badge RUNNING">QUEUED</span>
+            <strong id="jobPercent">0%</strong>
+          </div>
+        </div>
+
+        <div class="progress-bar">
+          <div id="jobProgress" class="progress-fill"></div>
+        </div>
+
+        <div id="timeline" class="timeline"></div>
+
+        <div class="terminal-wrap">
+          <div class="terminal-head">
+            <span data-i18n="terminal_title"></span>
+
+            <div id="technicalControls" class="terminal-controls hidden">
+              <button
+                id="pauseTerminal"
+                onclick="toggleTerminalPause()"
+                data-i18n="pause"
+              ></button>
+
+              <select id="terminalSpeed" onchange="changeTerminalSpeed()">
+                <option value="0.5">0.5x</option>
+                <option value="1">1x</option>
+                <option value="2">2x</option>
+                <option value="4" selected>4x</option>
+              </select>
+
+              <button onclick="copyTerminal()" data-i18n="copy"></button>
+              <button onclick="downloadTerminal()" data-i18n="download"></button>
+            </div>
+          </div>
+
+          <div id="terminal" class="terminal"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script src="/assets/panel.js?v=20260721-223915"></script>
+<script src="/assets/final.js?v=20260723-final"></script>
+  <script src="/assets/workspace-v2.js?v=20260723-21"></script>
+</body>
+</html>

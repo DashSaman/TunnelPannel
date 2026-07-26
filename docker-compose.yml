@@ -1,0 +1,151 @@
+name: network_automation
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: netauto-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-netauto}
+      POSTGRES_USER: ${POSTGRES_USER:-netauto}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - netauto-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-netauto} -d ${POSTGRES_DB:-netauto}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: netauto-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD}"]
+    volumes:
+      - redis_data:/data
+    networks:
+      - netauto-internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "PING"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend
+    container_name: netauto-api
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - netauto-internal
+    volumes:
+      - app_data:/app/data
+      - app_logs:/app/logs
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  bot:
+    build:
+      context: ./bot
+    container_name: netauto-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - netauto-internal
+
+  worker:
+    build:
+      context: ./worker
+    container_name: netauto-worker
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      api:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - netauto-internal
+    volumes:
+      - app_data:/app/data
+      - app_logs:/app/logs
+
+  # NETAUTO_PLAN_EXECUTOR_BEGIN
+  plan_executor:
+    build:
+      context: ./plan_executor
+    container_name: netauto-plan-executor
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - netauto-internal
+  # NETAUTO_PLAN_EXECUTOR_END
+
+  scheduler:
+    build:
+      context: ./scheduler
+    container_name: netauto-scheduler
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      api:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - netauto-internal
+
+  web:
+    image: nginx:1.27-alpine
+    container_name: netauto-web
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${WEB_BIND_PORT:-18080}:80"
+    volumes:
+      - ./web:/usr/share/nginx/html:ro
+      - ./proxy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - netauto-internal
+
+networks:
+  netauto-internal:
+    name: netauto-internal
+    driver: bridge
+
+volumes:
+  postgres_data:
+    name: netauto-postgres-data
+  redis_data:
+    name: netauto-redis-data
+  app_data:
+    name: netauto-app-data
+  app_logs:
+    name: netauto-app-logs

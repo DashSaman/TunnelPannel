@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>TehranNetwork — Network Automation</title>
+  <style>
+    :root{color-scheme:dark;--line:rgba(148,163,184,.17);--muted:#9fb0c8;--blue:#4f7cff;--purple:#8b5cf6}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Tahoma,Arial,sans-serif;color:#edf4ff;background:radial-gradient(circle at 10% 8%,rgba(37,99,235,.28),transparent 31%),radial-gradient(circle at 90% 90%,rgba(124,58,237,.28),transparent 34%),linear-gradient(145deg,#050913,#0a1220 55%,#070a12)}
+    a{text-decoration:none;color:inherit}.shell{width:min(1180px,calc(100% - 32px));margin:auto;padding:30px 0 56px}.top{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 0}.brand{display:flex;align-items:center;gap:12px;font-weight:800}.logo{display:grid;place-items:center;width:43px;height:43px;border-radius:14px;background:linear-gradient(135deg,#2563eb,#8b5cf6);box-shadow:0 15px 45px rgba(37,99,235,.35)}.nav{display:flex;gap:9px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border:1px solid var(--line);border-radius:12px;background:rgba(15,23,42,.6)}.btn.primary{border:0;background:linear-gradient(90deg,#2563eb,#7c3aed)}.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:center;padding:80px 0 52px}.eyebrow{display:inline-flex;padding:7px 11px;border:1px solid rgba(79,124,255,.3);border-radius:999px;color:#bfdbfe;background:rgba(30,64,175,.18);font-size:12px}.hero h1{max-width:720px;margin:22px 0 16px;font-size:clamp(38px,6vw,72px);line-height:1.06}.hero p{max-width:680px;margin:0;color:var(--muted);font-size:17px;line-height:2}.actions{display:flex;gap:11px;flex-wrap:wrap;margin-top:28px}.status-card{padding:24px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(145deg,rgba(17,28,48,.86),rgba(7,13,24,.88));box-shadow:0 28px 90px rgba(0,0,0,.35)}.status-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.online{display:inline-flex;align-items:center;gap:8px;color:#a7f3d0}.dot{width:9px;height:9px;border-radius:50%;background:#22c55e;box-shadow:0 0 16px rgba(34,197,94,.9)}.status-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:22px}.status-item{padding:15px;border:1px solid var(--line);border-radius:15px;background:rgba(3,8,17,.34)}.status-item small{display:block;color:var(--muted);margin-bottom:8px}.status-item strong{font-size:18px}.features{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.feature{padding:22px;border:1px solid var(--line);border-radius:18px;background:rgba(9,16,29,.62)}.feature h3{margin:0 0 9px}.feature p{margin:0;color:var(--muted);line-height:1.8;font-size:14px}.footer{margin-top:44px;padding-top:22px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}@media(max-width:850px){.hero{grid-template-columns:1fr;padding-top:45px}.features{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.hero h1{font-size:42px}}@media(max-width:520px){.status-grid{grid-template-columns:1fr}.nav,.actions{width:100%}.nav .btn,.actions .btn{flex:1}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="top">
+      <div class="brand"><span class="logo">⚡</span><span>TehranNetwork</span></div>
+      <nav class="nav">
+        <a class="btn" href="/docs">مستندات API</a>
+        <a class="btn" href="/app">پنل کاربر</a>
+        <a class="btn primary" href="/admin">ورود مدیریت</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div>
+        <span class="eyebrow">Network Automation Platform</span>
+        <h1>مدیریت و ساخت تونل‌های شبکه، از یک پنل واحد</h1>
+        <p>ثبت سرورها، Inventory، پیش‌بررسی دوطرفه، طراحی پلن تونل، اجرای ترتیبی و مشاهده زنده عملیات‌ها در یک سامانه چندزبانه.</p>
+        <div class="actions">
+          <a class="btn primary" href="/admin">بازکردن پنل مدیریت</a>
+          <a class="btn" href="/app">ورود کاربران</a>
+        </div>
+      </div>
+
+      <aside class="status-card">
+        <div class="status-head">
+          <div>
+            <small style="color:var(--muted)">وضعیت سرویس</small>
+            <h2 style="margin:7px 0 0">TehranNetwork Core</h2>
+          </div>
+          <span class="online"><i class="dot"></i><span id="healthText">در حال بررسی</span></span>
+        </div>
+        <div class="status-grid">
+          <div class="status-item"><small>API</small><strong id="apiState">Checking</strong></div>
+          <div class="status-item"><small>نسخه</small><strong id="apiVersion">—</strong></div>
+          <div class="status-item"><small>محیط</small><strong id="apiEnvironment">—</strong></div>
+          <div class="status-item"><small>پرداخت</small><strong id="paymentState">—</strong></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="features">
+      <article class="feature"><h3>🖥 مدیریت Endpoint</h3><p>ثبت امن سرور، Inventory شبکه، ویرایش، کنترل وضعیت و حذف مدیریت‌شده اطلاعات وابسته.</p></article>
+      <article class="feature"><h3>⇄ پیش‌بررسی دوطرفه</h3><p>بررسی ICMP، مسیر، DNS، TCP و UDP از هر دو جهت پیش از ساخت تونل.</p></article>
+      <article class="feature"><h3>🧩 Tunnel Composer</h3><p>ساخت پلن ترتیبی با روش‌های متعدد، سیاست توقف، Rollback و آدرس‌دهی خودکار.</p></article>
+    </section>
+
+    <footer class="footer">TehranNetwork · Secure network operations workspace</footer>
+  </main>
+
+  <script>
+    fetch('/api/v1/health', {cache:'no-store'})
+      .then(response => {
+        if (!response.ok) throw new Error('health');
+        return response.json();
+      })
+      .then(data => {
+        document.getElementById('healthText').textContent = 'آنلاین';
+        document.getElementById('apiState').textContent = data.status || 'ok';
+        document.getElementById('apiVersion').textContent = data.version || '—';
+        document.getElementById('apiEnvironment').textContent = data.environment || '—';
+        document.getElementById('paymentState').textContent = data.payments_enabled ? 'فعال' : 'غیرفعال';
+      })
+      .catch(() => {
+        document.getElementById('healthText').textContent = 'خطا';
+        document.getElementById('apiState').textContent = 'Unavailable';
+        document.querySelector('.dot').style.background = '#fb5b6b';
+      });
+  </script>
+</body>
+</html>
