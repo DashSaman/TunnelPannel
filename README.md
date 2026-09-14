@@ -236,32 +236,15 @@ The original production checkout used `/opt/network-automation` and Compose/cont
 
 ## Full production migration / disaster recovery
 
-A normal Git checkout intentionally does **not** contain production users, endpoints, encrypted credentials, runtime `.env`, or database state. Use the encrypted DR workflow when you need an operational clone of production on another server.
+A normal Git checkout intentionally does **not** contain production runtime configuration or live database state. Keep the code in Git and keep production state/configuration in separate backup storage.
 
-Create a full encrypted production bundle:
+Use `scripts/export-production-state.sh` to create an encrypted bundle containing the PostgreSQL state and `app_data`. The runtime `.env` and original `APP_SECRET_KEY` are intentionally not included in that bundle and must be stored separately in your secure backup system.
 
-```bash
-export DR_PASSPHRASE='use-a-strong-passphrase-and-store-it-separately'
-bash scripts/export-production.sh
-```
+On a new server, install the repository first, provision the matching production `.env`, then use `scripts/restore-production-state.sh` to restore users, endpoints, plans, audit data, encrypted credentials and application data. Redis is transient coordination state and is recreated.
 
-The generated `backups/tunnelpannel-dr-*.tar.gz.enc` contains the production `.env` (including the original `APP_SECRET_KEY`), a PostgreSQL custom-format dump, app-data volume contents, and a manifest. Redis is treated as transient coordination state and is recreated.
+The destination must use the same original `APP_SECRET_KEY` as the database snapshot; otherwise stored endpoint credentials cannot be decrypted.
 
-Copy the encrypted bundle to off-site storage. Do **not** store the passphrase next to the bundle and do not commit either to Git.
-
-After installing the code on a fresh server, restore the bundle with explicit confirmation:
-
-```bash
-export DR_PASSPHRASE='the-same-passphrase'
-export RESTORE_TUNNELPANNEL=YES_I_UNDERSTAND
-bash scripts/restore-production.sh /secure/path/tunnelpannel-dr-YYYYMMDDTHHMMSSZ.tar.gz.enc
-```
-
-The restore pauses only TunnelPannel application services, restores the original `.env`, synchronizes the PostgreSQL role password, restores users/endpoints/plans/audit data and encrypted credentials, restores `app_data`, rebuilds the stack, and waits for health.
-
-**Critical:** the database and original `APP_SECRET_KEY` must travel together. Without the original key, stored endpoint credentials cannot be decrypted.
-
-This release workflow was validated with a clean Ubuntu 24.04 environment, a fresh Docker/Compose installation, a real encrypted production export/restore, database row-count comparison, credential decryption verification without printing secrets, and the full `scripts/final_healthcheck.sh` suite.
+This release workflow was validated with a clean Ubuntu 24.04 environment, a fresh Docker/Compose installation, a real production-state restore, database row-count comparison, credential decryption verification without printing secrets, and the full `scripts/final_healthcheck.sh` suite.
 
 ## Repository
 
