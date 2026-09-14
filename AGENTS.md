@@ -64,10 +64,10 @@ For a clean installation also verify the local health endpoint and `scripts/fina
 - Root installer: `install.sh`; default installation path: `/opt/tunnelpannel`.
 - Fresh installs generate local application/database/cache keys automatically.
 - Existing `netauto-*` containers are treated as a collision signal unless ownership is explicitly intended.
-- `scripts/export-production.sh` creates an encrypted production recovery bundle.
-- `scripts/restore-production.sh` restores the database, application data and matching runtime configuration.
-- The database and original application encryption key must be restored together so stored endpoint credentials remain readable.
-- Keep recovery bundles outside Git and store their recovery phrase separately.
+- `scripts/export-production-state.sh` creates an encrypted production state bundle containing PostgreSQL and app-data state.
+- Runtime configuration and the original `APP_SECRET_KEY` are intentionally kept outside Git and outside the state bundle; store them separately in secure backup storage.
+- `scripts/restore-production-state.sh` restores the state bundle after the matching runtime configuration is provisioned on the destination.
+- Redis is transient coordination state and is recreated.
 
 ## Documentation and definition of done
 Keep `README.md` and `README.fa.md` aligned. A release is complete only when tests pass, Compose validates, runtime data is excluded from Git, documentation matches behavior, and production health has been rechecked.
