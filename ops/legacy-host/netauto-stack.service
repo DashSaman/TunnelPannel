@@ -1,0 +1,17 @@
+[Unit]
+Description=TehranNetwork automation Docker stack
+After=docker.service network-online.target
+Wants=network-online.target
+Requires=docker.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/network-automation
+ExecStart=/usr/bin/docker compose up -d
+ExecReload=/usr/bin/docker compose up -d
+TimeoutStartSec=300
+
+[Install]
+WantedBy=multi-user.target
