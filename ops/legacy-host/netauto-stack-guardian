@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -u
+
+PROJECT="/opt/network-automation"
+
+cd "$PROJECT" || exit 0
+
+if ! docker info >/dev/null 2>&1; then
+    exit 0
+fi
+
+required=(
+    postgres
+    redis
+    api
+    bot
+    worker
+    scheduler
+    web
+    plan_executor
+)
+
+running="$(
+    docker compose ps \
+      --status running \
+      --services \
+      2>/dev/null \
+      || true
+)"
+
+for service in "${required[@]}"; do
+    if ! printf '%s\n' "$running" \
+      | grep -Fxq "$service"
+    then
+        docker compose up -d "$service" \
+          >/dev/null 2>&1 \
+          || true
+    fi
+done
