@@ -234,6 +234,35 @@ For the full running stack, use `bash scripts/final_healthcheck.sh`; it verifies
 
 The original production checkout used `/opt/network-automation` and Compose/container names prefixed with `netauto-`. The GitHub installer defaults to `/opt/tunnelpannel` but intentionally preserves those internal service names for application compatibility. Do not run two copies with the same fixed container/volume names on one Docker host.
 
+## Full production migration / disaster recovery
+
+A normal Git checkout intentionally does **not** contain production users, endpoints, encrypted credentials, runtime `.env`, or database state. Use the encrypted DR workflow when you need an operational clone of production on another server.
+
+Create a full encrypted production bundle:
+
+```bash
+export DR_PASSPHRASE='use-a-strong-passphrase-and-store-it-separately'
+bash scripts/export-production.sh
+```
+
+The generated `backups/tunnelpannel-dr-*.tar.gz.enc` contains the production `.env` (including the original `APP_SECRET_KEY`), a PostgreSQL custom-format dump, app-data volume contents, and a manifest. Redis is treated as transient coordination state and is recreated.
+
+Copy the encrypted bundle to off-site storage. Do **not** store the passphrase next to the bundle and do not commit either to Git.
+
+After installing the code on a fresh server, restore the bundle with explicit confirmation:
+
+```bash
+export DR_PASSPHRASE='the-same-passphrase'
+export RESTORE_TUNNELPANNEL=YES_I_UNDERSTAND
+bash scripts/restore-production.sh /secure/path/tunnelpannel-dr-YYYYMMDDTHHMMSSZ.tar.gz.enc
+```
+
+The restore pauses only TunnelPannel application services, restores the original `.env`, synchronizes the PostgreSQL role password, restores users/endpoints/plans/audit data and encrypted credentials, restores `app_data`, rebuilds the stack, and waits for health.
+
+**Critical:** the database and original `APP_SECRET_KEY` must travel together. Without the original key, stored endpoint credentials cannot be decrypted.
+
+This release workflow was validated with a clean Ubuntu 24.04 environment, a fresh Docker/Compose installation, a real encrypted production export/restore, database row-count comparison, credential decryption verification without printing secrets, and the full `scripts/final_healthcheck.sh` suite.
+
 ## Repository
 
 `https://github.com/DashSaman/TunnelPannel`
