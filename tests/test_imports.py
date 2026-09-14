@@ -1,5 +1,11 @@
+import unittest
 from backend.app import main
 
 
-def test_import_main():
-    assert hasattr(main, 'app')
+class TestImports(unittest.TestCase):
+    def test_import_main(self):
+        self.assertTrue(hasattr(main, 'app'))
+
+
+if __name__ == '__main__':
+    unittest.main()
