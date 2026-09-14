@@ -34,18 +34,19 @@ class ReleaseAssetTests(unittest.TestCase):
         self.assertIn("README.md", persian)
         self.assertIn("77", english)
         self.assertTrue("77" in persian or "۷۷" in persian)
+        self.assertIn("export-production-state.sh", english)
+        self.assertIn("restore-production-state.sh", english)
 
     def test_root_installer_has_safety_and_private_repo_support(self):
         installer = (ROOT / "install.sh").read_text()
-        required_markers = [
+        for marker in [
             "ALLOW_EXISTING_NETAUTO",
             "GITHUB_TOKEN",
             "docker compose --env-file .env config",
             "openssl rand",
             "127.0.0.1",
             "DashSaman/TunnelPannel",
-        ]
-        for marker in required_markers:
+        ]:
             self.assertIn(marker, installer)
         self.assertNotRegex(
             installer,
@@ -56,6 +57,28 @@ class ReleaseAssetTests(unittest.TestCase):
         ignore = (ROOT / ".gitignore").read_text()
         for marker in [".env", "/backups", "*.key", "*.pem", "*.dump"]:
             self.assertIn(marker, ignore)
+
+    def test_agent_guide_is_comprehensive(self):
+        agents = (ROOT / "AGENTS.md").read_text()
+        for marker in [
+            "Production safety",
+            "Source of truth",
+            "Verification",
+            "77",
+            "plan_executor/executor.py",
+            "export-production-state.sh",
+            "restore-production-state.sh",
+        ]:
+            self.assertIn(marker, agents)
+
+    def test_state_recovery_helpers_exist(self):
+        export_script = (ROOT / "scripts/export-production-state.sh").read_text()
+        restore_script = (ROOT / "scripts/restore-production-state.sh").read_text()
+        for marker in ["DR_PASSPHRASE", "pg_dump", "app_data", "openssl enc -aes-256-cbc"]:
+            self.assertIn(marker, export_script)
+        self.assertNotIn("cp .env", export_script)
+        for marker in ["DR_PASSPHRASE", "pg_restore", "RESTORE_TUNNELPANNEL", "APP_SECRET_KEY"]:
+            self.assertIn(marker, restore_script)
 
 
 if __name__ == "__main__":
