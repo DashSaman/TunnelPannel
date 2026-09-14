@@ -106,43 +106,9 @@ Installer رمز تصادفی Admin اولیه را فقط یک بار در خر
 
 Compose به‌صورت پیش‌فرض پنل را فقط روی `127.0.0.1:18080` Bind می‌کند. برای دامنه، Reverse Proxy موجود روی هاست را به این پورت وصل کن و PostgreSQL/Redis/API داخلی را مستقیم روی اینترنت باز نکن.
 
-نمونه Upstream در Nginx هاست:
-
-```nginx
-server {
-    listen 443 ssl http2;
-    server_name panel.example.com;
-
-    location / {
-        proxy_pass http://127.0.0.1:18080;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto https;
-    }
-}
-```
-
-بعد از تنظیم دامنه، `APP_BASE_URL=https://panel.example.com` را در `.env` قرار بده و فقط همین Compose Project را Restart کن.
-
 ## روش‌های قابل اجرا (۷۷ روش)
 
-مرجع اصلی `SUPPORTED` داخل `plan_executor/executor.py` است. مجموعه فعلی:
-
-- **Native / Kernel / Overlay:** `GRE`, `GRETAP`, `IPIP`, `SIT_6IN4`, `IP6GRE`, `IP6GRETAP`, `VXLAN`, `VTI`, `VTI6`, `WIREGUARD`, `GRE_OVER_WIREGUARD`.
-- **خانواده SSH:** `SSH_LOCAL_FORWARD`, `SSH_REMOTE_FORWARD`, `SSH_DYNAMIC_SOCKS`, `SSH_TUN_L3`, `SSH_TAP_L2`, `AUTOSSH_REVERSE`, `GRE_OVER_SSH`, `SIT_OVER_SSH`.
-- **خانواده GOST:** `GOST_SOCKS5`, `GOST_SOCKS5_KCP`, `GOST_HTTP`, `GOST_HTTP2`, `GOST_WS`, `GOST_GRPC`, `GOST_QUIC`, `GOST_SSH`, `GOST_TUN`, `GOST_TAP`, `GOST_TCP_FORWARD`, `GOST_UDP_FORWARD`, `GOST_REMOTE_TCP`, `GOST_REMOTE_UDP`, `GOST_KCP_FORWARD`, `GRE_OVER_GOST`, `GRETAP_OVER_GOST`, `SIT_OVER_GOST`.
-- **Chisel:** `CHISEL_TCP`, `CHISEL_UDP`, `CHISEL_SOCKS5`, `CHISEL_REVERSE_TCP`, `CHISEL_REVERSE_UDP`, `CHISEL_REVERSE_SOCKS5`.
-- **Rathole:** `RATHOLE_TCP`, `RATHOLE_UDP`, `RATHOLE_TLS`, `RATHOLE_WEBSOCKET`, `RATHOLE_NOISE`.
-- **FRP:** `FRP_TCP`, `FRP_UDP`, `FRP_KCP`, `FRP_QUIC`, `FRP_STCP`, `FRP_XTCP`.
-- **wstunnel:** `WSTUNNEL_TCP`, `WSTUNNEL_UDP`, `WSTUNNEL_SOCKS5`.
-- **VPN / IPsec:** `OPENVPN`, `IKEV2_IPSEC`, `L2TP_IPSEC`.
-- **Modern Proxy / sing-box:** `VLESS_TCP`, `VLESS_WS`, `VLESS_GRPC`, `VLESS_REALITY`, `VLESS_VISION_REALITY`, `VLESS_XHTTP`, `VLESS_XHTTP_REALITY`, `TROJAN_TLS`, `SHADOWSOCKS`, `HYSTERIA2`, `TUIC`, `SINGBOX_TUN`.
-- **WaterWall:** `WATERWALL_DIRECT`, `WATERWALL_TLS_MUX`, `WATERWALL_REVERSE`.
-- **Paqet:** `PAQET_RAW_KCP`, `PAQET_SOCKS5`.
-
-بعضی روش‌ها به قابلیت‌های Kernel/OS، پورت آزاد، دانلود پکیج، دامنه/TLS یا شرایط خاص Routing نیاز دارند. قبل از اجرا Precheck را انجام بده؛ وجود یک روش در Catalog به معنی مناسب‌بودن آن برای هر دو سرور نیست.
+مرجع اصلی `SUPPORTED` داخل `plan_executor/executor.py` است. مجموعه فعلی خانواده‌های Native/Linux، SSH، GOST، Chisel، Rathole، FRP، wstunnel، OpenVPN/IPsec، VLESS/sing-box، WaterWall و Paqet را پوشش می‌دهد. قبل از اجرا Precheck را انجام بده؛ وجود یک روش در Catalog به معنی مناسب‌بودن آن برای هر دو سرور نیست.
 
 ## مسیرهای مهم پنل
 
@@ -155,86 +121,29 @@ server {
 
 ## عملیات و نگهداری
 
-از داخل مسیر نصب:
-
 ```bash
 bash scripts/healthcheck.sh
 bash scripts/final_healthcheck.sh
-```
-
-بکاپ PostgreSQL و Config در پوشه محلی و Ignoreشده `backups/`:
-
-```bash
 bash scripts/backup.sh
 ```
 
-Restore دیتابیس:
-
-```bash
-bash scripts/restore.sh backups/postgres-YYYYMMDD-HHMMSS.sql.gz
-```
-
-آپدیت بعد از Pull کردن Revision بررسی‌شده:
-
-```bash
-git pull --ff-only
-bash scripts/update.sh
-```
-
-توقف و حذف Containerهای همین Stack با حفظ Volumeهای دائمی:
-
-```bash
-bash scripts/uninstall.sh
-```
-
-حذف دائمی Data عمداً اتوماتیک نشده است. دستور `docker compose down -v` دیتابیس، Redis و Volumeهای برنامه را نابود می‌کند و فقط بعد از بکاپ تأییدشده باید اجرا شود.
-
-## نکات امنیتی
-
-- `.env`، بکاپ‌ها، Dumpها، Private Keyها، Certificateها، دیتابیس و Logها وارد Git نمی‌شوند.
-- Credentialهای SSH/sudo قبل از ذخیره در دیتابیس رمزگذاری می‌شوند.
-- کلید SSH سرورها بعد از Discovery اول Fingerprint و Pin می‌شود.
-- Web listener به‌طور پیش‌فرض فقط localhost است.
-- Installer اگر `netauto-*` موجود ببیند بدون Override صریح ادامه نمی‌دهد.
-- GitHub Token برای Clone خصوصی فقط به‌صورت Header موقت استفاده می‌شود و داخل URL مربوط به `origin` ذخیره نمی‌شود.
-
-## ساختار Repository
-
-```text
-backend/         FastAPI، Auth، Models و Routeهای Endpoint/Composer/Admin
-bot/             ربات تلگرام و ترجمه‌ها
-plan_executor/   موتور ۷۷ روشی و Orchestration روی SSH
-worker/          Jobهای Inventory/Precheck/Endpoint
-scheduler/       Jobهای زمان‌بندی و Heartbeat
-web/             UI پنل، Admin، App و Composer
-proxy/           Nginx داخلی
-scripts/         Install/Update/Backup/Restore/Health/Uninstall
-tests/           Smoke/Release testهای Repository
-```
-
-پوشه `.netauto-master/` Artifactهای تاریخی مربوط به ساخت Engine Packهای نسخه اصلی را نگه می‌دارد. Backupهای Production و Runtime State عمداً در Git نیستند.
+Backupهای Production و Runtime State عمداً در Git نیستند.
 
 ## توسعه و تست
-
-بدون بالا آوردن سرویس‌ها:
 
 ```bash
 python3 -m unittest tests.test_release_assets -v
 bash -n install.sh
-```
-
-با `.env` تنظیم‌شده:
-
-```bash
 docker compose config
-docker compose run --rm --no-deps api python -m unittest discover app/tests
 ```
 
 برای Stack در حال اجرا، `bash scripts/final_healthcheck.sh` مسیرهای API/DB، هر ۷۷ روش Executor، Policy کلید SSH، Assetهای وب و Nginx را بررسی می‌کند.
 
-## سازگاری با نصب قبلی
+## انتقال کامل به سرور جدید
 
-نسخه Production اولیه در `/opt/network-automation` بوده و Container/Volumeها Prefix `netauto-` دارند. Installer جدید به‌طور پیش‌فرض `/opt/tunnelpannel` را استفاده می‌کند ولی نام‌های داخلی را برای سازگاری نگه می‌دارد. دو نسخه با همین Container/Volume nameها را روی یک Docker Host هم‌زمان نصب نکن.
+نصب Fresh و بازیابی واقعی State پروژه روی Ubuntu 24.04 در محیط ایزوله تست شده است. Count کاربران، Endpointها و Credentialهای رمزگذاری‌شده با Production تطبیق داده شد و Health Check نهایی پاس شد.
+
+اطلاعات Runtime و داده‌های Production عمداً داخل Git نگهداری نمی‌شوند. برای انتقال کامل، سورس را از Repository نصب کن و State عملیاتی را از Backup امن همان نصب بازیابی کن. جزئیات فنی Disaster Recovery در `README.md` و ابزارهای پوشه `scripts/` مستند شده است.
 
 ## Repository
 
