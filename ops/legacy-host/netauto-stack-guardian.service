@@ -1,0 +1,9 @@
+[Unit]
+Description=TehranNetwork stack guardian
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/netauto-stack-guardian
+TimeoutStartSec=180
