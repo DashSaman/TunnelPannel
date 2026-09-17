@@ -1,0 +1,16 @@
+[Unit]
+Description=TunnelGuard multi-tunnel failover control plane
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/tunnelguard
+EnvironmentFile=/etc/tunnelguard/env
+ExecStart=/opt/tunnelguard/.venv/bin/python -m tfd
+Restart=always
+RestartSec=3
+User=root
+
+[Install]
+WantedBy=multi-user.target

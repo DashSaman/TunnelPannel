@@ -1,0 +1,22 @@
+services:
+  mtf-panel:
+    build:
+      context: ./docker
+    image: mtf-panel:1.0
+    container_name: mtf-panel
+    restart: unless-stopped
+    network_mode: host          # shares host netns -> panel on :9443, real netns/nft access
+    privileged: true            # kernel tunnels (netns, wireguard, nftables, /dev/net/tun)
+    volumes:
+      - /opt/multitunnel/engine:/opt/multitunnel/engine
+      - /opt/multitunnel/panel:/opt/multitunnel/panel
+      - /opt/multitunnel/tests:/opt/multitunnel/tests
+      - /opt/multitunnel/bin:/opt/multitunnel/bin
+      - /opt/multitunnel/data:/opt/multitunnel/data
+      - /opt/multitunnel/logs:/opt/multitunnel/logs
+      - /opt/multitunnel/methods:/opt/multitunnel/methods
+      - /opt/multitunnel/certs:/opt/multitunnel/certs:ro
+      - /lib/modules:/lib/modules:ro
+    environment:
+      - MTF_REGISTRY=/opt/multitunnel/engine/methods_registry.json
+      - TZ=Asia/Tehran

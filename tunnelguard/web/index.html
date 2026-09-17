@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="fa" dir="rtl" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>TunnelGuard — Multi-Tunnel Failover</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div id="view-login" class="login-wrap hidden">
+  <div class="login-card">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+      <div class="logo">🛡️</div>
+      <div><h1 data-i18n="brand">تونل‌گارد</h1></div>
+    </div>
+    <h2 style="font-size:16px;margin:0 0 2px" data-i18n="login_h"></h2>
+    <p data-i18n="login_p"></p>
+    <form id="login-form">
+      <div class="field"><label data-i18n="username"></label>
+        <input id="login-user" autocomplete="username" required></div>
+      <div class="field"><label data-i18n="password"></label>
+        <input id="login-pass" type="password" autocomplete="current-password" required></div>
+      <button class="btn primary block" type="submit" data-i18n="login_btn"></button>
+      <p class="err" id="login-err"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="view-app" class="hidden">
+  <header class="topbar">
+    <div class="brand"><span class="logo">🛡️</span><span data-i18n="brand"></span></div>
+    <span id="mode-badge" class="mode-badge auto"><i class="dot"></i><span id="mode-text"></span></span>
+    <div class="spacer"></div>
+    <nav class="nav">
+      <button class="btn" data-view="overview" data-i18n="nav_overview"></button>
+      <button class="btn" data-view="events" data-i18n="nav_events"></button>
+      <button class="btn" data-view="settings" data-i18n="nav_settings"></button>
+      <button class="btn" id="btn-lang">EN</button>
+      <button class="btn" id="btn-theme">☀️</button>
+      <button class="btn" id="btn-logout" data-i18n="logout"></button>
+    </nav>
+  </header>
+
+  <!-- overview -->
+  <main id="view-overview" class="main">
+    <div class="health-banner">
+      <div class="hb banner-status">
+        <div>
+          <small data-i18n="active_tunnel"></small>
+          <div class="big" id="hb-active">—</div>
+        </div>
+        <div id="hb-status-pill"></div>
+      </div>
+      <div class="hb"><small data-i18n="mode"></small>
+        <strong id="hb-mode">—</strong>
+        <div style="margin-top:8px;display:flex;gap:7px">
+          <button class="btn" id="btn-enable-auto" data-i18n="enable_auto"></button>
+          <button class="btn ghost" id="btn-reset-flap" data-i18n="reset_flap"></button>
+        </div>
+      </div>
+      <div class="hb"><small data-i18n="virtual_ip"></small>
+        <strong class="vip" id="hb-vip">—</strong></div>
+      <div class="hb"><small data-i18n="overall"></small>
+        <strong id="hb-overall">—</strong></div>
+    </div>
+
+    <div class="sec">
+      <h2><span data-i18n="overview"></span>
+        <button class="btn primary" id="btn-wizard" style="min-height:34px;font-size:12.5px">⚡ <span data-i18n="wizard"></span></button>
+        <button class="btn" id="btn-add-tunnel" style="min-height:34px;font-size:12.5px">＋ <span data-i18n="add_tunnel"></span></button>
+      </h2>
+      <div id="tunnel-grid" class="grid"></div>
+    </div>
+
+    <div class="sec two-col">
+      <div class="panel">
+        <h3 style="margin:0 0 10px;font-size:15px" data-i18n="chart_rtt"></h3>
+        <div class="chart-box"><canvas id="chart-rtt"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3 style="margin:0 0 10px;font-size:15px" data-i18n="events_title"></h3>
+        <div id="events-mini" style="max-height:260px;overflow:auto"></div>
+      </div>
+    </div>
+
+    <p class="footer-note">
+      TunnelGuard v1.2 — WireGuard · GRE · SIT 6in4 · OpenVPN · IKEv2/VTI · L2TPv3 · Hedioum Pool · HajSaman (WG-in-SIT) · Paqet (raw-TCP/KCP)
+      <br><span id="footer-limit"></span>
+    </p>
+  </main>
+
+  <!-- events -->
+  <main id="view-events" class="main hidden">
+    <div class="sec"><h2 data-i18n="events_title"></h2>
+      <div class="panel" id="events-full" style="max-height:70vh;overflow:auto"></div>
+    </div>
+  </main>
+
+  <!-- settings -->
+  <main id="view-settings" class="main hidden">
+    <div class="sec"><h2 data-i18n="settings_title"></h2>
+      <div class="panel">
+        <h3 style="font-size:14px;color:var(--muted)" data-i18n="settings_probe"></h3>
+        <div class="set-grid" id="set-probe"></div>
+        <h3 style="font-size:14px;color:var(--muted);margin-top:18px" data-i18n="settings_fail"></h3>
+        <div class="set-grid" id="set-fail"></div>
+        <h3 style="font-size:14px;color:var(--muted);margin-top:18px" data-i18n="settings_behavior"></h3>
+        <div class="set-grid" id="set-behavior"></div>
+        <h3 style="font-size:14px;color:var(--muted);margin-top:18px" data-i18n="settings_net"></h3>
+        <div class="set-grid" id="set-net"></div>
+        <p class="set-note" id="set-note" style="margin-top:14px"></p>
+        <button class="btn primary" id="btn-save-settings" style="margin-top:12px" data-i18n="save_settings"></button>
+      </div>
+    </div>
+  </main>
+
+  <!-- tunnel detail -->
+  <main id="view-detail" class="main hidden">
+    <button class="btn ghost" id="btn-detail-back">← <span data-i18n="back"></span></button>
+    <h2 id="detail-title" style="margin:14px 0"></h2>
+    <div class="two-col">
+      <div class="panel"><h3 style="margin:0 0 10px;font-size:14px" data-i18n="chart_rtt"></h3>
+        <div class="chart-box"><canvas id="d-chart-rtt"></canvas></div></div>
+      <div class="panel"><h3 style="margin:0 0 10px;font-size:14px" data-i18n="chart_loss"></h3>
+        <div class="chart-box"><canvas id="d-chart-loss"></canvas></div></div>
+      <div class="panel"><h3 style="margin:0 0 10px;font-size:14px" data-i18n="chart_jitter"></h3>
+        <div class="chart-box"><canvas id="d-chart-jit"></canvas></div></div>
+      <div class="panel"><h3 style="margin:0 0 10px;font-size:14px" data-i18n="chart_bw"></h3>
+        <div class="chart-box"><canvas id="d-chart-bw"></canvas></div></div>
+    </div>
+  </main>
+</div>
+
+<div id="modal-root"></div>
+<div id="toast-root"></div>
+
+<script src="assets/vendor/chart.umd.js"></script>
+<script src="assets/i18n.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

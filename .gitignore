@@ -1,55 +1,31 @@
-# Python
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-.pytest_cache/
-.pyre/
-
-# Runtime
-logs/
-data/
-*.log
-*.sqlite3
-*.db
-
-# Environment
+# secrets — never commit
 .env
-.env.*
-!.env.example
+.ghtoken
+*.token
+.srv1pass
+.srv2pass
+scripts/.srv*pass*
+*passfile*
 
-# Credentials and secrets
-*.pem
-*.key
-*.crt
-*.csr
-*.p12
-*.pfx
+# local helpers containing infra credentials
+scripts/sshrun.py
+scripts/sshrun2.py
+scripts/.srv*
 
-# Backups
-/backups
-*.dump
-
-# Docker
-docker-compose.override.yml
-*.envrc
-
-# IDE / Editor
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Node
+# reference clones & local workspace
+tp/
+download/
+tool-results/
+skills/
+agent-ctx/
 node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.log
+mtflocal/
+mtftest/
 
-# Misc
-*.bak
-*.tmp
-*.orig
-
-# Installer ownership marker
-.tunnelpannel-managed
+# keep legacy tracked files intact; only ignore future local junk
+system/
