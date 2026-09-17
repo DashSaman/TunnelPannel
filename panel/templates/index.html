@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MTF · Multi-Tunnel Failover</title>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23071022'/%3E%3Cpath d='M8 22V10m8 12V14m8 8V6' stroke='%2322D3EE' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<!-- ======================================================= top bar -->
+<header class="topbar glass">
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
+      <rect width="32" height="32" rx="8" fill="var(--surface-2)"/>
+      <path d="M8 22V10m8 12V14m8 8V6" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <div class="brand-t">
+      <strong>MTF</strong>
+      <span class="muted" data-i18n="brandSub">چندتونلی · فیلاور</span>
+    </div>
+  </div>
+  <div class="top-live">
+    <span class="pulse-dot" aria-hidden="true"></span>
+    <span id="clock" class="mono">--:--:--</span>
+    <span id="modeBadge" class="badge badge-auto">AUTO</span>
+    <span id="activeBadge" class="badge badge-active" data-i18n="noActive">بدون تانل فعال</span>
+    <button id="liveBtn" class="live-ctl" aria-pressed="false" title="Pause / resume live telemetry">
+      <span class="livedot" aria-hidden="true"></span><span id="liveTxt">LIVE</span>
+    </button>
+    <span id="updatedAgo" class="mono" aria-live="polite"></span>
+  </div>
+  <div class="top-actions">
+    <button id="langBtn" class="icon-btn" aria-label="Toggle language / تغییر زبان" title="fa / en">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke-width="1.6"/><path d="M3 12h18M12 3c2.6 2.6 3.9 5.6 3.9 9S14.6 18.4 12 21c-2.6-2.6-3.9-5.6-3.9-9S9.4 5.6 12 3z" stroke-width="1.6"/></svg>
+      <span id="langLabel">EN</span>
+    </button>
+    <a id="logoutBtn" class="icon-btn" href="/logout" aria-label="Logout / خروج" title="Logout">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h10" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </div>
+</header>
+
+<div class="shell">
+
+<!-- ======================================================= side rail -->
+<nav class="rail glass" aria-label="Main navigation">
+  <button class="rail-btn on" data-tab="dash">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" stroke-width="1.7"/><rect x="13" y="3" width="8" height="5" rx="2" stroke-width="1.7"/><rect x="13" y="10" width="8" height="11" rx="2" stroke-width="1.7"/><rect x="3" y="13" width="8" height="8" rx="2" stroke-width="1.7"/></svg>
+    <span data-i18n="navDash">داشبورد</span>
+  </button>
+  <button class="rail-btn" data-tab="tun">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9a5 5 0 0 1 0 10H8" stroke-width="1.7" fill="none" stroke-linecap="round"/><circle cx="5" cy="17" r="2.2" stroke-width="1.7" fill="none"/><circle cx="19" cy="7" r="2.2" stroke-width="1.7" fill="none"/><path d="M16.8 7H15" stroke-width="1.7" stroke-linecap="round"/></svg>
+    <span data-i18n="navTun">تانل‌ها (۸۲)</span>
+  </button>
+  <button class="rail-btn" data-tab="st">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="8" height="6" rx="1.5" stroke-width="1.7"/><rect x="13" y="14" width="8" height="6" rx="1.5" stroke-width="1.7"/><path d="M7 10v3a2 2 0 0 0 2 2h9M17 14v-3" stroke-width="1.7" fill="none" stroke-linecap="round"/></svg>
+    <span data-i18n="navSt">تانل‌های سرورها</span>
+    <em id="stDot" class="nav-dot" hidden></em>
+  </button>
+  <button class="rail-btn" data-tab="ports">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12a7 7 0 0 1 14 0M8 12a4 4 0 0 1 8 0" stroke-width="1.7" fill="none" stroke-linecap="round"/><circle cx="12" cy="14" r="2" stroke-width="1.7"/><path d="M12 16v4M9 21h6" stroke-width="1.7" stroke-linecap="round"/></svg>
+    <span data-i18n="navPorts">پورت‌ها و تداخل</span>
+  </button>
+  <button class="rail-btn" data-tab="probe">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.4" stroke-width="1.7"/><path d="M7.5 7.5a6.4 6.4 0 0 0 0 9M16.5 16.5a6.4 6.4 0 0 0 0-9M4.6 4.6a10.5 10.5 0 0 0 0 14.8M19.4 19.4a10.5 10.5 0 0 0 0-14.8" stroke-width="1.7" fill="none" stroke-linecap="round"/></svg>
+    <span data-i18n="navProbe">پروب سرورها</span>
+  </button>
+  <button class="rail-btn" data-tab="reco">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.3.9-4.5 4.4 1 6.1-5.5-2.9-5.5 2.9 1-6.1L3 9.5l6.3-.9L12 3z" stroke-width="1.7" fill="none" stroke-linejoin="round"/></svg>
+    <span data-i18n="navReco">پیشنهاد تونل</span>
+  </button>
+  <button class="rail-btn" data-tab="inst">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10m0 0l-3.5-3.5M12 13l3.5-3.5" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15v3a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-3" stroke-width="1.7" fill="none" stroke-linecap="round"/></svg>
+    <span data-i18n="navInst">استقرار روی سرور</span>
+  </button>
+  <button class="rail-btn" data-tab="set">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" stroke-width="1.7"/><path d="M19 12a7 7 0 0 0-.2-1.6l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2.7-1.6L13.4 2h-2.8l-.4 2.5a7 7 0 0 0-2.7 1.6l-2.3-1-2 3.4 2 1.5a7 7 0 0 0 0 3.2l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 2.7 1.6l.4 2.5h2.8l.4-2.5a7 7 0 0 0 2.7-1.6l2.3 1 2-3.4-2-1.5c.1-.5.2-1 .2-1.6z" stroke-width="1.6" fill="none" stroke-linejoin="round"/></svg>
+    <span data-i18n="navSet">تنظیمات</span>
+  </button>
+</nav>
+
+<main class="content">
+
+<!-- ======================================================= TAB: dashboard -->
+<section id="tab-dash" class="tabpane">
+
+  <div class="kpis">
+    <div class="card kpi">
+      <div class="kpi-ic ic-cyan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9a5 5 0 0 1 0 10H8" stroke-width="1.7" fill="none" stroke-linecap="round"/><circle cx="5" cy="17" r="2.2" stroke-width="1.7" fill="none"/></svg></div>
+      <div style="flex:1;min-width:0"><em data-i18n="kpiActive">تانل فعال</em><strong id="kpiActive">—</strong>
+        <svg id="sparkActive" class="kpi-spark" viewBox="0 0 160 30" preserveAspectRatio="none" role="img" aria-label="established connections sparkline"></svg></div>
+    </div>
+    <div class="card kpi">
+      <div class="kpi-ic ic-vio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 4v5c0 4.4-3 8-7 9-4-1-7-4.6-7-9V7l7-4z" stroke-width="1.7" fill="none" stroke-linejoin="round"/></svg></div>
+      <div style="flex:1;min-width:0"><em data-i18n="kpiVip">VIP فیلاور</em><strong id="kpiVip" class="mono">—</strong>
+        <svg id="sparkVip" class="kpi-spark" viewBox="0 0 160 30" preserveAspectRatio="none" role="img" aria-label="network throughput sparkline"></svg></div>
+    </div>
+    <div class="card kpi">
+      <div class="kpi-ic ic-grn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div style="flex:1;min-width:0"><em data-i18n="kpiUp">آپ / کل</em><strong id="kpiUp">—</strong>
+        <svg id="sparkUp" class="kpi-spark" viewBox="0 0 160 30" preserveAspectRatio="none" role="img" aria-label="CPU sparkline"></svg></div>
+    </div>
+    <div class="card kpi">
+      <div class="kpi-ic ic-amb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke-width="1.7" fill="none" stroke-linejoin="round"/></svg></div>
+      <div style="flex:1;min-width:0"><em data-i18n="kpiMode">حالت</em><strong id="kpiMode">—</strong>
+        <svg id="sparkRam" class="kpi-spark" viewBox="0 0 160 30" preserveAspectRatio="none" role="img" aria-label="RAM sparkline"></svg></div>
+    </div>
+  </div>
+
+  <div class="grid g-monitor">
+    <div class="card chart-card">
+      <header><h3 data-i18n="chHost">سلامت میزبان — CPU / RAM</h3><span class="muted" id="hostInfo"></span></header>
+      <div class="mini-stats">
+        <span>CPU <strong id="kpiCpu" class="mono">—</strong></span>
+        <span>RAM <strong id="kpiRam" class="mono">—</strong></span>
+        <span data-i18n="estab">اتصال TCP</span><strong id="kpiEstab" class="mono">—</strong>
+      </div>
+      <svg id="chartCpu" class="chart" viewBox="0 0 560 150" preserveAspectRatio="none" role="img" aria-label="CPU and RAM history"></svg>
+    </div>
+    <div class="card chart-card">
+      <header><h3 data-i18n="chNet">ترافیک شبکه (Bps)</h3>
+        <span class="legend"><i class="lg lg-rx"></i>RX <i class="lg lg-tx"></i>TX</span></header>
+      <svg id="chartNet" class="chart" viewBox="0 0 560 150" preserveAspectRatio="none" role="img" aria-label="Network RX TX history"></svg>
+      <div class="mini-stats"><span>RX <strong id="kpiRx" class="mono">—</strong></span><span>TX <strong id="kpiTx" class="mono">—</strong></span></div>
+    </div>
+    <div class="card chart-card">
+      <header><h3 data-i18n="chStates">وضعیت ۸۲ متد</h3></header>
+      <div class="donut-wrap">
+        <svg id="donutStates" viewBox="0 0 200 200" role="img" aria-label="Method states donut"></svg>
+        <table class="donut-legend" id="donutLegend"></table>
+      </div>
+    </div>
+    <div class="card chart-card">
+      <header><h3 data-i18n="chHealth">امتیاز سلامت</h3></header>
+      <div class="gauge-wrap">
+        <svg id="gaugeHealth" viewBox="0 0 220 130" role="img" aria-label="Health score gauge"></svg>
+        <div class="gauge-note muted" id="gaugeNote"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid g-2">
+    <div class="card">
+      <header class="card-head">
+        <h3 data-i18n="chTimeline">رویدادهای زنده</h3>
+        <button id="evBtn" class="btn btn-ghost btn-sm" data-i18n="refresh">به‌روزرسانی</button>
+      </header>
+      <ol id="timeline" class="timeline"></ol>
+    </div>
+    <div class="card">
+      <header><h3 data-i18n="chRtt">تأخیر بهترین تانل‌ها (ms)</h3></header>
+      <svg id="chartRtt" class="chart" viewBox="0 0 560 190" role="img" aria-label="Top methods RTT bar chart"></svg>
+    </div>
+  </div>
+
+  <div class="grid g-2">
+    <div class="card">
+      <header><h3 data-i18n="chUptime">نوار آپ‌تایم زنده — ۲۰ دقیقه اخیر</h3>
+        <span class="legend"><i class="lg lg-ok"></i><span data-i18n="up">آپ</span> <i class="lg lg-warn"></i><span data-i18n="degraded">تقلیل</span> <i class="lg lg-bad"></i><span data-i18n="error">خطا</span></span></header>
+      <div id="uptimeStrip" class="uptime-strip" role="img" aria-label="20 minute uptime heatmap"></div>
+      <div class="uptime-meta"><span id="uptimeFrom">—</span><span id="uptimeTo">—</span></div>
+    </div>
+    <div class="card">
+      <header><h3 data-i18n="chFlow">مسیر فیلاور — بسته‌ها از کدام تانل می‌گذرند</h3></header>
+      <div id="flowStrip" class="flow"></div>
+      <p class="muted" id="flowNote" style="font-size:12.3px"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= TAB: tunnels -->
+<section id="tab-tun" class="tabpane" hidden>
+  <div class="card">
+    <header class="card-head wrap">
+      <h3 data-i18n="tTitle">۸۲ متد تونل</h3>
+      <div class="tools">
+        <input id="qSearch" class="input" type="search" data-i18n-ph="tSearch" placeholder="جست‌وجو…">
+        <label class="chk"><input type="checkbox" id="starOnly"><span data-i18n="tStar">ستاره‌دار</span></label>
+        <span class="muted" id="selCount">0</span>
+        <button id="applyBtn" class="btn btn-primary" data-i18n="tApply">اعمال انتخاب‌شده‌ها</button>
+      </div>
+    </header>
+    <div id="famChips" class="chips"></div>
+    <div class="table-wrap">
+      <table class="tbl">
+        <thead><tr>
+          <th></th><th data-i18n="thId">شناسه</th><th data-i18n="thFam">خانواده</th>
+          <th data-i18n="thState">وضعیت</th><th data-i18n="thRtt">RTT</th><th data-i18n="thLoss">لاس</th>
+          <th data-i18n="thDetail">جزئیات</th><th data-i18n="thAct">عملیات</th>
+        </tr></thead>
+        <tbody id="methRows"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card">
+    <header class="card-head"><h3 data-i18n="tReceipts">رسیدهای تست (آخرین)</h3></header>
+    <div class="table-wrap"><table class="tbl" id="receiptTbl">
+      <thead><tr><th data-i18n="thId">شناسه</th><th data-i18n="thVerdict">نتیجه</th><th data-i18n="thWhen">زمان</th><th data-i18n="thEv">شواهد</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- ======================================================= TAB: server tunnels -->
+<section id="tab-st" class="tabpane" hidden>
+  <div class="card">
+    <header class="card-head wrap">
+      <h3 data-i18n="stTitle">تانل‌های روی سرورها — اسکن و نصب</h3>
+      <div class="tools"><button id="stScanBtn" class="btn btn-primary" data-i18n="stScan">اسکن همه سرورها</button></div>
+    </header>
+    <p class="muted" data-i18n="stHint">سرورهای SSH را اضافه کنید؛ پنل همه تانل‌های موجود (کرنلی، WireGuard، پروسس‌ها، سرویس‌ها، پورت‌ها) را شناسایی می‌کند. سپس از کاتالوگ پایین، متدها را تیک بزنید و بین دو سرور نصب کنید. پسوردها ذخیره نمی‌شوند.</p>
+    <div id="stSrvRows" class="srv-rows"></div>
+    <button id="stAddSrv" class="btn btn-ghost btn-sm" data-i18n="stAdd">+ افزودن سرور</button>
+    <div class="jobbar" id="stScanState" hidden><span class="spin"></span><span></span></div>
+  </div>
+
+  <div class="grid g-2">
+    <div class="card">
+      <header class="card-head"><h3 data-i18n="stFound">تانل‌های شناسایی‌شده</h3><span class="muted" id="stFoundInfo"></span></header>
+      <div id="stDiscovered" class="disc-list"></div>
+    </div>
+
+    <div class="card">
+      <header class="card-head"><h3 data-i18n="stCatalog">کاتالوگ نصب ماندگار</h3><span class="muted" id="stCatCount"></span></header>
+      <div class="pair-grid">
+        <label data-i18n="stSideA">سمت A (کلاینت)</label>
+        <select id="stSideA" class="input sel"></select>
+        <label data-i18n="stSideB">سمت B (سرور)</label>
+        <select id="stSideB" class="input sel"></select>
+      </div>
+      <label class="chk"><input type="checkbox" id="stPair" checked><span data-i18n="stPairMode">حالت جفتی (تانل واقعی دو طرفه)</span></label>
+      <div class="table-wrap cat-wrap">
+        <table class="tbl"><tbody id="stCatalog"></tbody></table>
+      </div>
+      <div class="tools">
+        <button id="stDeployBtn" class="btn btn-primary" data-i18n="stInstall">نصب موارد تیک‌خورده</button>
+      </div>
+      <div class="jobbar" id="stJob" hidden><span class="spin"></span><span id="stJobTxt"></span></div>
+      <pre id="stJobLog" class="joblog" hidden></pre>
+    </div>
+  </div>
+
+  <div class="card">
+    <header class="card-head"><h3 data-i18n="stBook">تانل‌های نصب‌شده (کتاب)</h3></header>
+    <div class="table-wrap"><table class="tbl">
+      <thead><tr><th data-i18n="thSide">سرور</th><th data-i18n="thId">شناسه</th><th data-i18n="thVerdict">نتیجه</th><th data-i18n="thIface">واحد/اینترفیس</th><th data-i18n="thAct">عملیات</th></tr></thead>
+      <tbody id="stBookRows"></tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- ======================================================= TAB: ports -->
+<section id="tab-ports" class="tabpane" hidden>
+  <div class="card">
+    <header class="card-head wrap">
+      <h3 data-i18n="pTitle">مدیریت پورت و تداخل</h3>
+      <div class="tools">
+        <button id="pScanBtn" class="btn btn-primary" data-i18n="pScan">اسکن پورت‌ها</button>
+        <span class="muted" id="pState"></span>
+      </div>
+    </header>
+    <p class="muted" data-i18n="pHint">پنل پورت‌های اشغال TCP/UDP هر سرور + پروتکل‌های سطح IP (GRE/IPIP/SIT/ESP) را جمع می‌کند، پورت‌های سیستمی را همیشه رزرو می‌کند و برای هر تانل به‌صورت خودکار پورت آزادِ بدون تداخل (روی v4 و v6) انتخاب می‌کند.</p>
+    <div class="grid g-3">
+      <div class="stat-mini"><em data-i18n="pTcp">TCP اشغال</em><strong id="pTcp">—</strong></div>
+      <div class="stat-mini"><em data-i18n="pUdp">UDP اشغال</em><strong id="pUdp">—</strong></div>
+      <div class="stat-mini"><em data-i18n="pProto">پروتکل‌های IP در استفاده</em><strong id="pProto">—</strong></div>
+    </div>
+  </div>
+
+  <div class="grid g-2">
+    <div class="card">
+      <header class="card-head"><h3 data-i18n="pListen">پورت‌های شنیده‌شده هر سرور</h3></header>
+      <div class="table-wrap"><table class="tbl">
+        <thead><tr><th data-i18n="thSide">سرور</th><th>Proto</th><th data-i18n="pAddr">آدرس:پورت</th><th data-i18n="pProc">پروسس</th></tr></thead>
+        <tbody id="pListenRows"></tbody>
+      </table></div>
+    </div>
+    <div class="card">
+      <header class="card-head"><h3 data-i18n="pAssign">تخصیص خودکار پورت</h3></header>
+      <div class="pair-grid">
+        <label data-i18n="thId">متد</label>
+        <select id="pAssignMid" class="input sel"></select>
+        <label>Transport</label>
+        <select id="pAssignProto" class="input sel"><option value="tcp">TCP</option><option value="udp">UDP</option></select>
+      </div>
+      <button id="pAssignBtn" class="btn btn-primary" data-i18n="pAssignBtn">پورت آزاد تخصیص بده</button>
+      <div class="table-wrap"><table class="tbl">
+        <thead><tr><th data-i18n="thId">شناسه</th><th data-i18n="pAlloc">پورت‌ها</th><th data-i18n="thWhen">زمان</th><th></th></tr></thead>
+        <tbody id="pAllocRows"></tbody>
+      </table></div>
+      <p class="muted" id="pRanges"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= TAB: probe -->
+<section id="tab-probe" class="tabpane" hidden>
+  <div class="card">
+    <header class="card-head wrap">
+      <h3 data-i18n="prTitle">پروب SSH سرورها</h3>
+      <div class="tools"><button id="probeBtn" class="btn btn-primary" data-i18n="prRun">اجرای پروب</button><span id="probeState" class="muted"></span></div>
+    </header>
+    <p class="muted" data-i18n="prHint">آی‌پی، پورت SSH، نام کاربری و رمز هر سرور را بدهید؛ پنل معماری (فارسی/چینی/English)، ماژول‌های کرنل، دسترسی‌ها و کیفیت لینک را می‌سنجد و مبنای پیشنهاد تونل می‌شود.</p>
+    <div id="srvRows" class="srv-rows"></div>
+    <button id="addSrv" class="btn btn-ghost btn-sm" data-i18n="prAdd">+ افزودن سرور</button>
+  </div>
+  <div class="grid g-2">
+    <div class="card"><header class="card-head"><h3 data-i18n="prResult">نتیجه پروب</h3></header>
+      <div id="probeOut" class="disc-list"></div></div>
+    <div class="card"><header class="card-head"><h3 data-i18n="prMatrix">ماتریس قابلیت‌ها</h3></header>
+      <div class="table-wrap"><table class="tbl">
+        <thead><tr><th data-i18n="thFam">قابلیت</th><th>SRV1</th><th>SRV2</th></tr></thead>
+        <tbody id="mxRows"></tbody>
+      </table></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= TAB: recommendations -->
+<section id="tab-reco" class="tabpane" hidden>
+  <div class="card">
+    <header class="card-head wrap">
+      <h3 data-i18n="reTitle">پیشنهاد هوشمند تونل</h3>
+      <button id="recoBtn" class="btn btn-primary" data-i18n="reRun">محاسبه پیشنهاد</button>
+    </header>
+    <div id="recoList" class="disc-list"><p class="muted" data-i18n="reEmpty">ابتدا پروب را اجرا کنید…</p></div>
+  </div>
+</section>
+
+<!-- ======================================================= TAB: install/deploy -->
+<section id="tab-inst" class="tabpane" hidden>
+  <div class="card">
+    <header class="card-head wrap">
+      <h3 data-i18n="inTitle">استقرار/تست ۸۲ متد روی سرور واقعی (SSH)</h3>
+    </header>
+    <p class="muted" data-i18n="inHint">هدف نصب را بدهید؛ پنل همان هارنس تست را روی سرور واقعی اجرا و شواهد ثبت می‌کند. برای تانل ماندگار دوطرفه از تب «تانل‌های سرورها» استفاده کنید.</p>
+    <div class="pair-grid">
+      <label>Host</label><input id="inHost" class="input" placeholder="1.2.3.4">
+      <label>SSH Port</label><input id="inPort" class="input" value="22" inputmode="numeric">
+      <label>User</label><input id="inUser" class="input" value="root">
+      <label>Pass</label><input id="inPass" class="input" type="password">
+    </div>
+    <label class="chk"><input type="checkbox" id="inAll" checked><span data-i18n="inAll">همه متدهای تأییدشده (PASS+PARTIAL)</span></label>
+    <div class="tools"><button id="inBtn" class="btn btn-primary" data-i18n="inStart">شروع استقرار</button><span id="inState" class="muted"></span></div>
+    <div class="jobbar" id="inJob" hidden><span class="spin"></span><span id="inJobTxt"></span></div>
+    <div class="table-wrap"><table class="tbl">
+      <thead><tr><th data-i18n="thId">شناسه</th><th data-i18n="thVerdict">نتیجه</th><th data-i18n="thDetail">جزئیات</th></tr></thead>
+      <tbody id="instRows"></tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- ======================================================= TAB: settings -->
+<section id="tab-set" class="tabpane" hidden>
+  <div class="grid g-2">
+    <div class="card">
+      <header class="card-head"><h3 data-i18n="sFailover">فیلاور</h3></header>
+      <div class="pair-grid">
+        <label data-i18n="sMode">حالت</label>
+        <div class="seg" role="group" aria-label="mode">
+          <button id="modeAuto" class="seg-btn" data-i18n="sAuto">خودکار</button>
+          <button id="modeManual" class="seg-btn" data-i18n="sManual">دستی</button>
+        </div>
+        <label>Cooldown (s)</label><input id="setCooldown" class="input" inputmode="numeric">
+        <label>Hysteresis (n)</label><input id="setHyst" class="input" inputmode="numeric">
+        <label>Loss degraded %</label><input id="setLossD" class="input" inputmode="decimal">
+        <label>Loss down %</label><input id="setLossX" class="input" inputmode="decimal">
+        <label>RTT degraded (ms)</label><input id="setRttD" class="input" inputmode="numeric">
+        <label>Probe interval (s)</label><input id="setProbe" class="input" inputmode="numeric">
+      </div>
+      <button id="setSave" class="btn btn-primary" data-i18n="sSave">ذخیره تنظیمات</button>
+    </div>
+    <div class="card">
+      <header class="card-head"><h3 data-i18n="sCred">اعتبار ورود</h3></header>
+      <div class="pair-grid">
+        <label data-i18n="sUser">نام کاربری</label><input id="credUser" class="input" autocomplete="username">
+        <label data-i18n="sPass">رمز جدید</label><input id="credPass" class="input" type="password" autocomplete="new-password">
+      </div>
+      <button id="credBtn" class="btn btn-primary" data-i18n="sChange">تغییر اعتبار</button>
+      <p class="muted" data-i18n="sWarn">پس از تغییر، دفعه بعد با اعتبار جدید وارد شوید.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

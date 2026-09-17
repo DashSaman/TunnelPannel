@@ -1,235 +1,195 @@
 # MTF — Multi-Tunnel Failover Panel
 
-[![methods](https://img.shields.io/badge/tunnel_methods-82-22d3ee)]()
-[![stack](https://img.shields.io/badge/stack-FastAPI%20%2B%20Docker-0ea5e9)]()
-[![dualstack](https://img.shields.io/badge/network-IPv4%20%2B%20IPv6-4ade80)]()
-[![distro](https://img.shields.io/badge/install-Debian%20%C2%B7%20Ubuntu%20%C2%B7%20RHEL%20%C2%B7%20SUSE%20%C2%B7%20Arch%20%C2%B7%20Alpine-a78bfa)]()
+[![methods](https://img.shields.io/badge/tunnel_methods-82-34DFF0)]() [![stack](https://img.shields.io/badge/engine-FastAPI%20%2B%20Docker-4ADE80)]() [![i18n](https://img.shields.io/badge/UI-%D9%81%D8%A7%D8%B1%D8%B3%DB%8C%20%2F%20English-A78BFA)]() [![ip](https://img.shields.io/badge/network-IPv4%20%2B%20IPv6-FBBF24)]()
 
-**MTF** is a self-hosted, bilingual (fa/en, RTL/LTR) monitoring + failover panel that
-tests **82 real tunnel methods**, watches servers with live charts, discovers every
-tunnel already running on your machines, installs new persistent tunnels **with
-one click**, and **auto-picks conflict-free ports** on both IPv4 and IPv6.
+> A self-hosted, bilingual (فارسی / English) control panel that builds, tests,
+> monitors and **auto-fails-over 82 tunnel methods** (kernel + userspace) between
+> your servers — with a built-in **port-conflict manager**, **IPv4+IPv6 dual-stack
+> routing**, **SSH probe** and **smart tunnel recommendation**.
 
-> 🇮🇷 نسخهٔ فارسی: [README-fa.md](README-fa.md)
-> Agent contract: [AGENTS.md](AGENTS.md) · 82-method test report: [docs/TEST-REPORT.md](docs/TEST-REPORT.md)
+![Dashboard](docs/shots/01-dashboard-fa.png)
 
 ---
 
-## Screenshot tour
+## ✨ What makes it different
 
-| # | Tab | Screenshot |
-|---|-----|------------|
-| 1 | Dashboard (fa) | ![Dashboard](docs/shots/live-01-dashboard.png) |
-| 2 | Tunnels — 82 methods (fa) | ![Tunnels](docs/shots/live-02-tunnels.png) |
-| 3 | Server Tunnels — scan & install (fa) | ![Server Tunnels](docs/shots/live-03-servertunnels.png) |
-| 4 | Ports & Conflicts (fa) | ![Ports](docs/shots/live-04-ports.png) |
-| 5 | Server Probe (fa) | ![Probe](docs/shots/live-05-probe.png) |
-| 6 | Settings (fa) | ![Settings](docs/shots/live-06-settings.png) |
-| 7 | Server Tunnels (en, LTR) | ![Server Tunnels EN](docs/shots/live-07-servertunnels-en.png) |
+| | |
+|---|---|
+| **82 tunnel methods** | WireGuard, GRE/GRETAP, SIT, IPIP, VXLAN, VTI/IPsec, L2TP, OpenVPN, SSH (6 kinds), GOST (15), Xray (7), sing-box (5), FRP (6), rathole (5), chisel (6), wstunnel (3), WaterWall (3), PAQET (2) + composites — every one verified by a real data-through test harness, not just "process started". |
+| **Real failover** | A virtual IP (VIP `10.10.10.5`) rides policy-routing table `51000` and is re-pointed to the best healthy tunnel automatically (auto mode) or by hand (manual mode). |
+| **Conflict-safe by design** | Before anything binds, the panel scans every server's TCP/UDP listeners *plus* IP-protocol space (GRE/IPIP/SIT/ESP), never allocates 48 system ports, and picks a free port that is safe on **both IPv4 and IPv6**. |
+| **Multi-distro installs** | Installs over SSH using the target's native package manager: `apt`, `dnf`, `yum`, `zypper`, `pacman`, `apk` — Debian/Ubuntu, RHEL/Rocky/Alma, openSUSE, Arch, Alpine all supported. |
+| **Live monitoring** | CPU/RAM/traffic charts, method-state donut, health gauge with threshold zones, per-5s sparklines, a 20-minute uptime heatmap and a failover-path diagram — zero CDN, fully self-drawn SVG. |
+| **Bilingual RTL/LTR UI** | One click switches فا↔EN including full RTL mirroring. Bundled Vazirmatn + JetBrains Mono, no external requests. |
 
 ---
 
-## 1. Every button and section, explained
-
-### 1.1 Top bar
-
-| Element | What it does |
-|---|---|
-| **Logo + MTF** | Brand mark; the three bars echo tunnel activity. |
-| **Pulse dot + clock** | Live heartbeat of the panel; updates every second. |
-| **AUTO / MANUAL badge** | Current failover mode. Cyan = auto, amber = manual. |
-| **Active tunnel badge** | Shows which tunnel currently carries the VIP `10.10.10.5`; “no active tunnel” when idle. |
-| **EN / FA globe button** | Toggles the whole UI between Persian (RTL) and English (LTR); choice is remembered in `localStorage`. |
-| **Door icon** | Logout — clears the session cookie. |
-
-### 1.2 Side rail (8 tabs)
-
-| Tab | Purpose |
-|---|---|
-| **Dashboard** | KPIs + 6 live charts + event timeline. |
-| **Tunnels (82)** | The full 82-method registry: select, apply, manual-switch. |
-| **Server Tunnels** | Scan servers for existing tunnels + one-click persistent install between two sides. |
-| **Ports & Conflicts** | Port/protocol conflict scanner and auto port assignment. |
-| **Server Probe** | SSH probe of user-supplied servers (OS, kernel, link quality). |
-| **Recommend** | Ranked tunnel suggestions per server pair. |
-| **Remote Deploy** | Run the full 82-method test harness on a real target over SSH. |
-| **Settings** | Failover thresholds, mode, and panel credentials. |
-
-### 1.3 Dashboard tab
-
-| Widget | Reading |
-|---|---|
-| **Active tunnel / VIP / UP-total / Mode** KPI cards | Live failover state at a glance. |
-| **Host health — CPU / RAM** area chart | 10-minute rolling window sampled every 5 s from `/proc`; direct value labels (not color-only). |
-| **Network traffic** RX/TX lines | Per-second bytes rate on the host; RX solid cyan, TX dashed amber. |
-| **82 methods state** donut | UP / Degraded / Deploying / Error / Stopped share, with a numeric legend table. |
-| **Health score gauge** | 0–100 composite: verified tunnels + host CPU headroom + zero-error bonus. |
-| **Live events** timeline | Every login, deploy, probe, switch — newest first, with severity dot. |
-| **Best tunnels latency** bar chart | Lowest-RTT methods from the last probe, direct ms labels. |
-
-### 1.4 Tunnels tab (82 methods)
-
-| Control | Behaviour |
-|---|---|
-| **Search box** | Filters by ID / name (live). |
-| **Starred checkbox** | Shows only the three signature families: HEDIOUM, HAJSAMAN, PAQET. |
-| **Family chips** | 13 families (SSH, GOST, FRP, RATHOLE, CHISEL, WSTUNNEL, VPN, XRAY, SING-BOX, WATERWALL, PAQET, COMPOSITE, KERNEL). |
-| **Row checkboxes** | Queue methods for deployment. |
-| **Apply selected** | Deploys + verifies each queued method via the kernel/userspace harness; state becomes UP / DEGRADED / ERROR with receipts. |
-| **Manual switch** | Points the VIP routing at that method and flips the panel to manual mode. |
-| **Receipts table** | Latest PASS/PARTIAL/FAIL verdicts with raw evidence. |
-
-### 1.5 Server Tunnels tab — scan & one-click install
-
-| Control | Behaviour |
-|---|---|
-| **Server rows (host / port / user / pass)** | Any number of SSH targets. **Passwords are never stored** — used in memory for the scan/install, then dropped. |
-| **+ Add server** | Appends another row. |
-| **Scan all servers** | SSHes into every side (plus the panel itself) and discovers: kernel tunnel interfaces (GRE/SIT/IPIP/VXLAN/VTI/ERSPAN…), WireGuard peers, userspace processes (gost, xray, sing-box, chisel, frp, rathole, wstunnel, hysteria, tuic, …), systemd units and listeners — everything tagged `panel's` if MTF created it. |
-| **Side A / Side B selectors** | Pick the two ends of the new tunnel (A = client, B = server). |
-| **Pair mode checkbox** | ON = a real two-sided tunnel (systemd units on both hosts); OFF = single-side client. |
-| **Install catalog (41 profiles)** | Tick any method — WIREGUARD, GRE, VXLAN, VTI, IP6GRE, OPENVPN, GOST×4, CHISEL×2, WSTUNNEL×2, RATHOLE×2, FRP×3, VLESS×7, HYSTERIA2, TUIC, TROJAN, SHADOWSOCKS, SSH×3 — then press **Install ticked methods**. |
-| **Install job bar + log** | Live per-method progress and raw SSH log lines. |
-| **Installed book table** | Every installed tunnel per server with verdict and unit name; **حذف شد / Remove** tears down units, interfaces, configs and frees the port. |
-
-### 1.6 Ports & Conflicts tab (public-server safety)
-
-| Control | Behaviour |
-|---|---|
-| **Scan ports** | Collects every TCP/UDP listener on every side (`ss -tulnpH`). |
-| **TCP busy / UDP busy / IP protocols** stat cards | 47+ listeners found in the live demo; IP-level usage shows GRE/IPIP/SIT/ESP occupancy. |
-| **Listeners table** | Side · proto · port per machine — the “who owns what” map. |
-| **Auto port assignment** | Pick method + transport → the manager picks a port that is: inside its safe range (TCP 21000–25999, UDP 26000–29999), free on **all** sides, not in the 48 system-port never-list (22, 53, 80, 443, 3306, 5432, 6379, 9443…), not previously allocated. Works identically for v4 and v6 because the check reads both listener tables. |
-| **Allocations table** | Current assignments with release buttons. Deploy automatically re-scans and re-verifies before writing configs. |
-
-### 1.7 Server Probe tab
-
-| Control | Behaviour |
-|---|---|
-| **Server rows + Run probe** | SSH-fingerprints each server: OS, kernel release, SSH latency, global IPs, uptime. |
-| **Probe result cards** | OK/FAIL badge per host with details. |
-| **Capability matrix** | Pairwise link quality: ICMP (or TCP-fallback) RTT, loss %, jitter. |
-
-### 1.8 Recommend tab
-
-- **Compute** ranks every probed pair (0–100 score) and lists the best tunnel
-  families per link with **bilingual reasons** (e.g. “lossy link → WaterWall /
-  paqet on QUIC recover best”, “UDP blocked → chisel on pure TCP”).
-- The three owner-picked families (HEDIOUM, HAJSAMAN, PAQET) are always listed.
-
-### 1.9 Remote Deploy tab
-
-| Control | Behaviour |
-|---|---|
-| **Host / SSH port / user / pass** | Target machine. |
-| **All verified methods** checkbox | Deploys PASS+PARTIAL set; untick it to use the selection from the Tunnels tab. |
-| **Start deploy** | Streams per-method results into the results table (verdict + evidence). |
-
-### 1.10 Settings tab
-
-| Control | Behaviour |
-|---|---|
-| **Mode segment** | Auto failover vs manual (auto probes, manual keeps your pick). |
-| **Cooldown / Hysteresis / Loss-degraded / Loss-down / RTT-degraded / Probe-interval** | The full FSM tuning surface. |
-| **Save settings** | Persists thresholds; the engine applies them live. |
-| **Credentials card** | Change panel username/password (stored in `data/panel_secret.json`). |
-
----
-
-## 2. What makes it unique
-
-- **Ops-console design system** — built token-first (primitive → semantic →
-  component) following the ui-ux-pro-max methodology: WCAG-AA contrast on a deep
-  navy canvas, cyan/amber data accents, 4/8 spacing rhythm, SVG icon set (zero
-  emoji icons), focus-visible rings, reduced-motion support, and a fully
-  self-drawn **zero-dependency SVG chart engine** (line/area, bars, donut, gauge)
-  with direct value labels and keyboard-focusable charts.
-- **Bilingual by design** — one dictionary drives fa (RTL, Vazirmatn) and en
-  (LTR); direction flips with zero layout breakage.
-- **Zero CDN** — fonts, icons, JS and CSS are all served from the container; it
-  runs on air-gapped boxes.
-
-## 3. Networking features
-
-| Feature | How |
-|---|---|
-| **Port conflict manager** | Live `ss` scan per side + IP-protocol occupancy + reserved system ports + allocation ledger. |
-| **Auto port assignment** | Deterministic ranges (TCP 21000–25999, UDP 26000–29999) verified free on **all** sides before install; the deploy pipeline re-scans at runtime. |
-| **IPv4 + IPv6** | Userspace servers bind dual-stack (`::` with v4-mapped); WireGuard/GRE/IPIP/VXLAN/VTI get inner `fd00:173:x::/126` addresses alongside v4; SIT/IP6GRE/IP6GRETAP/VTI6 run natively over v6 with automatic global-v6 detection. |
-| **Multi-distro install** | Package detection across apt / dnf / yum / zypper / pacman / apk with a per-family package map (`wireguard-tools`, `openvpn`, `iproute(iproute2)`, …); firewall opening via ufw → firewalld → nftables/iptables fallback. |
-| **Persistent installs** | systemd units on real hosts + supervisor loops inside the container, auto-restarted at panel boot. |
-
-## 4. Quick start
+## 🚀 Quick start
 
 ```bash
-# on the panel host (any x86_64 Linux with Docker)
-sudo mkdir -p /opt/multitunnel && cd /opt/multitunnel
-# place: engine/ panel/ docker/ bin/ certs/ (see repo layout)
-docker network create mtfnet 2>/dev/null || true
-docker run -d --name mtf-panel --restart unless-stopped \
-  --network mtfnet -p 9443:9443 \
-  --privileged --network_mode host \
+# on any Linux server with Docker
+docker run -d --name mtf-panel \
+  --privileged --network host \
   -v /opt/multitunnel/engine:/opt/multitunnel/engine \
   -v /opt/multitunnel/panel:/opt/multitunnel/panel \
-  -v /opt/multitunnel/bin:/opt/multitunnel/bin \
   -v /opt/multitunnel/data:/opt/multitunnel/data \
-  -v /opt/multitunnel/logs:/opt/multitunnel/logs \
   -v /opt/multitunnel/certs:/opt/multitunnel/certs \
-  mtf-panel:2.0
-# login: https://<host>:9443  (bootstrap password printed once at /api/password-hint)
+  -v /opt/multitunnel/bin:/opt/multitunnel/bin \
+  -v /opt/multitunnel/logs:/opt/multitunnel/logs \
+  mtf-panel:1.0
 ```
 
-The panel keeps its credentials in `/opt/multitunnel/data/panel_secret.json` and
-prints a one-time bootstrap password until the first login — change it in
-**Settings → Credentials** immediately.
+The panel serves HTTPS on **:9443** only. First login generates a random admin
+password (shown once via `/api/password-hint`); change it in **Settings → Login
+credentials** immediately.
 
-## 5. Architecture
+**Install on bare metal (no Docker)** — the engine's installer detects your distro:
 
-```
-┌──────────────────────── browser (fa RTL / en LTR) ────────────────────────┐
-│  SVG charts · i18n dictionary · no CDN · localStorage lang/mode           │
-└──────────────▲────────────────────────────────────────────────┬──────────┘
-               │ HTTPS :9443                                    │
-┌──────────────┴──────────────── mtf-panel (Docker) ────────────▼──────────┐
-│ FastAPI  /api/methods /api/status /api/metrics /api/st/* /api/ports/*    │
-│ ├─ core.py        failover FSM + VIP 10.10.10.5 policy routing (tbl 51000)│
-│ ├─ registry.py    82 methods / 13 families                               │
-│ ├─ probe_engine.py SSH fingerprint + pairwise RTT/loss/jitter            │
-│ ├─ servertunnels.py scan sides · persistent systemd installs · book      │
-│ ├─ st_profiles.py  41 persistent profiles (kernel + userspace)           │
-│ ├─ portmgr.py      conflict scan + auto port assignment (v4+v6)          │
-│ └─ metrics.py      /proc sampler → 240-pt ring → JSON history            │
-└──────────────────────────────────────────────────────────────────────────┘
+```bash
+sudo bash deploy/engine/mtf/installer.sh   # apt / dnf / yum / zypper / pacman / apk
 ```
 
-## 6. API reference (cookie-authenticated)
+---
 
-| Endpoint | Method | Purpose |
-|---|---|---|
-| `/api/methods` | GET | 82-method registry with live state |
-| `/api/methods/select` `/apply` | POST | queue + deploy+verify |
-| `/api/manual/{id}` | POST | VIP switch to one method |
-| `/api/mode` | POST | auto / manual |
-| `/api/status` | GET | counters, settings, events |
-| `/api/metrics` | GET | live host sample + 120-pt history |
-| `/api/st/scan` | GET/POST | discover tunnels on all sides |
-| `/api/st/deploy` | POST | persistent two-sided install |
-| `/api/st/remove` | POST | tear down one install |
-| `/api/ports/scan` `/report` `/assign` `/release` `/protos` | GET/POST | port manager |
-| `/api/probe` | GET/POST | SSH probe |
-| `/api/recommend` | GET | ranked suggestions |
-| `/api/install` | GET/POST | 82-method remote harness |
-| `/api/credentials` | POST | change login |
+## 🧭 UI guide — every button & section
 
-## 7. Security notes (read this!)
+### 1 · Login
 
-- The panel exposes **only port 9443** (TLS). Everything else stays inside the
-  Docker network.
-- SSH passwords for scans/installs live **in memory only**.
-- ⚠️ During development some credentials were shared in chat; **rotate the root
-  passwords of both servers, the panel password, and the GitHub token** before
-  relying on this deployment.
+![Login](docs/shots/00-login.png)
 
-## 8. License
+* **username / password** — credentials stored server-side in `data/panel_secret.json` (changeable in Settings).
+* **ورود / Sign in** — starts an httponly session cookie.
 
-MIT — see [LICENSE](LICENSE).
+### 2 · Top bar (always visible)
+
+![Dashboard EN](docs/shots/03-dash-fixed.png)
+
+| Control | What it does |
+|---|---|
+| 🟢 pulse dot + clock | Panel liveness + local time. |
+| `AUTO` / `MANUAL` badge | Current failover mode. |
+| active-tunnel badge | Which tunnel currently carries the VIP, or "no active tunnel". |
+| **LIVE / PAUSED** button | Pauses or resumes the 5-second telemetry polling — per the real-time UX rule that live data must have an update timestamp and a pause control. |
+| `updated · 3s ago` | Age of the last telemetry refresh; turns amber when stale (>16 s). |
+| 🌐 **FA/EN** button | Switches Persian ↔ English and flips the whole layout RTL ↔ LTR. |
+| ⎋ logout | Ends the session. |
+
+### 3 · Dashboard (first tab)
+
+![Dashboard FA](docs/shots/02-dashboard-fa-full.png)
+
+* **KPI cards with sparklines** — active tunnel, failover VIP, UP/total, mode; each card carries a 40-sample sparkline (TCP established, RX throughput, CPU, RAM).
+* **Host health — CPU / RAM** — 120-point area chart, direct value labels on the newest point (never color-only).
+* **Network traffic** — RX (solid) vs TX (dashed) with hover-readable y-grid.
+* **82 methods state donut** — share of UP / Degraded / Deploying / Error / Stopped with a numeric legend table.
+* **Health score gauge** — 0–100 with red/amber/green threshold zones and the score written beside the arc (accessibility rule: never color alone).
+* **Live events timeline** — every engine/probe/deploy event with severity dots.
+* **Best tunnels latency** — bar chart of the 8 lowest-RTT probed methods.
+* **Live uptime strip** *(new)* — 40 cells = last 20 minutes of fleet health (green UP, amber degraded, red error, blue idle).
+* **Failover path** *(new)* — local side → active tunnel → VIP with an animated packet dot on the green path.
+
+### 4 · Tunnels (82)
+
+![Tunnels](docs/shots/04-tunnels.png)
+
+| Control | What it does |
+|---|---|
+| **Search box** | Filters by method ID. |
+| **Starred checkbox** | Shows only the flagship methods (HEDIOUM / HAJSAMAN / PAQET). |
+| **Family chips** | GOST, XRAY, KERNEL_BASE, SSH, VPN, … filter the table. |
+| Row **checkbox** | Selects methods for deployment. |
+| **Apply selected** | Deploys + data-verifies every ticked method, records a receipt, then points the VIP at the first deployed method. |
+| **Manual switch** (per row) | Points the VIP at that method immediately and flips the panel to manual mode. |
+
+Below: **Test receipts (latest)** — PASS / PARTIAL / FAIL verdicts with raw evidence from the last run.
+
+### 5 · Server Tunnels
+
+![Server tunnels](docs/shots/05-servertunnels.png)
+![Server tunnels FA](docs/shots/12-st-fa.png)
+
+| Control | What it does |
+|---|---|
+| **+ Add server** rows (host, SSH port, user, password) | Targets to scan / install on. Passwords are used in-memory and never persisted. |
+| **Scan all servers** | Discovers existing tunnels on every side: kernel interfaces, WireGuard, listening ports, systemd services, processes — results appear under *Discovered tunnels*. |
+| **Side A / Side B selectors** | Picks the two ends of a persistent tunnel (either side may be "panel container"). |
+| **Pair mode checkbox** | Installs a real two-sided tunnel instead of single-end. |
+| **Catalog checkboxes + Install ticked methods** | Provisions the selected methods persistently between A and B with auto-allocated conflict-free ports. |
+| **Installed tunnels (book)** | Everything installed by the panel, with a per-row ✕ remove button. |
+
+### 6 · Ports & Conflicts
+
+![Ports](docs/shots/06-ports.png)
+![Ports FA](docs/shots/13-ports-fa.png)
+
+| Control | What it does |
+|---|---|
+| **Scan ports** | Collects `ss -tulnp` listeners + IP-protocol usage (GRE/IPIP/SIT/ESP/xfrm) on panel + all SSH servers. |
+| TCP busy / UDP busy / IP protocols | Counters per family. |
+| **Listeners per server** table | Who binds what — full transparency before you pick ports. |
+| **Auto port assignment** (method + transport + *Assign free port*) | Chooses a port free on **all sides, v4 and v6**, inside `TCP 21000-25999` / `UDP 26000-29999`, skipping 48 reserved system ports; allocations are listed and releasable with ✕. |
+
+### 7 · Server Probe
+
+![Probe](docs/shots/07-probe.png)
+![Probe FA](docs/shots/15-probe-fa.png)
+
+* **+ Add server** rows, then **Run probe** — SSHes in, fingerprints OS/arch, kernel modules (wireguard, sit, ipip, xfrm…), available binaries, and measures real link RTT/loss/jitter.
+* **Probe result** cards + **Capability matrix** table feed the recommender.
+
+### 8 · Recommend
+
+![Recommend](docs/shots/08-recommend.png)
+
+* **Compute** ranks the best method per server pair using probe scores — each card shows fit %, expected RTT and the reasons (architecture, modules, latency).
+
+### 9 · Remote Deploy
+
+![Deploy](docs/shots/09-deploy.png)
+
+* Host / SSH port / user / password + **Start deploy** runs the *same* 82-method verification harness against a real server over SSH and records receipts — the exact proof that a method works end-to-end on that host.
+
+### 10 · Settings
+
+![Settings](docs/shots/10-settings.png)
+![Settings FA](docs/shots/16-settings-fa.png)
+
+* **Failover card** — auto/manual segment, cooldown seconds, hysteresis, loss/RTT degradation thresholds, probe interval; **Save settings** persists them.
+* **Login credentials card** — new username and/or password; takes effect on next login.
+
+---
+
+## 🏗 Architecture
+
+```
+┌────────────────────────── Docker: mtf-panel (privileged, host net, :9443) ─────────────────────────┐
+│  FastAPI  (/login /api/*)  ──  Jinja2 + vanilla JS (RTL/LTR, SVG charts, i18n)                      │
+│      │            │                    │                        │                                   │
+│  core.py FSM  mtf/probe_engine   mtf/portmgr.py        mtf/servertunnels.py  mtf/metrics.py        │
+│  VIP routing  SSH fingerprint    conflict scan v4+v6   persistent installs   /proc sampling        │
+│      │            │                    │                        │                                   │
+│  mtf_kernel.sh (kernel tunnels in netns)      mtf_userspace.py (82-method runners)                 │
+└────────────────────────────────────────────────────────────────────────────────────────────────────┘
+        │ SSH                                                          ▲ probe / install / scan
+        ▼                                                              │
+  test server (45.141.148.59 …)  ◄──────────────── any distro ─────────┘
+```
+
+* **VIP failover**: `ip route` entries in table `51000` move `10.10.10.5` between tunnel interfaces; the FSM re-points it on probe failure with cooldown + hysteresis.
+* **Dual-stack**: listeners are checked on `0.0.0.0` **and** `::`; tunnels offer IPv6 flavors (SIT, IP6GRE, IP6GRETAP, VTI6) and the port manager treats v4/v6 as one allocation space because Linux binds are shared.
+
+## 🧪 Test evidence
+
+Full 82-method test matrix: [docs/TEST-REPORT.md](docs/TEST-REPORT.md) —
+25 PASS · 25 PARTIAL · 32 FAIL with per-method reasons (missing images/sshd on
+the test harness, etc.).
+
+## 🔐 Security notes
+
+* Panel binds **only** :9443 with TLS; session cookie is httponly + SameSite=Lax.
+* Server passwords given to the probe/installer are used in-memory and never written to disk.
+* Change the default credentials immediately (Settings → Login credentials) and rotate any secret that ever appeared in a chat or screenshot.
+
+## 📄 License
+
+MIT — fonts bundled under the SIL OFL (Vazirmatn, JetBrains Mono).
