@@ -67,3 +67,29 @@
 - [ ] Commit + push به `main`؟ / Committed and pushed to `main`?
 - [ ] گزارش نهایی فارسی به کاربر داده شد؟ / Final Persian report sent to the owner?
 - [ ] ⚠️ یادآوری امنیتی: رمزهای افشاشده در چت را به کاربر گوشزد کن. / Security reminder sent.
+
+## ۶. مرجع مهندسی / Engineering reference (release contract)
+
+**Source of truth — canonical artifacts:**
+
+- Deploy engine (77 persistent methods): `plan_executor/executor.py`
+- MTF test registry (82 entries): `deploy/methods_registry.json` + `deploy/engine/mtf/`
+- Failover FSM (tested): `tunnelguard/tfd/`
+- Development state: `docs/development/` (CURRENT_STATE, BASELINE, TASK_LEDGER, CATALOG_INVENTORY)
+
+**Verification policy:**
+
+- A method is verified only by real data-plane evidence (receipt), never by
+  "process started / port listening". Test verdicts live in `docs/TEST-REPORT.md`
+  and per-run receipts in the panel DB.
+- Statuses stay honest: PASS / PARTIAL / FAIL / BLOCKED — see `docs/development/BASELINE.md`.
+
+**Production safety:**
+
+- Never flush firewall state, never touch unowned interfaces/services, always go
+  through the port manager (`mtf/portmgr.py`) for allocations.
+- Disaster recovery export/restore:
+  `scripts/export-production-state.sh` → `scripts/restore-production-state.sh`
+  (encrypted, double-confirm; restore must be tested before calling DR "done").
+- Credentials: rotate anything ever committed (see
+  `docs/development/CURRENT_STATE.md` §Security + SECRET_HYGIENE.md).

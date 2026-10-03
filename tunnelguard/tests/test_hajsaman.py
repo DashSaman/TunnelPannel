@@ -9,6 +9,8 @@ Two honest layers:
 """
 import json
 
+import sys
+
 import pytest
 
 from tfd.engines.hajsaman import HajSamanAdapter, parse_slot_conf
@@ -92,6 +94,8 @@ def test_routing_capable_true():
     assert _adapter().routing_capable is True
 
 
+@pytest.mark.linux_integration
+@pytest.mark.skipif(sys.platform == "win32", reason="engine precheck uses POSIX os.geteuid")
 def test_cli_precheck_clean_and_notes_proto41():
     ex = FakeExec()
     a = _adapter(executor=ex)          # cli_path=/bin/true exists
@@ -99,6 +103,8 @@ def test_cli_precheck_clean_and_notes_proto41():
     assert len(problems) == 1 and "proto 41" in problems[0]
 
 
+@pytest.mark.linux_integration
+@pytest.mark.skipif(sys.platform == "win32", reason="engine precheck uses POSIX os.geteuid")
 def test_cli_precheck_missing_conf(monkeypatch):
     ex = FakeExec()
     ex.conf = ""
@@ -108,6 +114,8 @@ def test_cli_precheck_missing_conf(monkeypatch):
         and "not found" in problems[0]
 
 
+@pytest.mark.linux_integration
+@pytest.mark.skipif(sys.platform == "win32", reason="engine precheck uses POSIX os.geteuid")
 def test_cli_precheck_flags_admin_stopped():
     ex = FakeExec()
     ex.conf = SLOT_CONF.replace("ADMIN_STATE=running", "ADMIN_STATE=stopped")

@@ -12,6 +12,8 @@ import json
 import socket
 import threading
 
+import sys
+
 import pytest
 
 from tfd.engines.hedioum import HedioumAdapter, decode_pairing_token, CONFIG_PATH
@@ -77,6 +79,8 @@ def test_legacy_hex_token_maps_to_auth_token():
     assert node["auth_token"] == "c" * 32
 
 
+@pytest.mark.linux_integration
+@pytest.mark.skipif(sys.platform == "win32", reason="engine precheck uses POSIX os.geteuid")
 def test_precheck_rejects_empty_resolved_auth():
     t = {"id": 5, "name": "x", "engine": "hedioum", "iface": "h5",
          "config": json.dumps({"foreign_ip": "1.2.3.4",
@@ -118,6 +122,8 @@ def test_render_merges_and_preserves_co_tenants(tmp_path):
         ["other-node", "de-01"]
 
 
+@pytest.mark.linux_integration
+@pytest.mark.skipif(sys.platform == "win32", reason="engine precheck uses POSIX os.geteuid")
 def test_precheck_flags_missing_binary_and_config_role(tmp_path, monkeypatch):
     a = _adapter(None, cfg_extra={"binary_path": "/nonexistent/hedioum-tunnel"})
     monkeypatch.setattr(a, "_which", lambda b: None)
@@ -143,6 +149,8 @@ def test_routing_capable_requires_tun():
     assert _adapter(None, cfg_extra={"tun_enabled": True}).routing_capable
 
 
+@pytest.mark.linux_integration
+@pytest.mark.skipif(sys.platform == "win32", reason="engine precheck uses POSIX os.geteuid")
 def test_up_standalone_writes_config_and_persists_node(tmp_path, monkeypatch):
     """Standalone up() spawns the real binary only if present; here we check
     the config+artifact path with the spawn monkeypatched out."""

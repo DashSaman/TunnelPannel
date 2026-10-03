@@ -10,6 +10,8 @@ paqet is exercised on the same honest levels as Hedioum:
 """
 import json
 
+import sys
+
 import pytest
 
 from tfd.engines.paqet import PaqetAdapter, _dump_yaml
@@ -82,6 +84,8 @@ def test_routing_capable_is_false():
 
 
 # ------------------------------------------------------------- precheck
+@pytest.mark.linux_integration
+@pytest.mark.skipif(sys.platform == "win32", reason="engine precheck uses POSIX os.geteuid")
 def test_precheck_missing_everything_tells_the_truth(monkeypatch):
     t = {"id": 1, "name": "x", "engine": "paqet", "config": "{}"}
     a = PaqetAdapter(t)
@@ -95,6 +99,8 @@ def test_precheck_missing_everything_tells_the_truth(monkeypatch):
     assert "server.addr missing" in joined
 
 
+@pytest.mark.linux_integration
+@pytest.mark.skipif(sys.platform == "win32", reason="engine precheck uses POSIX os.geteuid")
 def test_precheck_warns_weak_block_and_standard_port(monkeypatch):
     a = _adapter(role="server", cfg_extra={"kcp_block": "none",
                                            "listen_addr": ":443"})
@@ -106,6 +112,8 @@ def test_precheck_warns_weak_block_and_standard_port(monkeypatch):
     assert "standard port" in joined
 
 
+@pytest.mark.linux_integration
+@pytest.mark.skipif(sys.platform == "win32", reason="engine precheck uses POSIX os.geteuid")
 def test_precheck_clean_client(monkeypatch):
     a = _adapter()
     monkeypatch.setattr("tfd.engines.paqet.os.geteuid", lambda: 0)
@@ -113,6 +121,8 @@ def test_precheck_clean_client(monkeypatch):
     assert a.precheck() == []
 
 
+@pytest.mark.linux_integration
+@pytest.mark.skipif(sys.platform == "win32", reason="engine precheck uses POSIX os.geteuid")
 def test_precheck_requires_root_for_raw_sockets(monkeypatch):
     a = _adapter()
     monkeypatch.setattr("tfd.engines.paqet.os.geteuid", lambda: 1000)
@@ -121,6 +131,8 @@ def test_precheck_requires_root_for_raw_sockets(monkeypatch):
 
 
 # ----------------------------------------------------------- lifecycle
+@pytest.mark.linux_integration
+@pytest.mark.skipif(sys.platform == "win32", reason="engine precheck uses POSIX os.geteuid")
 def test_up_writes_yaml_and_runs_standalone(monkeypatch):
     calls = {}
 

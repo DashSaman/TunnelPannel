@@ -158,6 +158,7 @@ _DEPLOY_LOCK = threading.Lock()
 def _apply_worker(ids: list[str]):
     fammap = {m.id: (m.set.replace("_METHODS", "").replace("KERNEL_BASE", "KERNEL"), m.cls)
               for m in methods}
+    deployed_kernel: list[str] = []
     with _DEPLOY_LOCK:
         for mid in ids:
             state.set_method(mid, state="DEPLOYING", deployed=0)
@@ -174,6 +175,7 @@ def _apply_worker(ids: list[str]):
                         ev = {"runner": "kernel", "raw": out[-500:]}
                         state.save_receipt(mid, "PASS", ev)
                         state.set_method(mid, state="UP", deployed=1, detail="deployed+verified")
+                        deployed_kernel.append(mid)
                         state.event("info", "deploy", f"{mid} kernel harness PASS")
                     else:
                         state.save_receipt(mid, "FAIL", {"runner": "kernel", "err": (out[-500:])})
@@ -193,8 +195,9 @@ def _apply_worker(ids: list[str]):
                         state.set_method(mid, state="ERROR", deployed=0, detail="failed: see receipt")
             except Exception as e:
                 state.set_method(mid, state="ERROR", deployed=0, detail=str(e)[:140])
-        # activate VIP on best deployed kernel method
-        core.point_vip_route(ids[0]) if ids else None
+        # activate VIP on the first *deployed kernel* method (point_vip_route is
+        # a no-op for userspace methods — they carry no L3 device)
+        core.point_vip_route(deployed_kernel[0]) if deployed_kernel else None
         state.event("info", "panel", f"apply finished: {len(ids)} methods")
 
 

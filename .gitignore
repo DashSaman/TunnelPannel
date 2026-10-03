@@ -29,3 +29,9 @@ mtftest/
 
 # keep legacy tracked files intact; only ignore future local junk
 system/
+
+# runtime artifacts & key/cert material — never commit
+/backups
+*.key
+*.pem
+*.dump

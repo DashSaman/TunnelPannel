@@ -7,6 +7,25 @@
 > your servers — with a built-in **port-conflict manager**, **IPv4+IPv6 dual-stack
 > routing**, **SSH probe** and **smart tunnel recommendation**.
 
+### Documentation map — read this first
+
+This repository currently contains **two coexisting systems** (see
+[docs/development/CURRENT_STATE.md](docs/development/CURRENT_STATE.md) for the full audit):
+
+| Docs | System | What it is |
+|---|---|---|
+| `README.md` (this file) + [`README-fa.md`](README-fa.md) | **MTF panel** (`deploy/`) | 82-method test/failover panel on `:9443` |
+| [`README.fa.md`](README.fa.md) | **NetAuto/TehranNetwork platform** (`backend/`, `plan_executor/`, `bot/`, …) | Control plane that **persistently deploys 77 methods** over SSH |
+
+Method counts, honestly: the NetAuto engine (`plan_executor/executor.py`) deploys **77**
+persistent tunnel methods; the MTF registry (`deploy/methods_registry.json`) tests **82**
+entries (the 77 + HAJSAMAN ×3 + HEDIOUM ×2 test-only flagships). Canonical catalog
+unification is tracked in [docs/development/CATALOG_INVENTORY.md](docs/development/CATALOG_INVENTORY.md).
+
+Disaster recovery (NetAuto stack): [`scripts/export-production-state.sh`](scripts/export-production-state.sh)
+and [`scripts/restore-production-state.sh`](scripts/restore-production-state.sh) —
+encrypted full-state export/restore.
+
 ![Dashboard](docs/shots/01-dashboard-fa.png)
 
 ---
@@ -43,11 +62,13 @@ The panel serves HTTPS on **:9443** only. First login generates a random admin
 password (shown once via `/api/password-hint`); change it in **Settings → Login
 credentials** immediately.
 
-**Install on bare metal (no Docker)** — the engine's installer detects your distro:
-
-```bash
-sudo bash deploy/engine/mtf/installer.sh   # apt / dnf / yum / zypper / pacman / apk
-```
+**Installing tunnel methods on remote servers** — from the panel (**Server Tunnels** tab)
+the engine installs over SSH using the target's native package manager
+(`apt`, `dnf`, `yum`, `zypper`, `pacman`, `apk` — see `deploy/engine/mtf/servertunnels.py`).
+There is no standalone bare-metal installer script; the supported deployment paths are the
+Docker container above and the panel-driven remote installer.
+`deploy/engine/mtf/installer.py` is the remote 82-method verification harness driver used
+by the **Remote Deploy** tab, not a host installer.
 
 ---
 

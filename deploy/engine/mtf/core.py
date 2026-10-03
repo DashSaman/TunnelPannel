@@ -139,6 +139,13 @@ def probe_kernel(mid: str, tries: int = 4) -> dict:
 def probe_userspace(mid: str) -> dict:
     """Health check a userspace tunnel by round-tripping through its proxy."""
     port = USERSPACE_SOCKS.get(mid)
+    if port is None:
+        # No persistent proxy deployment exists for this method (the test harness
+        # tears down after verify) — report honestly instead of curling :None.
+        # Proper fix (persistent userspace deploy + probe port from deployment
+        # record) is tracked as P4/P5 work; see docs/adr/ADR-001.
+        return {"ok": False, "rtt": None, "loss": 100.0, "jitter": 0.0,
+                "why": "no persistent proxy deployment to probe"}
     results, rtts = [], []
     n = 3
     fails = 0
