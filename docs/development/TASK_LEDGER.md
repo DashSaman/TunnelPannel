@@ -41,3 +41,11 @@ Statuses: `TODO` · `IN_PROGRESS` · `PASS` · `BLOCKED` · `FAILED`
   IPs/roles/panel URL/token-file names; `scripts/sshrun*.py` named in `.gitignore` as credential
   carriers; `deploy/srv2_install.sh` present in history. Full review = T-P0-003.
 - Dependency conflict fastapi 0.115.6 vs 0.116.1 recorded in BASELINE.md.
+
+## P2 execution log
+
+| ID | Phase | Depends on | Task | Status | Files | Test | Result | Commit |
+|---|---|---|---|---|---|---|---|---|
+| T-P2-001 | P2 | T-P1-005 | Canonical data model (23 entities, SQLAlchemy 2) | PASS | core/models.py | tests/unit/test_models.py (model set + roundtrip) | 23 tables; DAG chain; ownership ledger; job/verification vocabularies | (P2 commit) |
+| T-P2-002 | P2 | T-P1-004 | Engine/profile identity + legacy aliases + composite semantics | PASS | core/catalog.py | tests/unit/test_catalog.py (15 tests) | 82 registry IDs → 22 engines; gost=15 profiles; 6 composite templates (A-over-B); Gen3 bare names alias-resolve | (P2 commit) |
+| T-P2-003 | P2 | T-P2-001 | Alembic migrations + initial canonical schema | PASS | migrations/ · alembic.ini | test_models.py::TestAlembic (upgrade head on fresh sqlite) | revision f9cb963715a8; env honors DATABASE_URL; render_as_batch for sqlite | (P2 commit) |
