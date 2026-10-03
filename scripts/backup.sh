@@ -12,6 +12,7 @@ OUT="${1:-$DATA_DIR/backups/backup-$(date -u +%Y%m%dT%H%M%SZ).tar.gz}"
 [[ $EUID -eq 0 ]] || { echo "run as root"; exit 1; }
 mkdir -p "$(dirname "$OUT")"
 WORK=$(mktemp -d /tmp/tp-backup.XXXX)
+chown tunnelpannel:tunnelpannel "$WORK"     # VACUUM INTO runs as the service user
 trap 'rm -rf "$WORK"' EXIT
 
 set -a; . "$CONF_DIR/tunnelpannel.env"; set +a
