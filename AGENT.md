@@ -42,7 +42,7 @@
 - [ ] Screenshots of panel (browser)
 - [ ] README.fa-en.md with screenshots + every button/option explained
 - [ ] Push to GitHub (repo: DashSaman — needs token; ⚠️ old token leaked in chat, user must issue new one)
-- [ ] Security note to user: change root password 123456@Saman after delivery
+- [ ] Security note to user: change root password (redacted — see docs/development/CURRENT_STATE.md §Security; rotate it) after delivery
 
 ## Notes / decisions
 - Panel on 127.0.0.1:8500, TLS terminated by existing caddy (wildcard cert), no port conflicts.

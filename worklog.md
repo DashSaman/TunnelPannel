@@ -22,6 +22,6 @@ Work Log:
 
 Stage Summary:
 - PANEL LIVE: https://tun.softarg.ir:9443 (TLS ✓, external curl ✓)
-- Admin password (bootstrap): faZPTs6GVYoW (panel_secret.json)
+- Admin password (bootstrap): REDACTED (was committed in cleartext — rotate it; see docs/development/CURRENT_STATE.md)
 - 77-method test suite running in container (test_progress.json)
 - Pending: 4 binaries (rathole/WaterWall/paqet/hedioum) retry w/ token, receipts review, failover drill, README, GitHub push
