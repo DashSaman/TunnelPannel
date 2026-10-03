@@ -55,3 +55,5 @@ Statuses: `TODO` · `IN_PROGRESS` · `PASS` · `BLOCKED` · `FAILED`
 | T-P3-003 | P3 | T-P2-001 | Adapter SDK — 12-method contract + registry + ProbeResult truth gate | PASS | engines/adapters/__init__.py | tests/unit/test_manifests.py::TestAdapterSDK | partial implementations rejected at registration; probe() is the honesty gate | (P3 commit) |
 
 | T-P4-001 | P4 | T-P2-001 | Canonical ResourceManager (ports/ifaces/subnets/tables/fwmarks/nft/systemd/ns/temp) | PASS | orchestrator/resources/__init__.py · tests/unit/test_resources.py | 15 unit tests (collisions/release/idempotency/ownership) | ledger-backed; NEVER-list; external in-use provider protocol; live-row partial unique index | (P4a commit) |
+
+| T-P4-002 | P4 | T-P4-001 | Transactional deployment engine (PLAN→VALIDATE→DRY_RUN→RESERVE→APPLY→VERIFY→COMMIT, reverse ROLLBACK) | PASS | orchestrator/deployment/__init__.py · tests/unit/test_deployment.py | 11 unit tests incl. mandatory matrix | dry-run zero-mutations proven; reverse-order rollback; partial-apply + verify-failure paths; idempotent re-reserve; events audited | (P4b commit) |
