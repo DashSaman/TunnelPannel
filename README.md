@@ -7,6 +7,24 @@
 > your servers — with a built-in **port-conflict manager**, **IPv4+IPv6 dual-stack
 > routing**, **SSH probe** and **smart tunnel recommendation**.
 
+## ⚡ Quick install (tested on Ubuntu 22.04/24.04, Debian 11/12)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/main/install.sh | sudo bash
+```
+
+One command installs the canonical application: dependencies → `/opt/tunnelpannel` →
+generated secrets/RBAC tokens (shown **once**) → database migrations → systemd
+service `tunnelpannel-api` → real HTTP health check → install receipt.
+Re-running the same command **reconciles** (idempotent — never resets credentials
+or data). Verified in CI on every push (fresh install → health → second run →
+backup/mutate/restore → safe uninstall with unrelated-interface survival).
+
+- Panel/API: `http://127.0.0.1:8080` · Upgrade: `sudo bash scripts/upgrade.sh`
+- Backup/restore: `scripts/backup.sh` / `scripts/restore.sh` · Uninstall: `scripts/uninstall.sh`
+- Runs `main` (development mode) by default; pin a release with
+  `TUNNELPANNEL_VERSION=vX.Y.Z sudo -E bash install.sh`.
+
 ### Documentation map — read this first
 
 This repository currently contains **two coexisting systems** (see
