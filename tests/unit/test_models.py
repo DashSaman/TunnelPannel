@@ -24,6 +24,7 @@ EXPECTED_TABLES = {
     "failover_members", "health_samples", "events", "alerts", "audit_logs",
     "jobs", "secret_references",
     "component_dependencies", "composition_validations", "composition_templates",
+    "topologies", "topology_edges", "topology_paths", "topology_revisions",
 }
 
 

@@ -420,3 +420,43 @@ class CompositionTemplate(Base):
     source: Mapped[str] = mapped_column(String(16), default="legacy")  # legacy|operator|auto
     spec: Mapped[dict] = mapped_column(JSON)                            # ChainSpec as dict
     created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class TopologyDB(Base):
+    __tablename__ = "topologies"
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    name: Mapped[str] = mapped_column(String(120), unique=True)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class TopologyEdgeDB(Base):
+    __tablename__ = "topology_edges"
+    __table_args__ = (UniqueConstraint("topology_id", "edge_id", name="uq_topo_edge"),)
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    topology_id: Mapped[str] = mapped_column(ForeignKey("topologies.id", ondelete="CASCADE"))
+    edge_id: Mapped[str] = mapped_column(String(64))
+    from_node: Mapped[str] = mapped_column(String(32))
+    to_node: Mapped[str] = mapped_column(String(32))
+    route: Mapped[str] = mapped_column(String(120))
+    route_kind: Mapped[str] = mapped_column(String(8), default="single")
+    metrics: Mapped[dict] = mapped_column(JSON, default=dict)
+    verification: Mapped[str] = mapped_column(String(32), default="UNTESTED")
+
+
+class TopologyPathDB(Base):
+    __tablename__ = "topology_paths"
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    topology_id: Mapped[str] = mapped_column(ForeignKey("topologies.id", ondelete="CASCADE"))
+    path_id: Mapped[str] = mapped_column(String(64))
+    edge_ids: Mapped[list] = mapped_column(JSON)
+    state: Mapped[str] = mapped_column(String(16), default="PLANNED")
+    metrics: Mapped[dict] = mapped_column(JSON, default=dict)
+
+
+class TopologyRevisionDB(Base):
+    __tablename__ = "topology_revisions"
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    topology_id: Mapped[str] = mapped_column(ForeignKey("topologies.id", ondelete="CASCADE"))
+    revision: Mapped[int] = mapped_column(Integer, default=1)
+    snapshot: Mapped[dict] = mapped_column(JSON)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_now)

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TunnelPannel — Topology</title>
+<style>
+body{font-family:'Segoe UI',Tahoma,sans-serif;margin:0;color:#1c2b3a;background:#fff}
+header{background:#14324f;color:#fff;padding:14px 22px}
+main{padding:20px 22px}
+h2{font-size:14px;color:#14324f;border-bottom:2px solid #14324f;padding-bottom:4px;margin:22px 0 10px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{background:#14324f;color:#fff;padding:7px 9px;text-align:left}
+td{border-bottom:1px solid #d8dfe6;padding:6px 9px}
+.badge{border-radius:10px;padding:1px 9px;font-size:11px;font-weight:600}
+.VERIFIED{background:#eaf5ee;color:#1a7f4e}.PATH_FAILED,.HOP_FAILED{background:#f8ecea;color:#b03a34}
+.PLANNED{background:#e8eef4;color:#1f4a6e}
+.warn{background:#faf2e0;color:#96690f;padding:8px 12px;border-radius:6px;margin:8px 0;font-size:13px}
+.path{font-family:Consolas,monospace;background:#f6f8fa;border:1px solid #d8dfe6;border-radius:6px;padding:10px 14px;margin:8px 0;font-size:13px}
+form{background:#f6f8fa;border:1px solid #d8dfe6;border-radius:8px;padding:12px;font-size:13px}
+input,select{font:inherit;padding:5px 8px;margin:2px 4px 8px 0;border:1px solid #d8dfe6;border-radius:5px}
+button{background:#0e7490;color:#fff;border:0;border-radius:6px;padding:8px 18px;font-weight:600;cursor:pointer}
+</style>
+</head>
+<body>
+<header><h1>Topology — nodes, routes & multi-hop paths</h1></header>
+<main>
+<form id="add-edge">
+  <b>Add edge</b> —
+  from <input id="from" placeholder="node-id" size="8">
+  to <input id="to" placeholder="node-id" size="8">
+  route <input id="route" placeholder="WIREGUARD / chain:x" size="16">
+  <button>Add</button>
+  <button id="search" class="secondary" type="button">Find paths</button>
+</form>
+
+<h2>Edges</h2>
+<table id="edges"><thead><tr>
+<th>edge</th><th>from → to</th><th>route</th><th>kind</th><th>RTT</th>
+<th>loss</th><th>throughput</th><th>availability</th><th>MTU</th><th>verification</th>
+</tr></thead><tbody></tbody></table>
+
+<h2>Paths (loop-free, bounded search)</h2>
+<div id="paths"></div>
+
+<h2>Shared failure domains</h2>
+<div id="shared" class="warn" style="display:none"></div>
+</main>
+<script>
+"use strict";
+let topo = {edges: []};
+
+function h(tag, cls, text){const e=document.createElement(tag);if(cls)e.className=cls;
+  if(text!==undefined)e.textContent=text;return e;}
+
+async function refresh(){
+  const r = await fetch("/api/topology");
+  topo = await r.json();
+  const tb = document.querySelector("#edges tbody"); tb.innerHTML = "";
+  for (const e of topo.edges){
+    const tr = h("tr");
+    [e.edge_id, `${e.from_node} → ${e.to_node}`, e.route, e.route_kind,
+     e.rtt_ms ?? "—", e.loss_pct ?? "—", e.throughput_mbps ?? "—",
+     e.availability ?? "—", e.effective_mtu ?? "—", e.verification]
+      .forEach(v => tr.appendChild(h("td", "", v)));
+    tb.appendChild(tr);
+  }
+  renderPaths(topo.paths || []);
+}
+
+function renderPaths(paths){
+  const box = document.getElementById("paths"); box.innerHTML = "";
+  const shared = document.getElementById("shared");
+  shared.style.display = "none";
+  if (!paths.length){box.textContent = "No paths searched yet."; return;}
+  for (const p of paths){
+    const div = h("div", "path");
+    div.appendChild(h("span", "badge " + (p.state || "PLANNED"), p.state || "PLANNED"));
+    div.appendChild(document.createTextNode("  " + p.nodes.join(" → ") +
+      `   ${p.route_labels.join(" → ")}`));
+    const m = p.metrics || {};
+    div.appendChild(h("div", "",
+      `latency ${m.latency_ms ?? "—"} ms · loss ${m.loss_pct ?? "—"}% · ` +
+      `bottleneck ${m.throughput_mbps ?? "—"} Mb/s · availability ${m.availability ?? "—"} · ` +
+      `MTU ${m.effective_mtu ?? "—"} · score ${p.score ?? "—"} (${m.source || "derived"})`));
+    if (p.warnings && p.warnings.length)
+      div.appendChild(h("div", "warn", "⚠ " + p.warnings.join(" · ")));
+    box.appendChild(div);
+  }
+  if (topo.shared && Object.keys(topo.shared).length){
+    shared.style.display = "";
+    shared.textContent = "Shared across paths: " +
+      Object.entries(topo.shared).map(([k, v]) =>
+        `${k}: nodes ${v.shared_nodes.join(",") || "—"} (diversity ${v.diversity_score})`
+      ).join(" | ");
+  }
+}
+
+document.getElementById("add-edge").onsubmit = async (ev) => {
+  ev.preventDefault();
+  await fetch("/api/topology/edges", {method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({from_node: from.value, to_node: to.value, route: route.value})});
+  from.value = to.value = route.value = "";
+  refresh();
+};
+
+document.getElementById("search").onclick = () => {
+  const src = prompt("Source node id:"), dst = prompt("Destination node id:");
+  if (!src || !dst) return;
+  fetch("/api/topology/paths", {method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({source: src, destination: dst})}).then(refresh);
+};
+
+refresh();
+</script>
+</body>
+</html>
