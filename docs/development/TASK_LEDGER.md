@@ -43,7 +43,7 @@ no duplicate tables exist.
 | T-GATE-001 | P8 | — | Consistency gate: ledger normalization + canonical counts + invariants | PASS | core/counts.py · tests/unit/test_counts.py · this file | 10 count tests | 82/21/76/6/6/88; drift auto-detected · (this commit) |
 | T-P8-001 | P8 | T-GATE-001 | Composition engine (resolver/DAG/MTU/MSS/route-guard/placement/maturity/preflight/plan) | PASS | orchestrator/composition/core.py | 80 composition tests incl. 33 spec examples | 32/32 spec examples + invalids; profile-qualified capabilities; real-adapter-only rule · (P8 commit) |
 | T-P8-002 | P8 | T-P8-001 | Composition service (CRUD/dry-run/parents/overlays) + legacy mapping + migration 0002 | PASS | orchestrator/composition/service.py · migrations/versions/4040fb150042 | service tests | 6/6 legacy templates valid canonical chains; preview zero-mutation · (P8 commit) |
-| T-P9-001 | P9 | T-P8-001 | Bounded composed-chain candidate search + benchmark | TODO | orchestrator/benchmarking/ | — | — |
+| T-P9-001 | P9 | T-P8-001 | Bounded chain candidate search + chain benchmark + shared domains + combined ranking | PASS | orchestrator/benchmarking/chains.py | 15 chain tests | budgets enforced; dedupe; PREDICTED≠MEASURED; full-chain truth gate (components-pass-but-e2e-fail → FAILED); reverse-topo teardown; ORPHANED surfaced; shared-underlay warning · (P9 commit) |
 | T-P10-001 | P10 | T-P9-001 | Failover groups + FSM + anti-flap + receipts + UI flow | TODO | orchestrator/failover/ | — | — |
 | T-P11-001 | P11 | T-P10-001 | Topology + multi-hop | TODO | — | — | — |
 | T-P12-001 | P12 | T-P10-001 | Observability + alerts + bot integration | TODO | — | — | — |
