@@ -41,8 +41,8 @@ no duplicate tables exist.
 | T-P6-004 | P6 | T-P6-003 | Benchmark HTTP API (non-blocking Job semantics) | PASS | apps/api/benchmark_api.py | 6 tests | request never blocks · 16e5d67 |
 | T-P7-001 | P7 | T-P6-004 | Ranking UI + selection persistence | PASS | apps/web/ | 5 tests | selection ≠ deployment (0 deployments proven) · 8940f13 |
 | T-GATE-001 | P8 | — | Consistency gate: ledger normalization + canonical counts + invariants | PASS | core/counts.py · tests/unit/test_counts.py · this file | 10 count tests | 82/21/76/6/6/88; drift auto-detected · (this commit) |
-| T-P8-001 | P8 | T-GATE-001 | Composition engine (resolver/DAG/MTU/MSS/route-guard/placement/maturity/preflight/plan) | IN_PROGRESS | orchestrator/composition/ | — | — |
-| T-P8-002 | P8 | T-P8-001 | Composition service API + legacy composite→chain mapping | TODO | orchestrator/composition/service.py | — | — |
+| T-P8-001 | P8 | T-GATE-001 | Composition engine (resolver/DAG/MTU/MSS/route-guard/placement/maturity/preflight/plan) | PASS | orchestrator/composition/core.py | 80 composition tests incl. 33 spec examples | 32/32 spec examples + invalids; profile-qualified capabilities; real-adapter-only rule · (P8 commit) |
+| T-P8-002 | P8 | T-P8-001 | Composition service (CRUD/dry-run/parents/overlays) + legacy mapping + migration 0002 | PASS | orchestrator/composition/service.py · migrations/versions/4040fb150042 | service tests | 6/6 legacy templates valid canonical chains; preview zero-mutation · (P8 commit) |
 | T-P9-001 | P9 | T-P8-001 | Bounded composed-chain candidate search + benchmark | TODO | orchestrator/benchmarking/ | — | — |
 | T-P10-001 | P10 | T-P9-001 | Failover groups + FSM + anti-flap + receipts + UI flow | TODO | orchestrator/failover/ | — | — |
 | T-P11-001 | P11 | T-P10-001 | Topology + multi-hop | TODO | — | — | — |

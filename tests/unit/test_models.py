@@ -23,6 +23,7 @@ EXPECTED_TABLES = {
     "benchmark_samples", "benchmark_receipts", "scores", "failover_groups",
     "failover_members", "health_samples", "events", "alerts", "audit_logs",
     "jobs", "secret_references",
+    "component_dependencies", "composition_validations", "composition_templates",
 }
 
 

@@ -385,3 +385,38 @@ class SecretReference(Base):
     fingerprint: Mapped[str | None] = mapped_column(String(128))
     created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_now)
     rotated_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class ComponentDependency(Base):
+    """Explicit edge beyond parentage: overlay binds to underlay resources."""
+    __tablename__ = "component_dependencies"
+    __table_args__ = (UniqueConstraint("chain_id", "component_id", "depends_on", name="uq_dep"),)
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    chain_id: Mapped[str] = mapped_column(String(32), index=True)
+    component_id: Mapped[str] = mapped_column(String(64))
+    depends_on: Mapped[str] = mapped_column(String(64))
+    kind: Mapped[str] = mapped_column(String(32), default="underlay")  # underlay|address|route
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class CompositionValidation(Base):
+    """Persisted validation verdicts with reason codes (explainability)."""
+    __tablename__ = "composition_validations"
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    chain_id: Mapped[str | None] = mapped_column(String(32), index=True)
+    spec_hash: Mapped[str] = mapped_column(String(64), index=True)
+    valid: Mapped[bool] = mapped_column(Boolean)
+    reasons: Mapped[list] = mapped_column(JSON, default=list)
+    warnings: Mapped[list] = mapped_column(JSON, default=list)
+    adapters_used: Mapped[list] = mapped_column(JSON, default=list)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class CompositionTemplate(Base):
+    """Named reusable chain template (incl. legacy composite compatibility)."""
+    __tablename__ = "composition_templates"
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    template_key: Mapped[str] = mapped_column(String(64), unique=True)  # e.g. GRE_OVER_WIREGUARD
+    source: Mapped[str] = mapped_column(String(16), default="legacy")  # legacy|operator|auto
+    spec: Mapped[dict] = mapped_column(JSON)                            # ChainSpec as dict
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_now)
