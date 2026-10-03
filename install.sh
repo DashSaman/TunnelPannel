@@ -16,7 +16,7 @@ DATA_DIR="/var/lib/tunnelpannel"
 CONF_DIR="/etc/tunnelpannel"
 LOG_DIR="/var/log/tunnelpannel"
 SERVICE="tunnelpannel-api"
-VERSION="${TUNNELPANNEL_VERSION:-main}"      # release tag, or 'main' = development mode
+TP_VERSION="${TUNNELPANNEL_VERSION:-main}"   # release tag, or 'main' = development mode
 PORT="${TUNNELPANNEL_PORT:-8080}"
 LOG_FILE="$LOG_DIR/install.log"
 
@@ -32,13 +32,14 @@ trap 'die "unexpected error (see log above)"' ERR
 STAGE="detect-os"
 [[ $EUID -eq 0 ]] || die "run as root (curl … | sudo bash)"
 command -v apt-get >/dev/null 2>&1 || die "only apt-based hosts are supported (Ubuntu LTS / Debian stable); refusing to guess"
-. /etc/os-release
-case "$ID:${VERSION_ID%%.*}" in
+OS_ID="$(. /etc/os-release >/dev/null 2>&1; echo "$ID")"
+OS_VERSION_ID="$(. /etc/os-release >/dev/null 2>&1; echo "$VERSION_ID")"
+case "$OS_ID:${OS_VERSION_ID%%.*}" in
   ubuntu:2[24]|debian:1[123]) ;;
-  *) die "unsupported distribution: $ID $VERSION_ID (tested: Ubuntu 22.04/24.04, Debian 11/12)" ;;
+  *) die "unsupported distribution: $OS_ID $OS_VERSION_ID (tested: Ubuntu 22.04/24.04, Debian 11/12)" ;;
 esac
 ARCH="$(dpkg --print-architecture)"
-note "detected $ID $VERSION_ID ($ARCH); target version: $VERSION"
+note "detected $OS_ID $OS_VERSION_ID ($ARCH); target version: $TP_VERSION"
 
 # ── 2. base dependencies ──────────────────────────────────────────────
 STAGE="base-deps"
@@ -61,9 +62,9 @@ else
   note "cloning into $INSTALL_DIR"
   git clone -q "$REPO" "$INSTALL_DIR"
 fi
-git -C "$INSTALL_DIR" checkout -q "$VERSION"
+git -C "$INSTALL_DIR" checkout -q "$TP_VERSION"
 GIT_SHA="$(git -C "$INSTALL_DIR" rev-parse HEAD)"
-note "checked out $VERSION @ ${GIT_SHA:0:12}"
+note "checked out $TP_VERSION @ ${GIT_SHA:0:12}"
 
 # ── 5. secrets + runtime config (generated once, preserved on reruns) ──
 STAGE="config"
@@ -148,7 +149,7 @@ STAGE="receipt"
 cat > "$DATA_DIR/install-receipt.json" <<RECEIPT
 {
   "product": "TunnelPannel",
-  "version": "$VERSION",
+  "version": "$TP_VERSION",
   "commit": "$GIT_SHA",
   "install_path": "$INSTALL_DIR",
   "config_path": "$CONF_DIR/tunnelpannel.env",
