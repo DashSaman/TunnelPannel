@@ -82,12 +82,13 @@ jobs:
           test "$(systemctl list-units 'tunnelpannel-api*' --no-legend | wc -l)" -eq 1
           sudo cat /var/lib/tunnelpannel/install-receipt.json
       - name: Backup / mutate / restore round-trip
+        env:
+          RESTORE_TUNNELPANNEL: YES_I_UNDERSTAND
         run: |
-          set -a; . /etc/tunnelpannel/tunnelpannel.env; set +a
           sudo bash scripts/backup.sh /tmp/tp-backup.tar.gz
           sudo -u tunnelpannel sqlite3 /var/lib/tunnelpannel/tunnelpannel.db \
             "INSERT INTO nodes (id,name,host,created_at,updated_at) VALUES ('zz','zz','zz',datetime('now'),datetime('now'))"
-          RESTORE_TUNNELPANNEL=YES_I_UNDERSTAND sudo -E bash scripts/restore.sh /tmp/tp-backup.tar.gz
+          sudo -E bash scripts/restore.sh /tmp/tp-backup.tar.gz
           COUNT=$(sudo -u tunnelpannel sqlite3 /var/lib/tunnelpannel/tunnelpannel.db 'select count(*) from nodes where id="zz"')
           test "$COUNT" -eq 0              # mutation rolled back by restore
           curl -fsS http://127.0.0.1:8080/health
