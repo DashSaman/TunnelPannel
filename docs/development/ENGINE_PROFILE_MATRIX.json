@@ -1,0 +1,2099 @@
+{
+  "generated_by": "scripts/generate_engine_profile_matrix.py",
+  "engines": [
+    "chisel",
+    "frp",
+    "gost",
+    "gre",
+    "gretap",
+    "hajsaman",
+    "hedioum",
+    "ipip",
+    "ipsec",
+    "openvpn",
+    "paqet",
+    "rathole",
+    "singbox",
+    "sit",
+    "ssh",
+    "vti",
+    "vxlan",
+    "waterwall",
+    "wireguard",
+    "wstunnel",
+    "xray"
+  ],
+  "engine_count": 21,
+  "profile_count": 76,
+  "adapter_coverage": "76/76",
+  "composites": [
+    {
+      "legacy_method_id": "GRETAP_OVER_GOST",
+      "overlay_engine": "gretap",
+      "underlay_engine": "gost",
+      "canonical_home": "P8 composition engine (compatibility template until then)"
+    },
+    {
+      "legacy_method_id": "GRE_OVER_GOST",
+      "overlay_engine": "gre",
+      "underlay_engine": "gost",
+      "canonical_home": "P8 composition engine (compatibility template until then)"
+    },
+    {
+      "legacy_method_id": "GRE_OVER_SSH",
+      "overlay_engine": "gre",
+      "underlay_engine": "ssh",
+      "canonical_home": "P8 composition engine (compatibility template until then)"
+    },
+    {
+      "legacy_method_id": "GRE_OVER_WIREGUARD",
+      "overlay_engine": "gre",
+      "underlay_engine": "wireguard",
+      "canonical_home": "P8 composition engine (compatibility template until then)"
+    },
+    {
+      "legacy_method_id": "SIT_OVER_GOST",
+      "overlay_engine": "sit",
+      "underlay_engine": "gost",
+      "canonical_home": "P8 composition engine (compatibility template until then)"
+    },
+    {
+      "legacy_method_id": "SIT_OVER_SSH",
+      "overlay_engine": "sit",
+      "underlay_engine": "ssh",
+      "canonical_home": "P8 composition engine (compatibility template until then)"
+    }
+  ],
+  "matrix": [
+    {
+      "engine_id": "ssh",
+      "profile_id": "reverse",
+      "legacy_method_ids": [
+        "AUTOSSH_REVERSE"
+      ],
+      "family": "SSH",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TCP",
+      "requirements": {
+        "binaries": [
+          "ssh"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun profiles need root)"
+      },
+      "known_limitations": [
+        "per-connection TCP overhead; tun profiles need PermitTun"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "chisel",
+      "profile_id": "reverse_socks5",
+      "legacy_method_ids": [
+        "CHISEL_REVERSE_SOCKS5"
+      ],
+      "family": "CHISEL",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TCP",
+      "requirements": {
+        "binaries": [
+          "chisel"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "HTTP-based: long-lived connections may be proxied by CDNs"
+      ],
+      "existing_test_evidence": "NONE",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "chisel",
+      "profile_id": "reverse_tcp",
+      "legacy_method_ids": [
+        "CHISEL_REVERSE_TCP"
+      ],
+      "family": "CHISEL",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TCP",
+      "requirements": {
+        "binaries": [
+          "chisel"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "HTTP-based: long-lived connections may be proxied by CDNs"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "chisel",
+      "profile_id": "reverse_udp",
+      "legacy_method_ids": [
+        "CHISEL_REVERSE_UDP"
+      ],
+      "family": "CHISEL",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "UDP",
+      "requirements": {
+        "binaries": [
+          "chisel"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "HTTP-based: long-lived connections may be proxied by CDNs"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "chisel",
+      "profile_id": "socks5",
+      "legacy_method_ids": [
+        "CHISEL_SOCKS5"
+      ],
+      "family": "CHISEL",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TCP",
+      "requirements": {
+        "binaries": [
+          "chisel"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "HTTP-based: long-lived connections may be proxied by CDNs"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "chisel",
+      "profile_id": "tcp",
+      "legacy_method_ids": [
+        "CHISEL_TCP"
+      ],
+      "family": "CHISEL",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TCP",
+      "requirements": {
+        "binaries": [
+          "chisel"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "HTTP-based: long-lived connections may be proxied by CDNs"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "chisel",
+      "profile_id": "udp",
+      "legacy_method_ids": [
+        "CHISEL_UDP"
+      ],
+      "family": "CHISEL",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "UDP",
+      "requirements": {
+        "binaries": [
+          "chisel"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "HTTP-based: long-lived connections may be proxied by CDNs"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "frp",
+      "profile_id": "kcp",
+      "legacy_method_ids": [
+        "FRP_KCP"
+      ],
+      "family": "FRP",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "UDP",
+      "requirements": {
+        "binaries": [
+          "frpc",
+          "frps"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "server/client roles must be provisioned as a pair"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "frp",
+      "profile_id": "quic",
+      "legacy_method_ids": [
+        "FRP_QUIC"
+      ],
+      "family": "FRP",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "QUIC",
+      "requirements": {
+        "binaries": [
+          "frpc",
+          "frps"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "server/client roles must be provisioned as a pair"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "frp",
+      "profile_id": "stcp",
+      "legacy_method_ids": [
+        "FRP_STCP"
+      ],
+      "family": "FRP",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TCP",
+      "requirements": {
+        "binaries": [
+          "frpc",
+          "frps"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "server/client roles must be provisioned as a pair"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "frp",
+      "profile_id": "tcp",
+      "legacy_method_ids": [
+        "FRP_TCP"
+      ],
+      "family": "FRP",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TCP",
+      "requirements": {
+        "binaries": [
+          "frpc",
+          "frps"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "server/client roles must be provisioned as a pair"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "frp",
+      "profile_id": "udp",
+      "legacy_method_ids": [
+        "FRP_UDP"
+      ],
+      "family": "FRP",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "UDP",
+      "requirements": {
+        "binaries": [
+          "frpc",
+          "frps"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "server/client roles must be provisioned as a pair"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "frp",
+      "profile_id": "xtcp",
+      "legacy_method_ids": [
+        "FRP_XTCP"
+      ],
+      "family": "FRP",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "UDP",
+      "requirements": {
+        "binaries": [
+          "frpc",
+          "frps"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "server/client roles must be provisioned as a pair"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "gost",
+      "profile_id": "grpc",
+      "legacy_method_ids": [
+        "GOST_GRPC"
+      ],
+      "family": "GOST",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "gost"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun/tap profiles need CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "15 profiles differ in transport; tun/tap profiles need root"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "gost",
+      "profile_id": "http",
+      "legacy_method_ids": [
+        "GOST_HTTP"
+      ],
+      "family": "GOST",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "HTTP",
+      "requirements": {
+        "binaries": [
+          "gost"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun/tap profiles need CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "15 profiles differ in transport; tun/tap profiles need root"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "gost",
+      "profile_id": "http2",
+      "legacy_method_ids": [
+        "GOST_HTTP2"
+      ],
+      "family": "GOST",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "HTTP",
+      "requirements": {
+        "binaries": [
+          "gost"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun/tap profiles need CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "15 profiles differ in transport; tun/tap profiles need root"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "gost",
+      "profile_id": "kcp_forward",
+      "legacy_method_ids": [
+        "GOST_KCP_FORWARD"
+      ],
+      "family": "GOST",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TCP",
+      "requirements": {
+        "binaries": [
+          "gost"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun/tap profiles need CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "15 profiles differ in transport; tun/tap profiles need root"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "gost",
+      "profile_id": "quic",
+      "legacy_method_ids": [
+        "GOST_QUIC"
+      ],
+      "family": "GOST",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "gost"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun/tap profiles need CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "15 profiles differ in transport; tun/tap profiles need root"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "gost",
+      "profile_id": "remote_tcp",
+      "legacy_method_ids": [
+        "GOST_REMOTE_TCP"
+      ],
+      "family": "GOST",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TCP",
+      "requirements": {
+        "binaries": [
+          "gost"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun/tap profiles need CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "15 profiles differ in transport; tun/tap profiles need root"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "gost",
+      "profile_id": "remote_udp",
+      "legacy_method_ids": [
+        "GOST_REMOTE_UDP"
+      ],
+      "family": "GOST",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "UDP",
+      "requirements": {
+        "binaries": [
+          "gost"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun/tap profiles need CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "15 profiles differ in transport; tun/tap profiles need root"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "gost",
+      "profile_id": "socks5",
+      "legacy_method_ids": [
+        "GOST_SOCKS5"
+      ],
+      "family": "GOST",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "gost"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun/tap profiles need CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "15 profiles differ in transport; tun/tap profiles need root"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "gost",
+      "profile_id": "socks5_kcp",
+      "legacy_method_ids": [
+        "GOST_SOCKS5_KCP"
+      ],
+      "family": "GOST",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "gost"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun/tap profiles need CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "15 profiles differ in transport; tun/tap profiles need root"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "gost",
+      "profile_id": "ssh",
+      "legacy_method_ids": [
+        "GOST_SSH"
+      ],
+      "family": "GOST",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "gost"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun/tap profiles need CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "15 profiles differ in transport; tun/tap profiles need root"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "gost",
+      "profile_id": "tap",
+      "legacy_method_ids": [
+        "GOST_TAP"
+      ],
+      "family": "GOST",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TAP",
+      "requirements": {
+        "binaries": [
+          "gost"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun/tap profiles need CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "15 profiles differ in transport; tun/tap profiles need root"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "gost",
+      "profile_id": "tcp_forward",
+      "legacy_method_ids": [
+        "GOST_TCP_FORWARD"
+      ],
+      "family": "GOST",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TCP",
+      "requirements": {
+        "binaries": [
+          "gost"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun/tap profiles need CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "15 profiles differ in transport; tun/tap profiles need root"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "gost",
+      "profile_id": "tun",
+      "legacy_method_ids": [
+        "GOST_TUN"
+      ],
+      "family": "GOST",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TUN",
+      "requirements": {
+        "binaries": [
+          "gost"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun/tap profiles need CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "15 profiles differ in transport; tun/tap profiles need root"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "gost",
+      "profile_id": "udp_forward",
+      "legacy_method_ids": [
+        "GOST_UDP_FORWARD"
+      ],
+      "family": "GOST",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "UDP",
+      "requirements": {
+        "binaries": [
+          "gost"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun/tap profiles need CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "15 profiles differ in transport; tun/tap profiles need root"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "gost",
+      "profile_id": "ws",
+      "legacy_method_ids": [
+        "GOST_WS"
+      ],
+      "family": "GOST",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "gost"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun/tap profiles need CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "15 profiles differ in transport; tun/tap profiles need root"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "gre",
+      "profile_id": "default",
+      "legacy_method_ids": [
+        "GRE"
+      ],
+      "family": "KERNEL_BASE",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "ICMP",
+      "requirements": {
+        "binaries": [
+          "ip"
+        ],
+        "kernel_modules": [
+          "ip_gre"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "no encryption by itself"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "gretap",
+      "profile_id": "default",
+      "legacy_method_ids": [
+        "GRETAP"
+      ],
+      "family": "KERNEL_BASE",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "ICMP",
+      "requirements": {
+        "binaries": [
+          "ip"
+        ],
+        "kernel_modules": [
+          "ip_gre"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "bridging requires care on some distros"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "hajsaman",
+      "profile_id": "full",
+      "legacy_method_ids": [
+        "HAJSAMAN_FULL"
+      ],
+      "family": "HAJSAMAN",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "MULTI_SIGNAL",
+      "requirements": {
+        "binaries": [
+          "hajsaman"
+        ],
+        "kernel_modules": [
+          "sit",
+          "wireguard"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "slot-based custom transport"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "hajsaman",
+      "profile_id": "sit",
+      "legacy_method_ids": [
+        "HAJSAMAN_SIT"
+      ],
+      "family": "HAJSAMAN",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "MULTI_SIGNAL",
+      "requirements": {
+        "binaries": [
+          "hajsaman"
+        ],
+        "kernel_modules": [
+          "sit",
+          "wireguard"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "slot-based custom transport"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "hajsaman",
+      "profile_id": "wg",
+      "legacy_method_ids": [
+        "HAJSAMAN_WG"
+      ],
+      "family": "HAJSAMAN",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "MULTI_SIGNAL",
+      "requirements": {
+        "binaries": [
+          "hajsaman"
+        ],
+        "kernel_modules": [
+          "sit",
+          "wireguard"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "slot-based custom transport"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "hedioum",
+      "profile_id": "pool_socks",
+      "legacy_method_ids": [
+        "HEDIOUM_POOL_SOCKS"
+      ],
+      "family": "HEDIOUM",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "hedioum"
+        ],
+        "kernel_modules": [
+          "tun"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "pairing-token flow; pool_socks profile differs"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "hedioum",
+      "profile_id": "tun",
+      "legacy_method_ids": [
+        "HEDIOUM_TUN"
+      ],
+      "family": "HEDIOUM",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TUN",
+      "requirements": {
+        "binaries": [
+          "hedioum"
+        ],
+        "kernel_modules": [
+          "tun"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "pairing-token flow; pool_socks profile differs"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "singbox",
+      "profile_id": "hysteria2",
+      "legacy_method_ids": [
+        "HYSTERIA2"
+      ],
+      "family": "SINGBOX",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "sing-box"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun profile needs CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "tun profile needs root; protocol matrix is wide"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "ipsec",
+      "profile_id": "ikev2",
+      "legacy_method_ids": [
+        "IKEV2_IPSEC"
+      ],
+      "family": "VPN",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "ICMP",
+      "requirements": {
+        "binaries": [
+          "swanctl",
+          "ip"
+        ],
+        "kernel_modules": [
+          "xfrm",
+          "esp"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "IKE daemon config complexity"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "gre",
+      "profile_id": "ip6",
+      "legacy_method_ids": [
+        "IP6GRE"
+      ],
+      "family": "KERNEL_BASE",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "ICMP",
+      "requirements": {
+        "binaries": [
+          "ip"
+        ],
+        "kernel_modules": [
+          "ip_gre"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "no encryption by itself"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "gretap",
+      "profile_id": "ip6",
+      "legacy_method_ids": [
+        "IP6GRETAP"
+      ],
+      "family": "KERNEL_BASE",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "ICMP",
+      "requirements": {
+        "binaries": [
+          "ip"
+        ],
+        "kernel_modules": [
+          "ip_gre"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "bridging requires care on some distros"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "ipip",
+      "profile_id": "default",
+      "legacy_method_ids": [
+        "IPIP"
+      ],
+      "family": "KERNEL_BASE",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "ICMP",
+      "requirements": {
+        "binaries": [
+          "ip"
+        ],
+        "kernel_modules": [
+          "ipip"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "IPv4 only; no encryption"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "ipsec",
+      "profile_id": "l2tp",
+      "legacy_method_ids": [
+        "L2TP_IPSEC"
+      ],
+      "family": "VPN",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "ICMP",
+      "requirements": {
+        "binaries": [
+          "swanctl",
+          "ip"
+        ],
+        "kernel_modules": [
+          "xfrm",
+          "esp"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "IKE daemon config complexity"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "openvpn",
+      "profile_id": "default",
+      "legacy_method_ids": [
+        "OPENVPN"
+      ],
+      "family": "VPN",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "ICMP",
+      "requirements": {
+        "binaries": [
+          "openvpn"
+        ],
+        "kernel_modules": [
+          "tun"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "higher CPU than WireGuard at same throughput"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "paqet",
+      "profile_id": "raw_kcp",
+      "legacy_method_ids": [
+        "PAQET_RAW_KCP"
+      ],
+      "family": "PAQET",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "UDP",
+      "requirements": {
+        "binaries": [
+          "paqet"
+        ],
+        "kernel_modules": [],
+        "privileges": "root (raw socket modes)"
+      },
+      "known_limitations": [
+        "needs NOTRACK iptables rules; root required"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "paqet",
+      "profile_id": "socks5",
+      "legacy_method_ids": [
+        "PAQET_SOCKS5"
+      ],
+      "family": "PAQET",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "MULTI_SIGNAL",
+      "requirements": {
+        "binaries": [
+          "paqet"
+        ],
+        "kernel_modules": [],
+        "privileges": "root (raw socket modes)"
+      },
+      "known_limitations": [
+        "needs NOTRACK iptables rules; root required"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "rathole",
+      "profile_id": "noise",
+      "legacy_method_ids": [
+        "RATHOLE_NOISE"
+      ],
+      "family": "RATHOLE",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TCP",
+      "requirements": {
+        "binaries": [
+          "rathole"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "TCP-oriented; UDP support is limited"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "rathole",
+      "profile_id": "tcp",
+      "legacy_method_ids": [
+        "RATHOLE_TCP"
+      ],
+      "family": "RATHOLE",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TCP",
+      "requirements": {
+        "binaries": [
+          "rathole"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "TCP-oriented; UDP support is limited"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "rathole",
+      "profile_id": "tls",
+      "legacy_method_ids": [
+        "RATHOLE_TLS"
+      ],
+      "family": "RATHOLE",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TCP",
+      "requirements": {
+        "binaries": [
+          "rathole"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "TCP-oriented; UDP support is limited"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "rathole",
+      "profile_id": "udp",
+      "legacy_method_ids": [
+        "RATHOLE_UDP"
+      ],
+      "family": "RATHOLE",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "UDP",
+      "requirements": {
+        "binaries": [
+          "rathole"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "TCP-oriented; UDP support is limited"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "rathole",
+      "profile_id": "websocket",
+      "legacy_method_ids": [
+        "RATHOLE_WEBSOCKET"
+      ],
+      "family": "RATHOLE",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TCP",
+      "requirements": {
+        "binaries": [
+          "rathole"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "TCP-oriented; UDP support is limited"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "singbox",
+      "profile_id": "shadowsocks",
+      "legacy_method_ids": [
+        "SHADOWSOCKS"
+      ],
+      "family": "SINGBOX",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "sing-box"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun profile needs CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "tun profile needs root; protocol matrix is wide"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "singbox",
+      "profile_id": "tun",
+      "legacy_method_ids": [
+        "SINGBOX_TUN"
+      ],
+      "family": "SINGBOX",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TUN",
+      "requirements": {
+        "binaries": [
+          "sing-box"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun profile needs CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "tun profile needs root; protocol matrix is wide"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "sit",
+      "profile_id": "6in4",
+      "legacy_method_ids": [
+        "SIT_6IN4"
+      ],
+      "family": "KERNEL_BASE",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "ICMP",
+      "requirements": {
+        "binaries": [
+          "ip"
+        ],
+        "kernel_modules": [
+          "sit"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "carries IPv6 inside IPv4; no encryption"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "ssh",
+      "profile_id": "dynamic_socks",
+      "legacy_method_ids": [
+        "SSH_DYNAMIC_SOCKS"
+      ],
+      "family": "SSH",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "ssh"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun profiles need root)"
+      },
+      "known_limitations": [
+        "per-connection TCP overhead; tun profiles need PermitTun"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "ssh",
+      "profile_id": "local_forward",
+      "legacy_method_ids": [
+        "SSH_LOCAL_FORWARD"
+      ],
+      "family": "SSH",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TCP",
+      "requirements": {
+        "binaries": [
+          "ssh"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun profiles need root)"
+      },
+      "known_limitations": [
+        "per-connection TCP overhead; tun profiles need PermitTun"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "ssh",
+      "profile_id": "remote_forward",
+      "legacy_method_ids": [
+        "SSH_REMOTE_FORWARD"
+      ],
+      "family": "SSH",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TCP",
+      "requirements": {
+        "binaries": [
+          "ssh"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun profiles need root)"
+      },
+      "known_limitations": [
+        "per-connection TCP overhead; tun profiles need PermitTun"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "ssh",
+      "profile_id": "tap_l2",
+      "legacy_method_ids": [
+        "SSH_TAP_L2"
+      ],
+      "family": "SSH",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TAP",
+      "requirements": {
+        "binaries": [
+          "ssh"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun profiles need root)"
+      },
+      "known_limitations": [
+        "per-connection TCP overhead; tun profiles need PermitTun"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "ssh",
+      "profile_id": "tun_l3",
+      "legacy_method_ids": [
+        "SSH_TUN_L3"
+      ],
+      "family": "SSH",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TUN",
+      "requirements": {
+        "binaries": [
+          "ssh"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun profiles need root)"
+      },
+      "known_limitations": [
+        "per-connection TCP overhead; tun profiles need PermitTun"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "singbox",
+      "profile_id": "trojan_tls",
+      "legacy_method_ids": [
+        "TROJAN_TLS"
+      ],
+      "family": "SINGBOX",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "sing-box"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun profile needs CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "tun profile needs root; protocol matrix is wide"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "singbox",
+      "profile_id": "tuic",
+      "legacy_method_ids": [
+        "TUIC"
+      ],
+      "family": "SINGBOX",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "sing-box"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun profile needs CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "tun profile needs root; protocol matrix is wide"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "xray",
+      "profile_id": "grpc",
+      "legacy_method_ids": [
+        "VLESS_GRPC"
+      ],
+      "family": "XRAY",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "xray"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "carrier-class proxy: needs a real peer for full verification"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "xray",
+      "profile_id": "reality",
+      "legacy_method_ids": [
+        "VLESS_REALITY"
+      ],
+      "family": "XRAY",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "xray"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "carrier-class proxy: needs a real peer for full verification"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "xray",
+      "profile_id": "tcp",
+      "legacy_method_ids": [
+        "VLESS_TCP"
+      ],
+      "family": "XRAY",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "xray"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "carrier-class proxy: needs a real peer for full verification"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "xray",
+      "profile_id": "vision_reality",
+      "legacy_method_ids": [
+        "VLESS_VISION_REALITY"
+      ],
+      "family": "XRAY",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "xray"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "carrier-class proxy: needs a real peer for full verification"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "xray",
+      "profile_id": "ws",
+      "legacy_method_ids": [
+        "VLESS_WS"
+      ],
+      "family": "XRAY",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "xray"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "carrier-class proxy: needs a real peer for full verification"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "xray",
+      "profile_id": "xhttp",
+      "legacy_method_ids": [
+        "VLESS_XHTTP"
+      ],
+      "family": "XRAY",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "xray"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "carrier-class proxy: needs a real peer for full verification"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "xray",
+      "profile_id": "xhttp_reality",
+      "legacy_method_ids": [
+        "VLESS_XHTTP_REALITY"
+      ],
+      "family": "XRAY",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "xray"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "carrier-class proxy: needs a real peer for full verification"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "vti",
+      "profile_id": "default",
+      "legacy_method_ids": [
+        "VTI"
+      ],
+      "family": "VPN",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "ICMP",
+      "requirements": {
+        "binaries": [
+          "ip",
+          "swanctl"
+        ],
+        "kernel_modules": [
+          "vti",
+          "xfrm"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "requires strongSwan IKE on both ends"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "vti",
+      "profile_id": "v6",
+      "legacy_method_ids": [
+        "VTI6"
+      ],
+      "family": "VPN",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "ICMP",
+      "requirements": {
+        "binaries": [
+          "ip",
+          "swanctl"
+        ],
+        "kernel_modules": [
+          "vti",
+          "xfrm"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "requires strongSwan IKE on both ends"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "vxlan",
+      "profile_id": "default",
+      "legacy_method_ids": [
+        "VXLAN"
+      ],
+      "family": "KERNEL_BASE",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "ICMP",
+      "requirements": {
+        "binaries": [
+          "ip"
+        ],
+        "kernel_modules": [
+          "vxlan"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "default port 4789 must be open"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "waterwall",
+      "profile_id": "direct",
+      "legacy_method_ids": [
+        "WATERWALL_DIRECT"
+      ],
+      "family": "WATERWALL",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "waterwall"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "config-driven; fewer distro packages"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "waterwall",
+      "profile_id": "reverse",
+      "legacy_method_ids": [
+        "WATERWALL_REVERSE"
+      ],
+      "family": "WATERWALL",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "waterwall"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "config-driven; fewer distro packages"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "waterwall",
+      "profile_id": "tls_mux",
+      "legacy_method_ids": [
+        "WATERWALL_TLS_MUX"
+      ],
+      "family": "WATERWALL",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "LAB_VERIFIED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "waterwall"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "config-driven; fewer distro packages"
+      ],
+      "existing_test_evidence": "PARTIAL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "wireguard",
+      "profile_id": "default",
+      "legacy_method_ids": [
+        "WIREGUARD"
+      ],
+      "family": "KERNEL_BASE",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "ICMP",
+      "requirements": {
+        "binaries": [
+          "wg",
+          "wg-quick"
+        ],
+        "kernel_modules": [
+          "wireguard"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "needs kernel >= 5.6 or DKMS"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "wstunnel",
+      "profile_id": "socks5",
+      "legacy_method_ids": [
+        "WSTUNNEL_SOCKS5"
+      ],
+      "family": "WSTUNNEL",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "wstunnel"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "UDP-over-WS adds overhead and jitter"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "wstunnel",
+      "profile_id": "tcp",
+      "legacy_method_ids": [
+        "WSTUNNEL_TCP"
+      ],
+      "family": "WSTUNNEL",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TCP",
+      "requirements": {
+        "binaries": [
+          "wstunnel"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "UDP-over-WS adds overhead and jitter"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    },
+    {
+      "engine_id": "wstunnel",
+      "profile_id": "udp",
+      "legacy_method_ids": [
+        "WSTUNNEL_UDP"
+      ],
+      "family": "WSTUNNEL",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen1",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "UDP",
+      "requirements": {
+        "binaries": [
+          "wstunnel"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "UDP-over-WS adds overhead and jitter"
+      ],
+      "existing_test_evidence": "FAIL",
+      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+    }
+  ]
+}

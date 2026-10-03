@@ -127,9 +127,9 @@ class TestAdapterSDK:
 
     def test_register_and_lookup(self):
         @register_adapter
-        class FakeGost(EngineAdapter):
-            engine_id = "gost"
-            profile_id = "test-fake"
+        class FakeDemo(EngineAdapter):
+            engine_id = "sdk-demo"                    # unique: never collides with real engines
+            profile_id = "fake"
 
             def detect(self): return True
             def inventory(self): return {}
@@ -144,10 +144,10 @@ class TestAdapterSDK:
             def remove(self): pass
             def rollback(self): pass
 
-        assert ("gost", "test-fake") in registered()
-        assert get_adapter("gost", "test-fake") is FakeGost
+        assert ("sdk-demo", "fake") in registered()
+        assert get_adapter("sdk-demo", "fake") is FakeDemo
         # fallback: any profile of the engine
-        assert get_adapter("gost", "nonexistent-profile") is FakeGost
+        assert get_adapter("sdk-demo", "nonexistent-profile") is FakeDemo
         with pytest.raises(KeyError):
             get_adapter("no-such-engine")
 
