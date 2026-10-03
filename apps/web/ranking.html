@@ -76,6 +76,7 @@ details summary{cursor:pointer;color:var(--teal)}
 
   <div class="toolbar" id="toolbar" style="display:none">
     <button id="save-selection">Save selection for failover</button>
+    <button id="create-group" class="secondary" style="display:none">Create Failover Group</button>
     <span class="sel" id="sel-info">Selection is input to Failover Groups (P10) — deploying is a separate explicit action.</span>
   </div>
 </main>
@@ -244,7 +245,29 @@ $("save-selection").onclick = async () => {
 };
 function updateSelInfoDone(){
   $("sel-info").textContent = `Saved ${selected.size} selections for Failover Group creation (P10).`;
+  $("create-group").style.display = "";
 }
+
+$("create-group").onclick = async () => {
+  if (!jobId || !selected.size) return;
+  const order = JSON.parse($("tbody").dataset.rows || "[]")
+      .map(r => r.candidate).filter(c => selected.has(c));
+  const members = order.map((cand, i) => ({
+      candidate: cand, priority: i + 1,
+      kind: cand.startsWith("chain:") ? "chain" : "single"}));
+  const r = await fetch("/failover-groups", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({name: `from-benchmark-${jobId.slice(0, 8)}`,
+                          members: members, mode: "MANUAL_PRIORITY"}),
+  });
+  if (r.ok) {
+    const body = await r.json();
+    $("sel-info").textContent =
+      `Failover group created (active: ${body.active}). ` +
+      (body.diversity_warnings || []).map(w => `⚠ ${w.warning} (${w.shared})`).join(" ") +
+      (body.diversity_recommendation ? ` | ${body.diversity_recommendation}` : "");
+  }
+};
 
 loadNodes();
 </script>
