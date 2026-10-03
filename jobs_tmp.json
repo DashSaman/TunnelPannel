@@ -2,153 +2,21 @@
   "total_count": 3,
   "jobs": [
     {
-      "id": 111266770483,
-      "run_id": 37144921074,
+      "id": 111268032912,
+      "run_id": 37145353414,
       "workflow_name": "portable-tests",
       "head_branch": "main",
-      "run_url": "https://api.github.com/repos/DashSaman/TunnelPannel/actions/runs/37144921074",
+      "run_url": "https://api.github.com/repos/DashSaman/TunnelPannel/actions/runs/37145353414",
       "run_attempt": 1,
-      "node_id": "CR_kwDOUa1qA88AAAAZ6AQuMw",
-      "head_sha": "76de88cdd0f90bd0979b3f45d75e342fe91e1ce1",
-      "url": "https://api.github.com/repos/DashSaman/TunnelPannel/actions/jobs/111266770483",
-      "html_url": "https://github.com/DashSaman/TunnelPannel/actions/runs/37144921074/job/111266770483",
-      "status": "completed",
-      "conclusion": "failure",
-      "created_at": "2026-10-03T18:37:53Z",
-      "started_at": "2026-10-03T18:37:56Z",
-      "completed_at": "2026-10-03T18:38:52Z",
-      "name": "linux-integration",
-      "steps": [
-        {
-          "name": "Set up job",
-          "status": "completed",
-          "conclusion": "success",
-          "number": 1,
-          "started_at": "2026-10-03T18:37:57Z",
-          "completed_at": "2026-10-03T18:37:57Z"
-        },
-        {
-          "name": "Run actions/checkout@v4",
-          "status": "completed",
-          "conclusion": "success",
-          "number": 2,
-          "started_at": "2026-10-03T18:37:57Z",
-          "completed_at": "2026-10-03T18:37:59Z"
-        },
-        {
-          "name": "Run actions/setup-python@v5",
-          "status": "completed",
-          "conclusion": "success",
-          "number": 3,
-          "started_at": "2026-10-03T18:37:59Z",
-          "completed_at": "2026-10-03T18:37:59Z"
-        },
-        {
-          "name": "Install dependencies",
-          "status": "completed",
-          "conclusion": "success",
-          "number": 4,
-          "started_at": "2026-10-03T18:37:59Z",
-          "completed_at": "2026-10-03T18:38:10Z"
-        },
-        {
-          "name": "Full tunnelguard suite on Linux (skips lift on Linux)",
-          "status": "completed",
-          "conclusion": "success",
-          "number": 5,
-          "started_at": "2026-10-03T18:38:10Z",
-          "completed_at": "2026-10-03T18:38:16Z"
-        },
-        {
-          "name": "ShellCheck all shell scripts",
-          "status": "completed",
-          "conclusion": "success",
-          "number": 6,
-          "started_at": "2026-10-03T18:38:16Z",
-          "completed_at": "2026-10-03T18:38:17Z"
-        },
-        {
-          "name": "Bash syntax check",
-          "status": "completed",
-          "conclusion": "success",
-          "number": 7,
-          "started_at": "2026-10-03T18:38:17Z",
-          "completed_at": "2026-10-03T18:38:17Z"
-        },
-        {
-          "name": "Install.sh acceptance (fresh → health → idempotent second run)",
-          "status": "completed",
-          "conclusion": "success",
-          "number": 8,
-          "started_at": "2026-10-03T18:38:17Z",
-          "completed_at": "2026-10-03T18:38:50Z"
-        },
-        {
-          "name": "Backup / mutate / restore round-trip",
-          "status": "completed",
-          "conclusion": "failure",
-          "number": 9,
-          "started_at": "2026-10-03T18:38:50Z",
-          "completed_at": "2026-10-03T18:38:51Z"
-        },
-        {
-          "name": "Safe uninstall keeps unrelated resources",
-          "status": "completed",
-          "conclusion": "skipped",
-          "number": 10,
-          "started_at": "2026-10-03T18:38:51Z",
-          "completed_at": "2026-10-03T18:38:51Z"
-        },
-        {
-          "name": "Post Run actions/setup-python@v5",
-          "status": "completed",
-          "conclusion": "skipped",
-          "number": 19,
-          "started_at": "2026-10-03T18:38:51Z",
-          "completed_at": "2026-10-03T18:38:51Z"
-        },
-        {
-          "name": "Post Run actions/checkout@v4",
-          "status": "completed",
-          "conclusion": "success",
-          "number": 20,
-          "started_at": "2026-10-03T18:38:51Z",
-          "completed_at": "2026-10-03T18:38:51Z"
-        },
-        {
-          "name": "Complete job",
-          "status": "completed",
-          "conclusion": "success",
-          "number": 21,
-          "started_at": "2026-10-03T18:38:51Z",
-          "completed_at": "2026-10-03T18:38:51Z"
-        }
-      ],
-      "check_run_url": "https://api.github.com/repos/DashSaman/TunnelPannel/check-runs/111266770483",
-      "labels": [
-        "ubuntu-latest"
-      ],
-      "runner_id": 1000014245,
-      "runner_name": "GitHub Actions 1000014245",
-      "runner_group_id": 0,
-      "runner_group_name": "GitHub Actions"
-    },
-    {
-      "id": 111266770543,
-      "run_id": 37144921074,
-      "workflow_name": "portable-tests",
-      "head_branch": "main",
-      "run_url": "https://api.github.com/repos/DashSaman/TunnelPannel/actions/runs/37144921074",
-      "run_attempt": 1,
-      "node_id": "CR_kwDOUa1qA88AAAAZ6AQubw",
-      "head_sha": "76de88cdd0f90bd0979b3f45d75e342fe91e1ce1",
-      "url": "https://api.github.com/repos/DashSaman/TunnelPannel/actions/jobs/111266770543",
-      "html_url": "https://github.com/DashSaman/TunnelPannel/actions/runs/37144921074/job/111266770543",
+      "node_id": "CR_kwDOUa1qA88AAAAZ6BdxkA",
+      "head_sha": "5d88c0a4c79bc2fad64f78b0485ac5543ae1a254",
+      "url": "https://api.github.com/repos/DashSaman/TunnelPannel/actions/jobs/111268032912",
+      "html_url": "https://github.com/DashSaman/TunnelPannel/actions/runs/37145353414/job/111268032912",
       "status": "completed",
       "conclusion": "success",
-      "created_at": "2026-10-03T18:37:53Z",
-      "started_at": "2026-10-03T18:37:55Z",
-      "completed_at": "2026-10-03T18:38:21Z",
+      "created_at": "2026-10-03T18:44:46Z",
+      "started_at": "2026-10-03T18:44:47Z",
+      "completed_at": "2026-10-03T18:45:24Z",
       "name": "portable (3.11)",
       "steps": [
         {
@@ -156,123 +24,123 @@
           "status": "completed",
           "conclusion": "success",
           "number": 1,
-          "started_at": "2026-10-03T18:37:56Z",
-          "completed_at": "2026-10-03T18:37:56Z"
+          "started_at": "2026-10-03T18:44:48Z",
+          "completed_at": "2026-10-03T18:44:48Z"
         },
         {
           "name": "Run actions/checkout@v4",
           "status": "completed",
           "conclusion": "success",
           "number": 2,
-          "started_at": "2026-10-03T18:37:56Z",
-          "completed_at": "2026-10-03T18:37:59Z"
+          "started_at": "2026-10-03T18:44:48Z",
+          "completed_at": "2026-10-03T18:44:50Z"
         },
         {
           "name": "Run actions/setup-python@v5",
           "status": "completed",
           "conclusion": "success",
           "number": 3,
-          "started_at": "2026-10-03T18:37:59Z",
-          "completed_at": "2026-10-03T18:37:59Z"
+          "started_at": "2026-10-03T18:44:50Z",
+          "completed_at": "2026-10-03T18:44:50Z"
         },
         {
           "name": "Install dependencies",
           "status": "completed",
           "conclusion": "success",
           "number": 4,
-          "started_at": "2026-10-03T18:37:59Z",
-          "completed_at": "2026-10-03T18:38:08Z"
+          "started_at": "2026-10-03T18:44:50Z",
+          "completed_at": "2026-10-03T18:45:06Z"
         },
         {
           "name": "Ruff lint (canonical packages)",
           "status": "completed",
           "conclusion": "success",
           "number": 5,
-          "started_at": "2026-10-03T18:38:08Z",
-          "completed_at": "2026-10-03T18:38:08Z"
+          "started_at": "2026-10-03T18:45:06Z",
+          "completed_at": "2026-10-03T18:45:06Z"
         },
         {
           "name": "Canonical count + manifest invariants",
           "status": "completed",
           "conclusion": "success",
           "number": 6,
-          "started_at": "2026-10-03T18:38:08Z",
-          "completed_at": "2026-10-03T18:38:08Z"
+          "started_at": "2026-10-03T18:45:06Z",
+          "completed_at": "2026-10-03T18:45:07Z"
         },
         {
           "name": "Portable unit tests (root suite incl. API/UI/migrations)",
           "status": "completed",
           "conclusion": "success",
           "number": 7,
-          "started_at": "2026-10-03T18:38:08Z",
-          "completed_at": "2026-10-03T18:38:15Z"
+          "started_at": "2026-10-03T18:45:07Z",
+          "completed_at": "2026-10-03T18:45:17Z"
         },
         {
           "name": "TunnelGuard suite (linux_integration tier runs here)",
           "status": "completed",
           "conclusion": "success",
           "number": 8,
-          "started_at": "2026-10-03T18:38:15Z",
-          "completed_at": "2026-10-03T18:38:18Z"
+          "started_at": "2026-10-03T18:45:17Z",
+          "completed_at": "2026-10-03T18:45:22Z"
         },
         {
           "name": "Backend import smoke",
           "status": "completed",
           "conclusion": "success",
           "number": 9,
-          "started_at": "2026-10-03T18:38:18Z",
-          "completed_at": "2026-10-03T18:38:19Z"
+          "started_at": "2026-10-03T18:45:22Z",
+          "completed_at": "2026-10-03T18:45:23Z"
         },
         {
           "name": "Post Run actions/setup-python@v5",
           "status": "completed",
           "conclusion": "success",
           "number": 17,
-          "started_at": "2026-10-03T18:38:19Z",
-          "completed_at": "2026-10-03T18:38:19Z"
+          "started_at": "2026-10-03T18:45:23Z",
+          "completed_at": "2026-10-03T18:45:23Z"
         },
         {
           "name": "Post Run actions/checkout@v4",
           "status": "completed",
           "conclusion": "success",
           "number": 18,
-          "started_at": "2026-10-03T18:38:19Z",
-          "completed_at": "2026-10-03T18:38:19Z"
+          "started_at": "2026-10-03T18:45:23Z",
+          "completed_at": "2026-10-03T18:45:23Z"
         },
         {
           "name": "Complete job",
           "status": "completed",
           "conclusion": "success",
           "number": 19,
-          "started_at": "2026-10-03T18:38:19Z",
-          "completed_at": "2026-10-03T18:38:19Z"
+          "started_at": "2026-10-03T18:45:23Z",
+          "completed_at": "2026-10-03T18:45:23Z"
         }
       ],
-      "check_run_url": "https://api.github.com/repos/DashSaman/TunnelPannel/check-runs/111266770543",
+      "check_run_url": "https://api.github.com/repos/DashSaman/TunnelPannel/check-runs/111268032912",
       "labels": [
         "ubuntu-latest"
       ],
-      "runner_id": 1000014244,
-      "runner_name": "GitHub Actions 1000014244",
+      "runner_id": 1000014253,
+      "runner_name": "GitHub Actions 1000014253",
       "runner_group_id": 0,
       "runner_group_name": "GitHub Actions"
     },
     {
-      "id": 111266770650,
-      "run_id": 37144921074,
+      "id": 111268032952,
+      "run_id": 37145353414,
       "workflow_name": "portable-tests",
       "head_branch": "main",
-      "run_url": "https://api.github.com/repos/DashSaman/TunnelPannel/actions/runs/37144921074",
+      "run_url": "https://api.github.com/repos/DashSaman/TunnelPannel/actions/runs/37145353414",
       "run_attempt": 1,
-      "node_id": "CR_kwDOUa1qA88AAAAZ6AQu2g",
-      "head_sha": "76de88cdd0f90bd0979b3f45d75e342fe91e1ce1",
-      "url": "https://api.github.com/repos/DashSaman/TunnelPannel/actions/jobs/111266770650",
-      "html_url": "https://github.com/DashSaman/TunnelPannel/actions/runs/37144921074/job/111266770650",
+      "node_id": "CR_kwDOUa1qA88AAAAZ6BdxuA",
+      "head_sha": "5d88c0a4c79bc2fad64f78b0485ac5543ae1a254",
+      "url": "https://api.github.com/repos/DashSaman/TunnelPannel/actions/jobs/111268032952",
+      "html_url": "https://github.com/DashSaman/TunnelPannel/actions/runs/37145353414/job/111268032952",
       "status": "completed",
-      "conclusion": "failure",
-      "created_at": "2026-10-03T18:37:53Z",
-      "started_at": "2026-10-03T18:37:54Z",
-      "completed_at": "2026-10-03T18:38:26Z",
+      "conclusion": "success",
+      "created_at": "2026-10-03T18:44:46Z",
+      "started_at": "2026-10-03T18:44:48Z",
+      "completed_at": "2026-10-03T18:45:25Z",
       "name": "portable (3.12)",
       "steps": [
         {
@@ -280,104 +148,236 @@
           "status": "completed",
           "conclusion": "success",
           "number": 1,
-          "started_at": "2026-10-03T18:37:55Z",
-          "completed_at": "2026-10-03T18:37:56Z"
+          "started_at": "2026-10-03T18:44:48Z",
+          "completed_at": "2026-10-03T18:44:49Z"
         },
         {
           "name": "Run actions/checkout@v4",
           "status": "completed",
           "conclusion": "success",
           "number": 2,
-          "started_at": "2026-10-03T18:37:56Z",
-          "completed_at": "2026-10-03T18:37:57Z"
+          "started_at": "2026-10-03T18:44:49Z",
+          "completed_at": "2026-10-03T18:44:51Z"
         },
         {
           "name": "Run actions/setup-python@v5",
           "status": "completed",
           "conclusion": "success",
           "number": 3,
-          "started_at": "2026-10-03T18:37:57Z",
-          "completed_at": "2026-10-03T18:37:58Z"
+          "started_at": "2026-10-03T18:44:51Z",
+          "completed_at": "2026-10-03T18:44:52Z"
         },
         {
           "name": "Install dependencies",
           "status": "completed",
           "conclusion": "success",
           "number": 4,
-          "started_at": "2026-10-03T18:37:58Z",
-          "completed_at": "2026-10-03T18:38:15Z"
+          "started_at": "2026-10-03T18:44:52Z",
+          "completed_at": "2026-10-03T18:45:06Z"
         },
         {
           "name": "Ruff lint (canonical packages)",
           "status": "completed",
           "conclusion": "success",
           "number": 5,
-          "started_at": "2026-10-03T18:38:15Z",
-          "completed_at": "2026-10-03T18:38:15Z"
+          "started_at": "2026-10-03T18:45:06Z",
+          "completed_at": "2026-10-03T18:45:06Z"
         },
         {
           "name": "Canonical count + manifest invariants",
           "status": "completed",
           "conclusion": "success",
           "number": 6,
-          "started_at": "2026-10-03T18:38:15Z",
-          "completed_at": "2026-10-03T18:38:16Z"
+          "started_at": "2026-10-03T18:45:06Z",
+          "completed_at": "2026-10-03T18:45:07Z"
         },
         {
           "name": "Portable unit tests (root suite incl. API/UI/migrations)",
           "status": "completed",
-          "conclusion": "failure",
+          "conclusion": "success",
           "number": 7,
-          "started_at": "2026-10-03T18:38:16Z",
-          "completed_at": "2026-10-03T18:38:25Z"
+          "started_at": "2026-10-03T18:45:07Z",
+          "completed_at": "2026-10-03T18:45:16Z"
         },
         {
           "name": "TunnelGuard suite (linux_integration tier runs here)",
           "status": "completed",
-          "conclusion": "skipped",
+          "conclusion": "success",
           "number": 8,
-          "started_at": "2026-10-03T18:38:25Z",
-          "completed_at": "2026-10-03T18:38:25Z"
+          "started_at": "2026-10-03T18:45:16Z",
+          "completed_at": "2026-10-03T18:45:21Z"
         },
         {
           "name": "Backend import smoke",
           "status": "completed",
-          "conclusion": "skipped",
+          "conclusion": "success",
           "number": 9,
-          "started_at": "2026-10-03T18:38:25Z",
-          "completed_at": "2026-10-03T18:38:25Z"
+          "started_at": "2026-10-03T18:45:21Z",
+          "completed_at": "2026-10-03T18:45:22Z"
         },
         {
           "name": "Post Run actions/setup-python@v5",
           "status": "completed",
-          "conclusion": "skipped",
+          "conclusion": "success",
           "number": 17,
-          "started_at": "2026-10-03T18:38:25Z",
-          "completed_at": "2026-10-03T18:38:25Z"
+          "started_at": "2026-10-03T18:45:22Z",
+          "completed_at": "2026-10-03T18:45:23Z"
         },
         {
           "name": "Post Run actions/checkout@v4",
           "status": "completed",
           "conclusion": "success",
           "number": 18,
-          "started_at": "2026-10-03T18:38:25Z",
-          "completed_at": "2026-10-03T18:38:25Z"
+          "started_at": "2026-10-03T18:45:23Z",
+          "completed_at": "2026-10-03T18:45:23Z"
         },
         {
           "name": "Complete job",
           "status": "completed",
           "conclusion": "success",
           "number": 19,
-          "started_at": "2026-10-03T18:38:25Z",
-          "completed_at": "2026-10-03T18:38:25Z"
+          "started_at": "2026-10-03T18:45:23Z",
+          "completed_at": "2026-10-03T18:45:23Z"
         }
       ],
-      "check_run_url": "https://api.github.com/repos/DashSaman/TunnelPannel/check-runs/111266770650",
+      "check_run_url": "https://api.github.com/repos/DashSaman/TunnelPannel/check-runs/111268032952",
       "labels": [
         "ubuntu-latest"
       ],
-      "runner_id": 1000014246,
-      "runner_name": "GitHub Actions 1000014246",
+      "runner_id": 1000014252,
+      "runner_name": "GitHub Actions 1000014252",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111268033045,
+      "run_id": 37145353414,
+      "workflow_name": "portable-tests",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/DashSaman/TunnelPannel/actions/runs/37145353414",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOUa1qA88AAAAZ6BdyFQ",
+      "head_sha": "5d88c0a4c79bc2fad64f78b0485ac5543ae1a254",
+      "url": "https://api.github.com/repos/DashSaman/TunnelPannel/actions/jobs/111268033045",
+      "html_url": "https://github.com/DashSaman/TunnelPannel/actions/runs/37145353414/job/111268033045",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-10-03T18:44:46Z",
+      "started_at": "2026-10-03T18:44:47Z",
+      "completed_at": "2026-10-03T18:45:46Z",
+      "name": "linux-integration",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-03T18:44:48Z",
+          "completed_at": "2026-10-03T18:44:49Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-03T18:44:49Z",
+          "completed_at": "2026-10-03T18:44:51Z"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-03T18:44:51Z",
+          "completed_at": "2026-10-03T18:44:52Z"
+        },
+        {
+          "name": "Install dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-03T18:44:52Z",
+          "completed_at": "2026-10-03T18:45:03Z"
+        },
+        {
+          "name": "Full tunnelguard suite on Linux (skips lift on Linux)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-03T18:45:03Z",
+          "completed_at": "2026-10-03T18:45:09Z"
+        },
+        {
+          "name": "ShellCheck all shell scripts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-03T18:45:09Z",
+          "completed_at": "2026-10-03T18:45:11Z"
+        },
+        {
+          "name": "Bash syntax check",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-03T18:45:11Z",
+          "completed_at": "2026-10-03T18:45:11Z"
+        },
+        {
+          "name": "Install.sh acceptance (fresh → health → idempotent second run)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-03T18:45:11Z",
+          "completed_at": "2026-10-03T18:45:44Z"
+        },
+        {
+          "name": "Backup / mutate / restore round-trip",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 9,
+          "started_at": "2026-10-03T18:45:44Z",
+          "completed_at": "2026-10-03T18:45:44Z"
+        },
+        {
+          "name": "Safe uninstall keeps unrelated resources",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-03T18:45:44Z",
+          "completed_at": "2026-10-03T18:45:44Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 19,
+          "started_at": "2026-10-03T18:45:44Z",
+          "completed_at": "2026-10-03T18:45:44Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-10-03T18:45:44Z",
+          "completed_at": "2026-10-03T18:45:45Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-10-03T18:45:45Z",
+          "completed_at": "2026-10-03T18:45:45Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/DashSaman/TunnelPannel/check-runs/111268033045",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000014254,
+      "runner_name": "GitHub Actions 1000014254",
       "runner_group_id": 0,
       "runner_group_name": "GitHub Actions"
     }
