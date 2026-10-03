@@ -79,3 +79,82 @@ def require_role(*roles: str):
         return user
 
     return dep
+
+
+# ── audit trail (P13 §33) ──────────────────────────────────────────────
+
+def record_audit(session_factory, actor: str, action: str,
+                 target: str | None = None, detail: dict | None = None) -> None:
+    """Persist a security-sensitive mutation to the audit log.
+    Actor is a redacted identity (role + token hash), never a raw token."""
+    from core.models import AuditLog
+    with session_factory() as session:
+        session.add(AuditLog(actor=actor, action=action, target=target,
+                             detail=detail or {}))
+        session.commit()
+
+
+def audit_from_user(user: dict) -> str:
+    return f"{user['role']}:{user['token_hash']}"
+
+
+# ── rate limiting (P13 §33) ────────────────────────────────────────────
+
+import threading
+import time as _time
+
+
+class _Window:
+    def __init__(self):
+        self.hits: list[float] = []
+
+
+class RateLimiter:
+    """In-process sliding-window limiter keyed by (identity, bucket)."""
+
+    def __init__(self, default_limit: int = 60, default_window_s: float = 60.0):
+        self.default_limit = default_limit
+        self.default_window_s = default_window_s
+        self._windows: dict[tuple, _Window] = {}
+        self._lock = threading.Lock()
+
+    def allow(self, key: tuple, limit: int | None = None,
+              window_s: float | None = None) -> tuple[bool, float]:
+        """Returns (allowed, retry_after_s)."""
+        limit = limit or self.default_limit
+        window_s = window_s or self.default_window_s
+        now = _time.monotonic()
+        with self._lock:
+            w = self._windows.setdefault(key, _Window())
+            w.hits = [t for t in w.hits if now - t < window_s]
+            if len(w.hits) >= limit:
+                retry = window_s - (now - w.hits[0])
+                return False, max(retry, 0.0)
+            w.hits.append(now)
+            return True, 0.0
+
+
+_limiters: dict[str, RateLimiter] = {}
+_limiters_lock = threading.Lock()
+
+
+def rate_limit(bucket: str, limit: int | None = None, window_s: float | None = None):
+    """FastAPI dependency: sliding-window rate limit per authenticated
+    identity. Active by default (60 req/min); disabled only by explicit
+    TP_RATE_LIMIT=0 for local development."""
+    import os
+
+    def dep(request: Request) -> dict:
+        user = current_user(request)
+        disabled = os.environ.get("TP_RATE_LIMIT", "1") == "0"
+        if not disabled:
+            with _limiters_lock:
+                limiter = _limiters.setdefault(bucket, RateLimiter())
+            key = (bucket, user["token_hash"])
+            allowed, retry = limiter.allow(key, limit, window_s)
+            if not allowed:
+                raise HTTPException(
+                    status_code=429,
+                    detail=f"rate limit exceeded for {bucket}; retry in {retry:.0f}s")
+        return user
+    return dep

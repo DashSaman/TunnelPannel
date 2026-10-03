@@ -48,7 +48,7 @@ no duplicate tables exist.
 | T-P11-001 | P11 | T-P10-001 | Topology + true multi-hop (model, bounded search, loop prevention, per-hop state, e2e truth gate, path metrics, shared domains, routing plan, failover integration, UI) | PASS | orchestrator/topology.py · core/models.py (4 tables) · migrations/versions/7b6b540f5991 · apps/web/topology.html + web_api routes | 21 topology tests | bottleneck/weakest-hop/combined-loss metrics; e2e gate; HOP vs PATH failure; bounded search terminates on time budget; paths as FailoverGroup members · (P11 commit) |
 | T-P12-001 | P12 | T-P10-001 | Observability (lightweight sampling, rollups+retention, stability history, prometheus export) + alert engine (rules/severities/dedupe/cooldown/resolution) + Telegram bot core (authz, confirmations, redaction) | PASS | orchestrator/observability.py · orchestrator/alerting.py · apps/bot/core.py | 22 tests | 100 recurrences → 1 notification; FAST_BUT_UNSTABLE classifier; naive-datetime UTC guard · (P12 commit) |
 | T-P13-001 | P13 | — | Linux CI: portable matrix + linux-integration + install acceptance + security + release build | PASS | .github/workflows/*.yml | **CI GREEN on 7f3fa22** (portable-tests + security success; 5 real runner bugs found & fixed: os-release VERSION collision, py3.11 f-string backslash, useradd guard, backup staging ownership, IFNAMSIZ probe) | hosted-runner verified · 7f3fa22 |
-| T-P13-002 | P13 | — | Security hardening (RBAC, audit, rate limit) | TODO | — | — | — |
+| T-P13-002 | P13 | — | Security hardening: RBAC + audit log + rate limiting + surface hardening | PASS | core/security.py · apps/api/main.py · apps/api/failover_api.py · tests/unit/test_security_hardening.py (14) + test_app_rbac.py (11) | SUPER_ADMIN/OPERATOR perms ✓ · VIEWER read-only ✓ · 401/403 negative ✓ · audit rows for privileged mutations (raw tokens never stored) ✓ · 429 after 6/min with per-identity isolation + TP_RATE_LIMIT=0 dev off-switch ✓ · no-shell-endpoint ✓ · apps/ never imports executors ✓ · redaction ✓ | (this commit) |
 | T-P13-003 | P13 | — | install.sh (canonical app, Ubuntu/Debian, idempotent, generated RBAC tokens shown once, install receipt) + upgrade.sh (backup→migrate→health, rollback hint) + uninstall.sh (owned-only removal) | PASS | install.sh · scripts/{upgrade,uninstall}.sh · requirements-canonical.txt · requirements-dev.txt | bash -n all; contract test; CI install acceptance job | legacy Gen1 installer preserved in git history · (P13.2 commit) |
 | T-P13-004 | P13 | — | Canonical backup (VACUUM INTO/pg_dump, manifests, checksummed, secret-free) + restore (checksum gate, double-confirm, safety copy, health) | PASS | scripts/{backup,restore}.sh | CI backup→mutate→restore round-trip job | restore proven: mutation rolled back, health OK · (P13.2 commit) |
 | T-P14-001 | P14 | P0-P13 | Real-node validation (E2E receipts) | BLOCKED | — | — | **FRESH_REAL_NODE_CREDENTIALS_REQUIRED** — old leaked credentials are permanently untrusted (§77); operator must supply fresh disposable Linux nodes. Per §P14 gate: stop before P15. |
@@ -62,6 +62,19 @@ COMPOSITE_TEMPLATES **6** · ALIASES **6** · TOTAL_RESOLVABLE_LEGACY_IDS **88**
 Historical discrepancies resolved: "77" = Gen1 executor/catalog (subset, internally drift-free);
 "82" = registry superset; "90" = union incl. Gen3 bare names + abstract BASE/SIM;
 "22 engines" (early P2 smoke) included the `composite` pseudo-engine, excluded since.
+
+## P13 final-gate dependency remediations (pip-audit, real IDs)
+
+- tunnelguard/requirements: fastapi==0.115.6→>=0.142, starlette advisory
+  PYSEC-2026-2280/2281 → fixed by floor bump; paramiko==3.5.0→>=3.5
+  (resolves 5.x, clears PYSEC-2026-2858); pyjwt==2.10.1→>=2.14.0
+  (clears PYSEC-2026-4147); cryptography→>=48.0.1 (clears
+  GHSA-537c-gmf6-5ccf).
+- backend/requirements: fastapi→>=0.142, cryptography→>=48.0.1,
+  python-multipart→>=0.0.27 (clears PYSEC-2026-3039).
+- backend only: PYSEC-2026-1325 (ecdsa via legacy python-jose) — the ONE
+  documented temporary ignore (real ID, reason, expiry 2027-01-03 /
+  migration to canonical pyjwt; canonical app never imports it).
 
 ## Standing blockers
 

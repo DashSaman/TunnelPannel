@@ -98,7 +98,8 @@ jobs:
           ip link show tp-unrel-tst >/dev/null               # creation proven
           sudo bash scripts/uninstall.sh
           if ip link show tp-unrel-tst >/dev/null 2>&1; then
-            echo "unrelated interface survived — correct"; sudo ip link del tp-unrel-tst || true
+            echo "unrelated interface survived — correct"
+            sudo ip link del tp-unrel-tst
           else
             echo "FAIL: uninstall removed an unowned interface"; exit 1
           fi

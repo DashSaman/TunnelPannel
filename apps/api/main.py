@@ -20,13 +20,21 @@ from apps.api.benchmark_api import create_router as bench_router
 from apps.api.failover_api import create_router as failover_router
 from apps.web.web_api import create_web_router as web_router
 from core.models import Alert, Base, BenchmarkSample, FailoverGroup, Node
-from core.security import require_role
+from core.security import audit_from_user, rate_limit, record_audit, require_role
 
 DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:////var/lib/tunnelpannel/tunnelpannel.db")
 
-engine = create_engine(DATABASE_URL, connect_args=(
-    {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}))
-session_factory = sessionmaker(bind=engine)
+_shared_engine = None
+_shared_factory = None
+
+
+def _session_factory():
+    global _shared_engine, _shared_factory
+    if _shared_factory is None:
+        _shared_engine = create_engine(DATABASE_URL, connect_args=(
+            {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}))
+        _shared_factory = sessionmaker(bind=_shared_engine)
+    return _shared_factory
 
 
 def caps_from_dict(p: dict):
@@ -44,8 +52,10 @@ def demo_adapter_factory(cand):
 
 
 def create_app() -> FastAPI:
+    global session_factory
+    session_factory = _session_factory()
     app = FastAPI(title="TunnelPannel", version="0.1.0")
-    Base.metadata.create_all(engine)          # dev convenience; installer runs alembic
+    Base.metadata.create_all(session_factory.kw["bind"])  # dev convenience; installer runs alembic
 
     app.include_router(bench_router(session_factory, caps_from_dict,
                                     demo_adapter_factory))
@@ -92,7 +102,9 @@ def create_app() -> FastAPI:
         return prometheus_export(m)
 
     @app.post("/api/admin/reload")
-    def admin_reload(user=Depends(require_role("OPERATOR"))):
+    def admin_reload(user=Depends(rate_limit("admin", limit=6, window_s=60.0)),
+                     _role=Depends(require_role("OPERATOR", "SUPER_ADMIN"))):
+        record_audit(session_factory, audit_from_user(user), "admin.reload")
         return {"reloaded": True, "by": user}
 
     @app.get("/api/admin/overview")

@@ -26,11 +26,23 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: pip-audit canonical + dev requirements
+      - name: pip-audit canonical requirements (BLOCKING)
         run: |
           python -m pip install --upgrade pip pip-audit
-          pip-audit -r requirements-canonical.txt -r requirements-dev.txt \
-            --ignore-vuln GHSA-xxxx-yyyy-zzzz || true   # placeholder: tighten at P15
+          pip-audit -r requirements-canonical.txt
+      - name: pip-audit dev requirements (BLOCKING)
+        run: pip-audit -r requirements-dev.txt
+      - name: pip-audit tunnelguard requirements (BLOCKING)
+        run: pip-audit -r tunnelguard/requirements.txt
+      - name: pip-audit legacy backend requirements (BLOCKING)
+        # One documented, real-ID temporary exception (no blanket bypass):
+        #   PYSEC-2026-1325 (ecdsa) reaches us only via the LEGACY Gen1
+        #   stack's python-jose dependency; the canonical application does
+        #   not import it. Remediation: migrate Gen1 auth onto the
+        #   canonical pyjwt security layer (tracked in TASK_LEDGER
+        #   T-P13-002 notes). Expiry: remove by 2027-01-03 or when the
+        #   migration lands, whichever is first.
+        run: pip-audit -r backend/requirements.txt --ignore-vuln PYSEC-2026-1325
 
   shellcheck:
     runs-on: ubuntu-latest

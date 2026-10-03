@@ -82,12 +82,12 @@ class TestPrivilegeSeparation:
     def test_no_raw_shell_endpoint_in_api_surface(self, app):
         """§34: the public API must not expose arbitrary command execution."""
         c = TestClient(app)
-        paths = {r.path for r in app.routes}
+        paths = {getattr(r, "path", "") for r in app.routes}
         for forbidden in ("/api/exec", "/api/run", "/api/shell", "/api/cmd"):
             assert forbidden not in paths
         # every route is structured; none accepts raw command bodies
         for route in app.routes:
-            assert "command" not in getattr(route, "path", "")
+            assert "command" not in getattr(route, "path", "") or getattr(route, "path", "") == ""
 
 
 class TestPermissions:

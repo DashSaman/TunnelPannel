@@ -16,7 +16,20 @@ DATA_DIR="/var/lib/tunnelpannel"
 CONF_DIR="/etc/tunnelpannel"
 LOG_DIR="/var/log/tunnelpannel"
 SERVICE="tunnelpannel-api"
-TP_VERSION="${TUNNELPANNEL_VERSION:-main}"   # release tag, or 'main' = development mode
+# Version semantics: explicit TUNNELPANNEL_VERSION (tag|main) always wins.
+# Channel default stays 'main' (development) until the P15 release flips
+# TP_RELEASE_CHANNEL=stable; 'stable' resolves to the latest git tag.
+resolve_tp_version() {
+  local explicit="${TUNNELPANNEL_VERSION:-}"
+  local channel="${TP_RELEASE_CHANNEL:-development}"
+  if [[ -n "$explicit" ]]; then echo "$explicit"; return; fi
+  if [[ "$channel" == "stable" ]]; then
+    git -C "$INSTALL_DIR" describe --tags --abbrev=0 2>/dev/null || echo main
+  else
+    echo main
+  fi
+}
+TP_VERSION="pending"
 PORT="${TUNNELPANNEL_PORT:-8080}"
 LOG_FILE="$LOG_DIR/install.log"
 
@@ -35,8 +48,8 @@ command -v apt-get >/dev/null 2>&1 || die "only apt-based hosts are supported (U
 OS_ID="$(. /etc/os-release >/dev/null 2>&1; echo "$ID")"
 OS_VERSION_ID="$(. /etc/os-release >/dev/null 2>&1; echo "$VERSION_ID")"
 case "$OS_ID:${OS_VERSION_ID%%.*}" in
-  ubuntu:2[24]|debian:1[123]) ;;
-  *) die "unsupported distribution: $OS_ID $OS_VERSION_ID (tested: Ubuntu 22.04/24.04, Debian 11/12)" ;;
+  ubuntu:22|ubuntu:24|debian:12) ;;   # exactly what CI/real testing covers
+  *) die "unsupported distribution: $OS_ID $OS_VERSION_ID (tested: Ubuntu 22.04/24.04, Debian 12)" ;;
 esac
 ARCH="$(dpkg --print-architecture)"
 note "detected $OS_ID $OS_VERSION_ID ($ARCH); target version: $TP_VERSION"
@@ -62,6 +75,8 @@ else
   note "cloning into $INSTALL_DIR"
   git clone -q "$REPO" "$INSTALL_DIR"
 fi
+TP_VERSION="$(resolve_tp_version)"
+note "resolved install version: $TP_VERSION"
 git -C "$INSTALL_DIR" checkout -q "$TP_VERSION"
 GIT_SHA="$(git -C "$INSTALL_DIR" rev-parse HEAD)"
 note "checked out $TP_VERSION @ ${GIT_SHA:0:12}"

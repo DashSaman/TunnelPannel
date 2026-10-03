@@ -12,6 +12,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from core.models import Event, FailoverGroup, FailoverMember
+from core.security import record_audit
 from orchestrator.failover import (FailoverController, FailoverPolicy,
                                    MemberRuntime, diversity_recommendation,
                                    diversity_warnings)
@@ -96,6 +97,10 @@ def create_router(session_factory) -> APIRouter:
             session.commit()
             group_id = group.id
 
+        record_audit(session_factory, "operator", "failover.group_create",
+                     target=body.name,
+                     detail={"members": [m.candidate for m in body.members],
+                             "mode": body.mode})
         policy = FailoverPolicy(mode=body.mode, preemption=body.preemption,
                                 failure_threshold=body.failure_threshold,
                                 recovery_threshold=body.recovery_threshold,
@@ -188,6 +193,8 @@ def create_router(session_factory) -> APIRouter:
             _group(group_id, session)
             c = _controller(group_id, session)
             c.pin(None if body.member_index is None else f"m{body.member_index}")
+            record_audit(session_factory, "operator", "failover.pin",
+                         target=group_id, detail={"member_index": body.member_index})
             return {"pinned": c.pinned}
 
     @router.post("/{group_id}/maintenance")
@@ -199,6 +206,8 @@ def create_router(session_factory) -> APIRouter:
             if key not in c.members:
                 raise HTTPException(404, "no such member")
             c.set_maintenance(key, body.on)
+            record_audit(session_factory, "operator", "failover.maintenance",
+                         target=group_id, detail={"member": key, "on": body.on})
             receipt = c.decide()
             return {"maintenance": {k: m.maintenance for k, m in c.members.items()},
                     "switch": dataclasses.asdict(receipt) if receipt else None}
