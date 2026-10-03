@@ -1,5 +1,4 @@
 """Composed-chain benchmarking tests (P9) — unit_portable tier."""
-import dataclasses
 
 import pytest
 from sqlalchemy import create_engine, select

@@ -9,7 +9,7 @@ receipts recorded.
 import pytest
 
 from orchestrator.failover import (FailoverController, FailoverPolicy,
-                                   MemberRuntime, RepairDecision, decide_repair,
+                                   MemberRuntime, decide_repair,
                                    diversity_recommendation, diversity_warnings,
                                    propagate_underlay_failure)
 

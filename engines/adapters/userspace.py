@@ -11,7 +11,7 @@ from __future__ import annotations
 import dataclasses
 from typing import Callable
 
-from engines.adapters import EngineAdapter, PlanAction, ProbeResult, register_adapter
+from engines.adapters import ProbeResult, register_adapter
 from engines.adapters.kernel import CommandPlanAdapter
 
 RUN_DIR = "/run/tunnelpannel"

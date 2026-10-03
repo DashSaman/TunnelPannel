@@ -1,0 +1,51 @@
+name: build-release
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run portable suite before packaging
+        env:
+          APP_SECRET_KEY: ci
+          JWT_SECRET_KEY: ci
+          DATABASE_URL: sqlite:///./ci.db
+          REDIS_URL: redis://localhost:6379/0
+          PYTHONPATH: backend
+        run: |
+          pip install -r requirements-dev.txt
+          pytest tests/ -q
+      - name: Build source artifact + checksums
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          git archive --format=tar.gz --prefix="tunnelpannel-${TAG}/" -o "tunnelpannel-${TAG}.tar.gz" HEAD
+          sha256sum "tunnelpannel-${TAG}.tar.gz" > "tunnelpannel-${TAG}.tar.gz.sha256"
+          python - << 'PYEOF'
+          import json, pathlib, subprocess
+          tag = subprocess.run(["git", "describe", "--tags"], capture_output=True, text=True).stdout.strip()
+          sha = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+          migrations = sorted((pathlib.Path("migrations/versions").glob("*.py")))
+          info = {
+              "product": "TunnelPannel", "tag": tag, "commit": sha,
+              "artifact": f"tunnelpannel-{tag}.tar.gz",
+              "schema_migrations": [m.name for m in migrations],
+              "generated_at": __import__("datetime").datetime.utcnow().isoformat() + "Z",
+          }
+          pathlib.Path("release-meta.json").write_text(json.dumps(info, indent=2))
+          PYEOF
+      - name: Attach artifacts to the tag release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            tunnelpannel-*.tar.gz
+            tunnelpannel-*.tar.gz.sha256
+            release-meta.json

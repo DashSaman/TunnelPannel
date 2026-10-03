@@ -6,7 +6,7 @@ legacy mapping, topological install/reverse rollback, maturity,
 warnings, deterministic plans, resource preflight, service CRUD.
 """
 import pytest
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
 
@@ -16,7 +16,7 @@ from orchestrator.composition import (ABSOLUTE_CEILING, ChainSpec, CompSpec,
                                       check_placement, check_repeatability,
                                       classify_maturity, detect_cycle,
                                       descendants, plan_mtu, resolve_pair,
-                                      topological_order, validate_chain,
+                                      validate_chain,
                                       all_legacy_composite_specs,
                                       create_chain, delete_chain,
                                       get_chain_spec, legacy_composite_to_spec,
@@ -428,4 +428,3 @@ class TestService:
         assert {"gre", "frp", "gost", "xray"} <= engines
 
 
-from orchestrator.composition import HARD_AUTO_LIMIT  # noqa: E402  (used above)

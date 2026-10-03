@@ -199,7 +199,6 @@ class ResourceManager:
         if alloc is None or alloc.released_at is not None:
             return
         self._assert_owned(alloc)
-        from core.models import ResourceAllocation as RA  # local import avoids cycle noise
         import datetime as dt
         alloc.released_at = dt.datetime.now(dt.timezone.utc)
         self.session.flush()

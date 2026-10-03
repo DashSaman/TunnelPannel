@@ -37,17 +37,23 @@ class ReleaseAssetTests(unittest.TestCase):
         self.assertIn("export-production-state.sh", english)
         self.assertIn("restore-production-state.sh", english)
 
-    def test_root_installer_has_safety_and_private_repo_support(self):
+    def test_root_installer_has_safety_and_public_repo_support(self):
         installer = (ROOT / "install.sh").read_text()
+        # canonical installer contract (P13): public repo (no token),
+        # generated secrets, localhost bind, version-aware, idempotent,
+        # honest distro gate, migrations + real health check
         for marker in [
-            "ALLOW_EXISTING_NETAUTO",
-            "GITHUB_TOKEN",
-            "docker compose --env-file .env config",
+            "DashSaman/TunnelPannel",
             "openssl rand",
             "127.0.0.1",
-            "DashSaman/TunnelPannel",
+            "TUNNELPANNEL_VERSION",
+            "alembic",
+            "unsupported distribution",
+            "/health",
         ]:
             self.assertIn(marker, installer)
+        self.assertIn("set -Eeuo pipefail", installer)
+        self.assertNotIn("GITHUB_TOKEN=", installer)
         self.assertNotRegex(
             installer,
             re.compile(r"https://[^\n]*\$\{?GITHUB_TOKEN\}?@github\.com"),

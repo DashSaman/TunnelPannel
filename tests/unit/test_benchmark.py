@@ -5,7 +5,6 @@ timeouts, cancellation, always-attempted cleanup + ORPHANED_RESOURCE,
 raw-metrics-before-score, honest p99, hard gates, deterministic ranking,
 sanitized receipts.
 """
-import dataclasses
 import threading
 import time
 
@@ -14,10 +13,8 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
 from core.models import Base, BenchmarkReceipt, BenchmarkRun, BenchmarkSample, Event, Job
-from engines.adapters.kernel import FakeExecutor
-from engines.adapters import PlanAction, ProbeResult
-from orchestrator.benchmarking import (P99_MIN_SAMPLES, NodeCaps, PROFILES,
-                                       Candidate, resolve_candidates, rtt_stats)
+from engines.adapters import ProbeResult
+from orchestrator.benchmarking import (P99_MIN_SAMPLES, NodeCaps, Candidate, resolve_candidates, rtt_stats)
 from orchestrator.benchmarking.runner import BenchmarkRunner, sanitize
 from orchestrator.benchmarking.scoring import (DEFAULT_WEIGHTS, assert_weights,
                                                rank, score_sample)

@@ -10,19 +10,16 @@ from __future__ import annotations
 
 import dataclasses
 import datetime as dt
-import threading
 
 from sqlalchemy.orm import Session
 
 from core.catalog import CATALOG
 from core.models import BenchmarkReceipt, BenchmarkRun, BenchmarkSample, Event
 from engines.manifests import load_all
-from orchestrator.benchmarking.scoring import ScoredSample, score_sample
+from orchestrator.benchmarking.scoring import score_sample
 from orchestrator.composition import (ChainSpec, CompSpec, build_plan,
                                       chain_depth, topological_order,
                                       validate_chain)
-from orchestrator.composition.service import resource_preflight
-from orchestrator.resources import ResourceManager
 
 from .runner import sanitize
 

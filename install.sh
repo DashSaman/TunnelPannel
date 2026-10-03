@@ -1,172 +1,174 @@
 #!/usr/bin/env bash
+# TunnelPannel one-line installer (P13 §39-§47)
+#
+#   curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/main/install.sh | sudo bash
+#
+# Installs the CANONICAL application (apps/api + web UI). The legacy
+# Gen1 docker stack remains available in git history and deploy/.
+# Idempotent: a second run reconciles (keeps config/secrets/DB), never resets.
+# Supported/tested: Ubuntu LTS (22.04/24.04), Debian stable (11/12).
+# Other distributions fail honestly instead of guessing.
 set -Eeuo pipefail
 
-REPO_SLUG="${REPO_SLUG:-DashSaman/TunnelPannel}"
-BRANCH="${BRANCH:-main}"
-INSTALL_DIR="${INSTALL_DIR:-/opt/tunnelpannel}"
-WEB_BIND_PORT="${WEB_BIND_PORT:-18080}"
-APP_BASE_URL="${APP_BASE_URL:-http://127.0.0.1:${WEB_BIND_PORT}}"
-ADMIN_USERNAME="${ADMIN_USERNAME:-admin}"
-ALLOW_EXISTING_NETAUTO="${ALLOW_EXISTING_NETAUTO:-0}"
-MARKER_FILE=".tunnelpannel-managed"
+REPO="https://github.com/DashSaman/TunnelPannel"
+INSTALL_DIR="/opt/tunnelpannel"
+DATA_DIR="/var/lib/tunnelpannel"
+CONF_DIR="/etc/tunnelpannel"
+LOG_DIR="/var/log/tunnelpannel"
+SERVICE="tunnelpannel-api"
+VERSION="${TUNNELPANNEL_VERSION:-main}"      # release tag, or 'main' = development mode
+PORT="${TUNNELPANNEL_PORT:-8080}"
+LOG_FILE="$LOG_DIR/install.log"
 
-log() { printf '\n[ TunnelPannel ] %s\n' "$*"; }
-die() { printf '\n[ TunnelPannel ] ERROR: %s\n' "$*" >&2; exit 1; }
+mkdir -p "$LOG_DIR"
+exec > >(tee -a "$LOG_FILE") 2>&1
+STAGE="preflight"
+note() { printf '\n[install] [%s] %s\n' "$STAGE" "$*"; }
+die()  { printf '\n[install] FAILED at stage %s: %s\n  log: %s\n  safe retry: fix the cause and re-run install.sh (idempotent)\n' \
+              "$STAGE" "$*" "$LOG_FILE" >&2; exit 1; }
+trap 'die "unexpected error (see log above)"' ERR
 
-if [[ ${EUID} -ne 0 ]]; then
-  die "Run as root (for a piped install use: curl ... | sudo -E bash)."
-fi
+# ── 1. OS / arch detection ────────────────────────────────────────────
+STAGE="detect-os"
+[[ $EUID -eq 0 ]] || die "run as root (curl … | sudo bash)"
+command -v apt-get >/dev/null 2>&1 || die "only apt-based hosts are supported (Ubuntu LTS / Debian stable); refusing to guess"
+. /etc/os-release
+case "$ID:${VERSION_ID%%.*}" in
+  ubuntu:2[24]|debian:1[123]) ;;
+  *) die "unsupported distribution: $ID $VERSION_ID (tested: Ubuntu 22.04/24.04, Debian 11/12)" ;;
+esac
+ARCH="$(dpkg --print-architecture)"
+note "detected $ID $VERSION_ID ($ARCH); target version: $VERSION"
 
-if ! command -v apt-get >/dev/null 2>&1; then
-  die "This installer currently supports apt-based Ubuntu/Debian hosts."
-fi
-
+# ── 2. base dependencies ──────────────────────────────────────────────
+STAGE="base-deps"
 export DEBIAN_FRONTEND=noninteractive
-log "Installing base prerequisites"
 apt-get update -qq
-apt-get install -y -qq ca-certificates curl git openssl >/dev/null
+apt-get install -y -qq ca-certificates curl git python3 python3-venv python3-pip sqlite3 openssl sudo >/dev/null
 
-if ! command -v docker >/dev/null 2>&1; then
-  log "Docker is not installed; installing Docker Engine"
-  tmp_docker="$(mktemp)"
-  curl -fsSL https://get.docker.com -o "$tmp_docker"
-  sh "$tmp_docker"
-  rm -f "$tmp_docker"
+# ── 3. service user + directories (idempotent) ─────────────────────────
+STAGE="user-dirs"
+id -r tunnelpannel >/dev/null 2>&1 || useradd --system --home "$DATA_DIR" --shell /usr/sbin/nologin tunnelpannel
+mkdir -p "$INSTALL_DIR" "$DATA_DIR" "$CONF_DIR" "$LOG_DIR"
+chown -R tunnelpannel:tunnelpannel "$DATA_DIR" "$LOG_DIR"
+
+# ── 4. obtain source ──────────────────────────────────────────────────
+STAGE="fetch-source"
+if [[ -d "$INSTALL_DIR/.git" ]]; then
+  note "existing installation detected — reconciling (config/secrets/DB preserved)"
+  git -C "$INSTALL_DIR" fetch --tags --quiet
+else
+  note "cloning into $INSTALL_DIR"
+  git clone -q "$REPO" "$INSTALL_DIR"
+fi
+git -C "$INSTALL_DIR" checkout -q "$VERSION"
+GIT_SHA="$(git -C "$INSTALL_DIR" rev-parse HEAD)"
+note "checked out $VERSION @ ${GIT_SHA:0:12}"
+
+# ── 5. secrets + runtime config (generated once, preserved on reruns) ──
+STAGE="config"
+if [[ ! -f "$CONF_DIR/tunnelpannel.env" ]]; then
+  SECRET_KEY="$(openssl rand -hex 32)"
+  gen_hash() { printf '%s' "$1" | sha256sum | cut -d' ' -f1; }
+  # initial tokens printed to the operator ONCE, stored only as hashes
+  V_TOKEN="tp-viewer-$(openssl rand -hex 8)"
+  O_TOKEN="tp-operator-$(openssl rand -hex 8)"
+  A_TOKEN="tp-admin-$(openssl rand -hex 8)"
+  cat > "$CONF_DIR/tunnelpannel.env" <<ENV
+# TunnelPannel runtime configuration — generated $(date -u +%FT%TZ). NEVER COMMIT.
+DATABASE_URL=sqlite:///$DATA_DIR/tunnelpannel.db
+TP_SECRET_KEY=$SECRET_KEY
+TP_RBAC_TOKENS=VIEWER:$(gen_hash "$V_TOKEN"),OPERATOR:$(gen_hash "$O_TOKEN"),SUPER_ADMIN:$(gen_hash "$A_TOKEN")
+TP_BOT_ALLOWED_IDS=
+TELEGRAM_BOT_TOKEN=
+ENV
+  chmod 640 "$CONF_DIR/tunnelpannel.env"
+  chown root:tunnelpannel "$CONF_DIR/tunnelpannel.env"
+  SHOW_TOKENS=1
+else
+  note "existing configuration preserved (no secrets regenerated)"
+  SHOW_TOKENS=0
 fi
 
-if ! docker compose version >/dev/null 2>&1; then
-  die "Docker Compose v2 is required but was not installed successfully."
-fi
+# ── 6. python environment ─────────────────────────────────────────────
+STAGE="python-env"
+python3 -m venv "$INSTALL_DIR/.venv"
+"$INSTALL_DIR/.venv/bin/pip" install -q --upgrade pip
+"$INSTALL_DIR/.venv/bin/pip" install -q -r "$INSTALL_DIR/requirements-canonical.txt"
 
-existing_netauto="$(docker ps -a --format '{{.Names}}' 2>/dev/null | grep -E '^netauto-' || true)"
-if [[ -n "$existing_netauto" && ! -f "$INSTALL_DIR/$MARKER_FILE" && "$ALLOW_EXISTING_NETAUTO" != "1" ]]; then
-  printf '%s\n' "$existing_netauto" >&2
-  die "Existing netauto-* containers detected. Refusing to touch them. Set ALLOW_EXISTING_NETAUTO=1 only if you intentionally own that stack."
-fi
-
-script_dir=""
-if [[ -n "${BASH_SOURCE[0]:-}" && -f "${BASH_SOURCE[0]}" ]]; then
-  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-fi
-
-project_dir=""
-if [[ -n "$script_dir" && -f "$script_dir/docker-compose.yml" && -d "$script_dir/backend" ]]; then
-  project_dir="$script_dir"
-  log "Using the local repository checkout at $project_dir"
-fi
-
-clone_with_optional_token() {
-  local destination="$1"
-  local repo_url="https://github.com/${REPO_SLUG}.git"
-  local -a auth_args=()
-  if [[ -n "${GITHUB_TOKEN:-}" ]]; then
-    local basic
-    basic="$(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 | tr -d '\n')"
-    auth_args=(-c "http.extraHeader=Authorization: Basic ${basic}")
-  fi
-  GIT_TERMINAL_PROMPT=0 git "${auth_args[@]}" clone --depth 1 --branch "$BRANCH" "$repo_url" "$destination" || {
-    rm -rf "$destination"
-    die "Unable to clone ${REPO_SLUG}. For a private repository export GITHUB_TOKEN with Contents:read access."
-  }
-  git -C "$destination" remote set-url origin "$repo_url"
+# ── 7. database migrations ────────────────────────────────────────────
+STAGE="migrate"
+set -a; . "$CONF_DIR/tunnelpannel.env"; set +a
+mkdir -p "$DATA_DIR"; chown -R tunnelpannel:tunnelpannel "$DATA_DIR"
+run_migrations() {
+  sudo -u tunnelpannel env DATABASE_URL="$DATABASE_URL" \
+    "$INSTALL_DIR/.venv/bin/python" -m alembic -c "$INSTALL_DIR/alembic.ini" upgrade head
 }
+cd "$INSTALL_DIR"
+run_migrations || die "alembic migration failed"
+SCHEMA_REV="$(sudo -u tunnelpannel env DATABASE_URL="$DATABASE_URL" \
+  "$INSTALL_DIR/.venv/bin/python" -m alembic -c "$INSTALL_DIR/alembic.ini" current 2>/dev/null | tail -1 | awk '{print $1}')"
+note "schema at revision: ${SCHEMA_REV:-unknown}"
 
-if [[ -z "$project_dir" ]]; then
-  if [[ -e "$INSTALL_DIR" && ! -d "$INSTALL_DIR/.git" ]]; then
-    die "$INSTALL_DIR already exists and is not a Git checkout. Choose another INSTALL_DIR."
-  fi
-  if [[ ! -d "$INSTALL_DIR/.git" ]]; then
-    log "Cloning $REPO_SLUG"
-    mkdir -p "$(dirname "$INSTALL_DIR")"
-    clone_with_optional_token "$INSTALL_DIR"
-  else
-    log "Using existing managed checkout at $INSTALL_DIR"
-  fi
-  project_dir="$INSTALL_DIR"
-fi
+# ── 8. systemd service (idempotent: enable + restart, never duplicate) ─
+STAGE="service"
+cat > "/etc/systemd/system/$SERVICE.service" <<UNIT
+[Unit]
+Description=TunnelPannel canonical API + web UI
+After=network-online.target
 
-cd "$project_dir"
-touch "$MARKER_FILE"
-chmod 600 "$MARKER_FILE"
-chmod +x install.sh scripts/*.sh 2>/dev/null || true
+[Service]
+Type=simple
+User=tunnelpannel
+Group=tunnelpannel
+WorkingDirectory=$INSTALL_DIR
+EnvironmentFile=$CONF_DIR/tunnelpannel.env
+ExecStart=$INSTALL_DIR/.venv/bin/uvicorn apps.api.main:app --host 127.0.0.1 --port $PORT
+Restart=on-failure
+RestartSec=3
 
-set_env() {
-  local key="$1" value="$2" escaped
-  escaped="$(printf '%s' "$value" | sed 's/[&|]/\\&/g')"
-  if grep -q "^${key}=" .env; then
-    sed -i "s|^${key}=.*|${key}=${escaped}|" .env
-  else
-    printf '%s=%s\n' "$key" "$value" >> .env
-  fi
+[Install]
+WantedBy=multi-user.target
+UNIT
+systemctl daemon-reload
+systemctl enable "$SERVICE" >/dev/null 2>&1
+systemctl restart "$SERVICE"
+
+# ── 9. health check (real HTTP probe, not just 'systemctl active') ────
+STAGE="health"
+HEALTH=""
+for i in $(seq 1 30); do
+  if curl -fsS "http://127.0.0.1:$PORT/health" >/dev/null 2>&1; then HEALTH=ok; break; fi
+  sleep 1
+done
+[[ "$HEALTH" == "ok" ]] || die "service did not become healthy on :$PORT (inspect: journalctl -u $SERVICE -n 50)"
+
+# ── 10. install receipt (no secrets) ──────────────────────────────────
+STAGE="receipt"
+cat > "$DATA_DIR/install-receipt.json" <<RECEIPT
+{
+  "product": "TunnelPannel",
+  "version": "$VERSION",
+  "commit": "$GIT_SHA",
+  "install_path": "$INSTALL_DIR",
+  "config_path": "$CONF_DIR/tunnelpannel.env",
+  "data_path": "$DATA_DIR",
+  "schema_revision": "$SCHEMA_REV",
+  "services": ["$SERVICE"],
+  "port": $PORT,
+  "health": "ok",
+  "installed_at": "$(date -u +%FT%TZ)"
 }
+RECEIPT
+chown tunnelpannel:tunnelpannel "$DATA_DIR/install-receipt.json"
 
-fresh_env=0
-if [[ ! -f .env ]]; then
-  cp .env.example .env
-  fresh_env=1
+note "installation complete — API/UI: http://127.0.0.1:$PORT (health OK)"
+if [[ "$SHOW_TOKENS" == "1" ]]; then
+  echo
+  echo "  FIRST-RUN RBAC TOKENS (shown ONCE — only their hashes are stored):"
+  echo "    VIEWER:      $V_TOKEN"
+  echo "    OPERATOR:    $O_TOKEN"
+  echo "    SUPER_ADMIN: $A_TOKEN"
+  echo "  Store these now; they cannot be recovered from the server."
+  echo "  This notice appears only on first install (reruns never reset credentials)."
 fi
-chmod 600 .env
-
-if [[ "$fresh_env" == "1" ]]; then
-  log "Generating local application secrets"
-  app_secret="$(openssl rand -hex 48)"
-  jwt_secret="$(openssl rand -hex 48)"
-  postgres_password="$(openssl rand -hex 24)"
-  redis_password="$(openssl rand -hex 24)"
-  bot_internal_key="$(openssl rand -hex 32)"
-  generated_admin_password="${ADMIN_PASSWORD:-$(openssl rand -hex 16)}"
-
-  set_env APP_ENV production
-  set_env APP_BASE_URL "$APP_BASE_URL"
-  set_env WEB_BIND_PORT "$WEB_BIND_PORT"
-  set_env APP_SECRET_KEY "$app_secret"
-  set_env JWT_SECRET_KEY "$jwt_secret"
-  set_env POSTGRES_PASSWORD "$postgres_password"
-  set_env DATABASE_URL "postgresql+psycopg://netauto:${postgres_password}@postgres:5432/netauto"
-  set_env REDIS_PASSWORD "$redis_password"
-  set_env REDIS_URL "redis://:${redis_password}@redis:6379/0"
-  set_env BOOTSTRAP_ADMIN_USERNAME "$ADMIN_USERNAME"
-  set_env BOOTSTRAP_ADMIN_PASSWORD "$generated_admin_password"
-  set_env BOT_INTERNAL_API_KEY "$bot_internal_key"
-fi
-
-required_keys=(APP_SECRET_KEY JWT_SECRET_KEY POSTGRES_PASSWORD DATABASE_URL REDIS_PASSWORD REDIS_URL BOOTSTRAP_ADMIN_USERNAME BOT_INTERNAL_API_KEY)
-for key in "${required_keys[@]}"; do
-  value="$(grep -E "^${key}=" .env | tail -1 | cut -d= -f2- || true)"
-  if [[ -z "$value" || "$value" == CHANGE_ME* ]]; then
-    die "$key is missing or still uses a CHANGE_ME placeholder in $project_dir/.env"
-  fi
-done
-
-log "Validating Docker Compose configuration"
-docker compose --env-file .env config >/dev/null
-
-log "Building and starting only the TunnelPannel stack"
-docker compose --env-file .env up -d --build
-
-log "Waiting for the local health endpoint"
-health_url="http://127.0.0.1:${WEB_BIND_PORT}/api/v1/health"
-healthy=0
-for _ in $(seq 1 60); do
-  if curl -fsS "$health_url" >/dev/null 2>&1; then
-    healthy=1
-    break
-  fi
-  sleep 2
-done
-
-if [[ "$healthy" != "1" ]]; then
-  docker compose ps || true
-  die "Stack started but $health_url did not become healthy. Check: docker compose logs --tail=200"
-fi
-
-log "Installation completed successfully"
-printf 'Directory : %s\n' "$project_dir"
-printf 'Web/API   : http://127.0.0.1:%s\n' "$WEB_BIND_PORT"
-printf 'Health    : %s\n' "$health_url"
-printf 'Admin user: %s\n' "$ADMIN_USERNAME"
-if [[ "$fresh_env" == "1" ]]; then
-  printf 'Admin pass: %s\n' "$generated_admin_password"
-  printf '%s\n' 'Save this password now; it is not printed again by the installer.'
-fi
-printf '%s\n' 'The web port is bound to localhost by default. Add your own HTTPS reverse proxy when ready.'

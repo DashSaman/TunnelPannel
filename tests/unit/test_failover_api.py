@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from apps.api.failover_api import create_router
-from core.models import Base, Event, FailoverGroup, FailoverMember
+from core.models import Base, Event, FailoverMember
 
 pytestmark = pytest.mark.unit_portable
 

@@ -1,0 +1,102 @@
+name: portable-tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  portable:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+      - name: Ruff lint (canonical packages)
+        run: ruff check core engines orchestrator apps tests migrations scripts --select E9,F63,F7,F82,F401
+      - name: Canonical count + manifest invariants
+        run: |
+          python scripts/generate_catalog_inventory.py
+          python scripts/generate_engine_status.py
+          python scripts/generate_engine_profile_matrix.py
+      - name: Portable unit tests (root suite incl. API/UI/migrations)
+        env:
+          APP_SECRET_KEY: ci
+          JWT_SECRET_KEY: ci
+          DATABASE_URL: sqlite:///./ci.db
+          REDIS_URL: redis://localhost:6379/0
+          PYTHONPATH: backend
+        run: pytest tests/ -q
+      - name: TunnelGuard suite (linux_integration tier runs here)
+        run: |
+          pip install -r tunnelguard/requirements.txt httpx
+          cd tunnelguard && python -m pytest -q
+      - name: Backend import smoke
+        env:
+          APP_SECRET_KEY: ci
+          JWT_SECRET_KEY: ci
+          DATABASE_URL: sqlite:///./ci2.db
+          REDIS_URL: redis://localhost:6379/0
+        run: cd backend && python -m pytest app/tests -q
+
+  linux-integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+      - name: Full tunnelguard suite on Linux (skips lift on Linux)
+        run: |
+          pip install -r tunnelguard/requirements.txt httpx
+          cd tunnelguard && python -m pytest -q
+      - name: ShellCheck all shell scripts
+        uses: ludeeus/action-shellcheck@master
+        with:
+          severity: error
+          ignore_paths: deploy .netauto-master ops
+      - name: Bash syntax check
+        run: |
+          bash -n install.sh
+          for f in scripts/*.sh; do bash -n "$f"; done
+      - name: Install.sh acceptance (fresh → health → idempotent second run)
+        run: |
+          sudo bash install.sh
+          curl -fsS http://127.0.0.1:8080/health
+          sudo bash install.sh            # second run: reconcile, no reset
+          curl -fsS http://127.0.0.1:8080/health
+          systemctl is-active tunnelpannel-api
+          test "$(systemctl list-units 'tunnelpannel-api*' --no-legend | wc -l)" -eq 1
+          sudo cat /var/lib/tunnelpannel/install-receipt.json
+      - name: Backup / mutate / restore round-trip
+        run: |
+          set -a; . /etc/tunnelpannel/tunnelpannel.env; set +a
+          sudo bash scripts/backup.sh /tmp/tp-backup.tar.gz
+          sudo -u tunnelpannel sqlite3 /var/lib/tunnelpannel/tunnelpannel.db \
+            "INSERT INTO nodes (id,name,host,created_at,updated_at) VALUES ('zz','zz','zz',datetime('now'),datetime('now'))"
+          RESTORE_TUNNELPANNEL=YES_I_UNDERSTAND sudo -E bash scripts/restore.sh /tmp/tp-backup.tar.gz
+          COUNT=$(sudo -u tunnelpannel sqlite3 /var/lib/tunnelpannel/tunnelpannel.db 'select count(*) from nodes where id="zz"')
+          test "$COUNT" -eq 0              # mutation rolled back by restore
+          curl -fsS http://127.0.0.1:8080/health
+      - name: Safe uninstall keeps unrelated resources
+        run: |
+          sudo ip tuntap add mode tun dev tp-unrelated-test || true
+          sudo bash scripts/uninstall.sh
+          if ip link show tp-unrelated-test >/dev/null 2>&1; then
+            echo "unrelated interface survived — correct"; sudo ip link del tp-unrelated-test || true
+          else
+            echo "FAIL: uninstall removed an unowned interface"; exit 1
+          fi
+          test ! -d /opt/tunnelpannel

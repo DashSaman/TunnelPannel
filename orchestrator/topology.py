@@ -8,13 +8,10 @@ metrics (no naive averaging) and bounded search.
 """
 from __future__ import annotations
 
-import dataclasses
 import itertools
 from dataclasses import dataclass, field
 
-from engines.manifests import load_all
-from orchestrator.composition import (ChainSpec, build_plan, chain_depth,
-                                      topological_order, validate_chain)
+from orchestrator.composition import (ChainSpec, build_plan, validate_chain)
 
 
 # ── model ──────────────────────────────────────────────────────────────

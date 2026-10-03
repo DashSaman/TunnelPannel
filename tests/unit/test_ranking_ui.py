@@ -4,13 +4,13 @@ import time
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from apps.api.benchmark_api import create_router as bench_router
 from apps.web.web_api import create_web_router
-from core.models import Base, Deployment, Job, Node
+from core.models import Base, Node
 from engines.adapters import ProbeResult
 from orchestrator.benchmarking import NodeCaps
 

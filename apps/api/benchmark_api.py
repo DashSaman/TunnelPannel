@@ -13,7 +13,6 @@ background thread recorded as a Job row (finite states, timeouts).
 from __future__ import annotations
 
 import threading
-import uuid
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel

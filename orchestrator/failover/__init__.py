@@ -9,7 +9,6 @@ failure-domain warnings and decision receipts (AUTO/OPERATOR/EMERGENCY).
 """
 from __future__ import annotations
 
-import dataclasses
 from dataclasses import dataclass, field
 
 # ── configuration ──────────────────────────────────────────────────────

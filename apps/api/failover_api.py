@@ -7,7 +7,6 @@ fed by probes; production probe wiring arrives with P12 monitoring.
 from __future__ import annotations
 
 import dataclasses
-import datetime as dt
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -55,7 +54,6 @@ def _spec_for(candidate: str) -> ChainSpec | None:
     """Diversity analysis works on chain specs; single routes map to a
     one-component spec so shared-underlay math still applies."""
     if candidate.startswith("chain:"):
-        from orchestrator.composition.service import get_chain_spec
         return None                                 # resolved by caller with session
     from core.catalog import CATALOG
     try:

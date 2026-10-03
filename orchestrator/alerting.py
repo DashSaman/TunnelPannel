@@ -4,7 +4,6 @@ per dedupe key — recurring failures update it instead of storming
 Telegram."""
 from __future__ import annotations
 
-import dataclasses
 from dataclasses import dataclass, field
 
 INFO, WARNING, CRITICAL = "INFO", "WARNING", "CRITICAL"

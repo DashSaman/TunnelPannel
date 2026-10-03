@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import os
 
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import PlainTextResponse
 from sqlalchemy import create_engine, func, select
 from sqlalchemy.orm import sessionmaker
@@ -20,7 +20,7 @@ from apps.api.benchmark_api import create_router as bench_router
 from apps.api.failover_api import create_router as failover_router
 from apps.web.web_api import create_web_router as web_router
 from core.models import Alert, Base, BenchmarkSample, FailoverGroup, Node
-from core.security import ViewerOnly, require_role
+from core.security import require_role
 
 DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:////var/lib/tunnelpannel/tunnelpannel.db")
 

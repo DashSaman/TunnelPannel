@@ -6,7 +6,6 @@ a deterministic, documented ranking order.
 """
 from __future__ import annotations
 
-import dataclasses
 from dataclasses import dataclass
 
 DEFAULT_WEIGHTS = {

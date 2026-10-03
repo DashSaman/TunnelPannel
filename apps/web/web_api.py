@@ -86,7 +86,7 @@ def _topology_payload(session):
 
 
 def create_topology_routes(router, session_factory):
-    from core.models import TopologyDB, TopologyEdgeDB, TopologyPathDB
+    from core.models import TopologyEdgeDB, TopologyPathDB
     from orchestrator.topology import (Topology, TopologyEdge, TopologyPath,
                                        PathSearchConfig, candidate_paths,
                                        derive_path_metrics, path_score,

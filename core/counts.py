@@ -27,13 +27,8 @@ class CanonicalCounts:
     total_resolvable_legacy_ids: int
 
     def as_dict(self) -> dict:
-        return dataclasses.asdict(self) if hasattr(self, "__dataclass_fields__") \
-            else {"legacy_method_ids": self.legacy_method_ids,
-                  "canonical_engines": self.canonical_engines,
-                  "engine_profiles": self.engine_profiles,
-                  "composite_templates": self.composite_templates,
-                  "aliases": self.aliases,
-                  "total_resolvable_legacy_ids": self.total_resolvable_legacy_ids}
+        import dataclasses
+        return dataclasses.asdict(self)
 
 
 def compute_counts(catalog=CATALOG) -> CanonicalCounts:

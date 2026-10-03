@@ -6,10 +6,10 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
 
-from apps.bot.core import BotCore, NotAuthorized, ConfirmationRequired, redact
+from apps.bot.core import BotCore, NotAuthorized, ConfirmationRequired
 from core.models import Base, HealthSample
 from orchestrator.alerting import (CRITICAL, WARNING, AlertEngine,
-                                   AlertThresholds, evaluate_health,
+                                   evaluate_health,
                                    failover_alerts)
 from orchestrator.observability import (apply_retention, prometheus_export,
                                          record_sample, rollup,

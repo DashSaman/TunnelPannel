@@ -3,7 +3,6 @@
 Covers the mandatory P4 matrix: port/interface/subnet/table/fwmark
 collisions, release, idempotent reservation, ownership enforcement.
 """
-import datetime as dt
 
 import pytest
 from sqlalchemy import create_engine

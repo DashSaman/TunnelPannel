@@ -17,7 +17,7 @@ from typing import Callable
 from sqlalchemy.orm import Session
 
 from core.models import (BenchmarkReceipt, BenchmarkRun, BenchmarkSample,
-                         Deployment, Event, Job, ResourceAllocation)
+                         Deployment, Event, Job)
 from orchestrator.resources import ResourceManager
 
 from . import DEFAULT_MAX_PARALLEL, PROFILES, Candidate

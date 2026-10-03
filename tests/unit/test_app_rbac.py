@@ -1,6 +1,5 @@
 """Canonical app + RBAC tests (P13 §33, §34) — unit_portable tier."""
 import hashlib
-import os
 
 import pytest
 from fastapi.testclient import TestClient

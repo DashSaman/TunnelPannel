@@ -6,12 +6,10 @@ iperf/deep tests stay on-demand or scheduled-maintenance only.
 """
 from __future__ import annotations
 
-import dataclasses
 import datetime as dt
 import statistics
 from dataclasses import dataclass
 
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from core.models import HealthSample
