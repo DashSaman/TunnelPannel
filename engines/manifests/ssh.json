@@ -1,0 +1,56 @@
+{
+  "id": "ssh",
+  "name": "SSH forwarding/tun",
+  "family": "proxy",
+  "version": "1.0",
+  "maturity": "STANDARD",
+  "layer": "L4",
+  "transport": [
+    "tcp"
+  ],
+  "requires": [
+    "TCP_STREAM"
+  ],
+  "provides": [
+    "TCP_STREAM",
+    "SOCKS5_PROXY",
+    "REVERSE_TCP",
+    "TUN_INTERFACE",
+    "TAP_INTERFACE"
+  ],
+  "required_binaries": [
+    "ssh"
+  ],
+  "required_kernel_modules": [],
+  "required_privileges": "none (tun profiles need root)",
+  "ports": {
+    "tcp": 22
+  },
+  "ip_protocols": [],
+  "ipv4": true,
+  "ipv6": true,
+  "tun": true,
+  "tap": true,
+  "socks": true,
+  "http_proxy": false,
+  "reverse": true,
+  "raw_ip": false,
+  "encryption": "SSH ChaCha20/AES",
+  "mtu_overhead": 40,
+  "can_be_overlay": true,
+  "can_be_underlay": true,
+  "can_be_nested": true,
+  "repeatable": true,
+  "known_limitations": [
+    "per-connection TCP overhead; tun profiles need PermitTun"
+  ],
+  "verification": "REAL_PAIR_VERIFIED",
+  "supported_os": [
+    "linux"
+  ],
+  "supported_arch": [
+    "amd64",
+    "arm64"
+  ],
+  "implementation_status": "IMPLEMENTED"
+}

@@ -1,0 +1,54 @@
+{
+  "id": "ipip",
+  "name": "IPIP",
+  "family": "kernel",
+  "version": "1.0",
+  "maturity": "STANDARD",
+  "layer": "L3",
+  "transport": [
+    "ip"
+  ],
+  "requires": [
+    "RAW_IP"
+  ],
+  "provides": [
+    "L3_INTERFACE"
+  ],
+  "required_binaries": [
+    "ip"
+  ],
+  "required_kernel_modules": [
+    "ipip"
+  ],
+  "required_privileges": "CAP_NET_ADMIN",
+  "ports": {},
+  "ip_protocols": [
+    4
+  ],
+  "ipv4": true,
+  "ipv6": false,
+  "tun": false,
+  "tap": false,
+  "socks": false,
+  "http_proxy": false,
+  "reverse": false,
+  "raw_ip": false,
+  "encryption": "none",
+  "mtu_overhead": 20,
+  "can_be_overlay": true,
+  "can_be_underlay": true,
+  "can_be_nested": true,
+  "repeatable": true,
+  "known_limitations": [
+    "IPv4 only; no encryption"
+  ],
+  "verification": "REAL_PAIR_VERIFIED",
+  "supported_os": [
+    "linux"
+  ],
+  "supported_arch": [
+    "amd64",
+    "arm64"
+  ],
+  "implementation_status": "IMPLEMENTED"
+}

@@ -1,0 +1,63 @@
+{
+  "id": "vti",
+  "name": "VTI (IPsec)",
+  "family": "vpn",
+  "version": "1.0",
+  "maturity": "ADVANCED",
+  "layer": "L3",
+  "transport": [
+    "ip"
+  ],
+  "requires": [
+    "RAW_IP"
+  ],
+  "provides": [
+    "L3_INTERFACE",
+    "TUN_INTERFACE"
+  ],
+  "required_binaries": [
+    "ip",
+    "swanctl"
+  ],
+  "required_kernel_modules": [
+    "vti",
+    "xfrm"
+  ],
+  "required_privileges": "CAP_NET_ADMIN",
+  "ports": {
+    "udp": [
+      500,
+      4500
+    ]
+  },
+  "ip_protocols": [
+    50,
+    51
+  ],
+  "ipv4": true,
+  "ipv6": true,
+  "tun": true,
+  "tap": false,
+  "socks": false,
+  "http_proxy": false,
+  "reverse": false,
+  "raw_ip": false,
+  "encryption": "IPsec ESP (AES-GCM)",
+  "mtu_overhead": 70,
+  "can_be_overlay": true,
+  "can_be_underlay": true,
+  "can_be_nested": true,
+  "repeatable": false,
+  "known_limitations": [
+    "requires strongSwan IKE on both ends"
+  ],
+  "verification": "REAL_PAIR_VERIFIED",
+  "supported_os": [
+    "linux"
+  ],
+  "supported_arch": [
+    "amd64",
+    "arm64"
+  ],
+  "implementation_status": "IMPLEMENTED"
+}

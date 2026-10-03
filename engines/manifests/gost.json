@@ -1,0 +1,64 @@
+{
+  "id": "gost",
+  "name": "GOST",
+  "family": "proxy",
+  "version": "3.0",
+  "maturity": "STANDARD",
+  "layer": "L4",
+  "transport": [
+    "tcp",
+    "udp"
+  ],
+  "requires": [
+    "TCP_STREAM",
+    "UDP_DATAGRAM"
+  ],
+  "provides": [
+    "TCP_STREAM",
+    "UDP_DATAGRAM",
+    "SOCKS5_PROXY",
+    "HTTP_PROXY",
+    "TUN_INTERFACE",
+    "TAP_INTERFACE",
+    "REVERSE_TCP",
+    "REVERSE_UDP",
+    "TLS",
+    "QUIC"
+  ],
+  "required_binaries": [
+    "gost"
+  ],
+  "required_kernel_modules": [],
+  "required_privileges": "none (tun/tap profiles need CAP_NET_ADMIN)",
+  "ports": {
+    "tcp": "any",
+    "udp": "any"
+  },
+  "ip_protocols": [],
+  "ipv4": true,
+  "ipv6": true,
+  "tun": true,
+  "tap": true,
+  "socks": true,
+  "http_proxy": true,
+  "reverse": true,
+  "raw_ip": false,
+  "encryption": "TLS optional",
+  "mtu_overhead": 15,
+  "can_be_overlay": true,
+  "can_be_underlay": true,
+  "can_be_nested": true,
+  "repeatable": true,
+  "known_limitations": [
+    "15 profiles differ in transport; tun/tap profiles need root"
+  ],
+  "verification": "REAL_PAIR_VERIFIED",
+  "supported_os": [
+    "linux"
+  ],
+  "supported_arch": [
+    "amd64",
+    "arm64"
+  ],
+  "implementation_status": "IMPLEMENTED"
+}

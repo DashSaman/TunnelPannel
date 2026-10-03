@@ -1,0 +1,57 @@
+{
+  "id": "paqet",
+  "name": "PAQET",
+  "family": "custom",
+  "version": "1.x",
+  "maturity": "EXPERIMENTAL",
+  "layer": "L4",
+  "transport": [
+    "tcp",
+    "udp"
+  ],
+  "requires": [
+    "TCP_STREAM",
+    "UDP_DATAGRAM"
+  ],
+  "provides": [
+    "TCP_STREAM",
+    "UDP_DATAGRAM",
+    "SOCKS5_PROXY"
+  ],
+  "required_binaries": [
+    "paqet"
+  ],
+  "required_kernel_modules": [],
+  "required_privileges": "root (raw socket modes)",
+  "ports": {
+    "tcp": "any",
+    "udp": "any"
+  },
+  "ip_protocols": [],
+  "ipv4": true,
+  "ipv6": false,
+  "tun": false,
+  "tap": false,
+  "socks": true,
+  "http_proxy": false,
+  "reverse": false,
+  "raw_ip": false,
+  "encryption": "custom",
+  "mtu_overhead": 10,
+  "can_be_overlay": true,
+  "can_be_underlay": true,
+  "can_be_nested": true,
+  "repeatable": true,
+  "known_limitations": [
+    "needs NOTRACK iptables rules; root required"
+  ],
+  "verification": "LAB_VERIFIED",
+  "supported_os": [
+    "linux"
+  ],
+  "supported_arch": [
+    "amd64",
+    "arm64"
+  ],
+  "implementation_status": "IMPLEMENTED"
+}

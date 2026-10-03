@@ -1,0 +1,56 @@
+{
+  "id": "hedioum",
+  "name": "Hedioum",
+  "family": "custom",
+  "version": "1.x",
+  "maturity": "EXPERIMENTAL",
+  "layer": "L3",
+  "transport": [
+    "tcp"
+  ],
+  "requires": [
+    "TCP_STREAM"
+  ],
+  "provides": [
+    "L3_INTERFACE",
+    "TUN_INTERFACE",
+    "SOCKS5_PROXY"
+  ],
+  "required_binaries": [
+    "hedioum"
+  ],
+  "required_kernel_modules": [
+    "tun"
+  ],
+  "required_privileges": "CAP_NET_ADMIN",
+  "ports": {
+    "tcp": "any"
+  },
+  "ip_protocols": [],
+  "ipv4": true,
+  "ipv6": false,
+  "tun": true,
+  "tap": false,
+  "socks": true,
+  "http_proxy": false,
+  "reverse": false,
+  "raw_ip": false,
+  "encryption": "custom",
+  "mtu_overhead": 60,
+  "can_be_overlay": true,
+  "can_be_underlay": true,
+  "can_be_nested": true,
+  "repeatable": true,
+  "known_limitations": [
+    "pairing-token flow; pool_socks profile differs"
+  ],
+  "verification": "LAB_VERIFIED",
+  "supported_os": [
+    "linux"
+  ],
+  "supported_arch": [
+    "amd64",
+    "arm64"
+  ],
+  "implementation_status": "IMPLEMENTED"
+}

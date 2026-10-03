@@ -1,0 +1,55 @@
+{
+  "id": "gre",
+  "name": "GRE",
+  "family": "kernel",
+  "version": "1.0",
+  "maturity": "STANDARD",
+  "layer": "L3",
+  "transport": [
+    "ip"
+  ],
+  "requires": [
+    "RAW_IP"
+  ],
+  "provides": [
+    "L3_INTERFACE",
+    "RAW_IP"
+  ],
+  "required_binaries": [
+    "ip"
+  ],
+  "required_kernel_modules": [
+    "ip_gre"
+  ],
+  "required_privileges": "CAP_NET_ADMIN",
+  "ports": {},
+  "ip_protocols": [
+    47
+  ],
+  "ipv4": true,
+  "ipv6": true,
+  "tun": false,
+  "tap": false,
+  "socks": false,
+  "http_proxy": false,
+  "reverse": false,
+  "raw_ip": true,
+  "encryption": "none",
+  "mtu_overhead": 24,
+  "can_be_overlay": true,
+  "can_be_underlay": true,
+  "can_be_nested": true,
+  "repeatable": true,
+  "known_limitations": [
+    "no encryption by itself"
+  ],
+  "verification": "REAL_PAIR_VERIFIED",
+  "supported_os": [
+    "linux"
+  ],
+  "supported_arch": [
+    "amd64",
+    "arm64"
+  ],
+  "implementation_status": "IMPLEMENTED"
+}

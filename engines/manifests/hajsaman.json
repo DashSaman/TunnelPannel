@@ -1,0 +1,58 @@
+{
+  "id": "hajsaman",
+  "name": "HajSaman",
+  "family": "custom",
+  "version": "1.x",
+  "maturity": "EXPERIMENTAL",
+  "layer": "L3",
+  "transport": [
+    "ip"
+  ],
+  "requires": [
+    "RAW_IP"
+  ],
+  "provides": [
+    "L3_INTERFACE",
+    "TUN_INTERFACE"
+  ],
+  "required_binaries": [
+    "hajsaman"
+  ],
+  "required_kernel_modules": [
+    "sit",
+    "wireguard"
+  ],
+  "required_privileges": "CAP_NET_ADMIN",
+  "ports": {
+    "udp": "any"
+  },
+  "ip_protocols": [
+    41
+  ],
+  "ipv4": true,
+  "ipv6": true,
+  "tun": true,
+  "tap": false,
+  "socks": false,
+  "http_proxy": false,
+  "reverse": false,
+  "raw_ip": false,
+  "encryption": "slot-dependent",
+  "mtu_overhead": 40,
+  "can_be_overlay": true,
+  "can_be_underlay": true,
+  "can_be_nested": true,
+  "repeatable": true,
+  "known_limitations": [
+    "slot-based custom transport"
+  ],
+  "verification": "LAB_VERIFIED",
+  "supported_os": [
+    "linux"
+  ],
+  "supported_arch": [
+    "amd64",
+    "arm64"
+  ],
+  "implementation_status": "IMPLEMENTED"
+}

@@ -1,0 +1,62 @@
+{
+  "id": "frp",
+  "name": "FRP",
+  "family": "forwarder",
+  "version": "0.6x",
+  "maturity": "STANDARD",
+  "layer": "L4",
+  "transport": [
+    "tcp",
+    "udp",
+    "quic"
+  ],
+  "requires": [
+    "TCP_STREAM",
+    "UDP_DATAGRAM"
+  ],
+  "provides": [
+    "TCP_STREAM",
+    "UDP_DATAGRAM",
+    "REVERSE_TCP",
+    "REVERSE_UDP",
+    "TLS",
+    "QUIC"
+  ],
+  "required_binaries": [
+    "frpc",
+    "frps"
+  ],
+  "required_kernel_modules": [],
+  "required_privileges": "none",
+  "ports": {
+    "tcp": 7000,
+    "udp": 7000
+  },
+  "ip_protocols": [],
+  "ipv4": true,
+  "ipv6": true,
+  "tun": false,
+  "tap": false,
+  "socks": false,
+  "http_proxy": false,
+  "reverse": true,
+  "raw_ip": false,
+  "encryption": "TLS optional",
+  "mtu_overhead": 10,
+  "can_be_overlay": true,
+  "can_be_underlay": true,
+  "can_be_nested": true,
+  "repeatable": true,
+  "known_limitations": [
+    "server/client roles must be provisioned as a pair"
+  ],
+  "verification": "REAL_PAIR_VERIFIED",
+  "supported_os": [
+    "linux"
+  ],
+  "supported_arch": [
+    "amd64",
+    "arm64"
+  ],
+  "implementation_status": "IMPLEMENTED"
+}

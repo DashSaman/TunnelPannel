@@ -1,0 +1,55 @@
+{
+  "id": "wstunnel",
+  "name": "wstunnel",
+  "family": "forwarder",
+  "version": "2.x",
+  "maturity": "STANDARD",
+  "layer": "L4",
+  "transport": [
+    "tcp"
+  ],
+  "requires": [
+    "TCP_STREAM"
+  ],
+  "provides": [
+    "TCP_STREAM",
+    "UDP_DATAGRAM",
+    "SOCKS5_PROXY",
+    "TLS"
+  ],
+  "required_binaries": [
+    "wstunnel"
+  ],
+  "required_kernel_modules": [],
+  "required_privileges": "none",
+  "ports": {
+    "tcp": "any"
+  },
+  "ip_protocols": [],
+  "ipv4": true,
+  "ipv6": true,
+  "tun": false,
+  "tap": false,
+  "socks": true,
+  "http_proxy": false,
+  "reverse": false,
+  "raw_ip": false,
+  "encryption": "wss/TLS",
+  "mtu_overhead": 10,
+  "can_be_overlay": true,
+  "can_be_underlay": true,
+  "can_be_nested": true,
+  "repeatable": true,
+  "known_limitations": [
+    "UDP-over-WS adds overhead and jitter"
+  ],
+  "verification": "REAL_PAIR_VERIFIED",
+  "supported_os": [
+    "linux"
+  ],
+  "supported_arch": [
+    "amd64",
+    "arm64"
+  ],
+  "implementation_status": "IMPLEMENTED"
+}

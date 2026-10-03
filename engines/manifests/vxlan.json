@@ -1,0 +1,55 @@
+{
+  "id": "vxlan",
+  "name": "VXLAN",
+  "family": "kernel",
+  "version": "1.0",
+  "maturity": "STANDARD",
+  "layer": "L2",
+  "transport": [
+    "udp"
+  ],
+  "requires": [
+    "UDP_DATAGRAM"
+  ],
+  "provides": [
+    "L2_INTERFACE",
+    "TAP_INTERFACE"
+  ],
+  "required_binaries": [
+    "ip"
+  ],
+  "required_kernel_modules": [
+    "vxlan"
+  ],
+  "required_privileges": "CAP_NET_ADMIN",
+  "ports": {
+    "udp": 4789
+  },
+  "ip_protocols": [],
+  "ipv4": true,
+  "ipv6": true,
+  "tun": false,
+  "tap": true,
+  "socks": false,
+  "http_proxy": false,
+  "reverse": false,
+  "raw_ip": false,
+  "encryption": "none",
+  "mtu_overhead": 50,
+  "can_be_overlay": true,
+  "can_be_underlay": true,
+  "can_be_nested": true,
+  "repeatable": true,
+  "known_limitations": [
+    "default port 4789 must be open"
+  ],
+  "verification": "REAL_PAIR_VERIFIED",
+  "supported_os": [
+    "linux"
+  ],
+  "supported_arch": [
+    "amd64",
+    "arm64"
+  ],
+  "implementation_status": "IMPLEMENTED"
+}

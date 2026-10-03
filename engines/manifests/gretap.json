@@ -1,0 +1,55 @@
+{
+  "id": "gretap",
+  "name": "GRETAP",
+  "family": "kernel",
+  "version": "1.0",
+  "maturity": "STANDARD",
+  "layer": "L2",
+  "transport": [
+    "ethernet"
+  ],
+  "requires": [
+    "RAW_IP"
+  ],
+  "provides": [
+    "L2_INTERFACE",
+    "TAP_INTERFACE"
+  ],
+  "required_binaries": [
+    "ip"
+  ],
+  "required_kernel_modules": [
+    "ip_gre"
+  ],
+  "required_privileges": "CAP_NET_ADMIN",
+  "ports": {},
+  "ip_protocols": [
+    47
+  ],
+  "ipv4": true,
+  "ipv6": false,
+  "tun": false,
+  "tap": true,
+  "socks": false,
+  "http_proxy": false,
+  "reverse": false,
+  "raw_ip": false,
+  "encryption": "none",
+  "mtu_overhead": 38,
+  "can_be_overlay": true,
+  "can_be_underlay": true,
+  "can_be_nested": true,
+  "repeatable": true,
+  "known_limitations": [
+    "bridging requires care on some distros"
+  ],
+  "verification": "REAL_PAIR_VERIFIED",
+  "supported_os": [
+    "linux"
+  ],
+  "supported_arch": [
+    "amd64",
+    "arm64"
+  ],
+  "implementation_status": "IMPLEMENTED"
+}

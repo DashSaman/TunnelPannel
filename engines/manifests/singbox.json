@@ -1,0 +1,61 @@
+{
+  "id": "singbox",
+  "name": "sing-box",
+  "family": "proxy",
+  "version": "1.x",
+  "maturity": "STANDARD",
+  "layer": "L4",
+  "transport": [
+    "tcp",
+    "udp",
+    "quic"
+  ],
+  "requires": [
+    "TCP_STREAM",
+    "UDP_DATAGRAM"
+  ],
+  "provides": [
+    "TCP_STREAM",
+    "UDP_DATAGRAM",
+    "SOCKS5_PROXY",
+    "TUN_INTERFACE",
+    "TLS",
+    "QUIC"
+  ],
+  "required_binaries": [
+    "sing-box"
+  ],
+  "required_kernel_modules": [],
+  "required_privileges": "none (tun profile needs CAP_NET_ADMIN)",
+  "ports": {
+    "tcp": "any",
+    "udp": "any"
+  },
+  "ip_protocols": [],
+  "ipv4": true,
+  "ipv6": true,
+  "tun": true,
+  "tap": false,
+  "socks": true,
+  "http_proxy": false,
+  "reverse": false,
+  "raw_ip": false,
+  "encryption": "protocol-dependent",
+  "mtu_overhead": 20,
+  "can_be_overlay": true,
+  "can_be_underlay": true,
+  "can_be_nested": true,
+  "repeatable": true,
+  "known_limitations": [
+    "tun profile needs root; protocol matrix is wide"
+  ],
+  "verification": "REAL_PAIR_VERIFIED",
+  "supported_os": [
+    "linux"
+  ],
+  "supported_arch": [
+    "amd64",
+    "arm64"
+  ],
+  "implementation_status": "IMPLEMENTED"
+}
