@@ -10,10 +10,9 @@ import hashlib
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine, select
+from sqlalchemy import select
 
-from apps.api.main import create_app
-from core.models import AuditLog, Base
+from core.models import AuditLog
 
 pytestmark = pytest.mark.unit_portable
 
