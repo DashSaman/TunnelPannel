@@ -79,6 +79,10 @@ class TestSelection:
     def test_selection_roundtrip_on_job(self, client):
         job = client.post("/benchmarks", json={"node_a": CAPS, "node_b": CAPS,
                                                "profile": "QUICK"}).json()["job_id"]
+        for _ in range(100):                      # wait for terminal state first —
+            if client.get(f"/benchmarks/{job}").json()["state"] in ("PASS", "FAILED"):
+                break                              # selection happens on finished runs
+            time.sleep(0.05)
         r = client.post(f"/benchmarks/{job}/selection",
                         json={"selected": ["WIREGUARD", "GOST_GRPC"]})
         assert r.json() == {"job_id": job, "saved": 2}
