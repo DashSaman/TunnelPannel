@@ -1,0 +1,50 @@
+# P14 real-node validation config — TEMPLATE (credential-free)
+#
+# Copy to a LOCAL gitignored file (e.g. tests/e2e/p14-nodes.yml), fill in
+# FRESH credentials for your disposable nodes, and run:
+#   python scripts/p14_validate.py --config tests/e2e/p14-nodes.yml preflight
+#
+# RULES:
+# - NEVER commit the real copy; it is gitignored (tests/e2e/p14-nodes.yml).
+# - Use NEW credentials only. Anything that ever appeared in git history
+#   is permanently untrusted.
+# - key_path points to a private key ON THIS MACHINE — never paste keys.
+# - known_hosts is a local pin file; mutations refuse to run until the
+#   host key of every node is pinned there.
+
+run:
+  candidate: v0.9.0-rc1            # label for docs/releases/<candidate>/
+  profiles: [QUICK, NORMAL]
+  stages: [preflight, inventory, quick, normal, profiles, compositions,
+           failover, multihop, install, upgrade, backup-restore, uninstall]
+
+nodes:
+  node-a:
+    host: REPLACE_ME               # fresh disposable host (Ubuntu 22.04/24.04 / Debian 12)
+    port: 22
+    user: root
+    key_path: ~/.ssh/p14_node_a_ed25519        # LOCAL private key (never commit)
+    known_hosts: ~/.ssh/p14_known_hosts        # local pin file
+    alias: node-a
+  node-b:
+    host: REPLACE_ME
+    port: 22
+    user: root
+    key_path: ~/.ssh/p14_node_b_ed25519
+    known_hosts: ~/.ssh/p14_known_hosts
+    alias: node-b
+  # node-c (OPTIONAL — only needed for real multi-hop; omit when absent:
+  # the multihop stage records BLOCKED_NEEDS_THIRD_NODE and everything
+  # else still runs)
+  # node-c:
+  #   host: REPLACE_ME
+  #   port: 22
+  #   user: root
+  #   key_path: ~/.ssh/p14_node_c_ed25519
+  #   known_hosts: ~/.ssh/p14_known_hosts
+  #   alias: node-c
+
+settings:
+  profile_budget_s: 180            # per-profile wall-clock cap
+  max_hops: 3
+  install_port: 8080

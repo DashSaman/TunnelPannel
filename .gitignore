@@ -35,3 +35,9 @@ system/
 *.key
 *.pem
 *.dump
+
+# P14 real-node validation — local credentials & runtime artifacts (NEVER commit)
+tests/e2e/p14-nodes.yml
+tests/e2e/p14-nodes.*.yml
+!tests/e2e/p14-nodes.example.yml
+artifacts/
