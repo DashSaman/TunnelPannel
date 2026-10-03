@@ -288,9 +288,13 @@ def upgrade() -> None:
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('released_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['deployment_id'], ['deployments.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('kind', 'key', 'node_id', name='uq_resource')
+    sa.PrimaryKeyConstraint('id')
     )
+    # live-row uniqueness only (partial index; released rows remain as history)
+    op.create_index('uq_resource_live', 'resource_allocations',
+                    ['kind', 'key', 'node_id'], unique=True,
+                    postgresql_where=sa.text('released_at IS NULL'),
+                    sqlite_where=sa.text('released_at IS NULL'))
     op.create_table('scores',
     sa.Column('id', sa.String(length=32), nullable=False),
     sa.Column('candidate', sa.String(length=120), nullable=False),

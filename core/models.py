@@ -14,8 +14,8 @@ from __future__ import annotations
 import datetime as dt
 import uuid
 
-from sqlalchemy import (JSON, Boolean, DateTime, Float, ForeignKey, Integer,
-                        String, Text, UniqueConstraint)
+from sqlalchemy import (JSON, Boolean, DateTime, Float, ForeignKey, Index, Integer,
+                        String, Text, UniqueConstraint, text)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -183,9 +183,17 @@ class DeploymentRevision(Base):
 
 
 class ResourceAllocation(Base):
-    """Ownership ledger: every shared resource TunnelPannel creates is recorded here."""
+    """Ownership ledger: every shared resource TunnelPannel creates is recorded here.
+
+    Uniqueness applies only to LIVE rows (released allocations stay in the
+    ledger as history), expressed as a partial unique index.
+    """
     __tablename__ = "resource_allocations"
-    __table_args__ = (UniqueConstraint("kind", "key", "node_id", name="uq_resource"),)
+    __table_args__ = (
+        Index("uq_resource_live", "kind", "key", "node_id", unique=True,
+              postgresql_where=text("released_at IS NULL"),
+              sqlite_where=text("released_at IS NULL")),
+    )
     id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
     deployment_id: Mapped[str] = mapped_column(ForeignKey("deployments.id", ondelete="CASCADE"))
     chain_id: Mapped[str | None] = mapped_column(String(32))
