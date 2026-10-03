@@ -150,15 +150,23 @@ class HedioumAdapter(CommandPlanAdapter):
         ps, pc = int(p.get("server_port", 14111)), int(p.get("client_port", 14112))
         mode = "tun" if self.params.get("profile", self.profile_id) == "tun" else "pool_socks"
         iface = p.get("interface", "tp-hedioum")
-        return f"""mode: {mode}
-server:
-  listen: 0.0.0.0:{ps}
-  token_file: {CONF_DIR}/hedioum-token
-client:
-  server: {self.node_b['host'] if self.node_b else '127.0.0.1'}:{ps}
-  token: {p.get('pairing_token', 'REPLACE_ME')}
-  {('tun: ' + iface + chr(10) + '  routes: [\"' + p.get('subnet', '10.175.0.0/24') + '\"]') if mode == 'tun' else ('socks_listen: 127.0.0.1:' + str(pc))}
-"""
+        host = self.node_b["host"] if self.node_b else "127.0.0.1"
+        token = p.get("pairing_token", "REPLACE_ME")
+        if mode == "tun":
+            subnet = p.get("subnet", "10.175.0.0/24")
+            tail = "  tun: %s\n  routes: ['%s']" % (iface, subnet)
+        else:
+            tail = "  socks_listen: 127.0.0.1:%d" % pc
+        return (
+            "mode: %s\n"
+            "server:\n"
+            "  listen: 0.0.0.0:%d\n"
+            "  token_file: %s/hedioum-token\n"
+            "client:\n"
+            "  server: %s:%d\n"
+            "  token: %s\n"
+            "%s\n" % (mode, ps, CONF_DIR, host, ps, token, tail)
+        )
 
     def commands(self) -> list[tuple[str, str]]:
         conf = f"{CONF_DIR}/hedioum-{self.params.get('profile', self.profile_id)}.yml"

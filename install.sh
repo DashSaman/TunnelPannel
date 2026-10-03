@@ -49,7 +49,7 @@ apt-get install -y -qq ca-certificates curl git python3 python3-venv python3-pip
 
 # ── 3. service user + directories (idempotent) ─────────────────────────
 STAGE="user-dirs"
-id -r tunnelpannel >/dev/null 2>&1 || useradd --system --home "$DATA_DIR" --shell /usr/sbin/nologin tunnelpannel
+id tunnelpannel >/dev/null 2>&1 || useradd --system --home "$DATA_DIR" --shell /usr/sbin/nologin tunnelpannel
 mkdir -p "$INSTALL_DIR" "$DATA_DIR" "$CONF_DIR" "$LOG_DIR"
 chown -R tunnelpannel:tunnelpannel "$DATA_DIR" "$LOG_DIR"
 
