@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TunnelPannel — Benchmark &amp; Ranking</title>
+<style>
+:root{--navy:#14324f;--teal:#0e7490;--ok:#1a7f4e;--bad:#b03a34;--warn:#96690f;--line:#d8dfe6;--soft:#f6f8fa}
+*{box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,sans-serif;margin:0;color:#1c2b3a;background:#fff}
+header{background:var(--navy);color:#fff;padding:14px 22px;display:flex;gap:18px;align-items:center}
+header h1{font-size:17px;margin:0}
+header .badge{background:rgba(255,255,255,.14);border-radius:12px;padding:2px 10px;font-size:12px}
+main{padding:20px 22px;max-width:1500px}
+.controls{display:flex;gap:12px;align-items:end;flex-wrap:wrap;background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:14px}
+.controls label{display:flex;flex-direction:column;font-size:12px;color:#54636f;gap:4px}
+select,button{font:inherit}
+select{padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;min-width:180px}
+button{background:var(--teal);color:#fff;border:0;border-radius:6px;padding:9px 22px;font-weight:600;cursor:pointer}
+button:disabled{opacity:.5;cursor:default}
+button.secondary{background:#fff;color:var(--navy);border:1px solid var(--navy)}
+.progress{margin:16px 0;display:none;align-items:center;gap:14px;font-size:13px;color:#54636f}
+.progress .bar{flex:1;height:9px;background:var(--line);border-radius:5px;overflow:hidden}
+.progress .bar i{display:block;height:100%;background:var(--teal);width:0;transition:width .3s}
+.counts span{margin-right:10px}
+.counts b.p{color:var(--ok)} .counts b.f{color:var(--bad)} .counts b.b{color:var(--warn)}
+table{border-collapse:collapse;width:100%;font-size:12.5px;margin-top:14px}
+th{background:var(--navy);color:#fff;padding:7px 8px;text-align:left;position:sticky;top:0;cursor:pointer;white-space:nowrap}
+th:hover{background:#1f4a6e}
+td{border-bottom:1px solid var(--line);padding:6px 8px;white-space:nowrap}
+tbody tr:hover{background:var(--soft)}
+tr.PASS td.status{color:var(--ok);font-weight:600}
+tr.DEGRADED td.status{color:var(--warn);font-weight:600}
+tr.FAILED td.status, tr.TIMED_OUT td.status{color:var(--bad);font-weight:600}
+tr.BLOCKED td.status, tr.INCOMPATIBLE td.status{color:#7a6a99;font-weight:600}
+.score{font-weight:700}
+.reason{max-width:260px;overflow:hidden;text-overflow:ellipsis}
+details summary{cursor:pointer;color:var(--teal)}
+.toolbar{display:flex;gap:10px;margin-top:10px;align-items:center}
+.toolbar .sel{font-size:13px;color:#54636f}
+.error{color:var(--bad);font-weight:600;display:none;margin-top:10px}
+.empty{color:#7c8894;font-style:italic;margin-top:22px;display:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>TunnelPannel — Benchmark &amp; Ranking</h1>
+  <span class="badge" id="mode-badge">idle</span>
+</header>
+<main>
+  <div class="controls">
+    <label>Source node <select id="node-a"></select></label>
+    <label>Destination node <select id="node-b"></select></label>
+    <label>Profile
+      <select id="profile">
+        <option value="QUICK">QUICK — fast screening</option>
+        <option value="NORMAL" selected>NORMAL — default ranking</option>
+        <option value="DEEP">DEEP — explicit request only</option>
+      </select>
+    </label>
+    <button id="run">Benchmark</button>
+    <button id="cancel" class="secondary" disabled>Cancel</button>
+  </div>
+
+  <div class="progress" id="progress">
+    <span id="prog-label">0 / 0</span>
+    <div class="bar"><i id="prog-fill"></i></div>
+    <div class="counts" id="counts"></div>
+  </div>
+  <div class="error" id="error"></div>
+  <p class="empty" id="empty">No results yet — pick two nodes and run a benchmark.</p>
+
+  <table id="results" style="display:none">
+    <thead><tr id="head-row"></tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+
+  <div class="toolbar" id="toolbar" style="display:none">
+    <button id="save-selection">Save selection for failover</button>
+    <span class="sel" id="sel-info">Selection is input to Failover Groups (P10) — deploying is a separate explicit action.</span>
+  </div>
+</main>
+<script>
+"use strict";
+const COLUMNS = [
+  ["rank","#"], ["select","Select"], ["candidate","Method"], ["status","Status"],
+  ["score","Score"], ["rtt_avg","RTT avg"], ["rtt_p50","p50"], ["rtt_p95","p95"],
+  ["jitter","Jitter"], ["loss_pct","Loss"], ["throughput_mbps","Throughput"],
+  ["stability_ratio","Stability"], ["reconnect_s","Recovery"], ["cpu_pct","CPU"],
+  ["ram_mb","RAM"], ["reason","Reason"], ["details","Details"],
+];
+let jobId = null, sortKey = null, sortDir = -1, selected = new Set();
+
+function $(id){return document.getElementById(id)}
+
+function setBadge(t){$("mode-badge").textContent = t}
+
+async function loadNodes(){
+  // nodes come from the canonical API in production; fallback demo pair
+  const a = $("node-a"), b = $("node-b");
+  for (const sel of [a, b]) sel.innerHTML = "";
+  try {
+    const r = await fetch("/api/nodes");
+    const nodes = await r.json();
+    for (const n of nodes) {
+      a.add(new Option(n.name, n.id)); b.add(new Option(n.name, n.id));
+    }
+    if (nodes.length > 1) b.selectedIndex = 1;
+  } catch {
+    a.add(new Option("node-a", "node-a")); b.add(new Option("node-b", "node-b"));
+  }
+}
+
+function renderHead(){
+  const tr = $("head-row"); tr.innerHTML = "";
+  for (const [key, label] of COLUMNS){
+    const th = document.createElement("th");
+    th.textContent = label + (sortKey === key ? (sortDir < 0 ? " ▾" : " ▴") : "");
+    th.onclick = () => {
+      if (sortKey === key) sortDir = -sortDir; else { sortKey = key; sortDir = -1; }
+      renderHead(); renderRows();
+    };
+    tr.appendChild(th);
+  }
+}
+
+function fmt(v, unit){
+  if (v === null || v === undefined) return "—";
+  return typeof v === "number" ? (Math.round(v * 100) / 100) + (unit || "") : v;
+}
+
+function renderRows(){
+  const rows = JSON.parse($("tbody").dataset.rows || "[]");
+  const sorted = sortKey ? [...rows].sort((x, y) => {
+    const a = x.metrics?.[sortKey] ?? x[sortKey], b = y.metrics?.[sortKey] ?? y[sortKey];
+    if (a === b) return 0;
+    if (a === null || a === undefined) return 1;
+    if (b === null || b === undefined) return -1;
+    return (a < b ? -1 : 1) * -sortDir;
+  }) : rows;
+  const tb = $("tbody"); tb.innerHTML = "";
+  sorted.forEach((r, i) => {
+    const m = r.metrics || {};
+    const tr = document.createElement("tr");
+    tr.className = r.status;
+    const cells = [
+      i + 1,
+      `<input type="checkbox" data-cand="${r.candidate}" ${selected.has(r.candidate) ? "checked" : ""}>`,
+      r.candidate, r.status,
+      r.score === null || r.score === undefined ? "—" : `<span class="score">${r.score}</span>`,
+      fmt(m.rtt_avg, "ms"), fmt(m.rtt_p50, "ms"), fmt(m.rtt_p95, "ms"),
+      fmt(m.jitter, "ms"), fmt(m.loss_pct, "%"), fmt(m.throughput_mbps, "Mb/s"),
+      fmt(m.stability_ratio), fmt(m.reconnect_s, "s"), fmt(m.cpu_pct, "%"),
+      fmt(m.ram_mb, "MB"),
+      `<span class="reason" title="${(r.reason || "").replace(/"/g, "&quot;")}">${r.reason || "—"}</span>`,
+      `<details><summary>receipt</summary><pre>${JSON.stringify(m, null, 1)}</pre></details>`,
+    ];
+    cells.forEach((c, idx) => {
+      const td = document.createElement("td");
+      if (idx === 1) {
+        const wrap = document.createElement("div");
+        wrap.innerHTML = c;
+        wrap.firstChild.onchange = ev => {
+          ev.target.checked ? selected.add(r.candidate) : selected.delete(r.candidate);
+          updateSelInfo();
+        };
+        td.appendChild(wrap.firstChild);
+      } else if (typeof c === "string" && idx !== 0) {
+        td.innerHTML = c;
+      } else { td.textContent = c; }
+      tr.appendChild(td);
+    });
+    tb.appendChild(tr);
+  });
+}
+
+function updateSelInfo(){
+  $("sel-info").textContent = selected.size
+    ? `${selected.size} selected → Primary/Backup ordering happens in Failover Groups (P10). Deploying is a separate explicit action.`
+    : "Selection is input to Failover Groups (P10) — deploying is a separate explicit action.";
+}
+
+function showResults(rows){
+  $("results").style.display = ""; $("toolbar").style.display = "";
+  $("empty").style.display = "none";
+  $("tbody").dataset.rows = JSON.stringify(rows);
+  sortKey = null; renderHead(); renderRows(); updateSelInfo();
+}
+
+async function poll(){
+  const s = await (await fetch(`/benchmarks/${jobId}`)).json();
+  $("prog-label").textContent = `${Math.round((s.progress || 0) * 100)}%`;
+  $("prog-fill").style.width = `${Math.round((s.progress || 0) * 100)}%`;
+  setBadge(s.state);
+  if (["PASS", "FAILED", "CANCELLED", "TIMED_OUT"].includes(s.state)) {
+    $("cancel").disabled = true; $("run").disabled = false;
+    clearInterval(window._timer);
+    const res = await (await fetch(`/benchmarks/${jobId}/results`)).json();
+    showResults(res.results || []);
+    return;
+  }
+  const res = await (await fetch(`/benchmarks/${jobId}/results`)).json();
+  const c = {PASS: 0, DEGRADED: 0, FAILED: 0, BLOCKED: 0, INCOMPATIBLE: 0};
+  (res.results || []).forEach(r => { if (r.status in c) c[r.status]++; });
+  $("counts").innerHTML =
+    `<b class="p">${c.PASS} PASS</b><b>${c.DEGRADED} DEG</b>` +
+    `<b class="f">${c.FAILED} FAIL</b><b class="b">${c.BLOCKED} BLOCKED</b>` +
+    `<b class="b">${c.INCOMPATIBLE} INCOMPATIBLE</b>`;
+}
+
+$("run").onclick = async () => {
+  $("error").style.display = "none";
+  $("run").disabled = true; $("cancel").disabled = false;
+  setBadge("starting");
+  try {
+    const r = await fetch("/benchmarks", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        node_a: {node_id: $("node-a").value}, node_b: {node_id: $("node-b").value},
+        profile: $("profile").value,
+      }),
+    });
+    if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
+    const body = await r.json();
+    jobId = body.job_id;
+    $("progress").style.display = "flex";
+    $("counts").innerHTML = `<b>${body.compatible}</b> compatible / ${body.candidates} candidates`;
+    window._timer = setInterval(poll, 1000);
+  } catch (e) {
+    $("error").textContent = "start failed: " + e.message;
+    $("error").style.display = "";
+    $("run").disabled = false; $("cancel").disabled = true;
+  }
+};
+
+$("cancel").onclick = () => fetch(`/benchmarks/${jobId}/cancel`, {method: "POST"});
+
+$("save-selection").onclick = async () => {
+  if (!jobId || !selected.size) return;
+  await fetch(`/benchmarks/${jobId}/selection`, {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({selected: [...selected]}),
+  });
+  updateSelInfoDone();
+};
+function updateSelInfoDone(){
+  $("sel-info").textContent = `Saved ${selected.size} selections for Failover Group creation (P10).`;
+}
+
+loadNodes();
+</script>
+</body>
+</html>
