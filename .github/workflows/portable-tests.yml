@@ -94,10 +94,11 @@ jobs:
           curl -fsS http://127.0.0.1:8080/health
       - name: Safe uninstall keeps unrelated resources
         run: |
-          sudo ip tuntap add mode tun dev tp-unrelated-test || true
+          sudo ip tuntap add mode tun dev tp-unrel-tst      # IFNAMSIZ <= 15 chars
+          ip link show tp-unrel-tst >/dev/null               # creation proven
           sudo bash scripts/uninstall.sh
-          if ip link show tp-unrelated-test >/dev/null 2>&1; then
-            echo "unrelated interface survived — correct"; sudo ip link del tp-unrelated-test || true
+          if ip link show tp-unrel-tst >/dev/null 2>&1; then
+            echo "unrelated interface survived — correct"; sudo ip link del tp-unrel-tst || true
           else
             echo "FAIL: uninstall removed an unowned interface"; exit 1
           fi
