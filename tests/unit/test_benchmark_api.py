@@ -61,6 +61,21 @@ def client():
     return TestClient(app)
 
 
+TERMINAL = ("PASS", "FAILED", "CANCELLED", "TIMED_OUT")
+
+
+def wait_terminal(client, job_id, budget_s: float = 90.0):
+    """Poll until terminal (generous budget — shared CI runners vary)."""
+    deadline = time.monotonic() + budget_s
+    state = None
+    while time.monotonic() < deadline:
+        state = client.get(f"/benchmarks/{job_id}").json()
+        if state["state"] in TERMINAL:
+            return state
+        time.sleep(0.1)
+    return state
+
+
 class TestBenchmarkApi:
     def test_start_returns_immediately_with_counts(self, client):
         r = client.post("/benchmarks", json={"node_a": CAPS, "node_b": CAPS,
@@ -78,23 +93,16 @@ class TestBenchmarkApi:
     def test_job_reaches_terminal_state(self, client):
         job = client.post("/benchmarks", json={"node_a": CAPS, "node_b": CAPS,
                                                "profile": "QUICK"}).json()["job_id"]
-        for _ in range(100):
-            state = client.get(f"/benchmarks/{job}").json()
-            if state["state"] in ("PASS", "FAILED", "CANCELLED", "TIMED_OUT"):
-                break
-            time.sleep(0.05)
+        state = wait_terminal(client, job)
         assert state["state"] in ("PASS", "FAILED")
         assert state["finished_at"] is not None
 
     def test_results_ranked_best_first(self, client):
         job = client.post("/benchmarks", json={"node_a": CAPS, "node_b": CAPS,
                                                "profile": "QUICK"}).json()["job_id"]
-        for _ in range(100):
-            if client.get(f"/benchmarks/{job}").json()["state"] in ("PASS", "FAILED"):
-                break
-            time.sleep(0.05)
+        wait_terminal(client, job)
         res = client.get(f"/benchmarks/{job}/results").json()
-        assert res["results"], "no results persisted"
+        assert res["results"], "no results persisted after terminal state"
         statuses = [r["status"] for r in res["results"]]
         # PASS league before FAILED before BLOCKED/INCOMPATIBLE
         first_failed = statuses.index("FAILED") if "FAILED" in statuses else len(statuses)
@@ -106,11 +114,9 @@ class TestBenchmarkApi:
     def test_receipt_sanitized_and_retrievable(self, client):
         job = client.post("/benchmarks", json={"node_a": CAPS, "node_b": CAPS,
                                                "profile": "QUICK"}).json()["job_id"]
-        for _ in range(100):
-            if client.get(f"/benchmarks/{job}").json()["state"] in ("PASS", "FAILED"):
-                break
-            time.sleep(0.05)
+        wait_terminal(client, job)
         res = client.get(f"/benchmarks/{job}/results").json()
+        assert res["results"], "no results persisted after terminal state"
         cand = res["results"][0]["candidate"]
         rec = client.get(f"/benchmarks/{job}/receipts/{cand}")
         assert rec.status_code == 200
