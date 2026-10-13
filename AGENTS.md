@@ -97,4 +97,4 @@
 
 ## 2026-10-13 disposable-node validation
 
-480 canonical + 100 TunnelGuard + 1 backend tests passed on Linux. Full isolated legacy lab: 32 PASS / 23 PARTIAL / 27 FAIL. Six canonical kernel methods passed real-pair traffic and WG→GRE failure-triggered route switching passed. Installer lifecycle acceptance passed. Production remains BLOCKED by executor wiring, incomplete profiles and unverified full chains/multi-hop. See docs/releases/v0.9.0-rc2/REAL_VALIDATION.md. No new node credentials belong in tracked files.
+486 canonical + 100 TunnelGuard + 1 backend tests passed on Linux. Full isolated legacy lab: 32 PASS / 23 PARTIAL / 27 FAIL. Six canonical kernel methods passed real-pair traffic and WG→GRE failure-triggered route switching passed. Installer lifecycle acceptance passed. Production remains BLOCKED by executor wiring, incomplete profiles and unverified full chains/multi-hop. See docs/releases/v0.9.0-rc2/REAL_VALIDATION.md. No new node credentials belong in tracked files.

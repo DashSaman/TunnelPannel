@@ -8,7 +8,7 @@ Date: 2026-10-13. **Production release gate: BLOCKED.** This is a tested correct
 
 | Scope / محدوده | Result / نتیجه |
 |---|---|
-| Canonical Python suite | 480 PASS, 0 FAIL, 0 skipped |
+| Canonical Python suite | 486 PASS, 0 FAIL, 0 skipped |
 | TunnelGuard Linux suite | 100 PASS, 0 FAIL, 0 skipped |
 | Backend import suite | 1 PASS |
 | Ruff + canonical ShellCheck + catalog generators | PASS |
@@ -57,6 +57,8 @@ Failover drill: bring the verified WireGuard interface down, observe two failed 
 - Benchmark results/receipts are isolated by job/run. API tests use separate SQLite connections rather than concurrently sharing one in-memory connection.
 - UDP probes do not create the tested listener; FRP transport-port conflicts and Chisel remote syntax were corrected. The lab wrapper isolates network, process and mount namespaces.
 - The UI now shows benchmark startup failures and resets its status instead of hiding the error.
+- Legacy auth now uses PyJWT with HS256 allowlisting; expired, malformed, wrong-key and wrong-algorithm tokens are rejected. The old jose/ecdsa audit exception was removed.
+- CI installer acceptance pins the PR head, rather than inadvertently installing the old default branch. Historical Gitleaks exceptions are exact fingerprints of public source-file digests, not credentials.
 
 ## Operator access / دسترسی اپراتور
 

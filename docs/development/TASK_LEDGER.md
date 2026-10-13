@@ -86,5 +86,5 @@ Historical discrepancies resolved: "77" = Gen1 executor/catalog (subset, interna
 ## 2026-10-13 corrective acceptance
 
 - Installer reconciliation, permissions, bootstrap display/log exclusion, custom ports, backup working directory, validation truth/ownership gates, benchmark run isolation and lab transport defects corrected.
-- Fresh Linux checks: 480 canonical + 100 TunnelGuard + 1 backend PASS; Ruff/ShellCheck/catalog generators PASS; canonical pip-audit reports no known vulnerabilities.
+- Fresh Linux checks: 486 canonical + 100 TunnelGuard + 1 backend PASS; Ruff/ShellCheck/catalog generators PASS; canonical pip-audit reports no known vulnerabilities.
 - Install/reinstall, upgrade, SQLite restore, custom-port restore and owned-only uninstall/reinstall passed. Stable/production gate remains unfulfilled.

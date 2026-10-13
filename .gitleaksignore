@@ -1,0 +1,11 @@
+# Exact historical false positives: public source-file SHA-256 digests only.
+# The report now stores split hash chunks; future findings are not excluded.
+673339d55a0ed5620f710f3f1d635e6b9d072f55:docs/releases/v0.9.0-rc2/REAL_VALIDATION.json:jfrog-identity-token:668
+673339d55a0ed5620f710f3f1d635e6b9d072f55:docs/releases/v0.9.0-rc2/REAL_VALIDATION.json:generic-api-key:585
+673339d55a0ed5620f710f3f1d635e6b9d072f55:docs/releases/v0.9.0-rc2/REAL_VALIDATION.json:generic-api-key:586
+673339d55a0ed5620f710f3f1d635e6b9d072f55:docs/releases/v0.9.0-rc2/REAL_VALIDATION.json:generic-api-key:593
+673339d55a0ed5620f710f3f1d635e6b9d072f55:docs/releases/v0.9.0-rc2/REAL_VALIDATION.json:generic-api-key:620
+673339d55a0ed5620f710f3f1d635e6b9d072f55:docs/releases/v0.9.0-rc2/REAL_VALIDATION.json:generic-api-key:721
+673339d55a0ed5620f710f3f1d635e6b9d072f55:docs/releases/v0.9.0-rc2/REAL_VALIDATION.json:generic-api-key:729
+673339d55a0ed5620f710f3f1d635e6b9d072f55:docs/releases/v0.9.0-rc2/REAL_VALIDATION.json:generic-api-key:754
+673339d55a0ed5620f710f3f1d635e6b9d072f55:docs/releases/v0.9.0-rc2/REAL_VALIDATION.json:generic-api-key:764

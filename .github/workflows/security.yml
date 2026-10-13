@@ -35,14 +35,8 @@ jobs:
       - name: pip-audit tunnelguard requirements (BLOCKING)
         run: pip-audit -r tunnelguard/requirements.txt
       - name: pip-audit legacy backend requirements (BLOCKING)
-        # One documented, real-ID temporary exception (no blanket bypass):
-        #   PYSEC-2026-1325 (ecdsa) reaches us only via the LEGACY Gen1
-        #   stack's python-jose dependency; the canonical application does
-        #   not import it. Remediation: migrate Gen1 auth onto the
-        #   canonical pyjwt security layer (tracked in TASK_LEDGER
-        #   T-P13-002 notes). Expiry: remove by 2027-01-03 or when the
-        #   migration lands, whichever is first.
-        run: pip-audit -r backend/requirements.txt --ignore-vuln PYSEC-2026-1325
+        # Gen1 now uses PyJWT; the old jose/ecdsa exception is removed.
+        run: pip-audit -r backend/requirements.txt
 
   shellcheck:
     runs-on: ubuntu-latest

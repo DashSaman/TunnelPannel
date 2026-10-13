@@ -50,6 +50,9 @@ jobs:
 
   linux-integration:
     runs-on: ubuntu-latest
+    env:
+      # Exercise the proposed source, not the unrelated current default branch.
+      TUNNELPANNEL_VERSION: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -74,9 +77,9 @@ jobs:
           for f in scripts/*.sh; do bash -n "$f"; done
       - name: Install.sh acceptance (fresh → health → idempotent second run)
         run: |
-          sudo bash install.sh
+          sudo env TUNNELPANNEL_VERSION="$TUNNELPANNEL_VERSION" bash install.sh
           curl -fsS http://127.0.0.1:8080/health
-          sudo bash install.sh            # second run: reconcile, no reset
+          sudo env TUNNELPANNEL_VERSION="$TUNNELPANNEL_VERSION" bash install.sh
           curl -fsS http://127.0.0.1:8080/health
           systemctl is-active tunnelpannel-api
           test "$(systemctl list-units 'tunnelpannel-api*' --no-legend | wc -l)" -eq 1
