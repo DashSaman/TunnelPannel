@@ -6,7 +6,6 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool
 
 from apps.api.benchmark_api import create_router as bench_router
 from apps.web.web_api import create_web_router
@@ -42,8 +41,8 @@ def caps_from_dict(p):
 
 
 @pytest.fixture()
-def client():
-    eng = create_engine("sqlite:///:memory:", poolclass=StaticPool,
+def client(tmp_path):
+    eng = create_engine(f"sqlite:///{(tmp_path / 'ranking.db').as_posix()}",
                         connect_args={"check_same_thread": False})
     Base.metadata.create_all(eng)
     factory = sessionmaker(bind=eng)

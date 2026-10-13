@@ -52,7 +52,7 @@ no duplicate tables exist.
 | T-P13-003 | P13 | — | install.sh (canonical app, Ubuntu/Debian, idempotent, generated RBAC tokens shown once, install receipt) + upgrade.sh (backup→migrate→health, rollback hint) + uninstall.sh (owned-only removal) | PASS | install.sh · scripts/{upgrade,uninstall}.sh · requirements-canonical.txt · requirements-dev.txt | bash -n all; contract test; CI install acceptance job | legacy Gen1 installer preserved in git history · (P13.2 commit) |
 | T-P13-004 | P13 | — | Canonical backup (VACUUM INTO/pg_dump, manifests, checksummed, secret-free) + restore (checksum gate, double-confirm, safety copy, health) | PASS | scripts/{backup,restore}.sh | CI backup→mutate→restore round-trip job | restore proven: mutation rolled back, health OK · (P13.2 commit) |
 | T-P14-PREP | P14 | T-P13-001 | P14-PREP: real-validation runner (`scripts/p14_validate.py`), gitignored node-config + credential-free template, report generator, 31 prep tests | PASS | scripts/p14_validate.py · scripts/generate_real_validation_report.py · tests/e2e/p14-nodes.example.yml · tests/unit/test_p14_prep.py (31) | preflight zero-mutation (allowlist+verb-blocklist) · mgmt-route gate · resume · run-scoped cleanup + ORPHANED_RESOURCE · finite statuses · redaction · 3rd-node handling | (this commit) |
-| T-P14-001 | P14 | T-P14-PREP | Real-node validation (E2E receipts) | BLOCKED | — | — | **FRESH_REAL_NODE_CREDENTIALS_REQUIRED** — waiting for operator-supplied fresh disposable nodes (2 required, 3 for multi-hop); old leaked credentials permanently untrusted. All tooling ready: `scripts/p14_validate.py`. |
+| T-P14-001 | P14 | T-P14-PREP | Real-node validation (E2E receipts) | BLOCKED | — | — | **REAL_EXECUTOR_WIRING_AND_PROFILE_REMEDIATION_REQUIRED** — fresh two-node access supplied and tested 2026-10-13; 6 kernel real-pair PASS plus WG→GRE drill, 82-method isolated lab 32P/23PA/27F; full multi-hop needs a third node and a real path driver. See docs/releases/v0.9.0-rc2/REAL_VALIDATION.md. |
 | T-P15-001 | P15 | T-P14-001 | Production release (tag, matrices, acceptance) | TODO | — | — | — |
 
 ## Canonical counts (single source: core/counts.py — invariant-tested)
@@ -81,3 +81,10 @@ Historical discrepancies resolved: "77" = Gen1 executor/catalog (subset, interna
 
 - OPERATOR_ACTION_REQUIRED: rotate the two exposed passwords + GitHub token (history retains them).
 - linux_privileged / real_node_e2e tiers require a Linux host (CI in P13, validation in P14).
+
+
+## 2026-10-13 corrective acceptance
+
+- Installer reconciliation, permissions, bootstrap display/log exclusion, custom ports, backup working directory, validation truth/ownership gates, benchmark run isolation and lab transport defects corrected.
+- Fresh Linux checks: 480 canonical + 100 TunnelGuard + 1 backend PASS; Ruff/ShellCheck/catalog generators PASS; canonical pip-audit reports no known vulnerabilities.
+- Install/reinstall, upgrade, SQLite restore, custom-port restore and owned-only uninstall/reinstall passed. Stable/production gate remains unfulfilled.

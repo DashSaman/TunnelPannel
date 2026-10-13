@@ -195,6 +195,9 @@ class BenchmarkRunner:
                                  methodology=self.profile.methodology,
                                  state="RUNNING")
         self.session.add(self._run)
+        self.session.flush()
+        if self.job is not None:
+            self.job.payload = {**(self.job.payload or {}), "_run_id": self._run.id}
         self.session.commit()
 
         results: list[BenchResult] = []

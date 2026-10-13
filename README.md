@@ -1,3 +1,11 @@
+> **Operational review (2026-10-13):** the corrected canonical installer was exercised on two Ubuntu 24.04 VPSs. Software suites: 480 + 100 + 1 PASS. The full legacy lab: 32 PASS / 23 PARTIAL / 27 FAIL. Six kernel methods and a WireGuard→GRE route-switch drill passed between real nodes. **Production is still blocked by canonical executor wiring and incomplete profiles.** Read [the measured report](docs/releases/v0.9.0-rc2/REAL_VALIDATION.md) before using the historical feature claims below. The canonical API now returns 503 for unconfigured benchmarks. [فارسی](README-fa.md).
+
+Install the corrective candidate branch (development, not stable):
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/codex/server-validation-20261013/install.sh | sudo env TUNNELPANNEL_VERSION=codex/server-validation-20261013 bash
+```
+
 # MTF — Multi-Tunnel Failover Panel
 
 [![methods](https://img.shields.io/badge/tunnel_methods-82-34DFF0)]() [![stack](https://img.shields.io/badge/engine-FastAPI%20%2B%20Docker-4ADE80)]() [![i18n](https://img.shields.io/badge/UI-%D9%81%D8%A7%D8%B1%D8%B3%DB%8C%20%2F%20English-A78BFA)]() [![ip](https://img.shields.io/badge/network-IPv4%20%2B%20IPv6-FBBF24)]()

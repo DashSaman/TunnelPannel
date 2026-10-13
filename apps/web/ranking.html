@@ -38,7 +38,7 @@ details summary{cursor:pointer;color:var(--teal)}
 .toolbar{display:flex;gap:10px;margin-top:10px;align-items:center}
 .toolbar .sel{font-size:13px;color:#54636f}
 .error{color:var(--bad);font-weight:600;display:none;margin-top:10px}
-.empty{color:#7c8894;font-style:italic;margin-top:22px;display:none}
+.empty{color:#7c8894;font-style:italic;margin-top:22px}
 </style>
 </head>
 <body>
@@ -228,7 +228,8 @@ $("run").onclick = async () => {
     window._timer = setInterval(poll, 1000);
   } catch (e) {
     $("error").textContent = "start failed: " + e.message;
-    $("error").style.display = "";
+    $("error").style.display = "block";
+    setBadge("error");
     $("run").disabled = false; $("cancel").disabled = true;
   }
 };

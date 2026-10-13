@@ -42,6 +42,8 @@ class RecordingChannel:
         for needle, res in self.outputs.items():
             if needle in cmd:
                 return res
+        if "ip route get" in cmd:
+            return 0, "198.51.100.1 50000 198.51.100.10 22\n198.51.100.1 via 198.51.100.254 dev eth0"
         return self.default
 
 
@@ -300,7 +302,8 @@ class TestResume:
         ctx.state.finish_stage("quick", "FAILED", "boom")
         ctx.mgmt_routes = ctx.mgmt_routes or ctx.mgmt_routes  # keep snapshot
         p14.run_stage(ctx, "quick")                # resume re-runs FAILED stage
-        assert ctx.state.stage_status("quick") in ("PASS", "FAILED")
+        assert ctx.state.stage_status("quick") in p14.FINITE_RESULT_STATUSES
+        assert ctx.state.stage_status("quick") != "RUNNING"
 
 
 # ── 8. receipt/report generation ──────────────────────────────────────
@@ -352,13 +355,13 @@ class TestMultihop:
         # the rest of P14 is NOT blocked — other stages still runnable
         p14.assert_finite(res["status"])
 
-    def test_three_nodes_runs_real_path(self, env):
+    def test_three_nodes_still_require_a_real_path_probe(self, env):
         tmp_path, cfg, _ = env
         channels = {k: RecordingChannel(k) for k in ("node-a", "node-b", "node-c")}
         cfg3, _ = make_config(tmp_path, n_nodes=3)
         ctx = p14.RunContext(cfg3, p14.new_run_id(), channels=channels)
         res = p14.stage_multihop(ctx)
-        assert res["status"] == "PASS"
+        assert res["status"] == "BLOCKED_EXTERNAL_DEPENDENCY"
         assert res["path"] == ["node-a", "node-b", "node-c"]
 
 

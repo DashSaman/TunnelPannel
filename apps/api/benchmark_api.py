@@ -29,7 +29,8 @@ class StartRequest(BaseModel):
     max_parallel: int = 2
 
 
-def create_router(session_factory, caps_from_dict, adapter_factory) -> APIRouter:
+def create_router(session_factory, caps_from_dict, adapter_factory,
+                  execution_available: bool = True) -> APIRouter:
     """caps_from_dict(payload) -> NodeCaps; adapter_factory(candidate) -> adapter."""
     router = APIRouter(prefix="/benchmarks", tags=["benchmark"])
     runners: dict[str, BenchmarkRunner] = {}
@@ -37,6 +38,8 @@ def create_router(session_factory, caps_from_dict, adapter_factory) -> APIRouter
 
     @router.post("")
     def start(req: StartRequest):
+        if not execution_available:
+            raise HTTPException(503, "real-node benchmark execution is not configured; no job was started")
         if req.profile not in PROFILES:
             raise HTTPException(400, f"profile must be one of {sorted(PROFILES)}")
         caps_a = caps_from_dict(req.node_a)
@@ -67,6 +70,8 @@ def create_router(session_factory, caps_from_dict, adapter_factory) -> APIRouter
                 try:
                     runner.run()
                 except Exception as e:                     # thread must never die silently
+                    s.rollback()
+                    runner.job = s.get(Job, job_id)
                     if runner.job is not None:
                         runner.job.state = "FAILED"
                         runner.job.error = str(e)[:500]
@@ -113,8 +118,7 @@ def create_router(session_factory, caps_from_dict, adapter_factory) -> APIRouter
             job = _job(job_id, session)
             run_id = job.payload.get("_run_id") if job.payload else None
             if run_id is None:
-                # find latest run for this job via receipts' documents
-                samples = list(session.query(BenchmarkSample).all())
+                samples = []
             else:
                 samples = list(session.query(BenchmarkSample)
                                .filter(BenchmarkSample.run_id == run_id).all())
@@ -126,10 +130,14 @@ def create_router(session_factory, caps_from_dict, adapter_factory) -> APIRouter
     @router.get("/{job_id}/receipts/{candidate}")
     def receipt(job_id: str, candidate: str):
         with session_factory() as session:
-            _job(job_id, session)
+            job = _job(job_id, session)
+            run_id = (job.payload or {}).get("_run_id")
+            if not run_id:
+                raise HTTPException(404, f"no receipt for {candidate}")
             row = (session.query(BenchmarkReceipt)
                    .join(BenchmarkSample, BenchmarkReceipt.sample_id == BenchmarkSample.id)
                    .filter(BenchmarkSample.candidate == candidate)
+                   .filter(BenchmarkSample.run_id == run_id)
                    .order_by(BenchmarkReceipt.created_at.desc())
                    .first())
             if row is None:

@@ -11,7 +11,6 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool
 
 from apps.api.benchmark_api import create_router
 from core.models import Base
@@ -43,6 +42,8 @@ class ApiFakeAdapter:
     def metrics(self):
         return {"rtt_avg": 12.0, "loss_pct": 0.0, "jitter": 0.9}
 
+    def rollback(self): pass
+
 
 def caps_from_dict(p):
     return NodeCaps(node_id=p["node_id"], binaries=set(p["binaries"]),
@@ -51,8 +52,8 @@ def caps_from_dict(p):
 
 
 @pytest.fixture()
-def client():
-    eng = create_engine("sqlite:///:memory:", poolclass=StaticPool,
+def client(tmp_path):
+    eng = create_engine(f"sqlite:///{(tmp_path / 'benchmark.db').as_posix()}",
                         connect_args={"check_same_thread": False})
     Base.metadata.create_all(eng)
     factory = sessionmaker(bind=eng)

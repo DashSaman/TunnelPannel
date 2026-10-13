@@ -85,7 +85,7 @@ jobs:
         env:
           RESTORE_TUNNELPANNEL: YES_I_UNDERSTAND
         run: |
-          sudo bash scripts/backup.sh /tmp/tp-backup.tar.gz
+          sudo sh -c 'cd /root && bash /opt/tunnelpannel/scripts/backup.sh /tmp/tp-backup.tar.gz'
           sudo -u tunnelpannel sqlite3 /var/lib/tunnelpannel/tunnelpannel.db \
             "INSERT INTO nodes (id,name,host,ssh_port,ssh_username,auth_type,sudo_mode,role,tags,agent_enabled,created_at,updated_at) VALUES ('zz','zz','zz',22,'root','key','none','worker','[]',0,datetime('now'),datetime('now'))"
           sudo -E bash scripts/restore.sh /tmp/tp-backup.tar.gz

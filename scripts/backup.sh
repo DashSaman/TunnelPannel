@@ -30,7 +30,7 @@ fi
 cp -a "$DATA_DIR/install-receipt.json" "$WORK/" 2>/dev/null || true
 cp -a "$INSTALL_DIR/engines/manifests" "$WORK/manifests"
 printf '%s\n' "$DATABASE_URL" > "$WORK/db-url.txt"
-SCHEMA_REV="$(sudo -u tunnelpannel env DATABASE_URL="$DATABASE_URL" \
+SCHEMA_REV="$(cd "$INSTALL_DIR" && sudo -u tunnelpannel env DATABASE_URL="$DATABASE_URL" \
   "$INSTALL_DIR/.venv/bin/python" -m alembic -c "$INSTALL_DIR/alembic.ini" current 2>/dev/null \
   | tail -1 | awk '{print $1}')"
 cat > "$WORK/backup-receipt.json" <<RECEIPT

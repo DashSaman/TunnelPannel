@@ -25,3 +25,8 @@ Stage Summary:
 - Admin password (bootstrap): REDACTED (was committed in cleartext — rotate it; see docs/development/CURRENT_STATE.md)
 - 77-method test suite running in container (test_progress.json)
 - Pending: 4 binaries (rathole/WaterWall/paqet/hedioum) retry w/ token, receipts review, failover drill, README, GitHub push
+
+
+## 2026-10-13 disposable-node validation
+
+480 canonical + 100 TunnelGuard + 1 backend tests passed on Linux. Full isolated legacy lab: 32 PASS / 23 PARTIAL / 27 FAIL. Six canonical kernel methods passed real-pair traffic and WG→GRE failure-triggered route switching passed. Installer lifecycle acceptance passed. Production remains BLOCKED by executor wiring, incomplete profiles and unverified full chains/multi-hop. See docs/releases/v0.9.0-rc2/REAL_VALIDATION.md. No new node credentials belong in tracked files.

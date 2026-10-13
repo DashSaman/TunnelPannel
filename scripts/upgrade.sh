@@ -32,12 +32,20 @@ note "backup written: $BACKUPS/pre-upgrade-$STAMP.tar.gz"
 
 STAGE="fetch"
 git -C "$INSTALL_DIR" fetch --tags --quiet
-git -C "$INSTALL_DIR" checkout -q "$VERSION" || die "target version not found"
+git -C "$INSTALL_DIR" diff --quiet && git -C "$INSTALL_DIR" diff --cached --quiet \
+  || die "local source changes must be preserved before upgrading"
+if git -C "$INSTALL_DIR" show-ref --verify --quiet "refs/remotes/origin/$VERSION"; then
+  git -C "$INSTALL_DIR" checkout -q --detach "origin/$VERSION"
+else
+  git -C "$INSTALL_DIR" checkout -q --detach "$VERSION" || die "target version not found"
+fi
 NEW_SHA="$(git -C "$INSTALL_DIR" rev-parse HEAD)"
 
 STAGE="deps"
 python3 -m venv "$INSTALL_DIR/.venv"
 "$INSTALL_DIR/.venv/bin/pip" install -q -r "$INSTALL_DIR/requirements-canonical.txt"
+chown -R root:tunnelpannel "$INSTALL_DIR"
+chmod -R g+rX "$INSTALL_DIR"
 
 STAGE="migrate"
 set -a; . "$CONF_DIR/tunnelpannel.env"; set +a

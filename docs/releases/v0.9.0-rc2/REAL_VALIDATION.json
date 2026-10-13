@@ -1,0 +1,791 @@
+{
+  "candidate": "v0.9.0-rc2",
+  "production_ready": false,
+  "generated_at": "2026-10-13T14:25:58.790917+00:00",
+  "baseline_commit": "03416e271538a919abd13486a1f8c7d14b5c85fb",
+  "environment": "two disposable Ubuntu 24.04.4 x86_64 VPSs, kernel 6.8, 1 GiB RAM each",
+  "software_suites": {
+    "canonical": {
+      "tests": 480,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "tunnelguard": {
+      "tests": 100,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "backend": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "legacy_lab": {
+    "scope": "LAB_LOOPBACK_AND_NETNS_NOT_REAL_PAIR",
+    "done": 82,
+    "total": 82,
+    "summary": {
+      "PASS": 32,
+      "PARTIAL": 23,
+      "FAIL": 27
+    },
+    "results": {
+      "CHISEL_REVERSE_SOCKS5": {
+        "verdict": "PASS",
+        "ms": 3680
+      },
+      "CHISEL_REVERSE_TCP": {
+        "verdict": "PASS",
+        "ms": 3372
+      },
+      "CHISEL_REVERSE_UDP": {
+        "verdict": "PASS",
+        "ms": 3342
+      },
+      "CHISEL_SOCKS5": {
+        "verdict": "PASS",
+        "ms": 3366
+      },
+      "CHISEL_TCP": {
+        "verdict": "PASS",
+        "ms": 3356
+      },
+      "CHISEL_UDP": {
+        "verdict": "PASS",
+        "ms": 4344
+      },
+      "GRETAP_OVER_GOST": {
+        "verdict": "FAIL",
+        "ms": 240092
+      },
+      "GRE_OVER_GOST": {
+        "verdict": "FAIL",
+        "ms": 2048
+      },
+      "GRE_OVER_SSH": {
+        "verdict": "FAIL",
+        "ms": 1435
+      },
+      "GRE_OVER_WIREGUARD": {
+        "verdict": "PASS",
+        "ms": 3098
+      },
+      "SIT_OVER_GOST": {
+        "verdict": "FAIL",
+        "ms": 2664
+      },
+      "SIT_OVER_SSH": {
+        "verdict": "FAIL",
+        "ms": 1423
+      },
+      "FRP_KCP": {
+        "verdict": "PASS",
+        "ms": 3652
+      },
+      "FRP_QUIC": {
+        "verdict": "PASS",
+        "ms": 3567
+      },
+      "FRP_STCP": {
+        "verdict": "PARTIAL",
+        "ms": 5066
+      },
+      "FRP_TCP": {
+        "verdict": "FAIL",
+        "ms": 3065
+      },
+      "FRP_UDP": {
+        "verdict": "FAIL",
+        "ms": 6042
+      },
+      "FRP_XTCP": {
+        "verdict": "PARTIAL",
+        "ms": 17080
+      },
+      "GOST_GRPC": {
+        "verdict": "PASS",
+        "ms": 672
+      },
+      "GOST_HTTP": {
+        "verdict": "PASS",
+        "ms": 366
+      },
+      "GOST_HTTP2": {
+        "verdict": "PASS",
+        "ms": 382
+      },
+      "GOST_KCP_FORWARD": {
+        "verdict": "FAIL",
+        "ms": 685
+      },
+      "GOST_QUIC": {
+        "verdict": "PASS",
+        "ms": 368
+      },
+      "GOST_REMOTE_TCP": {
+        "verdict": "PASS",
+        "ms": 1584
+      },
+      "GOST_REMOTE_UDP": {
+        "verdict": "FAIL",
+        "ms": 3641
+      },
+      "GOST_SOCKS5": {
+        "verdict": "PASS",
+        "ms": 363
+      },
+      "GOST_SOCKS5_KCP": {
+        "verdict": "PASS",
+        "ms": 347
+      },
+      "GOST_SSH": {
+        "verdict": "PASS",
+        "ms": 340
+      },
+      "GOST_TAP": {
+        "verdict": "PARTIAL",
+        "ms": 4660
+      },
+      "GOST_TCP_FORWARD": {
+        "verdict": "PASS",
+        "ms": 353
+      },
+      "GOST_TUN": {
+        "verdict": "PARTIAL",
+        "ms": 6672
+      },
+      "GOST_UDP_FORWARD": {
+        "verdict": "FAIL",
+        "ms": 12042
+      },
+      "GOST_WS": {
+        "verdict": "PASS",
+        "ms": 341
+      },
+      "GRE": {
+        "verdict": "PASS",
+        "ms": 1119
+      },
+      "GRETAP": {
+        "verdict": "PASS",
+        "ms": 1122
+      },
+      "IP6GRE": {
+        "verdict": "FAIL",
+        "ms": 3130
+      },
+      "IP6GRETAP": {
+        "verdict": "PASS",
+        "ms": 2267
+      },
+      "IPIP": {
+        "verdict": "PASS",
+        "ms": 1126
+      },
+      "SIT_6IN4": {
+        "verdict": "PASS",
+        "ms": 1122
+      },
+      "VXLAN": {
+        "verdict": "PASS",
+        "ms": 1112
+      },
+      "WIREGUARD": {
+        "verdict": "PASS",
+        "ms": 2161
+      },
+      "PAQET_RAW_KCP": {
+        "verdict": "PARTIAL",
+        "ms": 93
+      },
+      "PAQET_SOCKS5": {
+        "verdict": "PARTIAL",
+        "ms": 2080
+      },
+      "RATHOLE_NOISE": {
+        "verdict": "PARTIAL",
+        "ms": 4744
+      },
+      "RATHOLE_TCP": {
+        "verdict": "PASS",
+        "ms": 4569
+      },
+      "RATHOLE_TLS": {
+        "verdict": "PARTIAL",
+        "ms": 4568
+      },
+      "RATHOLE_UDP": {
+        "verdict": "PARTIAL",
+        "ms": 38
+      },
+      "RATHOLE_WEBSOCKET": {
+        "verdict": "PARTIAL",
+        "ms": 4552
+      },
+      "HYSTERIA2": {
+        "verdict": "PARTIAL",
+        "ms": 83
+      },
+      "SHADOWSOCKS": {
+        "verdict": "PASS",
+        "ms": 2421
+      },
+      "SINGBOX_TUN": {
+        "verdict": "PARTIAL",
+        "ms": 2424
+      },
+      "TROJAN_TLS": {
+        "verdict": "PASS",
+        "ms": 2439
+      },
+      "TUIC": {
+        "verdict": "PARTIAL",
+        "ms": 77
+      },
+      "AUTOSSH_REVERSE": {
+        "verdict": "FAIL",
+        "ms": 240071
+      },
+      "SSH_DYNAMIC_SOCKS": {
+        "verdict": "FAIL",
+        "ms": 1375
+      },
+      "SSH_LOCAL_FORWARD": {
+        "verdict": "FAIL",
+        "ms": 1371
+      },
+      "SSH_REMOTE_FORWARD": {
+        "verdict": "FAIL",
+        "ms": 1361
+      },
+      "SSH_TAP_L2": {
+        "verdict": "FAIL",
+        "ms": 903
+      },
+      "SSH_TUN_L3": {
+        "verdict": "FAIL",
+        "ms": 1395
+      },
+      "IKEV2_IPSEC": {
+        "verdict": "FAIL",
+        "ms": 1184
+      },
+      "L2TP_IPSEC": {
+        "verdict": "FAIL",
+        "ms": 209
+      },
+      "OPENVPN": {
+        "verdict": "FAIL",
+        "ms": 682
+      },
+      "VTI": {
+        "verdict": "FAIL",
+        "ms": 1148
+      },
+      "VTI6": {
+        "verdict": "FAIL",
+        "ms": 1161
+      },
+      "WATERWALL_DIRECT": {
+        "verdict": "PARTIAL",
+        "ms": 6083
+      },
+      "WATERWALL_REVERSE": {
+        "verdict": "PARTIAL",
+        "ms": 6099
+      },
+      "WATERWALL_TLS_MUX": {
+        "verdict": "PARTIAL",
+        "ms": 6095
+      },
+      "WSTUNNEL_SOCKS5": {
+        "verdict": "PASS",
+        "ms": 4052
+      },
+      "WSTUNNEL_TCP": {
+        "verdict": "PASS",
+        "ms": 4047
+      },
+      "WSTUNNEL_UDP": {
+        "verdict": "PASS",
+        "ms": 4042
+      },
+      "VLESS_GRPC": {
+        "verdict": "FAIL",
+        "ms": 2548
+      },
+      "VLESS_REALITY": {
+        "verdict": "FAIL",
+        "ms": 2396
+      },
+      "VLESS_TCP": {
+        "verdict": "FAIL",
+        "ms": 2368
+      },
+      "VLESS_VISION_REALITY": {
+        "verdict": "PARTIAL",
+        "ms": 42
+      },
+      "VLESS_WS": {
+        "verdict": "FAIL",
+        "ms": 2361
+      },
+      "VLESS_XHTTP": {
+        "verdict": "FAIL",
+        "ms": 2362
+      },
+      "VLESS_XHTTP_REALITY": {
+        "verdict": "PARTIAL",
+        "ms": 45
+      },
+      "HEDIOUM_POOL_SOCKS": {
+        "verdict": "PARTIAL",
+        "ms": 140
+      },
+      "HEDIOUM_TUN": {
+        "verdict": "PARTIAL",
+        "ms": 54
+      },
+      "HAJSAMAN_SIT": {
+        "verdict": "PARTIAL",
+        "ms": 1126
+      },
+      "HAJSAMAN_WG": {
+        "verdict": "PARTIAL",
+        "ms": 2162
+      },
+      "HAJSAMAN_FULL": {
+        "verdict": "PARTIAL",
+        "ms": 2155
+      }
+    }
+  },
+  "real_pair": {
+    "scope": "REAL_PAIR",
+    "results": [
+      {
+        "method": "wireguard",
+        "status": "PASS",
+        "ipv6": true,
+        "bidirectional": true,
+        "cleanup_verified": true,
+        "duration_s": 7.28
+      },
+      {
+        "method": "gre",
+        "status": "PASS",
+        "ipv6": true,
+        "bidirectional": true,
+        "cleanup_verified": true,
+        "duration_s": 7.02
+      },
+      {
+        "method": "gretap",
+        "status": "PASS",
+        "ipv6": true,
+        "bidirectional": true,
+        "cleanup_verified": true,
+        "duration_s": 7.17
+      },
+      {
+        "method": "ipip",
+        "status": "PASS",
+        "ipv6": false,
+        "bidirectional": true,
+        "cleanup_verified": true,
+        "duration_s": 5.67
+      },
+      {
+        "method": "sit",
+        "status": "PASS",
+        "ipv6": true,
+        "bidirectional": true,
+        "cleanup_verified": true,
+        "duration_s": 6.95
+      },
+      {
+        "method": "vxlan",
+        "status": "PASS",
+        "ipv6": true,
+        "bidirectional": true,
+        "cleanup_verified": true,
+        "duration_s": 7.0
+      },
+      {
+        "method": "failover-wg-gre",
+        "status": "PASS",
+        "data_plane_ok": true,
+        "receipts": [
+          {
+            "phase": "broken-primary",
+            "rc": 2
+          },
+          {
+            "phase": "broken-primary",
+            "rc": 2
+          },
+          {
+            "phase": "backup-traffic",
+            "selected": "gre"
+          }
+        ]
+      },
+      {
+        "method": "management-route-survival",
+        "status": "PASS"
+      }
+    ]
+  },
+  "lifecycle": {
+    "node-a": [
+      "install",
+      "reinstall_config_hash_preserved",
+      "upgrade",
+      "backup_mutate_restore",
+      "custom_port_install_reinstall_restore",
+      "uninstall_unrelated_interface_survives",
+      "reinstall"
+    ],
+    "node-b": [
+      "fresh_install",
+      "reinstall_config_hash_preserved"
+    ]
+  },
+  "blockers": [
+    "CANONICAL_API_EXECUTOR_WIRING_REQUIRED",
+    "27_FAILED_AND_23_PARTIAL_LEGACY_LAB_METHODS",
+    "TRUE_MULTIHOP_REQUIRES_THIRD_NODE_AND_REAL_PATH_DRIVER"
+  ],
+  "checks": [
+    "ruff canonical packages PASS",
+    "shellcheck canonical scripts PASS",
+    "catalog invariants PASS"
+  ],
+  "binary_receipts": [
+    {
+      "engine": "frp",
+      "version": "v0.71.0",
+      "asset": "https://github.com/fatedier/frp/releases/download/v0.71.0/frp_0.71.0_linux_amd64.tar.gz",
+      "sha256": "84f27e39f11169f7adcef8e8b70c9329de17747b1f14dad9fb95eef5682ea716",
+      "upstream_digest_verified": true,
+      "installed": [
+        "frps",
+        "frpc"
+      ],
+      "status": "INSTALLED"
+    },
+    {
+      "engine": "xray",
+      "version": "v26.3.27",
+      "asset": "https://github.com/XTLS/Xray-core/releases/download/v26.3.27/Xray-linux-64.zip",
+      "sha256": "23cd9af937744d97776ee35ecad4972cf4b2109d1e0fe6be9930467608f7c8ae",
+      "upstream_digest_verified": true,
+      "installed": [
+        "xray"
+      ],
+      "status": "INSTALLED"
+    },
+    {
+      "engine": "sing-box",
+      "version": "v1.14.3",
+      "asset": "https://github.com/SagerNet/sing-box/releases/download/v1.14.3/sing-box-1.14.3-linux-amd64.tar.gz",
+      "sha256": "e2bdf179c15a3652955dc44867e33ca0965c9c9b91b34267dcc5a5d639a5feee",
+      "upstream_digest_verified": true,
+      "installed": [
+        "sing-box"
+      ],
+      "status": "INSTALLED"
+    },
+    {
+      "engine": "chisel",
+      "version": "v1.12.0",
+      "asset": "https://github.com/jpillora/chisel/releases/download/v1.12.0/chisel_1.12.0_linux_amd64.gz",
+      "sha256": "f3f180f1d93aa72cce4e6386f98cc06569a0146fbd65eb4423cf83e6434bcfe6",
+      "upstream_digest_verified": true,
+      "installed": [
+        "chisel"
+      ],
+      "status": "INSTALLED"
+    },
+    {
+      "engine": "rathole",
+      "version": "v0.5.0",
+      "asset": "https://github.com/rathole-org/rathole/releases/download/v0.5.0/rathole-x86_64-unknown-linux-gnu.zip",
+      "sha256": "3e7d0d0f365120cd3cd351d147d1a12ee960c8068b464d4dd533a3821873b80e",
+      "upstream_digest_verified": false,
+      "installed": [
+        "rathole"
+      ],
+      "status": "INSTALLED"
+    },
+    {
+      "engine": "wstunnel",
+      "version": "v11.0.0",
+      "asset": "https://github.com/erebe/wstunnel/releases/download/v11.0.0/wstunnel_11.0.0_linux_amd64.tar.gz",
+      "sha256": "9708a99717b5a951453c2ff7c14c25d3418d02ca7fcb96fdb382a8f2083bab5e",
+      "upstream_digest_verified": true,
+      "installed": [
+        "wstunnel"
+      ],
+      "status": "INSTALLED"
+    },
+    {
+      "engine": "paqet",
+      "version": "v1.0.0-alpha.21",
+      "asset": "https://github.com/hanselime/paqet/releases/download/v1.0.0-alpha.21/paqet-linux-amd64-v1.0.0-alpha.21.tar.gz",
+      "sha256": "4f2f69e0493746726598485ef18df43372470a1514f8021594137e522f0f4fc7",
+      "upstream_digest_verified": true,
+      "installed": [
+        "paqet"
+      ],
+      "status": "INSTALLED"
+    },
+    {
+      "engine": "gost",
+      "version": "v2.12.0",
+      "asset": "https://github.com/ginuerzh/gost/releases/download/v2.12.0/gost_2.12.0_linux_amd64.tar.gz",
+      "sha256": "1b6d47e6b850479b23fda484b3a8193c7bc0d5dc38fa5a02b4b4c57a77534d92",
+      "upstream_digest_verified": false,
+      "installed": [
+        "gost"
+      ],
+      "status": "INSTALLED"
+    },
+    {
+      "engine": "waterwall",
+      "version": "v1.46.96",
+      "asset": "https://github.com/radkesvat/WaterWall/releases/download/v1.46.96/Waterwall-linux-gcc-x64-old-cpu.zip",
+      "sha256": "7774dfeb107d8e4e93471cb0964e016ce41ed6b78052948b12d41bef971b488b",
+      "upstream_digest_verified": true,
+      "installed": [
+        "waterwall"
+      ],
+      "status": "INSTALLED"
+    },
+    {
+      "engine": "hedioum",
+      "version": "v0.11.3-pv1",
+      "asset": "https://github.com/DashSaman/Hedioum-Pool-Tunnel/releases/download/v0.11.3-pv1/hedioum-tunnel",
+      "sha256": "e39a0672ea504b2171eff674a3fedc57adc26b38e39def1f41bc38b859011a3c",
+      "upstream_digest_verified": true,
+      "installed": [
+        "hedioum"
+      ],
+      "status": "INSTALLED"
+    }
+  ],
+  "tested_file_sha256": {
+    "alembic.ini": "39fd31fab1d62869a4770d09320a73a4ec8c0eff4ce250e079f40f73b034edab",
+    "apps/__init__.py": "523751b1d03e39facc1f0f146af19b876e0f1f77fda0bddcbfea1f88055315b1",
+    "apps/api/__init__.py": "5f11397ffe248ebfd5bf08cbc5818b59a80395605b78a730c8ec5c915a61b751",
+    "apps/api/benchmark_api.py": "07321d509cdfbad583361688cca8f1997e98b8adf85e14d8f0042813b198f3b6",
+    "apps/api/failover_api.py": "5eac35974ec5c3cbafcfd6aa1f45d57dc90e97651d5706fffea4068430b13fc6",
+    "apps/api/main.py": "3e5aa726ff75b033058986eab9a0e145031f14d66cc35eb78ad221a360d6a224",
+    "apps/bot/__init__.py": "78369e23c425272def72de0e388b56ccbbd93aa33885e967dbe09a875ea910b4",
+    "apps/bot/core.py": "8433ea8810db1241fda044a9ff3ab66e2a012f4cec3cc40bde0cdc6fbd8bd2a6",
+    "apps/web/__init__.py": "ad8ce4422591c0a04dfc4645d64bb9bc65e93c8879658e6082ede8df4f5b8d8e",
+    "apps/web/ranking.html": "2f263d96ace7c5270ab57aa4b1299e3e8287fa8c8a3542f5bf34add3b0c9fa5e",
+    "apps/web/topology.html": "5751247997bff53d9d5e7ba494eaa51d9bfd9a0dc8961b28c9b16e2edfb4275c",
+    "apps/web/web_api.py": "4b58b6101a43c050b2f8e1a5acb78a83797d81a9d21e442f30430b5a06723fc8",
+    "backend/app/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "backend/app/admin_router.py": "93e52640c7d6eed1d7fa5f551cfcc5f9d85c8234be332953d37f9c3ef90692b2",
+    "backend/app/bot_control_router.py": "201e0a66b6c03355567e73bc3cd2589112286bbab808aeb9f8876705d73f4623",
+    "backend/app/composer_router.py": "76c6df64189e157edd5528e9acadfde7ad93091413e25f7317bf8a88130c336d",
+    "backend/app/config.py": "6ebac16a243f14dbd7a4d9143d5b9cdeeae7e9bc3fb371719e48b57bcb653b24",
+    "backend/app/db.py": "a01d4db27c17fe393a9fe88b3d89426f7dca1ba744852f3358c0a589af79de54",
+    "backend/app/endpoint_router.py": "7721c329a247909dec152d8da00cc09aec4a49e22f4cf2d26ffb3b3c679a58d5",
+    "backend/app/execution_capabilities.py": "b76bda8e1a50b6cd8a4bc6ed57326ecbbcb857be6c2676df64ea983bdf1734a8",
+    "backend/app/execution_router.py": "2813508b8a786d9df1c93f7ba87e5e5197e1b5fc4a4b2acba4808b608378c832",
+    "backend/app/main.py": "fd7e299baafeabd3fe018a522d354f6c13d231c80033f95c566e27ddbfbab2af",
+    "backend/app/models.py": "386050f364ddcd45815544927ba0067c851d36bb00986e2f39b2ee6ac6284339",
+    "backend/app/schemas.py": "b6b2e17fbc2dfec98f3376744889a159e3753c5427a5853a1e30aa4301049a09",
+    "backend/app/security.py": "5b1d4988c0e934088d723f868eefc9205236b9dc04da7ac1bfa25e1170207210",
+    "backend/app/tests/test_imports.py": "5661eccb43a61b96aae275bc4074a77e194f8f14a15cce8f356a495ac7329c5a",
+    "backend/app/tunnel_catalog.py": "8a106c62b75b04fbbabc07498195a0555c49cc80c38a556311332bef3d204b9e",
+    "backend/requirements.txt": "b0119421562b6710486820ac9dd02dd1240d8c866ce509619bfca692c6e2ea81",
+    "bot/bot.py": "8fce274bc1418ba6e5dbe05d772029c2175d25fe9790825e0b909313976fa9d5",
+    "bot/requirements.txt": "8363854b8b6bcfb2a7be460e347c7d67ba4d084dc310eadc65ed34f6cf2f6f47",
+    "bot/translations.py": "a836978d05fed7926cf97524dcf6d966c9194eb6cf9a3c27089f18fb527bf20d",
+    "core/__init__.py": "5b68b9abc66e460142fd08a594778c887fdae1d3869ae3843abf91d3bddc12c8",
+    "core/catalog.py": "4c4c359eca120fd0946de3c3999075b7949b4d623a3d6630ba890f08a4282909",
+    "core/counts.py": "04d0b5ed4c0be0f1d4e24150d1fd86131835e39f7b407068bc08d100693893c8",
+    "core/models.py": "f0ca7a4ec335d97da5f010c4cd3804b28aa4d5ea69af9d3db2fef7e813656b81",
+    "core/security.py": "49cd767a024d29c9a82f18e9fcf991140c533ea553f17c0fa686efaefdf12ffa",
+    "deploy/docker/entrypoint.sh": "9e359e24c92b756c36c0d7ebeb51ab33f54ceea2b0a44b3453c4c01c7845c1eb",
+    "deploy/engine/mtf/__init__.py": "dfe5984a5e56220346eb983dffbd4af4fbc2343f7faac211d6b9414be55d7cee",
+    "deploy/engine/mtf/api.py": "eda23dbf70757263be308e88b6c44bca588c4c4ace8c5218778d56595d766ebd",
+    "deploy/engine/mtf/core.py": "fe962937b285e283c33289de01c000ef2e837fa9edc9dacfef88ba48f66dc60b",
+    "deploy/engine/mtf/installer.py": "1220ed08d9c7f053499d4ea5cc7f55e6247c8c619a0e042d470a964ab64265ee",
+    "deploy/engine/mtf/metrics.py": "2a6ba402bf158c67f085357c6a376342a6a472d8cf67186e59de792c37059190",
+    "deploy/engine/mtf/portmgr.py": "beec61d3d8f69e9d6932a3e66373e29970ff8200282c88981ca1df8d9f74fc25",
+    "deploy/engine/mtf/probe_engine.py": "610ccd03abf589fe553c7892dfde970b56d03c417d53f9b9261520d278cd2ad3",
+    "deploy/engine/mtf/registry.py": "549b9e5cd4cd456d88ea5b69e8b26404a96a4d6f4c8145ade0031327c2b559e6",
+    "deploy/engine/mtf/servertunnels.py": "6e9bde3c898d2392f4fb902b6b8d8302302acdc76b186cd4392e7d4f48a6ac59",
+    "deploy/engine/mtf/st_profiles.py": "8474ffee197756b1b1feafe05752b063e63f6bc9411d114647bce00f5be12277",
+    "deploy/engine/mtf/state.py": "a78c9420da7880b8c4b0a6bf2719fdfb0e46d21a79de256f6f445fd95cc3d48a",
+    "deploy/engine/mtf_kernel.sh": "516f1926e50d1f977ecdb94ad65020f980ebf76d6c1e11fbbb9e2f7cc0b6a5c3",
+    "deploy/engine/mtf_userspace.py": "1c976bec73ea9cd7d30683c8c40e5b59277f06707dce65ee3d38285e72565c1c",
+    "deploy/engine/run_panel.py": "a7d0c367c768bd8c37256ae90a70c73d09b37bcca8f702c636fec3765e0dba6b",
+    "deploy/fix_bins_v3.sh": "24fe98d13e47cc057b4fcde79d89ca4c734ee68cfe8edb7c417eb74fe4fed0e7",
+    "deploy/methods_registry.json": "bfb55806a150f0c67465d0f88597159efe4bf19ed8a4b9b7169eb4746e5f5dc4",
+    "deploy/panel/templates/index.html": "e5374eed8b90578f0aea53a16cb2db5ed3c84d1cd00356decbabb8e6db57f174",
+    "deploy/panel/templates/login.html": "1166e1edd5b67c33ec78d30026075b373254fa4279b81ccf17ab779282370b6e",
+    "deploy/srv2_install.sh": "b6dac165c44a366dc0a58cc75bcccc670d960ffb52172d516f589f2b65dc4376",
+    "deploy/tests/run_all_tests.py": "b77c9da9037976f267eef1fbf41c70d46ea455c08c5b407ab9f0a4860392ee03",
+    "deploy/tests/run_isolated_tests.sh": "55da2a0c14ecfd0efabb87d6b8ce2bdb3985862a1a3e4a2fbbc4846f73835850",
+    "engines/__init__.py": "f596f5a283e2681df44166e9cbea324a269ea35675e3ed7f43b649ff457138a0",
+    "engines/adapters/__init__.py": "b6fc7c139de36f6364d3dd1c2c12e081160653b3655905e324348f094d2698cf",
+    "engines/adapters/kernel.py": "5257e57ec183447307edcfe5062dd455819a50271cea6e65c0a731570f7c7980",
+    "engines/adapters/kernel_extra.py": "3bb258e226925e85952a0897979c04f2dfcac0707c6428d01ffdfceaec8571c4",
+    "engines/adapters/ssh_family.py": "a4297123f735b0e14a66d25bc92a0ef33225c07be4f761b7c8601a690d60da8c",
+    "engines/adapters/userspace.py": "83dcf0577a2750dbc21c529c2aa5ca704d1947be257e49b7e26d6491c930df74",
+    "engines/executors.py": "8962f09ab76ba5e2bd2ec8d85dc410f47403daef10dcb90f7722bf195928a459",
+    "engines/manifests/__init__.py": "5c3ff696aa3acaf94ef729608bd82db77949bb4f97cc8428cc43248d0be6159b",
+    "engines/manifests/chisel.json": "17d83b1559744a3003deb3d012293bd17bd0fd07a3165dce39a62efd8cba8e97",
+    "engines/manifests/frp.json": "95afe1383e1fe8c05f6a04491f0a0fcf2c4d6c861701b464e7c41c8ee677e011",
+    "engines/manifests/gost.json": "041a27a727aa95cdf562e213ed36de6c5112216ea7c0538e308a8c2ec4cc7089",
+    "engines/manifests/gre.json": "7b1fbdd429df251222775453b1780ccb6564f97e3d68180cc15565820e536172",
+    "engines/manifests/gretap.json": "3e726e03cee26756bacccc7174e83549041c993a0652a723c21a1d19b15e4761",
+    "engines/manifests/hajsaman.json": "463d9274522151c2689a51fd4801bfb5a0b9e3d5f08075bf1b10fd716a0f9b5f",
+    "engines/manifests/hedioum.json": "4f511a4ef7fec86db972848b1ca46734422de223d17e5b1d070bf75937478f07",
+    "engines/manifests/ipip.json": "bae27c20e2a233105bc2f6c05524cb92a1afa08c846fd2ce1e7c8e7cee347676",
+    "engines/manifests/ipsec.json": "019b70b9e7bace7f4231bcb9564a9294f223db6caa00a81befd4bebfde2f8cf5",
+    "engines/manifests/openvpn.json": "476d9d3ce6c31f0dc89e52012ba31cd21c0a11ef0b95c04d76b4ef2457b3ebed",
+    "engines/manifests/paqet.json": "6b65e10ac0b99825f09b506eb74bcf5c9ed14c6727a8858daf24333ca1a60137",
+    "engines/manifests/rathole.json": "1cd61c2017415bfe1a19f1c926fe63885fc912cf179eac8223907e3b510acb79",
+    "engines/manifests/singbox.json": "1ff3cd74054ecae952e5a847134e552ea5b15d43b3bd34e1f8fe25f6300b9faa",
+    "engines/manifests/sit.json": "7406a5b9d15211ecda47a79878a286b6eefa5a3c45dbf8c1decd346ad1464308",
+    "engines/manifests/ssh.json": "f014631dc36c7b771450e550d6ffbff23a3eea4e0caac0f07368d44d9c102f62",
+    "engines/manifests/vti.json": "4aadce62bb716afcd39a06d8cc7968b21cb97aad998633f9a394b016d2538b08",
+    "engines/manifests/vxlan.json": "517204876bc0036bf4399d45fab8d88f6037f7cabfbd442f959088993c51c664",
+    "engines/manifests/waterwall.json": "dd0640682ad3156218b418bf18b24bb7a2a6842f14f5bbffef98af5a4da4edfe",
+    "engines/manifests/wireguard.json": "f080db47cfd87fa7901a41bd416745113263d09168b3157b788b1fc88df8305a",
+    "engines/manifests/wstunnel.json": "24a3155e603887e6f7aa89c309c738f84fddb8125e1747dd39495c54df58c010",
+    "engines/manifests/xray.json": "aef5d876385cd09d6982ad1c37e74b50c151630e392226f492aad896e2a277c5",
+    "engines/packages.py": "e15ae18b08099375489f424a1f113dde25a4e7fcfa1b1697479b5fb8a5f61eb9",
+    "install.sh": "ac91cb8352d7aed3e4bc5cadb19df5be4609d34e1ed161cd808afad04651c405",
+    "migrations/env.py": "c127d1f536b7711b3cb19f93c2a25a66e0513365c5ee9f48ea2713742696b28d",
+    "migrations/versions/4040fb150042_composition_entities_p8.py": "4140f707d22cda859d96cdfc842392445deccf85b174b28a1d900be8e90bf7a3",
+    "migrations/versions/7b6b540f5991_topology_entities_p11.py": "df265b442569796bf4a887b80e78eb1c383481dd7c454578b368b19f96fa9eac",
+    "migrations/versions/f9cb963715a8_initial_canonical_schema_p2.py": "457f1e735abf846d4f726b7c19a9dbfa2c32425fa941ad68b691256262228ab2",
+    "orchestrator/__init__.py": "6d4399f6d8ddef13d98839dc8746ff09d17d33d12a24d127935b261da595ace1",
+    "orchestrator/alerting.py": "a2f43ebf5b1e138b9d74f293f3942d8295d8b1b36b773c67176da52f9c40a7e7",
+    "orchestrator/benchmarking/__init__.py": "3e7fd1c626105ea3b546a520d761b753b91c671284b5d988106d6340aa7e924a",
+    "orchestrator/benchmarking/chains.py": "a9f5ac4daeae00610ba382f9328f8b009c4ec235fa2aaae36516d3c95dbd4ef1",
+    "orchestrator/benchmarking/runner.py": "274b7a340c2633dcb95d549905443bc78d9c5a3ebc58b4897e389701cb9ef048",
+    "orchestrator/benchmarking/scoring.py": "0f27315a2dc138d0339fec25286c514f506baf678935f762a147b3ca8e1bdcce",
+    "orchestrator/composition/__init__.py": "5793d2270c966ab13712e8d2c83e4a19ab1c6dbe482e68fb0d6f2b5113e9fc3d",
+    "orchestrator/composition/core.py": "0bf6f47d0e68707dadac0f75feea69161ef0ed97755857e28b6093093e126675",
+    "orchestrator/composition/service.py": "ec91039acbdde66ed03f39e6361694f5cadbcb2fb0ddba6d4dc2f5f2c4742dc3",
+    "orchestrator/deployment/__init__.py": "e41612bc1c03326c02e933727a2314ef513c8da86593670b1ace56ecb314ae64",
+    "orchestrator/failover/__init__.py": "cb6894be5b3c503ff4f5e05c9ae80eadb3705e570915f42265ffa5ad5ca3c9f8",
+    "orchestrator/observability.py": "0b7a0195145a6232a00f2ffce96bfadb2596e808e53a175150cb471156fad5fa",
+    "orchestrator/resources/__init__.py": "db19ab855efbb5142cacd7f8ef5f1854155e60035ce4231fb0585382504c77bd",
+    "orchestrator/topology.py": "c994dcfaf38454997a4633ef0534e72aacd431445522f037cd5d23e1ca9da5e6",
+    "panel/static/fonts/JetBrainsMono-OFL.txt": "a76abf002c49097d146e86740a3105a5d00450b1592e820a1109a8c5680cd697",
+    "panel/templates/index.html": "837dbaf6c0a449ea20267a2486e18aeff2a42161f7a3057258d43618cf9c00bc",
+    "plan_executor/executor.py": "f3890c2f48e8ca397c844805010d545bee24cae3493a387e050439930c0c9430",
+    "plan_executor/requirements.txt": "5369fb7afd05d7ccf3e06d7b175478e55d683a340e8b6b893fdbefd6b7764c1a",
+    "pytest.ini": "315ad6102b8e70afc255508825bc02a4fbda2e8db15c4c5347d7bb89aab232e1",
+    "requirements-canonical.txt": "d82bcfe1078fd37b142e0d853b0ac2556e8ffb81436cf5bcfa7a8443fb6b578f",
+    "requirements-dev.txt": "a28afa129836b4db24e642807e6d03d0c1618559b783e2d9d5619ace722e63a2",
+    "scheduler/requirements.txt": "a594820145075c32bbc11f03f012b36e28647f623fdc74013ba919701e79e419",
+    "scheduler/scheduler.py": "907f43e1f9ff7410c55c79f4dca98d70ecbefaa95dc13ca30bc429144687ae45",
+    "scripts/backup.sh": "8475d54c920a7c8e2ba0180ae26f73b0f8b10b20375e339a406b707dcfa6fea9",
+    "scripts/export-production-state.sh": "e330e536b74e6b1f6d951eac6817da9d354477e82b5bef4b2cf8d46868dcc41a",
+    "scripts/final_healthcheck.sh": "7cfddbf5162e31ef9720e33c04747c2ac7f7aba8a015798a464909a47a99edbc",
+    "scripts/generate_catalog_inventory.py": "717083c56ec6e7e051709503199450bdc9f69d5bf911a695d86c2c7ee0c6d813",
+    "scripts/generate_engine_manifests.py": "3daa87a532895f315b8e3c30013416dcb2b1ace79846e7bd620616755f27281e",
+    "scripts/generate_engine_profile_matrix.py": "962ba013fed84f427cdaa424f135001b17c06515d5109fa613f838cb0fad54cc",
+    "scripts/generate_engine_status.py": "33f9a277d91bbb569b951f4c833828b9756c10f0b5d02d3371677defa297fc1a",
+    "scripts/generate_real_validation_report.py": "873e4f823e461c1d452bf79f58ba7eab14523faaaa0e082edd526db4a10e662c",
+    "scripts/healthcheck.sh": "7eb9e53ed1532b1e83d3e07b787a0ff67e5bf69fb700495abc55637d5f83f5af",
+    "scripts/install.sh": "d1e030b8f22ccd75a702537366c30b9730bb8dd4d9f4cf63482ab469f4ffb68c",
+    "scripts/p14_validate.py": "4e9136e4455f96becdac72bd3b45e9a9be8f965eebd5c33d780f748ef7ec9957",
+    "scripts/restore-production-state.sh": "e1991d3c080bf990c539077ed9afb3e9399ada72090097aa22ab79cd859ccd78",
+    "scripts/restore.sh": "02e931f6fe2ef3a47b458332e9dec84448f04426b9a1a0e56ed78cc67c2f4c7a",
+    "scripts/uninstall.sh": "a39f904729a9e8d67a15d31a43fed2c1f2fea12f0d4a466fa68408a93dffbcee",
+    "scripts/update.sh": "db34bdd53c185d619dd92b634f4ea36fde177da2377f0eed4dcd5dc533bc7623",
+    "scripts/upgrade.sh": "27adbc90a917945763af02d0e62af393e2c4c5378067ff95c066f14fa9c405c0",
+    "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/conftest.py": "e1fd5e1021dc24f650e28c9a4209bfad65ea264f44a16975ae31ee8680cb0b33",
+    "tests/test_imports.py": "4e7e606eddb00685315c7a554430a3b2f76ec7289b719bc739b44573623ff85f",
+    "tests/test_release_assets.py": "21cd2fb8b82cf862f96904006b76df0dba5048d3435f27a0019b604cfd111358",
+    "tests/unit/test_adapter_families.py": "646002ff66782d7fc68255d28deee66030deb46c4bdb593de563ea263d925d70",
+    "tests/unit/test_app_rbac.py": "2edd62fb80af70471e17665d3885478173f96464d12d206a985042f094a9dd67",
+    "tests/unit/test_benchmark.py": "a6ae5022e18d3fbb5fde7f63328eb7a4f6453b13d0c117e924c26dddaba12a69",
+    "tests/unit/test_benchmark_api.py": "24f8a0d7f3b0bfa622b60965384d99f5961f4a8f40d848c1bbf1fcb2d5309e56",
+    "tests/unit/test_benchmark_isolation.py": "6ad3175b6f6a6dd1139c6fd8096768206751c2e23911d866cb78ddf6cf465d6f",
+    "tests/unit/test_catalog.py": "ccaf5753c201a1e34b791c483c39996cd88f1d787e77d52d4fa0184ce8633d2d",
+    "tests/unit/test_chain_benchmark.py": "1ca5bf2f2b30d28d5c58dc58366acbd08878435462e216e48e8712abf024c997",
+    "tests/unit/test_composition.py": "6edf3e87138348f2560fb6a73f9b70d0fc3aea08b4222688a0a202441b848f05",
+    "tests/unit/test_counts.py": "3c1f23a457320791fc6bf82a59b08c2a95e6aed6f691f3e0f83b9883f752c50e",
+    "tests/unit/test_deployment.py": "3c93ed7cdc4aab62a9f2893c32858a3ba4a49b92069910e54c250c21093669fd",
+    "tests/unit/test_failover.py": "57a81a8b4f9ab4032a82473a3eb7cf1542fa983dc20feec86a53d87a8f9726e1",
+    "tests/unit/test_failover_api.py": "9a98004998502c6b8f07fe7062c1593b233d2101ceef51d650dfdb6dccf59a02",
+    "tests/unit/test_installer.py": "23f71e3478188e7e4a21f934f401e6c1de322c590a4530098299433fcbbbf8aa",
+    "tests/unit/test_installer_reconciliation.py": "745850fa116e7b9c3c315967d327fc8d78221631a28c6aebc321f68dee85df2d",
+    "tests/unit/test_kernel_adapters.py": "bf5c4190a60f62b4d3e6d1f34554227528f2716711ead3c995064cd34f3beca6",
+    "tests/unit/test_legacy_probe_honesty.py": "c8e14ac89de933beab55469801b665c575ef620e77ff927fb13028bde401267a",
+    "tests/unit/test_manifests.py": "62866560172fbafad277070ae8af1b5f85990c3b81dccc2fc969faf65752db11",
+    "tests/unit/test_models.py": "bc1d47133f23d74edf32a6c4e1230bcd59553fe6ffbefcc3394a695f65ba7c25",
+    "tests/unit/test_observability_bot.py": "1f41d684f9b9d72b8b5e269b8167ce74b17bc6be04458d10be1a4bb3f821b404",
+    "tests/unit/test_p14_prep.py": "dfc6d46adeec745fa441917d24b773d633ab01c4120011899798c6530b8d896f",
+    "tests/unit/test_port_allocation.py": "83c3586cbc8df89bfe8c34118b162e4b7e6995685e242aea6b44c4431c1ae604",
+    "tests/unit/test_ranking_ui.py": "d5afb02168bab436836963210fe5ecb5aeabb172f686dd9a326d9318a66bccd3",
+    "tests/unit/test_real_validation_regressions.py": "5c33a38ce27657cd85805f47cd2b6fb8dba3b8de2969debf71d88196710f7bee",
+    "tests/unit/test_resources.py": "0cdabb10b1374782c80a8dcfe6fbec83c33988584e4be10f543761bdbf7a3c10",
+    "tests/unit/test_security_hardening.py": "64f7e0fa612ab65556c82cd2fb9c882fd89f2c54eed69d510b07d55f61205556",
+    "tests/unit/test_topology.py": "549c08949ce9089c14173f9967f064e61718a932e80d106159da753116e85bac",
+    "tunnelguard/install.sh": "1e95e80696ec279e6a7abb8c27cfc08d66f111d5d9c99926ee5f3e74ae7af0bc",
+    "tunnelguard/pytest.ini": "e4f170acd2cf77854f32571bbf37f270b5e8e23fb0f85d68a9b78925c062860b",
+    "tunnelguard/requirements.txt": "b89c7fe8095b7d2c3bbfe4a18b1cb1e9704f19688ddc6f3790502a294778c0bd",
+    "tunnelguard/scripts/boot_live.sh": "a6c27a5db20ca84b54f04cbc533daa2a2a2b37cbe931855553ca06eba2b8f3ba",
+    "tunnelguard/scripts/install_hedioum.sh": "620eb6b0725adec40505da57f1b69a0be977b671a3446b87cd9b3f7a4584c2d6",
+    "tunnelguard/scripts/install_paqet.sh": "a169ecc564929dab7f7d3aed8ca43805289e62cf92bc85bde067a0969884650d",
+    "tunnelguard/scripts/run_hedioum_e2e.py": "640ba20d1c73260643331217514480145363d744b35ef3340a40e895b834853b",
+    "tunnelguard/scripts/selftest.py": "1097f7ccb15c24a1ea5be3235cbf4e42d16ca5ca0bb3eb778fbfdf6ccd388ca7",
+    "tunnelguard/scripts/smoke_v12.py": "14c9a6210330e7ed59e58ead73d6de896c0e96ad4bd48dacc57167c9f433131f",
+    "tunnelguard/tests/conftest.py": "25015e3bf5fa86ef4edd47021fc062635626456f2296ec9646b5df55a98a37fb",
+    "tunnelguard/tests/test_api.py": "5a4dc8de0c4d4e550c7106e4eff055edf5f39d3c86f66f20d2b96630a4cdfcb5",
+    "tunnelguard/tests/test_engines.py": "dbad24b9b54ca834735cd91721019ef50a828c43b5edbfe664f99ab3d424439c",
+    "tunnelguard/tests/test_failover_fsm.py": "0cbd846578be008085ec3e5f1233da9dcb8be587a865fa1e8c8eaa7d8772b4d6",
+    "tunnelguard/tests/test_hajsaman.py": "feb04233f4adf764478c4a34f1a5645c2c623f2ea105b1b69f1d4a25ed63402a",
+    "tunnelguard/tests/test_hedioum.py": "55a5bf973787a9bb055c83ae821cfdf2105a1cb4ee94e8eba6ab7a2b2bc68f00",
+    "tunnelguard/tests/test_paqet.py": "99ba428e1a691e6eac71b257ad7b76fc1e73cc309b8f26cc2e269cb3590616fc",
+    "tunnelguard/tests/test_probes.py": "2b9cc5cf9f50928ddc55ece1767ea7d137c6e4f6c76a6524e30754992e6494c2",
+    "tunnelguard/tests/test_wizard.py": "95f5c21a85b8f7add1cf40517ccf1d703baa368c8633b8b2ada9dce0138bdc45",
+    "tunnelguard/tfd/__init__.py": "de0414ac889ff3ba3be0ae80d28cf9358628092fad4e21b895820822540c8433",
+    "tunnelguard/tfd/__main__.py": "b9987ba732307feb87b62ebb7d81aeb1088d58a3ded44eaa2963227c509d1bf8",
+    "tunnelguard/tfd/api.py": "fe3a0c8a5094d7d869bbe3e59b47aae57be6f139818f4c2921266db2fb86c7f6",
+    "tunnelguard/tfd/config.py": "5bdbe35a999af6f3768ee62e3db3311c3c0c0917f6438f388c19eb8a072afe9a",
+    "tunnelguard/tfd/db.py": "974154c9ae29687843ad3a401a4b7e2b164849adc0a000dba713d6a579bc7064",
+    "tunnelguard/tfd/engines/__init__.py": "7f552011def3525cff1952c5becad7b232881faba65e9ab7cf985f27bc96fbf1",
+    "tunnelguard/tfd/engines/base.py": "83f6a0a683ffc5f5a333a9f09c19b2fa0706db7e0b4d2d08f925b8bec584fd06",
+    "tunnelguard/tfd/engines/hajsaman.py": "537c05ea470842b394dfe0759e1492e363167eaeee95b93d03366e50d8a7782c",
+    "tunnelguard/tfd/engines/hedioum.py": "4048550f52ca6a51fcf6798dc4baf528e14a4239b53cdd8360b0cf16bf0870b2",
+    "tunnelguard/tfd/engines/ipsec.py": "a7800e867dd7a5d32af92f00dadefde3cae5c3b482d63f79dcb6a838a41762cf",
+    "tunnelguard/tfd/engines/kernel.py": "3bc8a660c4742e82eceacb307d2295e715a60895ae9f5eb3c1e5d8598945f136",
+    "tunnelguard/tfd/engines/openvpn.py": "2e975290a9177af94a0325a3b99cad9e0c53231e001c85f58e4115313a5ab780",
+    "tunnelguard/tfd/engines/paqet.py": "8fac55dcbddbfe84400794afa1833b1d89c1c9f022a0bb3f1289c57fbf9fbc1b",
+    "tunnelguard/tfd/engines/wireguard.py": "279395a3bff7b74d203a43fd1731a4f3a9163f2624ae90c99e004a0f07c4217c",
+    "tunnelguard/tfd/events.py": "64c49344a506fa12017be8558958ef1206d2a23aed20fd96d479138032cfec71",
+    "tunnelguard/tfd/failover.py": "8e2fbc32b8de68336be2da99964ceff192951df8d28244866f4a40685cfc7c8d",
+    "tunnelguard/tfd/main.py": "74c5f4336ec63249b1175562bdbba6a6ad3dc232ffcd96bdbd639c64da7dc267",
+    "tunnelguard/tfd/probes.py": "8faf0c52ab9fd294e637e3f73b1e67663fa930fbd0594b4a39352139528c5482",
+    "tunnelguard/tfd/routing.py": "536a660a9ae75209f75d5a9ac7be14459eaeebcace2a92977289de8cc5d623b2",
+    "tunnelguard/tfd/security.py": "0f8b6f450a308956be1e606b8cd819b40a99ab56037ec7179cf124630a6b0beb",
+    "tunnelguard/web/index.html": "1c33d33d8f5886b2814389345256384979786e62aa4ff57f65ec8137897c3adf",
+    "update_composer_simple_extra.sh": "16f49a5ba810b8992d16b6a2c89941c91cb45eb2e958a548eefc551a1cda0fa5",
+    "web/admin.html": "7a62fe0b637691ea47375219cc9c2a23a1916fc7f7e11f1ffa4afe8328be2558",
+    "web/app.html": "7a62fe0b637691ea47375219cc9c2a23a1916fc7f7e11f1ffa4afe8328be2558",
+    "web/composer.html": "4a005dc18a6a587a4c8aa09f73a95f2ee3e43ed4787e0b9ff41968587d20f4da",
+    "web/index.html": "c5b96c907b1830eb0e1fae91fc1b14988d6b3bf0aafa474ee0771f3f9924e035",
+    "worker/requirements.txt": "5369fb7afd05d7ccf3e06d7b175478e55d683a340e8b6b893fdbefd6b7764c1a",
+    "worker/worker.py": "eefe2b58f119064b3d230773b4b54094f09b90a3095540a4e65370a29bc5bf68"
+  }
+}

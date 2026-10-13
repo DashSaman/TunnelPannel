@@ -65,17 +65,28 @@ def curl_direct(port: int, url: str | None = None, timeout: int = 12) -> tuple[b
 
 
 def udp_echo_test(port: int, payload: str = "mtf-udp-probe") -> tuple[bool, str]:
-    rc, out = sh(
-        f"(sleep 0.2; printf '{payload}' | socat -t3 - UDP4:127.0.0.1:{port}) "
-        f"& sleep 0.1; socat -T3 UDP4-RECVFROM:{port},fork EXEC:'/bin/cat' 2>/dev/null "
-        f"| head -c 64", timeout=8)
-    return (payload in out), f"udp roundtrip via :{port} -> {out[:40]!r}"
+    # A probe never creates the listener it is meant to verify.
+    data = payload.encode()
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as client:
+            client.settimeout(3)
+            client.sendto(data, ("127.0.0.1", port))
+            response, _ = client.recvfrom(65535)
+        return response == data, f"udp roundtrip via :{port}: payload matched={response == data}"
+    except OSError as error:
+        return False, f"udp roundtrip via :{port} failed: {error}"
 
 
 def ensure_echo():
+    echo_dir = f"{MDIR}/echo-origin"
+    os.makedirs(echo_dir, exist_ok=True)
+    wr(f"{echo_dir}/index.html", "TunnelPannel isolated lab origin\n")
     rc, out = sh(f"ss -tln | grep -q ':{ECHO_PORT} ' && echo up || "
-                 f"(nohup python3 -m http.server {ECHO_PORT} --bind 0.0.0.0 "
+                 f"(nohup python3 -m http.server {ECHO_PORT} --bind 127.0.0.1 --directory {echo_dir} "
                  f">> {LOGD}/echo.log 2>&1 & echo starting)")
+    sh(f"ss -uln | grep -q ':{ECHO_PORT} ' || "
+       f"(nohup socat UDP4-RECVFROM:{ECHO_PORT},bind=127.0.0.1,fork EXEC:/bin/cat "
+       f">> {LOGD}/udp-origin.log 2>&1 & echo starting)")
     for _ in range(20):
         if wait_port(ECHO_PORT):
             return
@@ -218,9 +229,10 @@ def run_gost_tun(h: Harness, variant: str) -> tuple[str, dict]:
     h.start([g, "-L", "tun://:0?net=10.74.0.1/30&route=10.74.0.0/30"], "srv-tun")
     h.start([g, "-L", "tun://:0?net=10.74.0.2/30&gw=10.74.0.1"], "cli-tun")
     time.sleep(4)
-    ok, msg = sh("ping -c3 -i0.3 -W2 -I tun0 10.74.0.1 2>&1 | tail -2")[0] == 0
+    rc, _ = sh("ping -c3 -i0.3 -W2 -I tun0 10.74.0.1 2>&1")
+    ok = rc == 0
     h.ev(f"gost TUN datapath ping -> rc={0 if ok else 1}")
-    return ("PASS" if ok else "PARTIAL"), {"evidence": h.evidence,
+    return "PARTIAL", {"evidence": h.evidence,
                                            "note": "TUN needs /dev/net/tun + gost tun plugin"}
 
 
@@ -229,18 +241,20 @@ def run_frp(h: Harness, variant: str) -> tuple[str, dict]:
     bind = 14110
     proto = variant.replace("FRP_", "").lower()          # tcp udp kcp quic stcp xtcp
     tok = secrets.token_hex(8)
+    carrier = (f'kcpBindPort = {bind}\n' if proto == "kcp" else
+               f'quicBindPort = {bind}\n' if proto == "quic" else "")
     wr(f"{h.dir}/frps.toml",
-       f'bindAddr = "0.0.0.0"\nbindPort = {bind}\nkcpBindPort = {bind}\nquicBindPort = {bind}\n')
+       f'bindAddr = "127.0.0.1"\nbindPort = {bind}\n' + carrier)
     h.start([frps, "-c", f"{h.dir}/frps.toml"], "frps")
     if variant in ("FRP_TCP", "FRP_UDP", "FRP_KCP", "FRP_QUIC"):
         wr(f"{h.dir}/frpc.toml",
            f'serverAddr = "127.0.0.1"\nserverPort = {bind}\n'
-           f'transport.protocol = "{proto}"\n\n'
-           f'[[proxies]]\nname = "mtf"\ntype = "tcp"\n'
+           f'transport.protocol = "{proto if proto in ("kcp", "quic") else "tcp"}"\n\n'
+           f'[[proxies]]\nname = "mtf"\ntype = "{"udp" if proto == "udp" else "tcp"}"\n'
            f'localIP = "127.0.0.1"\nlocalPort = {ECHO_PORT}\nremotePort = 14111\n')
         h.start([frpc, "-c", f"{h.dir}/frpc.toml"], "frpc")
         time.sleep(3)
-        ok, msg = curl_direct(14111)
+        ok, msg = udp_echo_test(14111) if proto == "udp" else curl_direct(14111)
         h.ev(msg)
         return ("PASS" if ok else "FAIL"), {"evidence": h.evidence}
     # STCP / XTCP: secret-key visitor
@@ -297,18 +311,19 @@ def run_chisel(h: Harness, variant: str) -> tuple[str, dict]:
     ch = f"{BIN}/chisel"
     P = 14130
     auth = f"user:pass-{secrets.token_hex(4)}"
-    h.start([ch, "server", "--port", str(P), "--auth", auth, "--reverse"], "ch-srv")
+    h.start([ch, "server", "--host", "127.0.0.1", "--port", str(P), "--auth", auth,
+             "--reverse", "--socks5"], "ch-srv")
     if not wait_port(P):
         h.ev("chisel server not ready")
         return "FAIL", {"evidence": h.evidence}
     url = f"http://127.0.0.1:{P}"
     cases = {
-        "CHISEL_SOCKS5":      [["client", "--auth", auth, url, "socks5://127.0.0.1:14131"], ("socks", 14131)],
+        "CHISEL_SOCKS5":      [["client", "--auth", auth, url, "127.0.0.1:14131:socks"], ("socks", 14131)],
         "CHISEL_TCP":         [["client", "--auth", auth, url, "14132:127.0.0.1:%d" % ECHO_PORT], ("direct", 14132)],
-        "CHISEL_UDP":         [["client", "--auth", auth, url, "udp://14133:127.0.0.1:%d/udp" % ECHO_PORT], ("udp", 14133)],
-        "CHISEL_REVERSE_SOCKS5": [["client", "--auth", auth, url, "-R", "socks://0.0.0.0:14134"], ("socks", 14134)],
-        "CHISEL_REVERSE_TCP": [["client", "--auth", auth, url, "-R", "14135:127.0.0.1:%d" % ECHO_PORT], ("direct", 14135)],
-        "CHISEL_REVERSE_UDP": [["client", "--auth", auth, url, "-R", "udp://14136:127.0.0.1:%d/udp" % ECHO_PORT], ("udp", 14136)],
+        "CHISEL_UDP":         [["client", "--auth", auth, url, "14133:127.0.0.1:%d/udp" % ECHO_PORT], ("udp", 14133)],
+        "CHISEL_REVERSE_SOCKS5": [["client", "--auth", auth, url, "R:127.0.0.1:14134:socks"], ("socks", 14134)],
+        "CHISEL_REVERSE_TCP": [["client", "--auth", auth, url, "R:14135:127.0.0.1:%d" % ECHO_PORT], ("direct", 14135)],
+        "CHISEL_REVERSE_UDP": [["client", "--auth", auth, url, "R:14136:127.0.0.1:%d/udp" % ECHO_PORT], ("udp", 14136)],
     }
     cmd, (mode, port) = cases[variant]
     h.start([ch] + cmd, "ch-cli")
@@ -480,11 +495,14 @@ def run_singbox(h: Harness, variant: str) -> tuple[str, dict]:
     time.sleep(2)
     ok, msg = curl_via_socks(CP)
     h.ev(msg)
+    if variant == "SINGBOX_TUN":
+        h.ev("only the mixed/SOCKS carrier was exercised; no TUN interface or routing was configured")
+        return "PARTIAL", {"evidence": h.evidence}
     return ("PASS" if ok else "FAIL"), {"evidence": h.evidence}
 
 
 def run_waterwall(h: Harness, variant: str) -> tuple[str, dict]:
-    ww = f"{BIN}/WaterWall"
+    ww = f"{BIN}/WaterWall" if os.path.exists(f"{BIN}/WaterWall") else f"{BIN}/waterwall"
     rc, out = sh(f"{ww} --help 2>&1 | head -30")
     h.ev(f"binary help: {out[:300]}")
     P = 14170

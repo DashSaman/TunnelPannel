@@ -58,7 +58,7 @@ def create_app() -> FastAPI:
     Base.metadata.create_all(session_factory.kw["bind"])  # dev convenience; installer runs alembic
 
     app.include_router(bench_router(session_factory, caps_from_dict,
-                                    demo_adapter_factory))
+                                    demo_adapter_factory, execution_available=False))
     app.include_router(failover_router(session_factory))
     app.include_router(web_router(session_factory))
 

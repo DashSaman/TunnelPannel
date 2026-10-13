@@ -1,3 +1,11 @@
+> **بررسی عملیاتی ۱۳ اکتبر ۲۰۲۶:** نصب اصلاح‌شده روی دو VPS اوبونتو ۲۴.۰۴ تست شد؛ ۴۸۰ + ۱۰۰ + ۱ تست نرم‌افزاری موفق بود. از ۸۲ روش آزمایشگاهی، ۳۲ موفق، ۲۳ ناقص و ۲۷ ناموفق بود. شش روش کرنلی و تست سوییچ WireGuard به GRE روی دو سرور واقعی موفق بودند. **انتشار Production هنوز به‌دلیل اتصال ناقص موتور به API و پروفایل‌های ناقص مسدود است.** [گزارش دقیق](docs/releases/v0.9.0-rc2/REAL_VALIDATION.md) را قبل از استفاده از ادعاهای تاریخی زیر بخوانید. API برای benchmark بدون اجراکننده پاسخ 503 می‌دهد.
+
+نصب تک‌خطی شاخهٔ اصلاح‌شده (نسخهٔ آزمایشی، نه stable):
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/codex/server-validation-20261013/install.sh | sudo env TUNNELPANNEL_VERSION=codex/server-validation-20261013 bash
+```
+
 # MTF — پنل چندتونلی با فیلاور
 
 [![methods](https://img.shields.io/badge/روش_تانل-82-34DFF0)]() [![stack](https://img.shields.io/badge/موتور-FastAPI%20%2B%20Docker-4ADE80)]() [![i18n](https://img.shields.io/badge/رابط-فارسی%20%2F%20English-A78BFA)]() [![ip](https://img.shields.io/badge/شبکه-IPv4%20%2B%20IPv6-FBBF24)]()
