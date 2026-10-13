@@ -88,3 +88,10 @@ Historical discrepancies resolved: "77" = Gen1 executor/catalog (subset, interna
 - Installer reconciliation, permissions, bootstrap display/log exclusion, custom ports, backup working directory, validation truth/ownership gates, benchmark run isolation and lab transport defects corrected.
 - Fresh Linux checks: 486 canonical + 100 TunnelGuard + 1 backend PASS; Ruff/ShellCheck/catalog generators PASS; canonical pip-audit reports no known vulnerabilities.
 - Install/reinstall, upgrade, SQLite restore, custom-port restore and owned-only uninstall/reinstall passed. Stable/production gate remains unfulfilled.
+
+
+## 2026-10-14 canonical real-pair continuation
+
+Latest two-node NORMAL results: 82 PASS, derived from the full matrix (76 PASS/6 FAILED) and explicit corrected-profile reruns. Fresh software suites: 533 canonical + 100 TunnelGuard + 1 backend PASS. Real canonical node registration, pinned SSH, encrypted credentials and panel jobs are wired. See docs/releases/v0.9.0-rc3/REAL_BENCHMARK.md. Five DEEP profiles, final installer lifecycle and public CI are in progress. Native Hedioum rapid short-connection churn remains a documented diagnostic limitation; sustained TUN speed uses bidirectional iperf3. Supplied credentials never belong in tracked files.
+
+The former canonical executor/profile blockers are resolved for the tested two-node benchmark. A three-server path and arbitrary production environments remain outside this evidence.

@@ -40,6 +40,13 @@ class TestHealthAndSurface:
 
 
 class TestRBAC:
+    @pytest.mark.parametrize("role", ["VIEWER", "OPERATOR", "SUPER_ADMIN"])
+    def test_all_registered_roles_can_identify_their_session(self, app, monkeypatch, role):
+        _set_tokens(monkeypatch, {role: "session-test-token"})
+        response = TestClient(app).get("/api/whoami", headers={"Authorization": "Bearer session-test-token"})
+        assert response.status_code == 200
+        assert response.json()["role"] == role
+
     def test_no_token_401(self, app):
         c = TestClient(app)
         assert c.get("/api/whoami").status_code == 401

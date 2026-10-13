@@ -18,6 +18,7 @@ from sqlalchemy.orm import sessionmaker
 
 from apps.api.benchmark_api import create_router as bench_router
 from apps.api.failover_api import create_router as failover_router
+from apps.api.nodes_api import create_nodes_router
 from apps.web.web_api import create_web_router as web_router
 from core.models import Alert, Base, BenchmarkSample, FailoverGroup, Node
 from core.security import audit_from_user, rate_limit, record_audit, require_role
@@ -51,14 +52,16 @@ def demo_adapter_factory(cand):
     raise HTTPException(501, "benchmark execution requires engine executor wiring")
 
 
-def create_app() -> FastAPI:
+def create_app(factory=None) -> FastAPI:
     global session_factory
-    session_factory = _session_factory()
+    session_factory = factory or _session_factory()
     app = FastAPI(title="TunnelPannel", version="0.1.0")
     Base.metadata.create_all(session_factory.kw["bind"])  # dev convenience; installer runs alembic
 
-    app.include_router(bench_router(session_factory, caps_from_dict,
-                                    demo_adapter_factory, execution_available=False))
+    from orchestrator.pair_runtime import prepare_benchmark
+    app.include_router(create_nodes_router(session_factory))
+    app.include_router(bench_router(session_factory, caps_from_dict, None,
+                                    prepare=prepare_benchmark(session_factory), secure=True))
     app.include_router(failover_router(session_factory))
     app.include_router(web_router(session_factory))
 
@@ -108,11 +111,11 @@ def create_app() -> FastAPI:
         return {"reloaded": True, "by": user}
 
     @app.get("/api/admin/overview")
-    def admin_overview(user=Depends(require_role("VIEWER"))):
+    def admin_overview(user=Depends(require_role("VIEWER", "OPERATOR", "SUPER_ADMIN"))):
         return {"overview": "ok", "for": user}
 
     @app.get("/api/whoami")
-    def whoami(user=Depends(require_role("VIEWER"))):
+    def whoami(user=Depends(require_role("VIEWER", "OPERATOR", "SUPER_ADMIN"))):
         return user
 
     return app

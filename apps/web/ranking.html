@@ -13,8 +13,11 @@ header .badge{background:rgba(255,255,255,.14);border-radius:12px;padding:2px 10
 main{padding:20px 22px;max-width:1500px}
 .controls{display:flex;gap:12px;align-items:end;flex-wrap:wrap;background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:14px}
 .controls label{display:flex;flex-direction:column;font-size:12px;color:#54636f;gap:4px}
-select,button{font:inherit}
+select,input,textarea,button{font:inherit}
 select{padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;min-width:180px}
+input,textarea{padding:7px 10px;border:1px solid var(--line);border-radius:6px;min-width:180px}
+.access{margin-bottom:14px}.access summary{font-size:14px;font-weight:600;padding:10px}
+.note{font-size:13px;color:#54636f}.controls textarea{min-height:60px}
 button{background:var(--teal);color:#fff;border:0;border-radius:6px;padding:9px 22px;font-weight:600;cursor:pointer}
 button:disabled{opacity:.5;cursor:default}
 button.secondary{background:#fff;color:var(--navy);border:1px solid var(--navy)}
@@ -47,6 +50,25 @@ details summary{cursor:pointer;color:var(--teal)}
   <span class="badge" id="mode-badge">idle</span>
 </header>
 <main>
+  <div class="controls access">
+    <label>API access token / توکن دسترسی <input id="access-token" type="password" autocomplete="off"></label>
+    <button id="connect">Connect / اتصال</button>
+    <span class="note" id="auth-status">Enter your operator or admin token / توکن اپراتور یا مدیر را وارد کنید</span>
+  </div>
+  <details class="access">
+    <summary>Add a node / افزودن سرور</summary>
+    <div class="controls">
+      <label>Name / نام <input id="new-name" maxlength="120"></label>
+      <label>Host / آدرس <input id="new-host" autocomplete="off"></label>
+      <label>SSH port / پورت <input id="new-port" type="number" min="1" max="65535" value="22"></label>
+      <label>User / کاربر <input id="new-user" value="root"></label>
+      <label>Host key SHA256 / اثر انگشت میزبان <input id="new-fingerprint" autocomplete="off"></label>
+      <label>Password / رمز <input id="new-password" type="password" autocomplete="new-password"></label>
+      <label>Private key (alternative) / کلید خصوصی <textarea id="new-key" autocomplete="off"></textarea></label>
+      <button id="add-node">Save node / ثبت یا بروزرسانی سرور</button>
+    </div>
+    <p class="note">Use the fingerprint from a trusted SSH connection. Credentials are encrypted on the panel server. / اثر انگشت را از اتصال SSH معتبر دریافت کنید؛ اطلاعات ورود روی سرور پنل رمزگذاری می‌شود.</p>
+  </details>
   <div class="controls">
     <label>Source node <select id="node-a"></select></label>
     <label>Destination node <select id="node-b"></select></label>
@@ -57,8 +79,15 @@ details summary{cursor:pointer;color:var(--teal)}
         <option value="DEEP">DEEP — explicit request only</option>
       </select>
     </label>
+    <label>Methods / روش‌ها <select id="methods" multiple size="4"></select></label>
+    <button id="discover" class="secondary">Inspect nodes / بررسی سرورها</button>
     <button id="run">Benchmark</button>
     <button id="cancel" class="secondary" disabled>Cancel</button>
+  </div>
+  <div class="controls">
+    <label>Previous benchmarks / بنچمارک‌های قبلی <select id="history"></select></label>
+    <button id="refresh-history" class="secondary">Refresh history / بروزرسانی سوابق</button>
+    <button id="open-history" class="secondary">View results / نمایش نتایج</button>
   </div>
 
   <div class="progress" id="progress">
@@ -90,26 +119,75 @@ const COLUMNS = [
   ["ram_mb","RAM"], ["reason","Reason"], ["details","Details"],
 ];
 let jobId = null, sortKey = null, sortDir = -1, selected = new Set();
+let apiToken = "";
 
 function $(id){return document.getElementById(id)}
 
 function setBadge(t){$("mode-badge").textContent = t}
 
+async function api(path, options={}){
+  const headers={...(options.headers||{}), Authorization: "Bearer " + apiToken};
+  const response=await fetch(path,{...options,headers});
+  if(!response.ok){let detail=response.statusText;try{detail=(await response.json()).detail||detail}catch{}throw new Error(typeof detail === "string"?detail:JSON.stringify(detail))}
+  return response;
+}
+function displayError(error){$("error").textContent=error.message;$("error").style.display="block"}
+function escapeHTML(value){return String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
+
 async function loadNodes(){
-  // nodes come from the canonical API in production; fallback demo pair
   const a = $("node-a"), b = $("node-b");
   for (const sel of [a, b]) sel.innerHTML = "";
   try {
-    const r = await fetch("/api/nodes");
+    const r = await api("/api/nodes");
     const nodes = await r.json();
     for (const n of nodes) {
       a.add(new Option(n.name, n.id)); b.add(new Option(n.name, n.id));
     }
     if (nodes.length > 1) b.selectedIndex = 1;
-  } catch {
-    a.add(new Option("node-a", "node-a")); b.add(new Option("node-b", "node-b"));
-  }
+  } catch(error) { displayError(error); }
 }
+
+$("connect").onclick=async()=>{try{
+  apiToken=$("access-token").value.trim();
+  const user=await (await api("/api/whoami")).json();
+  $("auth-status").textContent=user.role;
+  $("access-token").value="";
+  $("error").style.display="none";
+  await loadNodes();
+  const methods=await (await api("/benchmarks/methods")).json();
+  $("methods").replaceChildren();
+  for(const method of methods){const option=new Option(method.id,method.id);option.selected=["WIREGUARD","GRE","GRETAP","IPIP","SIT_6IN4","VXLAN"].includes(method.id);$("methods").add(option)}
+  await loadHistory();
+}catch(error){apiToken="";displayError(error)}};
+async function loadHistory(){
+  const jobs=await (await api('/benchmarks')).json();
+  $("history").replaceChildren();
+  for(const job of jobs)$("history").add(new Option(`${job.created_at} · ${job.profile} · ${job.state} · ${job.job_id.slice(0,8)}`,job.job_id));
+}
+$("refresh-history").onclick=()=>loadHistory().catch(displayError);
+$("open-history").onclick=async()=>{try{
+  if(!$("history").value)return;
+  clearInterval(window._timer);jobId=$("history").value;selected.clear();
+  $("progress").style.display="block";await poll();
+  if(!$("cancel").disabled)window._timer=setInterval(poll,1000);
+}catch(error){displayError(error)}};
+$("add-node").onclick=async()=>{try{
+  const payload={name:$("new-name").value.trim(),host:$("new-host").value.trim(),ssh_port:Number($("new-port").value),ssh_username:$("new-user").value.trim(),host_key_fingerprint:$("new-fingerprint").value.trim(),password:$("new-password").value,private_key:$("new-key").value};
+  let node;
+  try{node=await (await api("/api/nodes",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)})).json()}
+  catch(error){
+    if(error.message!=="node name already exists")throw error;
+    const existing=(await (await api('/api/nodes')).json()).find(n=>n.name===payload.name&&n.host===payload.host);
+    if(!existing)throw error;
+    node=await (await api(`/api/nodes/${existing.id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})).json();
+  }
+  $("new-password").value="";$("new-key").value="";
+  await api(`/api/nodes/${node.id}/discover`,{method:"POST"});await loadNodes();
+}catch(error){displayError(error)}};
+$("discover").onclick=async()=>{try{
+  for(const id of new Set([$("node-a").value,$("node-b").value])) await api(`/api/nodes/${id}/discover`,{method:"POST"});
+  $("auth-status").textContent="Nodes inspected / سرورها بررسی شدند";
+}catch(error){displayError(error)}};
 
 function renderHead(){
   const tr = $("head-row"); tr.innerHTML = "";
@@ -146,14 +224,14 @@ function renderRows(){
     const cells = [
       i + 1,
       `<input type="checkbox" data-cand="${r.candidate}" ${selected.has(r.candidate) ? "checked" : ""}>`,
-      r.candidate, r.status,
+      escapeHTML(r.candidate), escapeHTML(r.status),
       r.score === null || r.score === undefined ? "—" : `<span class="score">${r.score}</span>`,
       fmt(m.rtt_avg, "ms"), fmt(m.rtt_p50, "ms"), fmt(m.rtt_p95, "ms"),
       fmt(m.jitter, "ms"), fmt(m.loss_pct, "%"), fmt(m.throughput_mbps, "Mb/s"),
       fmt(m.stability_ratio), fmt(m.reconnect_s, "s"), fmt(m.cpu_pct, "%"),
       fmt(m.ram_mb, "MB"),
-      `<span class="reason" title="${(r.reason || "").replace(/"/g, "&quot;")}">${r.reason || "—"}</span>`,
-      `<details><summary>receipt</summary><pre>${JSON.stringify(m, null, 1)}</pre></details>`,
+      `<span class="reason" title="${escapeHTML(r.reason)}">${escapeHTML(r.reason || "—")}</span>`,
+      `<details><summary>receipt</summary><pre>${escapeHTML(JSON.stringify(m, null, 1))}</pre></details>`,
     ];
     cells.forEach((c, idx) => {
       const td = document.createElement("td");
@@ -188,24 +266,24 @@ function showResults(rows){
 }
 
 async function poll(){
-  const s = await (await fetch(`/benchmarks/${jobId}`)).json();
+  try {
+  const s = await (await api(`/benchmarks/${jobId}`)).json();
   $("prog-label").textContent = `${Math.round((s.progress || 0) * 100)}%`;
   $("prog-fill").style.width = `${Math.round((s.progress || 0) * 100)}%`;
-  setBadge(s.state);
-  if (["PASS", "FAILED", "CANCELLED", "TIMED_OUT"].includes(s.state)) {
-    $("cancel").disabled = true; $("run").disabled = false;
-    clearInterval(window._timer);
-    const res = await (await fetch(`/benchmarks/${jobId}/results`)).json();
-    showResults(res.results || []);
-    return;
+  const terminal=["PASS","FAILED","CANCELLED","TIMED_OUT"].includes(s.state);
+  $("cancel").disabled=terminal; $("run").disabled=!terminal;
+  const res = await (await api(`/benchmarks/${jobId}/results`)).json();
+  const rows = res.results || [];
+  const c = {PASS:0, DEGRADED:0, FAILED:0, BLOCKED:0, INCOMPATIBLE:0, TIMED_OUT:0, CANCELLED:0};
+  rows.forEach(r=>{if(r.status in c)c[r.status]++});
+  $("counts").textContent = `${c.PASS} PASS · ${c.DEGRADED} DEG · ${c.FAILED+c.TIMED_OUT} FAIL · ${c.BLOCKED} BLOCKED · ${c.INCOMPATIBLE} INCOMPATIBLE · ${c.CANCELLED} CANCELLED`;
+  showResults(rows);
+  $("error").style.display="none";
+  setBadge(terminal && c.FAILED+c.TIMED_OUT>0 ? "Completed with failures / پایان با خطا" : s.state);
+  if (terminal) {
+    $("cancel").disabled=true; $("run").disabled=false; clearInterval(window._timer);
   }
-  const res = await (await fetch(`/benchmarks/${jobId}/results`)).json();
-  const c = {PASS: 0, DEGRADED: 0, FAILED: 0, BLOCKED: 0, INCOMPATIBLE: 0};
-  (res.results || []).forEach(r => { if (r.status in c) c[r.status]++; });
-  $("counts").innerHTML =
-    `<b class="p">${c.PASS} PASS</b><b>${c.DEGRADED} DEG</b>` +
-    `<b class="f">${c.FAILED} FAIL</b><b class="b">${c.BLOCKED} BLOCKED</b>` +
-    `<b class="b">${c.INCOMPATIBLE} INCOMPATIBLE</b>`;
+  } catch(error){clearInterval(window._timer);displayError(error);$("run").disabled=false;setBadge("error")}
 }
 
 $("run").onclick = async () => {
@@ -213,11 +291,13 @@ $("run").onclick = async () => {
   $("run").disabled = true; $("cancel").disabled = false;
   setBadge("starting");
   try {
-    const r = await fetch("/benchmarks", {
+    const r = await api("/benchmarks", {
       method: "POST", headers: {"Content-Type": "application/json"},
       body: JSON.stringify({
         node_a: {node_id: $("node-a").value}, node_b: {node_id: $("node-b").value},
         profile: $("profile").value,
+        methods: Array.from($("methods").selectedOptions).map(option=>option.value),
+        max_parallel: 1,
       }),
     });
     if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
@@ -234,11 +314,11 @@ $("run").onclick = async () => {
   }
 };
 
-$("cancel").onclick = () => fetch(`/benchmarks/${jobId}/cancel`, {method: "POST"});
+$("cancel").onclick = () => api(`/benchmarks/${jobId}/cancel`, {method: "POST"}).catch(displayError);
 
 $("save-selection").onclick = async () => {
   if (!jobId || !selected.size) return;
-  await fetch(`/benchmarks/${jobId}/selection`, {
+  await api(`/benchmarks/${jobId}/selection`, {
     method: "POST", headers: {"Content-Type": "application/json"},
     body: JSON.stringify({selected: [...selected]}),
   });

@@ -14,10 +14,11 @@ from __future__ import annotations
 
 import threading
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 
 from core.models import BenchmarkReceipt, BenchmarkSample, Job
+from core.security import require_role
 from orchestrator.benchmarking import PROFILES, resolve_candidates
 from orchestrator.benchmarking.runner import BenchmarkRunner, sanitize
 
@@ -27,24 +28,45 @@ class StartRequest(BaseModel):
     node_b: dict
     profile: str = "NORMAL"
     max_parallel: int = 2
+    methods: list[str] | None = None
 
 
 def create_router(session_factory, caps_from_dict, adapter_factory,
-                  execution_available: bool = True) -> APIRouter:
+                  execution_available: bool = True, prepare=None, secure=False) -> APIRouter:
     """caps_from_dict(payload) -> NodeCaps; adapter_factory(candidate) -> adapter."""
     router = APIRouter(prefix="/benchmarks", tags=["benchmark"])
     runners: dict[str, BenchmarkRunner] = {}
     lock = threading.Lock()
 
-    @router.post("")
+    mutations = [Depends(require_role("SUPER_ADMIN", "OPERATOR"))] if secure else []
+    reads = [Depends(require_role("SUPER_ADMIN", "OPERATOR", "VIEWER"))] if secure else []
+
+    @router.get("/methods", dependencies=reads)
+    def methods():
+        from core.catalog import CATALOG
+        return [{"id": i.legacy_id, "engine": i.engine, "profile": i.profile,
+                 "composite": i.is_composite} for i in CATALOG.identities.values()]
+
+    @router.get("", dependencies=reads)
+    def history():
+        with session_factory() as session:
+            jobs = session.query(Job).filter_by(kind="benchmark").order_by(Job.created_at.desc()).limit(30).all()
+            return [{"job_id": j.id, "state": j.state, "profile": j.payload.get("profile"),
+                     "created_at": j.created_at} for j in jobs]
+
+    @router.post("", dependencies=mutations)
     def start(req: StartRequest):
         if not execution_available:
             raise HTTPException(503, "real-node benchmark execution is not configured; no job was started")
         if req.profile not in PROFILES:
             raise HTTPException(400, f"profile must be one of {sorted(PROFILES)}")
-        caps_a = caps_from_dict(req.node_a)
-        caps_b = caps_from_dict(req.node_b)
-        candidates = resolve_candidates(caps_a, caps_b)
+        if prepare:
+            caps_a, caps_b, candidates, factory = prepare(req)
+        else:
+            caps_a = caps_from_dict(req.node_a)
+            caps_b = caps_from_dict(req.node_b)
+            candidates = resolve_candidates(caps_a, caps_b)
+            factory = adapter_factory
         with session_factory() as session:
             job = Job(kind="benchmark",
                       payload={"node_a": caps_a.node_id, "node_b": caps_b.node_id,
@@ -57,7 +79,7 @@ def create_router(session_factory, caps_from_dict, adapter_factory,
             session.commit()
             job_id = job.id
         runner = BenchmarkRunner(None, caps_a.node_id, caps_b.node_id,
-                                 req.profile, adapter_factory, candidates,
+                                 req.profile, factory, candidates,
                                  max_parallel=req.max_parallel)
         with lock:
             runners[job_id] = runner
@@ -76,6 +98,9 @@ def create_router(session_factory, caps_from_dict, adapter_factory,
                         runner.job.state = "FAILED"
                         runner.job.error = str(e)[:500]
                         s.commit()
+                finally:
+                    with lock:
+                        runners.pop(job_id, None)
 
         threading.Thread(target=_run, daemon=True,
                          name=f"bench-{job_id[:8]}").start()
@@ -89,7 +114,7 @@ def create_router(session_factory, caps_from_dict, adapter_factory,
             raise HTTPException(404, "no such benchmark job")
         return job
 
-    @router.get("/{job_id}")
+    @router.get("/{job_id}", dependencies=reads)
     def state(job_id: str):
         with session_factory() as session:
             job = _job(job_id, session)
@@ -97,7 +122,7 @@ def create_router(session_factory, caps_from_dict, adapter_factory,
                     "error": job.error, "payload": job.payload,
                     "created_at": job.created_at, "finished_at": job.finished_at}
 
-    @router.post("/{job_id}/cancel")
+    @router.post("/{job_id}/cancel", dependencies=mutations)
     def cancel(job_id: str):
         with lock:
             runner = runners.get(job_id)
@@ -112,7 +137,7 @@ def create_router(session_factory, caps_from_dict, adapter_factory,
         runner.cancel()
         return {"job_id": job_id, "state": "cancelling"}
 
-    @router.get("/{job_id}/results")
+    @router.get("/{job_id}/results", dependencies=reads)
     def results(job_id: str):
         with session_factory() as session:
             job = _job(job_id, session)
@@ -122,12 +147,17 @@ def create_router(session_factory, caps_from_dict, adapter_factory,
             else:
                 samples = list(session.query(BenchmarkSample)
                                .filter(BenchmarkSample.run_id == run_id).all())
+            from orchestrator.benchmarking.scoring import score_sample, rank
+            scored = rank([score_sample(s.candidate, s.metrics, s.status) for s in samples])
+            by_candidate = {s.candidate: s for s in samples}
             return {"job_id": job_id, "job_state": job.state,
                     "results": [{"candidate": s.candidate, "status": s.status,
-                                 "reason": s.reason, "metrics": s.metrics}
-                                for s in samples]}
+                                 "score": s.score,
+                                 "reason": by_candidate[s.candidate].reason or ("; ".join(s.reasons) if s.status == "DEGRADED" else None),
+                                 "scoring_reasons": s.reasons, "metrics": s.metrics}
+                                for s in scored]}
 
-    @router.get("/{job_id}/receipts/{candidate}")
+    @router.get("/{job_id}/receipts/{candidate}", dependencies=reads)
     def receipt(job_id: str, candidate: str):
         with session_factory() as session:
             job = _job(job_id, session)

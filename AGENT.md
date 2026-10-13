@@ -73,4 +73,9 @@
 
 ## 2026-10-13 disposable-node validation
 
-486 canonical + 100 TunnelGuard + 1 backend tests passed on Linux. Full isolated legacy lab: 32 PASS / 23 PARTIAL / 27 FAIL. Six canonical kernel methods passed real-pair traffic and WG→GRE failure-triggered route switching passed. Installer lifecycle acceptance passed. Production remains BLOCKED by executor wiring, incomplete profiles and unverified full chains/multi-hop. See docs/releases/v0.9.0-rc2/REAL_VALIDATION.md. No new node credentials belong in tracked files.
+Historical RC2 baseline (superseded by RC3): 32 PASS / 23 PARTIAL / 27 FAIL in the isolated legacy lab, six real kernel methods and the WG-to-GRE drill. See docs/releases/v0.9.0-rc2/REAL_VALIDATION.md.
+
+
+## 2026-10-14 real panel benchmark verification
+
+Latest two-node NORMAL results: 82 PASS, derived from the full matrix (76 PASS/6 FAILED) and explicit corrected-profile reruns. Fresh software suites: 533 canonical + 100 TunnelGuard + 1 backend PASS. Real canonical node registration, pinned SSH, encrypted credentials and panel jobs are wired. See docs/releases/v0.9.0-rc3/REAL_BENCHMARK.md. Five DEEP profiles, final installer lifecycle and public CI are in progress. Native Hedioum rapid short-connection churn remains a documented diagnostic limitation; sustained TUN speed uses bidirectional iperf3. Supplied credentials never belong in tracked files.

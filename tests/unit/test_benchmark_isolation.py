@@ -30,7 +30,9 @@ def test_results_and_receipts_are_scoped_to_the_requested_job(tmp_path):
     assert client.get(f"/benchmarks/{new_id}/receipts/GRE").status_code == 404
 
 
-def test_unconfigured_production_executor_refuses_a_job_before_starting(monkeypatch, tmp_path):
+def test_production_executor_rejects_unregistered_nodes_before_starting(monkeypatch, tmp_path):
+    import hashlib
+    monkeypatch.setenv("TP_RBAC_TOKENS", "SUPER_ADMIN:" + hashlib.sha256(b"test-admin").hexdigest())
     monkeypatch.setenv("DATABASE_URL", f"sqlite:///{(tmp_path / 'app.db').as_posix()}")
     from apps.api import main
     monkeypatch.setattr(main, "_shared_factory", None)
@@ -38,8 +40,9 @@ def test_unconfigured_production_executor_refuses_a_job_before_starting(monkeypa
     client = TestClient(main.create_app())
     with main.session_factory() as s:
         before = s.query(Job).count()
-    response = client.post("/benchmarks", json={"node_a": {"node_id": "a"},
+    response = client.post("/benchmarks", headers={"Authorization": "Bearer test-admin"},
+                           json={"node_a": {"node_id": "a"},
                                                 "node_b": {"node_id": "b"}, "profile": "QUICK"})
-    assert response.status_code == 503
+    assert response.status_code == 400
     with main.session_factory() as s:
         assert s.query(Job).count() == before
