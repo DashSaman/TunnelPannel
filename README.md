@@ -1,6 +1,6 @@
 # TunnelPannel
 
-[فارسی](README-fa.md) · [Real two-node report](docs/releases/v0.9.0-rc3/REAL_BENCHMARK.md)
+[فارسی](README.fa.md) · [Real two-node report](docs/releases/v0.9.0-rc3/REAL_BENCHMARK.md)
 
 The canonical panel at `/ranking` runs **82 real tunnel methods between two registered Linux servers**: deployment, actual traffic, latency/loss, measured throughput, service restart/recovery, ownership receipts and cleanup. The earlier 23 partial and 27 failed isolated lab methods were the remediation baseline; retained failed attempts and final real-node results are in the release report.
 
@@ -50,3 +50,5 @@ The canonical path is `apps/api`, `apps/web`, `core` and `orchestrator/pair_runt
 Keep `/etc/tunnelpannel/tunnelpannel.env` separately and privately with backups: the archive excludes installation secrets. Keep the installation secret paired with the database to decrypt node credentials. Supplied server passwords are excluded from source and reports.
 
 [Task ledger](docs/development/TASK_LEDGER.md) · [Catalog](docs/development/CATALOG_INVENTORY.md) · [Historical baseline](docs/releases/v0.9.0-rc2/REAL_VALIDATION.md)
+
+The historical executor catalog contains 77 methods; the canonical registry includes 82 profiles. For existing Gen1 Docker installations only, use scripts/export-production-state.sh and scripts/restore-production-state.sh with their documented encrypted PostgreSQL recovery workflow. The canonical installation uses the backup/restore commands above.

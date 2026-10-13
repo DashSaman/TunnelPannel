@@ -50,3 +50,5 @@ CPU و RAM مربوط به کل سرور هستند. زمان HTTP سربار ا
 فایل `/etc/tunnelpannel/tunnelpannel.env` را جداگانه و خصوصی همراه پشتیبان نگه دارید؛ آرشیو کلید نصب را شامل نمی‌شود. کلید نصب و دیتابیس را کنار هم حفظ کنید تا اطلاعات SSH قابل رمزگشایی باشد. رمزهای ارائه‌شده در سورس و گزارش قرار ندارند.
 
 [دفتر وظایف](docs/development/TASK_LEDGER.md) · [کاتالوگ](docs/development/CATALOG_INVENTORY.md) · [گزارش تاریخی مبنا](docs/releases/v0.9.0-rc2/REAL_VALIDATION.md)
+
+کاتالوگ executor قدیمی ۷۷ روش دارد؛ رجیستری پنل اصلی شامل ۸۲ پروفایل است. فقط برای نصب‌های موجود Docker نسل اول، اسکریپت‌های scripts/export-production-state.sh و scripts/restore-production-state.sh و روند رمزگذاری‌شده PostgreSQL آن‌ها را به‌کار ببرید. نصب اصلی از دستورهای پشتیبان‌گیری و بازیابی بالا استفاده می‌کند.
