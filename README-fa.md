@@ -7,10 +7,10 @@
 ## نصب تک‌خطی
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/codex/server-validation-20261013/install.sh | sudo env TUNNELPANNEL_VERSION=codex/server-validation-20261013 bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/main/install.sh | sudo bash
 ```
 
-این دستور شاخهٔ بررسی‌شده را نصب می‌کند. برای نصب دقیق نسخهٔ تحویل‌شده، دستور متصل به شناسهٔ ثابت نسخه در `install-one-line.txt` را اجرا کنید. نصب‌کننده وابستگی‌ها، کاربر برنامه، دیتابیس و systemd را آماده و سلامت HTTP را بررسی می‌کند. نصب مجدد اطلاعات ورود و داده‌ها را حفظ می‌کند و سورس دارای تغییرات محلی را بازنویسی نمی‌کند.
+این دستور نسخهٔ جاری شاخهٔ main را نصب می‌کند. برای نصب دقیق نسخهٔ تحویل‌شده، دستور متصل به شناسهٔ ثابت نسخه در `install-one-line.txt` را اجرا کنید. نصب‌کننده وابستگی‌ها، کاربر برنامه، دیتابیس و systemd را آماده و سلامت HTTP را بررسی می‌کند. نصب مجدد اطلاعات ورود و داده‌ها را حفظ می‌کند و سورس دارای تغییرات محلی را بازنویسی نمی‌کند.
 
 آزمایش واقعی روی Ubuntu 24.04 با معماری amd64 انجام شده است؛ محیط‌های دیگر به آزمون اختصاصی نیاز دارند. پنل روی **127.0.0.1:8080** گوش می‌دهد. روی رایانهٔ خود اجرا کنید:
 
@@ -52,3 +52,5 @@ CPU و RAM مربوط به کل سرور هستند. زمان HTTP سربار ا
 [دفتر وظایف](docs/development/TASK_LEDGER.md) · [کاتالوگ](docs/development/CATALOG_INVENTORY.md) · [گزارش تاریخی مبنا](docs/releases/v0.9.0-rc2/REAL_VALIDATION.md)
 
 کاتالوگ executor قدیمی ۷۷ روش دارد؛ رجیستری پنل اصلی شامل ۸۲ پروفایل است. فقط برای نصب‌های موجود Docker نسل اول، اسکریپت‌های scripts/export-production-state.sh و scripts/restore-production-state.sh و روند رمزگذاری‌شده PostgreSQL آن‌ها را به‌کار ببرید. نصب اصلی از دستورهای پشتیبان‌گیری و بازیابی بالا استفاده می‌کند.
+
+![Real panel benchmark](docs/shots/panel-real-benchmark.jpg)

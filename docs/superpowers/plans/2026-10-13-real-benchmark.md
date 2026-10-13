@@ -14,8 +14,10 @@
 - [x] Repair shared SSH and IPv6/IPsec/VPN deployment and probe defects using the previous per-method error receipts. Verify actual traffic and teardown for each profile.
 - [x] Repair GOST/FRP/Rathole/Xray/sing-box configuration and probes against installed binary versions. Verify each named transport and composite path with positive traffic and negative outage checks.
 - [x] Implement genuine WaterWall/Paqet/Hedioum/HajSaman paths; verify named profiles rather than aliases or binary-help smoke. If upstream lacks a named protocol, preserve truthful unsupported status and document evidence instead of claiming success.
-- [ ] Run complete software suites, real-node per-method matrix and fresh/repeated installer lifecycle. Publish bilingual measured documentation, CI-green reviewed candidate, ZIP/checksums and pinned installer. Remove test-only credentials/resources; preserve application node registration for operator use.
+- [x] Run complete software suites, real-node per-method matrix and fresh/repeated installer lifecycle. Publish bilingual measured documentation, CI-green reviewed candidate, ZIP/checksums and pinned installer. Remove test-only credentials/resources; preserve application node registration for operator use.
 
 ## Review focus
 
 Wrong SSH host key; viewer attempting network mutation; forged client capabilities; concurrent jobs on the same nodes; partial configure failure before an artifact is returned; cleanup failure; SSH control timeout; cancellation during setup; proxy requests bypassing the tunnel; carrier success mislabeled as composite success.
+
+Acceptance evidence: latest NORMAL 82 PASS across full matrix and preserved reruns; selected DEEP latest 5 PASS with initial 4 PASS/1 FAILED retained. Public installer passed on both nodes; complete lifecycle passed on node B. Python 3.11/3.12, Linux installer and security CI passed at e6a2c419. Final delivery pins the documentation/UI label revision and records its fresh CI/install checks alongside the ZIP.

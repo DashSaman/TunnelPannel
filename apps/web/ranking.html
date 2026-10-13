@@ -162,7 +162,7 @@ $("connect").onclick=async()=>{try{
 async function loadHistory(){
   const jobs=await (await api('/benchmarks')).json();
   $("history").replaceChildren();
-  for(const job of jobs)$("history").add(new Option(`${job.created_at} · ${job.profile} · ${job.state} · ${job.job_id.slice(0,8)}`,job.job_id));
+  for(const job of jobs)$("history").add(new Option(`${job.created_at} · ${job.profile} · ${job.state === 'PASS' ? 'COMPLETED' : job.state} · ${job.job_id.slice(0,8)}`,job.job_id));
 }
 $("refresh-history").onclick=()=>loadHistory().catch(displayError);
 $("open-history").onclick=async()=>{try{

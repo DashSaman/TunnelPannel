@@ -7,10 +7,10 @@ The canonical panel at `/ranking` runs **82 real tunnel methods between two regi
 ## Install
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/codex/server-validation-20261013/install.sh | sudo env TUNNELPANNEL_VERSION=codex/server-validation-20261013 bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/main/install.sh | sudo bash
 ```
 
-This installs the reviewed candidate branch. For the exact delivered revision, use the pinned command in `install-one-line.txt`. Re-running preserves credentials and data. The installer creates the application account, installs dependencies, migrates the database, starts systemd and verifies HTTP health. It refuses to overwrite local source changes.
+This installs the current main branch. For the exact delivered revision, use the pinned command in `install-one-line.txt`. Re-running preserves credentials and data. The installer creates the application account, installs dependencies, migrates the database, starts systemd and verifies HTTP health. It refuses to overwrite local source changes.
 
 Real-node validation uses Ubuntu 24.04 amd64. Other environments need their own validation. The API binds to **127.0.0.1:8080**. From your computer:
 
@@ -52,3 +52,5 @@ Keep `/etc/tunnelpannel/tunnelpannel.env` separately and privately with backups:
 [Task ledger](docs/development/TASK_LEDGER.md) · [Catalog](docs/development/CATALOG_INVENTORY.md) · [Historical baseline](docs/releases/v0.9.0-rc2/REAL_VALIDATION.md)
 
 The historical executor catalog contains 77 methods; the canonical registry includes 82 profiles. For existing Gen1 Docker installations only, use scripts/export-production-state.sh and scripts/restore-production-state.sh with their documented encrypted PostgreSQL recovery workflow. The canonical installation uses the backup/restore commands above.
+
+![Real panel benchmark](docs/shots/panel-real-benchmark.jpg)

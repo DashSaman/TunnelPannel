@@ -41,7 +41,14 @@ Latest NORMAL results: **82 PASS / 0 incomplete / 0 failed**, derived from the c
 
 Fresh software verification: **533 canonical + 100 TunnelGuard + 1 backend PASS**, no failures/skips. Canonical lint, shell syntax/ShellCheck and catalog checks passed.
 
-Five DEEP profiles and final public-commit installer acceptance are being verified before final delivery.
+Five selected DEEP profiles have latest **5 PASS**: WIREGUARD, GOST_SSH, WATERWALL_REVERSE, SINGBOX_TUN and native HEDIOUM_TUN. The initial DEEP job was 4 PASS / 1 FAILED (sing-box repeated HTTP probe); its failed receipt is preserved. An independent 100-probe reproduction and unchanged panel rerun passed. This intermittent failure remains visible; no assertion was relaxed.
+
+Pinned public installation at `e6a2c419e3cccce613cb558ab1dfbb7b9733e43c` passed on both nodes, preserving configuration. Node B passed backup/mutate/restore, pinned upgrade, custom-port persistence, safe uninstall and fresh source reinstall. CI portable Python 3.11/3.12, installer integration, secrets/dependency checks and shell checks all passed at that source revision. Final delivery also pins and verifies the final documentation commit.
+
+آخرین نتیجهٔ پنج روش منتخب DEEP موفق است. اجرای نخست چهار موفق و یک خطای بررسی HTTP در sing-box داشت؛ رسید ناموفق حذف نشد. بازتولید مستقل با ۱۰۰ بررسی و بازآزمایی بدون تغییر معیار موفق بودند؛ این رفتار متناوب همچنان در شواهد دیده می‌شود. نصب عمومی روی هر دو سرور و چرخهٔ نصب، بازیابی و حذف امن روی سرور دوم موفق بود.
+
+Ownership audit: zero live allocations. Eleven historical VTI6 allocations were reconciled only after exact paths were absent and owned units inactive; the original failed receipt remains unchanged.
+
 
 ### Measurement limits / محدودیت معیارها
 
@@ -139,3 +146,15 @@ HTTP transfer blobs are a remote nonce plus zero-filled bytes, checked with SHA2
 | WSTUNNEL_UDP | PASS | 178.89 | 0.147 | f0debd5b |
 
 The JSON report includes the original attempts, final rows, per-job methodology and sanitized receipts.
+
+### Latest selected DEEP results
+
+| Method | Status | Mbps | Recovery s | Receipt job |
+|---|---|---:|---:|---|
+| WIREGUARD | PASS | 747.14 | 20.952 | b21a24b4 |
+| HEDIOUM_TUN | PASS | 465.16 | 0.299 | b21a24b4 |
+| GOST_SSH | PASS | 422.98 | 1.248 | b21a24b4 |
+| WATERWALL_REVERSE | PASS | 389.21 | 0.154 | b21a24b4 |
+| SINGBOX_TUN | PASS | 671.11 | 0.281 | ad5f0e04 |
+
+![Actual panel NORMAL rerun](../../shots/panel-real-benchmark.jpg)
