@@ -17,6 +17,7 @@ def wg_params():
         "interface": "tp0", "port": 24000, "subnet": "10.174.0.0/24",
         "inner_ip_a": "10.174.0.1/24", "inner_ip_b": "10.174.0.2",
         "probe_target": "10.174.0.2", "endpoint_b": "203.0.113.20:24000",
+        "peer_public_key": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
     }
 
 
@@ -48,6 +49,26 @@ class TestWireGuardAdapter:
         problems = ad.precheck()
         assert any("endpoint" in p for p in problems)
         assert any("subnet" in p for p in problems)
+
+    def test_missing_peer_key_blocks_configuration(self):
+        ad, _ = self.make()
+        del ad.params["peer_public_key"]
+        assert any("peer public key" in p for p in ad.precheck())
+
+    def test_commands_are_valid_bash_without_a_placeholder_peer(self):
+        import subprocess
+        from tests.unit.test_installer import BASH
+        ad, _ = self.make()
+        for _, command in ad.commands():
+            result = subprocess.run([BASH, "-n", "-c", command], capture_output=True, text=True)
+            assert result.returncode == 0, result.stderr
+        assert any(ad.params["peer_public_key"] in cmd for _, cmd in ad.commands())
+
+    def test_ipv6_inner_subnet_is_allowed_by_the_peer(self):
+        ad, _ = self.make()
+        ad.params["subnet6"] = "fd74:244:1::/126"
+        assert any("allowed-ips 10.174.0.0/24,fd74:244:1::/126" in cmd
+                   for _, cmd in ad.commands())
 
     def test_plan_is_declarative_and_covers_commands(self):
         ad, ex = self.make()

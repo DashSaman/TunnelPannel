@@ -1,0 +1,2674 @@
+{
+  "candidate": "v0.9.0-rc2",
+  "production_ready": false,
+  "generated_at": "2026-10-13T14:50:55.647687+00:00",
+  "baseline_commit": "03416e271538a919abd13486a1f8c7d14b5c85fb",
+  "environment": "two disposable Ubuntu 24.04.4 x86_64 VPSs, kernel 6.8, 1 GiB RAM each",
+  "software_suites": {
+    "canonical": {
+      "tests": 486,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "tunnelguard": {
+      "tests": 100,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "backend": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "legacy_lab": {
+    "scope": "LAB_LOOPBACK_AND_NETNS_NOT_REAL_PAIR",
+    "done": 82,
+    "total": 82,
+    "summary": {
+      "PASS": 32,
+      "PARTIAL": 23,
+      "FAIL": 27
+    },
+    "results": {
+      "CHISEL_REVERSE_SOCKS5": {
+        "verdict": "PASS",
+        "ms": 3680
+      },
+      "CHISEL_REVERSE_TCP": {
+        "verdict": "PASS",
+        "ms": 3372
+      },
+      "CHISEL_REVERSE_UDP": {
+        "verdict": "PASS",
+        "ms": 3342
+      },
+      "CHISEL_SOCKS5": {
+        "verdict": "PASS",
+        "ms": 3366
+      },
+      "CHISEL_TCP": {
+        "verdict": "PASS",
+        "ms": 3356
+      },
+      "CHISEL_UDP": {
+        "verdict": "PASS",
+        "ms": 4344
+      },
+      "GRETAP_OVER_GOST": {
+        "verdict": "FAIL",
+        "ms": 240092
+      },
+      "GRE_OVER_GOST": {
+        "verdict": "FAIL",
+        "ms": 2048
+      },
+      "GRE_OVER_SSH": {
+        "verdict": "FAIL",
+        "ms": 1435
+      },
+      "GRE_OVER_WIREGUARD": {
+        "verdict": "PASS",
+        "ms": 3098
+      },
+      "SIT_OVER_GOST": {
+        "verdict": "FAIL",
+        "ms": 2664
+      },
+      "SIT_OVER_SSH": {
+        "verdict": "FAIL",
+        "ms": 1423
+      },
+      "FRP_KCP": {
+        "verdict": "PASS",
+        "ms": 3652
+      },
+      "FRP_QUIC": {
+        "verdict": "PASS",
+        "ms": 3567
+      },
+      "FRP_STCP": {
+        "verdict": "PARTIAL",
+        "ms": 5066
+      },
+      "FRP_TCP": {
+        "verdict": "FAIL",
+        "ms": 3065
+      },
+      "FRP_UDP": {
+        "verdict": "FAIL",
+        "ms": 6042
+      },
+      "FRP_XTCP": {
+        "verdict": "PARTIAL",
+        "ms": 17080
+      },
+      "GOST_GRPC": {
+        "verdict": "PASS",
+        "ms": 672
+      },
+      "GOST_HTTP": {
+        "verdict": "PASS",
+        "ms": 366
+      },
+      "GOST_HTTP2": {
+        "verdict": "PASS",
+        "ms": 382
+      },
+      "GOST_KCP_FORWARD": {
+        "verdict": "FAIL",
+        "ms": 685
+      },
+      "GOST_QUIC": {
+        "verdict": "PASS",
+        "ms": 368
+      },
+      "GOST_REMOTE_TCP": {
+        "verdict": "PASS",
+        "ms": 1584
+      },
+      "GOST_REMOTE_UDP": {
+        "verdict": "FAIL",
+        "ms": 3641
+      },
+      "GOST_SOCKS5": {
+        "verdict": "PASS",
+        "ms": 363
+      },
+      "GOST_SOCKS5_KCP": {
+        "verdict": "PASS",
+        "ms": 347
+      },
+      "GOST_SSH": {
+        "verdict": "PASS",
+        "ms": 340
+      },
+      "GOST_TAP": {
+        "verdict": "PARTIAL",
+        "ms": 4660
+      },
+      "GOST_TCP_FORWARD": {
+        "verdict": "PASS",
+        "ms": 353
+      },
+      "GOST_TUN": {
+        "verdict": "PARTIAL",
+        "ms": 6672
+      },
+      "GOST_UDP_FORWARD": {
+        "verdict": "FAIL",
+        "ms": 12042
+      },
+      "GOST_WS": {
+        "verdict": "PASS",
+        "ms": 341
+      },
+      "GRE": {
+        "verdict": "PASS",
+        "ms": 1119
+      },
+      "GRETAP": {
+        "verdict": "PASS",
+        "ms": 1122
+      },
+      "IP6GRE": {
+        "verdict": "FAIL",
+        "ms": 3130
+      },
+      "IP6GRETAP": {
+        "verdict": "PASS",
+        "ms": 2267
+      },
+      "IPIP": {
+        "verdict": "PASS",
+        "ms": 1126
+      },
+      "SIT_6IN4": {
+        "verdict": "PASS",
+        "ms": 1122
+      },
+      "VXLAN": {
+        "verdict": "PASS",
+        "ms": 1112
+      },
+      "WIREGUARD": {
+        "verdict": "PASS",
+        "ms": 2161
+      },
+      "PAQET_RAW_KCP": {
+        "verdict": "PARTIAL",
+        "ms": 93
+      },
+      "PAQET_SOCKS5": {
+        "verdict": "PARTIAL",
+        "ms": 2080
+      },
+      "RATHOLE_NOISE": {
+        "verdict": "PARTIAL",
+        "ms": 4744
+      },
+      "RATHOLE_TCP": {
+        "verdict": "PASS",
+        "ms": 4569
+      },
+      "RATHOLE_TLS": {
+        "verdict": "PARTIAL",
+        "ms": 4568
+      },
+      "RATHOLE_UDP": {
+        "verdict": "PARTIAL",
+        "ms": 38
+      },
+      "RATHOLE_WEBSOCKET": {
+        "verdict": "PARTIAL",
+        "ms": 4552
+      },
+      "HYSTERIA2": {
+        "verdict": "PARTIAL",
+        "ms": 83
+      },
+      "SHADOWSOCKS": {
+        "verdict": "PASS",
+        "ms": 2421
+      },
+      "SINGBOX_TUN": {
+        "verdict": "PARTIAL",
+        "ms": 2424
+      },
+      "TROJAN_TLS": {
+        "verdict": "PASS",
+        "ms": 2439
+      },
+      "TUIC": {
+        "verdict": "PARTIAL",
+        "ms": 77
+      },
+      "AUTOSSH_REVERSE": {
+        "verdict": "FAIL",
+        "ms": 240071
+      },
+      "SSH_DYNAMIC_SOCKS": {
+        "verdict": "FAIL",
+        "ms": 1375
+      },
+      "SSH_LOCAL_FORWARD": {
+        "verdict": "FAIL",
+        "ms": 1371
+      },
+      "SSH_REMOTE_FORWARD": {
+        "verdict": "FAIL",
+        "ms": 1361
+      },
+      "SSH_TAP_L2": {
+        "verdict": "FAIL",
+        "ms": 903
+      },
+      "SSH_TUN_L3": {
+        "verdict": "FAIL",
+        "ms": 1395
+      },
+      "IKEV2_IPSEC": {
+        "verdict": "FAIL",
+        "ms": 1184
+      },
+      "L2TP_IPSEC": {
+        "verdict": "FAIL",
+        "ms": 209
+      },
+      "OPENVPN": {
+        "verdict": "FAIL",
+        "ms": 682
+      },
+      "VTI": {
+        "verdict": "FAIL",
+        "ms": 1148
+      },
+      "VTI6": {
+        "verdict": "FAIL",
+        "ms": 1161
+      },
+      "WATERWALL_DIRECT": {
+        "verdict": "PARTIAL",
+        "ms": 6083
+      },
+      "WATERWALL_REVERSE": {
+        "verdict": "PARTIAL",
+        "ms": 6099
+      },
+      "WATERWALL_TLS_MUX": {
+        "verdict": "PARTIAL",
+        "ms": 6095
+      },
+      "WSTUNNEL_SOCKS5": {
+        "verdict": "PASS",
+        "ms": 4052
+      },
+      "WSTUNNEL_TCP": {
+        "verdict": "PASS",
+        "ms": 4047
+      },
+      "WSTUNNEL_UDP": {
+        "verdict": "PASS",
+        "ms": 4042
+      },
+      "VLESS_GRPC": {
+        "verdict": "FAIL",
+        "ms": 2548
+      },
+      "VLESS_REALITY": {
+        "verdict": "FAIL",
+        "ms": 2396
+      },
+      "VLESS_TCP": {
+        "verdict": "FAIL",
+        "ms": 2368
+      },
+      "VLESS_VISION_REALITY": {
+        "verdict": "PARTIAL",
+        "ms": 42
+      },
+      "VLESS_WS": {
+        "verdict": "FAIL",
+        "ms": 2361
+      },
+      "VLESS_XHTTP": {
+        "verdict": "FAIL",
+        "ms": 2362
+      },
+      "VLESS_XHTTP_REALITY": {
+        "verdict": "PARTIAL",
+        "ms": 45
+      },
+      "HEDIOUM_POOL_SOCKS": {
+        "verdict": "PARTIAL",
+        "ms": 140
+      },
+      "HEDIOUM_TUN": {
+        "verdict": "PARTIAL",
+        "ms": 54
+      },
+      "HAJSAMAN_SIT": {
+        "verdict": "PARTIAL",
+        "ms": 1126
+      },
+      "HAJSAMAN_WG": {
+        "verdict": "PARTIAL",
+        "ms": 2162
+      },
+      "HAJSAMAN_FULL": {
+        "verdict": "PARTIAL",
+        "ms": 2155
+      }
+    }
+  },
+  "real_pair": {
+    "scope": "REAL_PAIR",
+    "results": [
+      {
+        "method": "wireguard",
+        "status": "PASS",
+        "ipv6": true,
+        "bidirectional": true,
+        "cleanup_verified": true,
+        "duration_s": 7.28
+      },
+      {
+        "method": "gre",
+        "status": "PASS",
+        "ipv6": true,
+        "bidirectional": true,
+        "cleanup_verified": true,
+        "duration_s": 7.02
+      },
+      {
+        "method": "gretap",
+        "status": "PASS",
+        "ipv6": true,
+        "bidirectional": true,
+        "cleanup_verified": true,
+        "duration_s": 7.17
+      },
+      {
+        "method": "ipip",
+        "status": "PASS",
+        "ipv6": false,
+        "bidirectional": true,
+        "cleanup_verified": true,
+        "duration_s": 5.67
+      },
+      {
+        "method": "sit",
+        "status": "PASS",
+        "ipv6": true,
+        "bidirectional": true,
+        "cleanup_verified": true,
+        "duration_s": 6.95
+      },
+      {
+        "method": "vxlan",
+        "status": "PASS",
+        "ipv6": true,
+        "bidirectional": true,
+        "cleanup_verified": true,
+        "duration_s": 7.0
+      },
+      {
+        "method": "failover-wg-gre",
+        "status": "PASS",
+        "data_plane_ok": true,
+        "receipts": [
+          {
+            "phase": "broken-primary",
+            "rc": 2
+          },
+          {
+            "phase": "broken-primary",
+            "rc": 2
+          },
+          {
+            "phase": "backup-traffic",
+            "selected": "gre"
+          }
+        ]
+      },
+      {
+        "method": "management-route-survival",
+        "status": "PASS"
+      }
+    ]
+  },
+  "lifecycle": {
+    "node-a": [
+      "install",
+      "reinstall_config_hash_preserved",
+      "upgrade",
+      "backup_mutate_restore",
+      "custom_port_install_reinstall_restore",
+      "uninstall_unrelated_interface_survives",
+      "reinstall"
+    ],
+    "node-b": [
+      "fresh_install",
+      "reinstall_config_hash_preserved"
+    ]
+  },
+  "blockers": [
+    "CANONICAL_API_EXECUTOR_WIRING_REQUIRED",
+    "27_FAILED_AND_23_PARTIAL_LEGACY_LAB_METHODS",
+    "TRUE_MULTIHOP_REQUIRES_THIRD_NODE_AND_REAL_PATH_DRIVER"
+  ],
+  "checks": [
+    "ruff canonical packages PASS",
+    "shellcheck canonical scripts PASS",
+    "catalog invariants PASS"
+  ],
+  "binary_receipts": [
+    {
+      "engine": "frp",
+      "version": "v0.71.0",
+      "asset": "https://github.com/fatedier/frp/releases/download/v0.71.0/frp_0.71.0_linux_amd64.tar.gz",
+      "sha256": "84f27e39f11169f7adcef8e8b70c9329de17747b1f14dad9fb95eef5682ea716",
+      "upstream_digest_verified": true,
+      "installed": [
+        "frps",
+        "frpc"
+      ],
+      "status": "INSTALLED"
+    },
+    {
+      "engine": "xray",
+      "version": "v26.3.27",
+      "asset": "https://github.com/XTLS/Xray-core/releases/download/v26.3.27/Xray-linux-64.zip",
+      "sha256": "23cd9af937744d97776ee35ecad4972cf4b2109d1e0fe6be9930467608f7c8ae",
+      "upstream_digest_verified": true,
+      "installed": [
+        "xray"
+      ],
+      "status": "INSTALLED"
+    },
+    {
+      "engine": "sing-box",
+      "version": "v1.14.3",
+      "asset": "https://github.com/SagerNet/sing-box/releases/download/v1.14.3/sing-box-1.14.3-linux-amd64.tar.gz",
+      "sha256": "e2bdf179c15a3652955dc44867e33ca0965c9c9b91b34267dcc5a5d639a5feee",
+      "upstream_digest_verified": true,
+      "installed": [
+        "sing-box"
+      ],
+      "status": "INSTALLED"
+    },
+    {
+      "engine": "chisel",
+      "version": "v1.12.0",
+      "asset": "https://github.com/jpillora/chisel/releases/download/v1.12.0/chisel_1.12.0_linux_amd64.gz",
+      "sha256": "f3f180f1d93aa72cce4e6386f98cc06569a0146fbd65eb4423cf83e6434bcfe6",
+      "upstream_digest_verified": true,
+      "installed": [
+        "chisel"
+      ],
+      "status": "INSTALLED"
+    },
+    {
+      "engine": "rathole",
+      "version": "v0.5.0",
+      "asset": "https://github.com/rathole-org/rathole/releases/download/v0.5.0/rathole-x86_64-unknown-linux-gnu.zip",
+      "sha256": "3e7d0d0f365120cd3cd351d147d1a12ee960c8068b464d4dd533a3821873b80e",
+      "upstream_digest_verified": false,
+      "installed": [
+        "rathole"
+      ],
+      "status": "INSTALLED"
+    },
+    {
+      "engine": "wstunnel",
+      "version": "v11.0.0",
+      "asset": "https://github.com/erebe/wstunnel/releases/download/v11.0.0/wstunnel_11.0.0_linux_amd64.tar.gz",
+      "sha256": "9708a99717b5a951453c2ff7c14c25d3418d02ca7fcb96fdb382a8f2083bab5e",
+      "upstream_digest_verified": true,
+      "installed": [
+        "wstunnel"
+      ],
+      "status": "INSTALLED"
+    },
+    {
+      "engine": "paqet",
+      "version": "v1.0.0-alpha.21",
+      "asset": "https://github.com/hanselime/paqet/releases/download/v1.0.0-alpha.21/paqet-linux-amd64-v1.0.0-alpha.21.tar.gz",
+      "sha256": "4f2f69e0493746726598485ef18df43372470a1514f8021594137e522f0f4fc7",
+      "upstream_digest_verified": true,
+      "installed": [
+        "paqet"
+      ],
+      "status": "INSTALLED"
+    },
+    {
+      "engine": "gost",
+      "version": "v2.12.0",
+      "asset": "https://github.com/ginuerzh/gost/releases/download/v2.12.0/gost_2.12.0_linux_amd64.tar.gz",
+      "sha256": "1b6d47e6b850479b23fda484b3a8193c7bc0d5dc38fa5a02b4b4c57a77534d92",
+      "upstream_digest_verified": false,
+      "installed": [
+        "gost"
+      ],
+      "status": "INSTALLED"
+    },
+    {
+      "engine": "waterwall",
+      "version": "v1.46.96",
+      "asset": "https://github.com/radkesvat/WaterWall/releases/download/v1.46.96/Waterwall-linux-gcc-x64-old-cpu.zip",
+      "sha256": "7774dfeb107d8e4e93471cb0964e016ce41ed6b78052948b12d41bef971b488b",
+      "upstream_digest_verified": true,
+      "installed": [
+        "waterwall"
+      ],
+      "status": "INSTALLED"
+    },
+    {
+      "engine": "hedioum",
+      "version": "v0.11.3-pv1",
+      "asset": "https://github.com/DashSaman/Hedioum-Pool-Tunnel/releases/download/v0.11.3-pv1/hedioum-tunnel",
+      "sha256": "e39a0672ea504b2171eff674a3fedc57adc26b38e39def1f41bc38b859011a3c",
+      "upstream_digest_verified": true,
+      "installed": [
+        "hedioum"
+      ],
+      "status": "INSTALLED"
+    }
+  ],
+  "tested_file_sha256_chunks": {
+    "tests/unit/test_legacy_jwt.py": [
+      "bc288d12",
+      "7f2f6557",
+      "a1548e47",
+      "fd7cd30c",
+      "5658e04a",
+      "a014d991",
+      "2c6549e0",
+      "72a6461c"
+    ],
+    "alembic.ini": [
+      "39fd31fa",
+      "b1d62869",
+      "a4770d09",
+      "320a73a4",
+      "ec8c0eff",
+      "4ce250e0",
+      "79f40f73",
+      "b034edab"
+    ],
+    "apps/__init__.py": [
+      "523751b1",
+      "d03e39fa",
+      "cc1f0f14",
+      "6af19b87",
+      "6e0f1f77",
+      "fda0bddc",
+      "bfea1f88",
+      "055315b1"
+    ],
+    "apps/api/__init__.py": [
+      "5f11397f",
+      "fe248ebf",
+      "d5bf08cb",
+      "c5818b59",
+      "a8039560",
+      "5b78a730",
+      "c8ec5c91",
+      "5a61b751"
+    ],
+    "apps/api/benchmark_api.py": [
+      "07321d50",
+      "9cdfbad5",
+      "83361688",
+      "cca8f199",
+      "7e98b8ad",
+      "f85e14d8",
+      "f0042813",
+      "b198f3b6"
+    ],
+    "apps/api/failover_api.py": [
+      "5eac3597",
+      "4ec5c3cb",
+      "afcfd6aa",
+      "1f45d57d",
+      "c90e9765",
+      "1d5706ff",
+      "fea40684",
+      "30b13fc6"
+    ],
+    "apps/api/main.py": [
+      "3e5aa726",
+      "ff75b033",
+      "058986ea",
+      "b9a0e145",
+      "031f14d6",
+      "6cc35eb7",
+      "8ad221a3",
+      "60d6a224"
+    ],
+    "apps/bot/__init__.py": [
+      "78369e23",
+      "c425272d",
+      "ef72de0e",
+      "388b56cc",
+      "bbd93aa3",
+      "3885e967",
+      "dbe09a87",
+      "5ea910b4"
+    ],
+    "apps/bot/core.py": [
+      "8433ea88",
+      "10db1241",
+      "fda044a9",
+      "ff3ab66e",
+      "2a012f4c",
+      "ec3cc40b",
+      "de0cdc6f",
+      "bd8bd2a6"
+    ],
+    "apps/web/__init__.py": [
+      "ad8ce442",
+      "2591c0a0",
+      "4dfc4645",
+      "d64bb9bc",
+      "65e93c88",
+      "79658e60",
+      "82ede8df",
+      "4f5b8d8e"
+    ],
+    "apps/web/ranking.html": [
+      "2f263d96",
+      "ace7c527",
+      "0ab57aa4",
+      "b1299e3e",
+      "8287fa8c",
+      "8a3542f5",
+      "bf34add3",
+      "b0c9fa5e"
+    ],
+    "apps/web/topology.html": [
+      "57512479",
+      "97bff53d",
+      "9d5e7ba4",
+      "94eaa51d",
+      "9bfd9a0d",
+      "c8961b28",
+      "c9b16e2e",
+      "dfb4275c"
+    ],
+    "apps/web/web_api.py": [
+      "4b58b610",
+      "1a43c050",
+      "b2f8e1a5",
+      "acb78a83",
+      "797d81a9",
+      "d21e442f",
+      "30430b5a",
+      "06723fc8"
+    ],
+    "backend/app/__init__.py": [
+      "e3b0c442",
+      "98fc1c14",
+      "9afbf4c8",
+      "996fb924",
+      "27ae41e4",
+      "649b934c",
+      "a495991b",
+      "7852b855"
+    ],
+    "backend/app/admin_router.py": [
+      "93e52640",
+      "c7d6eed1",
+      "d7fa5f55",
+      "1cfcc5f9",
+      "d85c8234",
+      "be332953",
+      "d37f9c3e",
+      "f90692b2"
+    ],
+    "backend/app/bot_control_router.py": [
+      "201e0a66",
+      "b6c03355",
+      "567e73bc",
+      "3cd25891",
+      "12286bba",
+      "b808aeb9",
+      "f8876705",
+      "d73f4623"
+    ],
+    "backend/app/composer_router.py": [
+      "76c6df64",
+      "189e157e",
+      "dd5528e9",
+      "acadfde7",
+      "ad930914",
+      "13e25f73",
+      "17bf8a88",
+      "130c336d"
+    ],
+    "backend/app/config.py": [
+      "6ebac16a",
+      "243f14db",
+      "d7a4d914",
+      "3d5b9cde",
+      "eae7e9bc",
+      "3fb37171",
+      "9e48b57b",
+      "cb653b24"
+    ],
+    "backend/app/db.py": [
+      "a01d4db2",
+      "7c17fe39",
+      "3a9fe88b",
+      "3d89426f",
+      "7dca1ba7",
+      "44852f33",
+      "58c0a589",
+      "af79de54"
+    ],
+    "backend/app/endpoint_router.py": [
+      "7721c329",
+      "a247909d",
+      "ec152d8d",
+      "a00cc09a",
+      "ec4a49e2",
+      "2f4cf2d2",
+      "6ffb3b3c",
+      "679a58d5"
+    ],
+    "backend/app/execution_capabilities.py": [
+      "b76bda8e",
+      "1a50b6cd",
+      "8a4bc6ed",
+      "57326ecb",
+      "bcb857be",
+      "6c2676df",
+      "64ea983b",
+      "df1734a8"
+    ],
+    "backend/app/execution_router.py": [
+      "2813508b",
+      "8a786d9d",
+      "f1c93f7b",
+      "a87e5e51",
+      "97e1b5fc",
+      "4a4b2acb",
+      "a4808b60",
+      "8378c832"
+    ],
+    "backend/app/main.py": [
+      "fd7e299b",
+      "aafeabd3",
+      "fe018a52",
+      "2d354f6c",
+      "13d231c8",
+      "0033f95c",
+      "566e27dd",
+      "bfbab2af"
+    ],
+    "backend/app/models.py": [
+      "386050f3",
+      "64ddcd45",
+      "81554492",
+      "7ba0067c",
+      "851d36bb",
+      "00986e2f",
+      "39b2ee6a",
+      "c6284339"
+    ],
+    "backend/app/schemas.py": [
+      "b6b2e17f",
+      "bc2dfec9",
+      "8f337674",
+      "4889a159",
+      "e3753c54",
+      "27a5853a",
+      "1e30aa43",
+      "01049a09"
+    ],
+    "backend/app/security.py": [
+      "ce67ce4f",
+      "12f793bb",
+      "8e45b5bd",
+      "f5ea5145",
+      "bc1b3012",
+      "5f41ea40",
+      "9e848c24",
+      "c047b7b9"
+    ],
+    "backend/app/tests/test_imports.py": [
+      "5661eccb",
+      "43a61b96",
+      "aae275bc",
+      "4074a77e",
+      "194f8f14",
+      "a15cce8f",
+      "356a495a",
+      "c7329c5a"
+    ],
+    "backend/app/tunnel_catalog.py": [
+      "8a106c62",
+      "b75b04fb",
+      "babc0749",
+      "8195a055",
+      "5c49cc80",
+      "c38a5563",
+      "11332bef",
+      "3d204b9e"
+    ],
+    "backend/requirements.txt": [
+      "a781e563",
+      "de2eddc2",
+      "5f3c9007",
+      "7f4965bb",
+      "1c6fe015",
+      "c595a413",
+      "a7750c05",
+      "14893d9a"
+    ],
+    "bot/bot.py": [
+      "8fce274b",
+      "c1418ba6",
+      "e5dbe05d",
+      "772029c2",
+      "175d25fe",
+      "9790825e",
+      "0b909313",
+      "976fa9d5"
+    ],
+    "bot/requirements.txt": [
+      "8363854b",
+      "8b6bcfb2",
+      "a7be460e",
+      "347c7d67",
+      "ba4d084d",
+      "c310eadc",
+      "65ed34f6",
+      "cf2f6f47"
+    ],
+    "bot/translations.py": [
+      "a836978d",
+      "05fed792",
+      "6cf97524",
+      "dcf6d966",
+      "c9194eb6",
+      "cf9a3c27",
+      "089f18fb",
+      "527bf20d"
+    ],
+    "core/__init__.py": [
+      "5b68b9ab",
+      "c66e4601",
+      "42fd08a5",
+      "94778c88",
+      "7fdae1d3",
+      "869ae384",
+      "3abf91d3",
+      "bddc12c8"
+    ],
+    "core/catalog.py": [
+      "4c4c359e",
+      "ca120fd0",
+      "946de3c3",
+      "999075b7",
+      "949b4d62",
+      "3a3d6630",
+      "ba890f08",
+      "a4282909"
+    ],
+    "core/counts.py": [
+      "04d0b5ed",
+      "4c0be0f1",
+      "d4e24150",
+      "d1fd8613",
+      "1835e39f",
+      "7b407068",
+      "bc08d100",
+      "693893c8"
+    ],
+    "core/models.py": [
+      "f0ca7a4e",
+      "c335d97d",
+      "a5f010c4",
+      "cd3804b2",
+      "8aa4d5ea",
+      "69af9d3d",
+      "b2fef7e8",
+      "13656b81"
+    ],
+    "core/security.py": [
+      "49cd767a",
+      "024d29c9",
+      "a82f18e9",
+      "fcf99114",
+      "0c533ea5",
+      "53f17c0f",
+      "a686efae",
+      "fdf12ffa"
+    ],
+    "deploy/docker/entrypoint.sh": [
+      "9e359e24",
+      "c92b756c",
+      "36c0d7eb",
+      "eb51ab33",
+      "f54ceea2",
+      "b0a44b34",
+      "53c4c01c",
+      "7845c1eb"
+    ],
+    "deploy/engine/mtf/__init__.py": [
+      "dfe5984a",
+      "5e562203",
+      "46eb983d",
+      "ffbd4af4",
+      "fbc2343f",
+      "7faac211",
+      "d6b9414b",
+      "e55d7cee"
+    ],
+    "deploy/engine/mtf/api.py": [
+      "eda23dbf",
+      "70757263",
+      "be308e88",
+      "b6c44bca",
+      "588c4c4a",
+      "ce8c5218",
+      "778d5659",
+      "5d766ebd"
+    ],
+    "deploy/engine/mtf/core.py": [
+      "fe962937",
+      "b285e283",
+      "c33289de",
+      "01c000ef",
+      "2e837fa9",
+      "edc9dacf",
+      "ef88ba48",
+      "f66dc60b"
+    ],
+    "deploy/engine/mtf/installer.py": [
+      "1220ed08",
+      "d9c7f053",
+      "499d4ea5",
+      "cc7f55e6",
+      "247c8c61",
+      "9a0e042d",
+      "470a964a",
+      "b64265ee"
+    ],
+    "deploy/engine/mtf/metrics.py": [
+      "2a6ba402",
+      "bf158c67",
+      "f085357c",
+      "6a376342",
+      "a6a472d8",
+      "cf67186e",
+      "59de792c",
+      "37059190"
+    ],
+    "deploy/engine/mtf/portmgr.py": [
+      "beec61d3",
+      "d8f69e9d",
+      "6932a3e6",
+      "6373e299",
+      "70ff8200",
+      "282c8898",
+      "1ca1df8d",
+      "9f74fc25"
+    ],
+    "deploy/engine/mtf/probe_engine.py": [
+      "610ccd03",
+      "abf589fe",
+      "553c7892",
+      "dfde970b",
+      "56d03c41",
+      "7d53f9b9",
+      "261520d2",
+      "78cd2ad3"
+    ],
+    "deploy/engine/mtf/registry.py": [
+      "549b9e5c",
+      "d4cd456d",
+      "88ea5b69",
+      "e8b26404",
+      "a96a4d6f",
+      "4c8145ad",
+      "e0031327",
+      "c2b559e6"
+    ],
+    "deploy/engine/mtf/servertunnels.py": [
+      "6e9bde3c",
+      "898d2392",
+      "f4fb902b",
+      "6b8d8302",
+      "302acdc7",
+      "6b186cd4",
+      "392e7d4f",
+      "48a6ac59"
+    ],
+    "deploy/engine/mtf/st_profiles.py": [
+      "8474ffee",
+      "197756b1",
+      "b1feafe0",
+      "5752b063",
+      "e63f6bc9",
+      "411d1146",
+      "47bce00f",
+      "5be12277"
+    ],
+    "deploy/engine/mtf/state.py": [
+      "a78c9420",
+      "da7880b8",
+      "c4b0a6bf",
+      "2719fdfb",
+      "0e46d21a",
+      "79de256f",
+      "6f445fd9",
+      "5cc3d48a"
+    ],
+    "deploy/engine/mtf_kernel.sh": [
+      "516f1926",
+      "e50d1f97",
+      "7ecdb94a",
+      "d65020f9",
+      "80ebf76d",
+      "6c1e11fb",
+      "bb9e2f7c",
+      "c0b6a5c3"
+    ],
+    "deploy/engine/mtf_userspace.py": [
+      "1c976bec",
+      "73ea9cd7",
+      "d30683c8",
+      "c40e5b59",
+      "277f0670",
+      "7dce65ee",
+      "3d38285e",
+      "72565c1c"
+    ],
+    "deploy/engine/run_panel.py": [
+      "a7d0c367",
+      "c768bd8c",
+      "37256ae9",
+      "0a70c73d",
+      "09b37bcc",
+      "a8f702c6",
+      "36fec376",
+      "5e0dba6b"
+    ],
+    "deploy/fix_bins_v3.sh": [
+      "24fe98d1",
+      "3e47cc05",
+      "7b4fcde7",
+      "9d89ca4c",
+      "734ee68c",
+      "fe8edb7c",
+      "417eb74f",
+      "e4fed0e7"
+    ],
+    "deploy/methods_registry.json": [
+      "bfb55806",
+      "a150f0c6",
+      "7465d0f8",
+      "8597159e",
+      "fe4bf19e",
+      "d8a4b9b7",
+      "169eb474",
+      "6e5f5dc4"
+    ],
+    "deploy/panel/templates/index.html": [
+      "e5374eed",
+      "8b90578f",
+      "0aea53a1",
+      "6cb2db5e",
+      "d3c84d1c",
+      "d00356de",
+      "cbabb8e6",
+      "db57f174"
+    ],
+    "deploy/panel/templates/login.html": [
+      "1166e1ed",
+      "d5b67c33",
+      "ec78d300",
+      "26075b37",
+      "3254fa42",
+      "79b81ccf",
+      "17ab7792",
+      "82370b6e"
+    ],
+    "deploy/srv2_install.sh": [
+      "b6dac165",
+      "c44a366d",
+      "c0a58cc7",
+      "5bcccc67",
+      "0d960ffb",
+      "52172d51",
+      "6f589f2b",
+      "65dc4376"
+    ],
+    "deploy/tests/run_all_tests.py": [
+      "b77c9da9",
+      "037976f2",
+      "67eef1fb",
+      "f41c70d4",
+      "6ea455c0",
+      "8c5b407a",
+      "b9f0a486",
+      "0392ee03"
+    ],
+    "deploy/tests/run_isolated_tests.sh": [
+      "55da2a0c",
+      "14ecfd0e",
+      "fabb87d6",
+      "b8ce2bdb",
+      "3985862a",
+      "1a3e4a2f",
+      "bbc4846f",
+      "73835850"
+    ],
+    "engines/__init__.py": [
+      "f596f5a2",
+      "83e2681d",
+      "f44166e9",
+      "cbea324a",
+      "269ea356",
+      "75e3ed7f",
+      "43b649ff",
+      "457138a0"
+    ],
+    "engines/adapters/__init__.py": [
+      "b6fc7c13",
+      "9de36f63",
+      "64d3dd1c",
+      "2c12e081",
+      "160653b3",
+      "655905e3",
+      "24348f09",
+      "4d2698cf"
+    ],
+    "engines/adapters/kernel.py": [
+      "5257e57e",
+      "c1834473",
+      "07edcfe5",
+      "062dd455",
+      "819a5027",
+      "1cea6e65",
+      "c0a73157",
+      "0f7c7980"
+    ],
+    "engines/adapters/kernel_extra.py": [
+      "3bb258e2",
+      "26925e85",
+      "952a0897",
+      "979c04f2",
+      "dfcac070",
+      "7c6428d0",
+      "1ffdfcea",
+      "ec8571c4"
+    ],
+    "engines/adapters/ssh_family.py": [
+      "a4297123",
+      "f735b0e1",
+      "4a66d25b",
+      "c92a0ef3",
+      "3225c07b",
+      "e4f761b7",
+      "c8601a69",
+      "0d60da8c"
+    ],
+    "engines/adapters/userspace.py": [
+      "83dcf057",
+      "7a2750db",
+      "c21c529c",
+      "2aa5ca70",
+      "4d1947be",
+      "257e49b7",
+      "e26d6491",
+      "c930df74"
+    ],
+    "engines/executors.py": [
+      "8962f09a",
+      "b76ba5e2",
+      "bd2ec8d8",
+      "5dc410f4",
+      "7403daef",
+      "10dcb90f",
+      "7722bf19",
+      "5928a459"
+    ],
+    "engines/manifests/__init__.py": [
+      "5c3ff696",
+      "aa3acaf9",
+      "4ef72960",
+      "8bd82db7",
+      "7949bb4f",
+      "97cc8428",
+      "cc43248d",
+      "0be6159b"
+    ],
+    "engines/manifests/chisel.json": [
+      "17d83b15",
+      "59744a30",
+      "03deb3d0",
+      "12293bd1",
+      "7bd0fd07",
+      "a3165dce",
+      "39a62efd",
+      "8cba8e97"
+    ],
+    "engines/manifests/frp.json": [
+      "95afe138",
+      "3e1fe8c0",
+      "5f6a0449",
+      "1f0a0fcf",
+      "2c4d6c86",
+      "1701b464",
+      "e7c41c8e",
+      "e677e011"
+    ],
+    "engines/manifests/gost.json": [
+      "041a27a7",
+      "27aa95cd",
+      "f562e213",
+      "ed36de6c",
+      "5112216e",
+      "a7c0538e",
+      "308a8c2e",
+      "c4cc7089"
+    ],
+    "engines/manifests/gre.json": [
+      "7b1fbdd4",
+      "29df2512",
+      "22775453",
+      "b1780ccb",
+      "6564f97e",
+      "3d68180c",
+      "c1556582",
+      "0e536172"
+    ],
+    "engines/manifests/gretap.json": [
+      "3e726e03",
+      "cee26756",
+      "bacccc71",
+      "74e83549",
+      "041c993a",
+      "0652a723",
+      "c21a1d19",
+      "b15e4761"
+    ],
+    "engines/manifests/hajsaman.json": [
+      "463d9274",
+      "522151c2",
+      "689a51fd",
+      "4801bfb5",
+      "a0b9e3d5",
+      "f08075bf",
+      "1b10fd71",
+      "6a0f9b5f"
+    ],
+    "engines/manifests/hedioum.json": [
+      "4f511a4e",
+      "f7fec86d",
+      "b972848b",
+      "1ca46734",
+      "422de223",
+      "d17e5b1d",
+      "070bf759",
+      "37478f07"
+    ],
+    "engines/manifests/ipip.json": [
+      "bae27c20",
+      "e2a23310",
+      "5bc2f6c0",
+      "5524cb92",
+      "a1afa08c",
+      "846fd2ce",
+      "1e7c8e7c",
+      "ee347676"
+    ],
+    "engines/manifests/ipsec.json": [
+      "019b70b9",
+      "e7bace7f",
+      "4231bcb9",
+      "564a9294",
+      "f223db6c",
+      "aa00a81b",
+      "efd4bebf",
+      "de2f8cf5"
+    ],
+    "engines/manifests/openvpn.json": [
+      "476d9d3c",
+      "e6c31f0d",
+      "c89e5201",
+      "2ba31cd2",
+      "1c0a11ef",
+      "0b95c04d",
+      "76b4ef24",
+      "57b3ebed"
+    ],
+    "engines/manifests/paqet.json": [
+      "6b65e10a",
+      "c0b99825",
+      "f09b506e",
+      "b74bcf5c",
+      "9ed14c67",
+      "27a8858d",
+      "af24333c",
+      "a1a60137"
+    ],
+    "engines/manifests/rathole.json": [
+      "1cd61c20",
+      "17415bfe",
+      "1a19f1c9",
+      "26fe6388",
+      "5fc912cf",
+      "179eac82",
+      "23907e3b",
+      "510acb79"
+    ],
+    "engines/manifests/singbox.json": [
+      "1ff3cd74",
+      "054ecae9",
+      "52e5a847",
+      "134e552e",
+      "a5b15d43",
+      "b3bd34e1",
+      "f8fe25f6",
+      "300b9faa"
+    ],
+    "engines/manifests/sit.json": [
+      "7406a5b9",
+      "d15211ec",
+      "da47a798",
+      "78a286b6",
+      "eefa5a3c",
+      "45dbf8c1",
+      "decd346a",
+      "d1464308"
+    ],
+    "engines/manifests/ssh.json": [
+      "f014631d",
+      "c36c7b77",
+      "1450e550",
+      "d6ffbff2",
+      "3a3eea4e",
+      "0caac0f0",
+      "7368d44d",
+      "9c102f62"
+    ],
+    "engines/manifests/vti.json": [
+      "4aadce62",
+      "bb716afc",
+      "d39a06d8",
+      "cc7968b2",
+      "1cb97aad",
+      "998633f9",
+      "a394b016",
+      "d2538b08"
+    ],
+    "engines/manifests/vxlan.json": [
+      "51720487",
+      "6bc0036b",
+      "f4399d45",
+      "fab8d88f",
+      "6037f7ca",
+      "bfbd442f",
+      "95908899",
+      "3c51c664"
+    ],
+    "engines/manifests/waterwall.json": [
+      "dd064068",
+      "2ad31562",
+      "18b418bf",
+      "18b24bb7",
+      "a2a6842f",
+      "14f5bbff",
+      "ef98af5a",
+      "4da4edfe"
+    ],
+    "engines/manifests/wireguard.json": [
+      "f080db47",
+      "cfd87fa7",
+      "901a41bd",
+      "41674511",
+      "3263d091",
+      "68b3157b",
+      "788b1fc8",
+      "8df8305a"
+    ],
+    "engines/manifests/wstunnel.json": [
+      "24a3155e",
+      "603887e6",
+      "f7aa89c3",
+      "09c738f8",
+      "4fddb812",
+      "5e1747dd",
+      "39495c54",
+      "df58c010"
+    ],
+    "engines/manifests/xray.json": [
+      "aef5d876",
+      "385cd09d",
+      "6982ad1c",
+      "37e74b50",
+      "c151630e",
+      "392226f4",
+      "92aad896",
+      "e2a277c5"
+    ],
+    "engines/packages.py": [
+      "e15ae18b",
+      "08099375",
+      "489f424a",
+      "1f113dde",
+      "25a4e7fc",
+      "fa1b1697",
+      "479b5fb8",
+      "a5f61eb9"
+    ],
+    "install.sh": [
+      "ac91cb83",
+      "52d7aed3",
+      "e4bc5cad",
+      "b19df5be",
+      "4609d34e",
+      "1ed161cd",
+      "808afad0",
+      "4651c405"
+    ],
+    "migrations/env.py": [
+      "c127d1f5",
+      "36b7711b",
+      "3cb19f93",
+      "c2a25a66",
+      "e0513365",
+      "c5ee9f48",
+      "ea271374",
+      "2696b28d"
+    ],
+    "migrations/versions/4040fb150042_composition_entities_p8.py": [
+      "4140f707",
+      "d22cda85",
+      "9d96cdfc",
+      "84239244",
+      "5deccf85",
+      "b174b28a",
+      "1d900be8",
+      "e90bf7a3"
+    ],
+    "migrations/versions/7b6b540f5991_topology_entities_p11.py": [
+      "df265b44",
+      "2569796b",
+      "f4a887b8",
+      "0e78eb1c",
+      "383481dd",
+      "7c454578",
+      "b368b19f",
+      "96fa9eac"
+    ],
+    "migrations/versions/f9cb963715a8_initial_canonical_schema_p2.py": [
+      "457f1e73",
+      "5abf846d",
+      "4f726b7c",
+      "19a9dbfa",
+      "2c32425f",
+      "a941ad68",
+      "b6912562",
+      "62228ab2"
+    ],
+    "orchestrator/__init__.py": [
+      "6d4399f6",
+      "d8ddef13",
+      "d98839dc",
+      "8746ff09",
+      "d17d33d1",
+      "2a24d127",
+      "935b261d",
+      "a595ace1"
+    ],
+    "orchestrator/alerting.py": [
+      "a2f43ebf",
+      "5b1e138b",
+      "9d74f293",
+      "f3942d82",
+      "95d8b1b3",
+      "6b773c67",
+      "176da52f",
+      "9c40a7e7"
+    ],
+    "orchestrator/benchmarking/__init__.py": [
+      "3e7fd1c6",
+      "26105ea3",
+      "b546a520",
+      "d761b753",
+      "b91c6712",
+      "84b5d988",
+      "106d6340",
+      "aa7e924a"
+    ],
+    "orchestrator/benchmarking/chains.py": [
+      "a9f5ac4d",
+      "aeae0061",
+      "0ba382f9",
+      "328f8b00",
+      "9c4ec235",
+      "fa2aaae3",
+      "6516d3c9",
+      "5dbd4ef1"
+    ],
+    "orchestrator/benchmarking/runner.py": [
+      "274b7a34",
+      "0c2633dc",
+      "b95d5499",
+      "05443bc7",
+      "8d9c5a3e",
+      "bc58b489",
+      "7e389701",
+      "cb9ef048"
+    ],
+    "orchestrator/benchmarking/scoring.py": [
+      "0f27315a",
+      "2dc138d0",
+      "339fec25",
+      "286c514f",
+      "506baf67",
+      "8935f762",
+      "a147b3ca",
+      "8e1bdcce"
+    ],
+    "orchestrator/composition/__init__.py": [
+      "5793d227",
+      "0c966ab1",
+      "3712e8d2",
+      "c83e4a19",
+      "ab1c6dbe",
+      "482e68fb",
+      "0d6f2b51",
+      "13e9fc3d"
+    ],
+    "orchestrator/composition/core.py": [
+      "0bf6f47d",
+      "0e68707d",
+      "adac0f75",
+      "feea6916",
+      "1ef0ed97",
+      "755857e2",
+      "8b609309",
+      "3e126675"
+    ],
+    "orchestrator/composition/service.py": [
+      "ec91039a",
+      "cbdde66e",
+      "d03f39e6",
+      "361694f5",
+      "cadbcb2f",
+      "b0ddba6d",
+      "4dc2f5f2",
+      "c4742dc3"
+    ],
+    "orchestrator/deployment/__init__.py": [
+      "e41612bc",
+      "1c03326c",
+      "02e93372",
+      "7a2314ef",
+      "513c8da8",
+      "6593670b",
+      "1ace56ec",
+      "b314ae64"
+    ],
+    "orchestrator/failover/__init__.py": [
+      "cb6894be",
+      "5b3c503f",
+      "f4f5e05c",
+      "9ae80ead",
+      "b3705e57",
+      "0915f422",
+      "65ffa5ad",
+      "5ca3c9f8"
+    ],
+    "orchestrator/observability.py": [
+      "0b7a0195",
+      "145a6232",
+      "a00f2ffc",
+      "e96bfadb",
+      "2596e808",
+      "e53a1751",
+      "50cb4711",
+      "56fad5fa"
+    ],
+    "orchestrator/resources/__init__.py": [
+      "db19ab85",
+      "5efbb514",
+      "2cacd7f8",
+      "ef5f1854",
+      "155e6003",
+      "5ce4231f",
+      "b0585382",
+      "504c77bd"
+    ],
+    "orchestrator/topology.py": [
+      "c994dcfa",
+      "f3845499",
+      "7a4633ef",
+      "0534e72a",
+      "acd43144",
+      "5522f037",
+      "cd5d23e1",
+      "ca9da5e6"
+    ],
+    "panel/static/fonts/JetBrainsMono-OFL.txt": [
+      "a76abf00",
+      "2c49097d",
+      "146e8674",
+      "0a3105a5",
+      "d00450b1",
+      "592e820a",
+      "1109a8c5",
+      "680cd697"
+    ],
+    "panel/templates/index.html": [
+      "837dbaf6",
+      "c0a449ea",
+      "20267a24",
+      "86e18aef",
+      "f2a42161",
+      "f7a30572",
+      "58d43618",
+      "cf9c00bc"
+    ],
+    "plan_executor/executor.py": [
+      "f3890c2f",
+      "48e8ca39",
+      "7c844805",
+      "010d545b",
+      "ee24cae3",
+      "493a387e",
+      "05043993",
+      "0c0c9430"
+    ],
+    "plan_executor/requirements.txt": [
+      "5369fb7a",
+      "fd05d7cc",
+      "f3e06d7b",
+      "175478e5",
+      "5d683a34",
+      "0e8b6b89",
+      "3fdbefd6",
+      "b7764c1a"
+    ],
+    "pytest.ini": [
+      "315ad610",
+      "2b8e70af",
+      "c2555088",
+      "25bc02a4",
+      "fbda2e8d",
+      "b15c4c53",
+      "47d7bb89",
+      "aab232e1"
+    ],
+    "requirements-canonical.txt": [
+      "d82bcfe1",
+      "078fd37b",
+      "142e0d85",
+      "3b0ac255",
+      "6e8ffb81",
+      "436cf5bc",
+      "fa7a8443",
+      "fb6b578f"
+    ],
+    "requirements-dev.txt": [
+      "a28afa12",
+      "9836b4db",
+      "24e64280",
+      "7e6d03d0",
+      "c1618559",
+      "b783e2d9",
+      "d5619ace",
+      "722e63a2"
+    ],
+    "scheduler/requirements.txt": [
+      "a5948201",
+      "45075c32",
+      "bbc11f03",
+      "f012b36e",
+      "28647f62",
+      "3fdc7401",
+      "3ba91970",
+      "1e79e419"
+    ],
+    "scheduler/scheduler.py": [
+      "907f43e1",
+      "f9ff7410",
+      "c55c79f4",
+      "dca98d70",
+      "ecbefaa9",
+      "5dc13ca3",
+      "0bc42914",
+      "4687ae45"
+    ],
+    "scripts/backup.sh": [
+      "8475d54c",
+      "920a7c8e",
+      "2ba0180a",
+      "e26f73b0",
+      "f8b10b20",
+      "375e339a",
+      "406b707d",
+      "cfa6fea9"
+    ],
+    "scripts/export-production-state.sh": [
+      "e330e536",
+      "b74e6b1f",
+      "6d951eac",
+      "6817da9d",
+      "354477e8",
+      "2b5bef4b",
+      "2cf8d468",
+      "68dcc41a"
+    ],
+    "scripts/final_healthcheck.sh": [
+      "7cfddbf5",
+      "162e31ef",
+      "9720e33c",
+      "04747c2a",
+      "c7f7aba8",
+      "a015798a",
+      "464909a4",
+      "7a99edbc"
+    ],
+    "scripts/generate_catalog_inventory.py": [
+      "717083c5",
+      "6ec6e7e0",
+      "51709503",
+      "199450bd",
+      "c9f69d5b",
+      "f911a695",
+      "d86c2c7e",
+      "e0c6d813"
+    ],
+    "scripts/generate_engine_manifests.py": [
+      "3daa87a5",
+      "32895f31",
+      "5b8e3c30",
+      "013416dc",
+      "b2b1ace7",
+      "9846e7bd",
+      "62061675",
+      "5f27281e"
+    ],
+    "scripts/generate_engine_profile_matrix.py": [
+      "962ba013",
+      "fed84f42",
+      "7cdaa424",
+      "f135001b",
+      "17c06515",
+      "d5109fa6",
+      "13f838cb",
+      "0fad54cc"
+    ],
+    "scripts/generate_engine_status.py": [
+      "33f9a277",
+      "d91bbb56",
+      "9b951f4c",
+      "833828b9",
+      "756c10f0",
+      "b5d02d33",
+      "71677def",
+      "a297fc1a"
+    ],
+    "scripts/generate_real_validation_report.py": [
+      "873e4f82",
+      "3e461c1d",
+      "452bf79f",
+      "58ba7eab",
+      "14523faa",
+      "aa0e082e",
+      "dd526db4",
+      "a10e662c"
+    ],
+    "scripts/healthcheck.sh": [
+      "7eb9e53e",
+      "d1532b1e",
+      "83d3e07b",
+      "787a0ff6",
+      "7e5bf69f",
+      "b700495a",
+      "bc55637d",
+      "5f83f5af"
+    ],
+    "scripts/install.sh": [
+      "d1e030b8",
+      "f22ccd75",
+      "a7025373",
+      "66c30b97",
+      "30bb8dd4",
+      "d9f4cf63",
+      "482ab469",
+      "f4ffb68c"
+    ],
+    "scripts/p14_validate.py": [
+      "4e9136e4",
+      "455f96be",
+      "cdac72bd",
+      "3b45e9a9",
+      "be8f965e",
+      "ebd5c33d",
+      "780f748e",
+      "f7ec9957"
+    ],
+    "scripts/restore-production-state.sh": [
+      "e1991d3c",
+      "080bf990",
+      "c539077e",
+      "d9afb3e9",
+      "399ada72",
+      "090097aa",
+      "22ab79cd",
+      "859ccd78"
+    ],
+    "scripts/restore.sh": [
+      "02e931f6",
+      "fe2ef3a4",
+      "7b458332",
+      "e9dec844",
+      "48f04426",
+      "b9a1a0e5",
+      "6ed78cc6",
+      "7c2f4c7a"
+    ],
+    "scripts/uninstall.sh": [
+      "a39f9047",
+      "29a9e8d6",
+      "7a15d31a",
+      "43fed2c1",
+      "f2fea12f",
+      "0d4a466f",
+      "a68408a9",
+      "3dffbcee"
+    ],
+    "scripts/update.sh": [
+      "db34bdd5",
+      "3c185d61",
+      "9dd92b63",
+      "4f4ea36f",
+      "de177da2",
+      "377f0eed",
+      "4dcd5dc5",
+      "33bc7623"
+    ],
+    "scripts/upgrade.sh": [
+      "27adbc90",
+      "a9179457",
+      "63af02d0",
+      "e62af393",
+      "e2c4c537",
+      "8067ff95",
+      "c066f14f",
+      "a9c405c0"
+    ],
+    "tests/__init__.py": [
+      "e3b0c442",
+      "98fc1c14",
+      "9afbf4c8",
+      "996fb924",
+      "27ae41e4",
+      "649b934c",
+      "a495991b",
+      "7852b855"
+    ],
+    "tests/conftest.py": [
+      "e1fd5e10",
+      "21dc24f6",
+      "50e28c9a",
+      "4209bfad",
+      "65ea264f",
+      "44a16975",
+      "ae31ee86",
+      "80cb0b33"
+    ],
+    "tests/test_imports.py": [
+      "4e7e606e",
+      "ddb00685",
+      "315c7a55",
+      "4430a3b2",
+      "f76ec728",
+      "9b719bc7",
+      "39b44573",
+      "623ff85f"
+    ],
+    "tests/test_release_assets.py": [
+      "21cd2fb8",
+      "b82cf862",
+      "f9690400",
+      "6b76df0d",
+      "ba5048d3",
+      "435f27a0",
+      "019b604c",
+      "fd111358"
+    ],
+    "tests/unit/test_adapter_families.py": [
+      "646002ff",
+      "66782d7f",
+      "c68255d2",
+      "8deee660",
+      "30deb46c",
+      "4bdb593d",
+      "e563ea26",
+      "3d925d70"
+    ],
+    "tests/unit/test_app_rbac.py": [
+      "2edd62fb",
+      "80af7047",
+      "1e17665d",
+      "38854781",
+      "73f96464",
+      "d12d206a",
+      "985042f0",
+      "94a9dd67"
+    ],
+    "tests/unit/test_benchmark.py": [
+      "a6ae5022",
+      "e18d3fbb",
+      "5fde7f63",
+      "328eb7a4",
+      "f6453b13",
+      "d0c117e9",
+      "24c26ddd",
+      "aba12a69"
+    ],
+    "tests/unit/test_benchmark_api.py": [
+      "24f8a0d7",
+      "f3b0bfa6",
+      "22b60965",
+      "384d99f5",
+      "961f4a8f",
+      "40d848c1",
+      "bbf1fcb2",
+      "d5309e56"
+    ],
+    "tests/unit/test_benchmark_isolation.py": [
+      "6ad3175b",
+      "6f6a6dd1",
+      "139c6fd8",
+      "09676820",
+      "6751c2e2",
+      "3911d866",
+      "cb78ddf6",
+      "cf465d6f"
+    ],
+    "tests/unit/test_catalog.py": [
+      "ccaf5753",
+      "c201a1e3",
+      "4b791c48",
+      "3c39996c",
+      "d88f1d78",
+      "7e77d52d",
+      "4fa0184c",
+      "e8633d2d"
+    ],
+    "tests/unit/test_chain_benchmark.py": [
+      "1ca5bf2f",
+      "2b30d28d",
+      "5c58dc58",
+      "366acbd0",
+      "88784354",
+      "62e216e4",
+      "8e8712ab",
+      "f024c997"
+    ],
+    "tests/unit/test_composition.py": [
+      "6edf3e87",
+      "138348f2",
+      "560fb6a7",
+      "3f9b70d0",
+      "fc3aea08",
+      "b4222688",
+      "a0a20244",
+      "1b848f05"
+    ],
+    "tests/unit/test_counts.py": [
+      "3c1f23a4",
+      "57320791",
+      "fc6bf82a",
+      "59b08c2a",
+      "95e6aed6",
+      "f691f3e0",
+      "f83b9883",
+      "f752c50e"
+    ],
+    "tests/unit/test_deployment.py": [
+      "3c93ed7c",
+      "dc4aab62",
+      "a9f2893c",
+      "32858a3b",
+      "a4a49b92",
+      "069910e5",
+      "4c250c21",
+      "093669fd"
+    ],
+    "tests/unit/test_failover.py": [
+      "57a81a8b",
+      "4f9ab403",
+      "2a82473a",
+      "3eb7cf15",
+      "42fa983d",
+      "c20feec8",
+      "6a53d87a",
+      "8f9726e1"
+    ],
+    "tests/unit/test_failover_api.py": [
+      "9a980049",
+      "98502c6b",
+      "8f07fe70",
+      "62c1593b",
+      "233d2101",
+      "ceef51d6",
+      "50dfdb6d",
+      "ccf59a02"
+    ],
+    "tests/unit/test_installer.py": [
+      "23f71e34",
+      "78188e7e",
+      "4a21f934",
+      "f401e6c1",
+      "de322c59",
+      "0a453009",
+      "8299433f",
+      "cbbbf8aa"
+    ],
+    "tests/unit/test_installer_reconciliation.py": [
+      "745850fa",
+      "116e7b9c",
+      "3c315967",
+      "d327fc8d",
+      "78221631",
+      "a28c6aeb",
+      "c321f68d",
+      "ee85df2d"
+    ],
+    "tests/unit/test_kernel_adapters.py": [
+      "bf5c4190",
+      "a60f62b4",
+      "d3e6d1f3",
+      "45542275",
+      "28f27167",
+      "11ead3c9",
+      "95064cd3",
+      "4f3beca6"
+    ],
+    "tests/unit/test_legacy_probe_honesty.py": [
+      "c8e14ac8",
+      "9de933be",
+      "ab554698",
+      "01b665c5",
+      "75ef620e",
+      "77ff927f",
+      "b13028bd",
+      "e401267a"
+    ],
+    "tests/unit/test_manifests.py": [
+      "62866560",
+      "172fbafa",
+      "d277070a",
+      "e8af1b5f",
+      "85990c3b",
+      "81dccc2f",
+      "c969faf6",
+      "5752db11"
+    ],
+    "tests/unit/test_models.py": [
+      "bc1d4713",
+      "3f23d74e",
+      "df32a6c4",
+      "e1230bcd",
+      "59553fe6",
+      "ffbefcc3",
+      "394a695f",
+      "65ba7c25"
+    ],
+    "tests/unit/test_observability_bot.py": [
+      "1f41d684",
+      "f9b9d72b",
+      "8b5e269b",
+      "8167ce74",
+      "b17bc6be",
+      "04458d10",
+      "be1a4bb3",
+      "f821b404"
+    ],
+    "tests/unit/test_p14_prep.py": [
+      "dfc6d46a",
+      "deec745f",
+      "a441917d",
+      "24b773d6",
+      "33ab01c4",
+      "12001189",
+      "9798c653",
+      "0b8d896f"
+    ],
+    "tests/unit/test_port_allocation.py": [
+      "83c3586c",
+      "bc8df89b",
+      "fe8c3411",
+      "8b162e4b",
+      "7e699568",
+      "5e242aea",
+      "6b44c443",
+      "1c1ae604"
+    ],
+    "tests/unit/test_ranking_ui.py": [
+      "d5afb021",
+      "68bab436",
+      "83696321",
+      "0fe5ecb5",
+      "aeabb172",
+      "f686dd9a",
+      "326d9318",
+      "a66bccd3"
+    ],
+    "tests/unit/test_real_validation_regressions.py": [
+      "5c33a38c",
+      "e27657cd",
+      "85805f47",
+      "cd2b6fb8",
+      "dba3b8de",
+      "2969debf",
+      "71d88196",
+      "710f7bee"
+    ],
+    "tests/unit/test_resources.py": [
+      "0cdabb10",
+      "b1374782",
+      "c80a8dcf",
+      "e6fbec83",
+      "c3398858",
+      "4e4be10f",
+      "543761bd",
+      "bf7a3c10"
+    ],
+    "tests/unit/test_security_hardening.py": [
+      "64f7e0fa",
+      "612ab655",
+      "56c82cd2",
+      "fb9c882f",
+      "d89f2c54",
+      "eed69d51",
+      "0b07d55f",
+      "61205556"
+    ],
+    "tests/unit/test_topology.py": [
+      "549c0894",
+      "9ce9089c",
+      "14173f99",
+      "67f064e6",
+      "1718a932",
+      "e80d1061",
+      "59da7531",
+      "16e85bac"
+    ],
+    "tunnelguard/install.sh": [
+      "1e95e806",
+      "96ec279e",
+      "6a7abb8c",
+      "27cfc08d",
+      "66f111d5",
+      "d9c99926",
+      "ee5f3e74",
+      "ae7af0bc"
+    ],
+    "tunnelguard/pytest.ini": [
+      "e4f170ac",
+      "d2cf7785",
+      "4f32571b",
+      "bf37f270",
+      "b5e8e23f",
+      "b0f85d68",
+      "a9b78925",
+      "c062860b"
+    ],
+    "tunnelguard/requirements.txt": [
+      "b89c7fe8",
+      "095b7d2c",
+      "3bbfe4a1",
+      "8b1cb1e9",
+      "704f1968",
+      "8ddc6f37",
+      "90502a29",
+      "4778c0bd"
+    ],
+    "tunnelguard/scripts/boot_live.sh": [
+      "a6c27a5d",
+      "b20ca84b",
+      "54f04cbc",
+      "533daa2a",
+      "2a2b37cb",
+      "e9318555",
+      "53ca06eb",
+      "a2b8f3ba"
+    ],
+    "tunnelguard/scripts/install_hedioum.sh": [
+      "620eb6b0",
+      "725adec4",
+      "0505da57",
+      "f1b69a0b",
+      "e977b671",
+      "a3446b87",
+      "cd9b3f7a",
+      "4584c2d6"
+    ],
+    "tunnelguard/scripts/install_paqet.sh": [
+      "a169ecc5",
+      "64929dab",
+      "7f7d3aed",
+      "8ca43805",
+      "289e62cf",
+      "92bc85bd",
+      "e067a096",
+      "9884650d"
+    ],
+    "tunnelguard/scripts/run_hedioum_e2e.py": [
+      "640ba20d",
+      "1c732606",
+      "43331217",
+      "51448014",
+      "5363d744",
+      "b35ef334",
+      "0a40e895",
+      "b834853b"
+    ],
+    "tunnelguard/scripts/selftest.py": [
+      "1097f7cc",
+      "b15c24a1",
+      "ea5be323",
+      "5cbf4e42",
+      "d16ca5ca",
+      "0bb3eb77",
+      "8fbfdf6c",
+      "cd388ca7"
+    ],
+    "tunnelguard/scripts/smoke_v12.py": [
+      "14c9a621",
+      "0330e7ed",
+      "59e58ead",
+      "73d6de89",
+      "6c0e96ad",
+      "4bd48dac",
+      "c57167c9",
+      "f433131f"
+    ],
+    "tunnelguard/tests/conftest.py": [
+      "25015e3b",
+      "f5fa86ef",
+      "4edd4702",
+      "1fc06263",
+      "5626456f",
+      "2296ec96",
+      "46b5df55",
+      "a98a37fb"
+    ],
+    "tunnelguard/tests/test_api.py": [
+      "5a4dc8de",
+      "0c4d4e55",
+      "0c7106e4",
+      "eff055ed",
+      "f5f39d3c",
+      "86f66f20",
+      "d2b96630",
+      "a4cdfcb5"
+    ],
+    "tunnelguard/tests/test_engines.py": [
+      "dbad24b9",
+      "b54ca834",
+      "735cd917",
+      "21019ef5",
+      "0a828c43",
+      "b5edbfe6",
+      "64f99ab3",
+      "d424439c"
+    ],
+    "tunnelguard/tests/test_failover_fsm.py": [
+      "0cbd8465",
+      "78be0080",
+      "85ec3e5f",
+      "1233da9d",
+      "cb8be587",
+      "a865fa1e",
+      "8c8eaa7d",
+      "8772b4d6"
+    ],
+    "tunnelguard/tests/test_hajsaman.py": [
+      "feb04233",
+      "f4adf764",
+      "478c4a34",
+      "f1a5645c",
+      "2c623f2e",
+      "a105b1b6",
+      "9f1d4a25",
+      "ed63402a"
+    ],
+    "tunnelguard/tests/test_hedioum.py": [
+      "55a5bf97",
+      "3787a9bb",
+      "055c83ae",
+      "821cfdf2",
+      "105a1cb4",
+      "ee94e8eb",
+      "a6ab7a2b",
+      "2bc68f00"
+    ],
+    "tunnelguard/tests/test_paqet.py": [
+      "99ba428e",
+      "1a691e6e",
+      "ac71b257",
+      "ad7b76fc",
+      "1e73cc30",
+      "9b8f26cc",
+      "2e269cb3",
+      "590616fc"
+    ],
+    "tunnelguard/tests/test_probes.py": [
+      "2b9cc5cf",
+      "9f50928d",
+      "dc55ece1",
+      "767ea7d1",
+      "37c6e4f6",
+      "c76a6524",
+      "e3075499",
+      "2e6494c2"
+    ],
+    "tunnelguard/tests/test_wizard.py": [
+      "95f5c21a",
+      "85b8f7ad",
+      "d1cf4051",
+      "7ccf1d70",
+      "3baa368c",
+      "8633b8b2",
+      "ada9dce0",
+      "138bdc45"
+    ],
+    "tunnelguard/tfd/__init__.py": [
+      "de0414ac",
+      "889ff3ba",
+      "3be0ae80",
+      "d28cf935",
+      "8628092f",
+      "ad4e21b8",
+      "95820822",
+      "540c8433"
+    ],
+    "tunnelguard/tfd/__main__.py": [
+      "b9987ba7",
+      "32307feb",
+      "87b62ebb",
+      "7d81aeb1",
+      "088d58a3",
+      "ded44eaa",
+      "2963227c",
+      "509d1bf8"
+    ],
+    "tunnelguard/tfd/api.py": [
+      "fe3a0c8a",
+      "5094d7d8",
+      "69bbe3e5",
+      "9b47aae5",
+      "7be6f139",
+      "818f4c29",
+      "21266db2",
+      "fb86c7f6"
+    ],
+    "tunnelguard/tfd/config.py": [
+      "5bdbe35a",
+      "999af6f3",
+      "768ee62e",
+      "3db3311c",
+      "3c0c0917",
+      "f6438f38",
+      "8c19eb8a",
+      "072afe9a"
+    ],
+    "tunnelguard/tfd/db.py": [
+      "974154c9",
+      "ae296878",
+      "43ad3a40",
+      "1a4b7e2b",
+      "164849ad",
+      "c0a000db",
+      "a713d6a5",
+      "79bc7064"
+    ],
+    "tunnelguard/tfd/engines/__init__.py": [
+      "7f552011",
+      "def3525c",
+      "ff1952c5",
+      "becad7b2",
+      "32881fab",
+      "a65e9ab7",
+      "cf985f27",
+      "bc96fbf1"
+    ],
+    "tunnelguard/tfd/engines/base.py": [
+      "83f6a0a6",
+      "83ffc5f5",
+      "a333a9f0",
+      "9c19b2fa",
+      "0706db7e",
+      "0b4d2d08",
+      "f925b8be",
+      "c584fd06"
+    ],
+    "tunnelguard/tfd/engines/hajsaman.py": [
+      "537c05ea",
+      "470842b3",
+      "94dfe075",
+      "9e1492e3",
+      "63167eae",
+      "ee95b93d",
+      "03366e50",
+      "d8a7782c"
+    ],
+    "tunnelguard/tfd/engines/hedioum.py": [
+      "4048550f",
+      "52ca6a51",
+      "fcf6798d",
+      "c4baf528",
+      "e14a4239",
+      "b53cdd83",
+      "60b0cf16",
+      "bf0870b2"
+    ],
+    "tunnelguard/tfd/engines/ipsec.py": [
+      "a7800e86",
+      "7dd7a5d3",
+      "2af92f00",
+      "dadefde3",
+      "cae5c3b4",
+      "82d63f79",
+      "dcb6a838",
+      "a41762cf"
+    ],
+    "tunnelguard/tfd/engines/kernel.py": [
+      "3bc8a660",
+      "c4742e82",
+      "eceacb30",
+      "7d2295e7",
+      "15a60895",
+      "ae9f5eb3",
+      "c1e5d859",
+      "8945f136"
+    ],
+    "tunnelguard/tfd/engines/openvpn.py": [
+      "2e975290",
+      "a9177af9",
+      "4a0325a3",
+      "b99cad9e",
+      "0c53231e",
+      "001c85f5",
+      "8e411531",
+      "3a5ab780"
+    ],
+    "tunnelguard/tfd/engines/paqet.py": [
+      "8fac55dc",
+      "bddbfe84",
+      "400794af",
+      "a1833b1d",
+      "89c1c9f0",
+      "22a0bb3f",
+      "1289c57f",
+      "bf9fbc1b"
+    ],
+    "tunnelguard/tfd/engines/wireguard.py": [
+      "279395a3",
+      "bff7b74d",
+      "203a43fd",
+      "1731a4f3",
+      "a9163f26",
+      "24ae90c9",
+      "9e004a0f",
+      "07c4217c"
+    ],
+    "tunnelguard/tfd/events.py": [
+      "64c49344",
+      "a506fa12",
+      "017be855",
+      "8958ef12",
+      "06d2a23a",
+      "ed20fd96",
+      "d4791380",
+      "32cfec71"
+    ],
+    "tunnelguard/tfd/failover.py": [
+      "8e2fbc32",
+      "b8de6833",
+      "6be2da99",
+      "964ceff1",
+      "92951df8",
+      "d2824486",
+      "6f4a4068",
+      "5cfc7c8d"
+    ],
+    "tunnelguard/tfd/main.py": [
+      "74c5f433",
+      "6ec63249",
+      "b1175562",
+      "bdbba6a6",
+      "ad3dc232",
+      "ffcd96bd",
+      "bd639c64",
+      "da7dc267"
+    ],
+    "tunnelguard/tfd/probes.py": [
+      "8faf0c52",
+      "ab9fd294",
+      "e637e3f7",
+      "3b1e6766",
+      "3fa930fb",
+      "d0594b4a",
+      "39352139",
+      "528c5482"
+    ],
+    "tunnelguard/tfd/routing.py": [
+      "536a660a",
+      "9ae75209",
+      "f75d5a9a",
+      "c7be1445",
+      "9eaeebca",
+      "ce2a9297",
+      "7289de8c",
+      "c5d623b2"
+    ],
+    "tunnelguard/tfd/security.py": [
+      "0f8b6f45",
+      "0a308956",
+      "be1e606b",
+      "8cd819b4",
+      "0a99ab56",
+      "037ec717",
+      "9cf12463",
+      "0a6b0beb"
+    ],
+    "tunnelguard/web/index.html": [
+      "1c33d33d",
+      "8f5886b2",
+      "81438934",
+      "52563849",
+      "79786e62",
+      "aa4ff57f",
+      "65ec8137",
+      "897c3adf"
+    ],
+    "update_composer_simple_extra.sh": [
+      "16f49a5b",
+      "a810b899",
+      "2d16b6a2",
+      "c89941c9",
+      "1cb45eb2",
+      "e958a548",
+      "eefc551a",
+      "1cda0fa5"
+    ],
+    "web/admin.html": [
+      "7a62fe0b",
+      "637691ea",
+      "47375219",
+      "cc9c2a23",
+      "a1916fc7",
+      "f7e11f1f",
+      "fa4afe83",
+      "28be2558"
+    ],
+    "web/app.html": [
+      "7a62fe0b",
+      "637691ea",
+      "47375219",
+      "cc9c2a23",
+      "a1916fc7",
+      "f7e11f1f",
+      "fa4afe83",
+      "28be2558"
+    ],
+    "web/composer.html": [
+      "4a005dc1",
+      "8a6a587a",
+      "4c8aa09f",
+      "73a95f2e",
+      "e3e43ed4",
+      "787e0b9f",
+      "f4196858",
+      "7d20f4da"
+    ],
+    "web/index.html": [
+      "c5b96c90",
+      "7b1830eb",
+      "0e1fae91",
+      "fc1b1498",
+      "8d6b3bf0",
+      "aafa474e",
+      "e0771f3f",
+      "9924e035"
+    ],
+    "worker/requirements.txt": [
+      "5369fb7a",
+      "fd05d7cc",
+      "f3e06d7b",
+      "175478e5",
+      "5d683a34",
+      "0e8b6b89",
+      "3fdbefd6",
+      "b7764c1a"
+    ],
+    "worker/worker.py": [
+      "eefe2b58",
+      "f119064b",
+      "3d230773",
+      "b4b54094",
+      "f09b90a3",
+      "095540a4",
+      "e65370a2",
+      "9bc5bf68"
+    ]
+  },
+  "hash_encoding": "Join the eight 8-character chunks to recover each SHA-256 digest."
+}

@@ -216,7 +216,8 @@ def conflicts_for(mid: str, ports: dict, report: dict) -> list:
     return bad
 
 
-def free_port(report: dict, proto: str, side_ids: list, start: int = None) -> int:
+def free_port(report: dict, proto: str, side_ids: list, start: int = None,
+              reserved: set = None) -> int:
     """Find a port free on ALL given sides (and in NEVER/RANGE rules)."""
     proto = (proto or "tcp").upper()
     occ = occupied_set(report)
@@ -224,7 +225,7 @@ def free_port(report: dict, proto: str, side_ids: list, start: int = None) -> in
     cand = start if (start and lo <= start <= hi) else lo
     # also avoid anything allocated before
     allocs = _load(ALLOC_FILE, {})
-    taken = set()
+    taken = set(reserved or ())
     for a in allocs.values():
         for v in (a.get("ports") or {}).values():
             if v:
@@ -246,7 +247,7 @@ def assign(mid: str, needs: dict, side_ids: list, report: dict = None) -> dict:
     ports = {}
     for role, proto in needs.items():
         old = (prev.get("ports") or {}).get(role)
-        p = free_port(report, proto, side_ids, start=old)
+        p = free_port(report, proto, side_ids, start=old, reserved=set(ports.values()))
         if not p:
             return {"ok": False, "err": f"no free {proto} port in range for {role}"}
         ports[role] = p

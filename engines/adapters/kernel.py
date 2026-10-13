@@ -144,6 +144,8 @@ class WireGuardAdapter(CommandPlanAdapter):
             problems.append("no peer endpoint (endpoint_b / node_b.host)")
         if not self.params.get("subnet"):
             problems.append("no inner subnet allocated")
+        if not self.params.get("peer_public_key"):
+            problems.append("no peer public key exchanged")
         return problems
 
     def commands(self) -> list[tuple[str, str]]:
@@ -151,25 +153,33 @@ class WireGuardAdapter(CommandPlanAdapter):
         iface, port = p["interface"], p["port"]
         inner_a, inner_b = p["inner_ip_a"], p["inner_ip_b"]
         endpoint_b = p.get("endpoint_b") or f"{self.node_b['host']}:{port}"
+        import shlex
+        peer = p.get("peer_public_key")
+        if not peer:
+            raise ValueError("peer public key must be exchanged before configuration")
+        key_path = p.get("private_key_path", f"/etc/wireguard/{iface}.key")
+        allowed_ips = p['subnet'] + ("," + p["subnet6"] if p.get("subnet6") else "")
+        generate = [] if p.get("private_key_path") else [
+            ("generate keys", f"umask 077; mkdir -p /etc/wireguard; wg genkey | "
+             f"tee /etc/wireguard/{iface}.key | wg pubkey > /etc/wireguard/{iface}.pub")]
         return [
             ("create interface", f"ip link add {iface} type wireguard"),
-            ("generate keys",
-             f"wg genkey | tee /etc/wireguard/{iface}.key | wg pubkey > /etc/wireguard/{iface}.pub"),
+            *generate,
             ("configure listen",
-             f"wg set {iface} listen-port {port} private-key /etc/wireguard/{iface}.key"),
+             f"wg set {iface} listen-port {port} private-key {shlex.quote(key_path)}"),
             ("assign address", f"ip addr add {inner_a} dev {iface}"),
-            ("peer config placeholder",
-             f"wg set {iface} peer $({{ cat /etc/wireguard/{iface}.peer || echo PENDING }}) "
-             f"endpoint {endpoint_b} allowed-ips {p['subnet']}"),
+            ("configure exchanged peer",
+             f"wg set {iface} peer {shlex.quote(peer)} "
+             f"endpoint {endpoint_b} allowed-ips {allowed_ips}"),
             ("mtu", f"ip link set dev {iface} mtu {p.get('mtu', 1420)} up"),
         ]
 
     def rollback_commands(self) -> list[tuple[str, str]]:
         iface = self.params["interface"]
-        return [
-            ("delete interface", f"ip link del {iface}"),
-            ("remove keys", f"rm -f /etc/wireguard/{iface}.key /etc/wireguard/{iface}.pub"),
-        ]
+        actions = [("delete interface", f"ip link del {iface}")]
+        if not self.params.get("private_key_path"):
+            actions.append(("remove keys", f"rm -f /etc/wireguard/{iface}.key /etc/wireguard/{iface}.pub"))
+        return actions
 
     def probe_commands(self) -> list[str]:
         return [f"ping -c 3 -W 2 -I {self.params['interface']} {self.params['probe_target']}"]

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run ALL 77 method tests inside the mtf-panel container -> receipts in DB.
+"""Run every registry method in a disposable namespace -> receipts in DB.
 Writes progress to /opt/multitunnel/data/test_progress.json for polling."""
 import json
 import os
@@ -42,6 +42,10 @@ def run_kernel(mid):
             ev = json.loads(p.stdout or "{}")
         except Exception:
             ev = {"raw": p.stdout[-400:]}
+        ev["scope"] = "LAB_NETNS"
+        if mid in {"HAJSAMAN_SIT", "HAJSAMAN_WG", "HAJSAMAN_FULL", "VTI6"}:
+            ev["note"] = "only an underlying kernel component was exercised; the named full profile is not verified"
+            return "PARTIAL", ev
         return "PASS", ev
     try:
         ev = json.loads(p.stdout or "{}")

@@ -13,18 +13,15 @@ from contextlib import contextmanager
 from datetime import datetime
 
 import paramiko
-import psycopg
 from cryptography.fernet import Fernet
-from psycopg.rows import dict_row
-from redis import Redis
 
-DATABASE_URL = os.environ["DATABASE_URL"].replace(
+DATABASE_URL = os.environ.get("DATABASE_URL", "").replace(
     "postgresql+psycopg://", "postgresql://"
 )
-REDIS_URL = os.environ["REDIS_URL"]
-APP_SECRET_KEY = os.environ["APP_SECRET_KEY"]
+REDIS_URL = os.environ.get("REDIS_URL", "")
+APP_SECRET_KEY = os.environ.get("APP_SECRET_KEY") or os.environ.get("TP_SECRET_KEY", "")
 
-redis_client = Redis.from_url(REDIS_URL, decode_responses=True)
+redis_client = None  # CLI services are initialized only when the legacy worker runs.
 logging.basicConfig(
     level=os.getenv("LOG_LEVEL", "INFO"),
     format="%(asctime)s %(levelname)s %(message)s",
@@ -113,6 +110,10 @@ SUPPORTED = {
 
 
 def db_connect():
+    import psycopg
+    from psycopg.rows import dict_row
+    if not DATABASE_URL:
+        raise RuntimeError("legacy worker DATABASE_URL is required")
     return psycopg.connect(DATABASE_URL, row_factory=dict_row)
 
 
@@ -469,11 +470,7 @@ def deploy_kernel(
 
     safe_prefix = safe_prefixes[method]
 
-    interface_name = (
-        f"{safe_prefix}"
-        f"{int(run['id']) % 1000:03d}"
-        f"{int(run_item['id']) % 1000:03d}"
-    )[:15]
+    interface_name = short_name(safe_prefix, int(run["id"]), int(run_item["id"]))
     name = unit_name(run["id"], run_item["id"])
     source_a = str(addr["source_a"])
     source_b = str(addr["source_b"])
@@ -797,6 +794,13 @@ def install_packages(
         shlex.quote(value)
         for value in packages
     )
+    installed = remote.run(
+        f"for package in {package_list}; do "
+        "dpkg-query -W -f='${Status}' \"$package\" 2>/dev/null "
+        "| grep -qx 'install ok installed' || exit 1; done",
+        root=True, check=False)
+    if installed['code'] == 0:
+        return
 
     remote.run(
         (
@@ -804,7 +808,7 @@ def install_packages(
             "export "
             "DEBIAN_FRONTEND=noninteractive "
             "DEBCONF_NONINTERACTIVE_SEEN=true "
-            "NEEDRESTART_MODE=a; "
+            "NEEDRESTART_MODE=l; "
             "apt-get update; "
             "apt-get install -y "
             "-o Dpkg::Options::=--force-confold "
@@ -842,6 +846,7 @@ def persistent_service(
     command: str,
     environment: dict | None = None,
 ):
+    command = command.replace('%', '%%')  # systemd expands specifiers before the shell
     env_lines = "".join(
         f"Environment={shlex.quote(str(key) + '=' + str(value))}\n"
         for key, value in (environment or {}).items()
@@ -884,6 +889,8 @@ def oneshot_service(
     start_script: str,
     stop_script: str,
 ):
+    start_script = start_script.replace('%', '%%')
+    stop_script = stop_script.replace('%', '%%')
     unit = (
         "[Unit]\n"
         f"Description=TehranNetwork {name}\n"
@@ -966,49 +973,39 @@ def ensure_ssh_tunnel_server(remote: Remote):
 
 
 def prepare_ssh_identity(client: Remote, server: Remote, server_endpoint: dict, name: str):
+    """Create a pinned, key-only sidecar; leave management sshd untouched."""
     install_packages(client, ["openssh-client", "autossh"])
     key_dir = f"/etc/netauto/ssh/{name}"
     key_path = f"{key_dir}/id_ed25519"
     known_hosts = f"{key_dir}/known_hosts"
     host = str(server_endpoint["host"])
-    port = int(server_endpoint.get("port") or 22)
     username = str(server_endpoint["ssh_username"])
-
+    port = free_port(server, "tcp", 22000)
+    server_dir = f"/etc/netauto/ssh-server/{name}"
+    server_service = name + "-sshd"
     client.run(
         f"install -d -m 0700 {shlex.quote(key_dir)}; "
-        f"test -f {shlex.quote(key_path)} || ssh-keygen -q -t ed25519 -N '' -f {shlex.quote(key_path)}; "
-        f"ssh-keyscan -p {port} -H {shlex.quote(host)} > {shlex.quote(known_hosts)}; "
-        f"chmod 600 {shlex.quote(key_path)} {shlex.quote(known_hosts)}",
-        root=True,
-        timeout=120,
-    )
-    public_key = client.run(
-        f"cat {shlex.quote(key_path)}.pub",
-        root=True,
-    )["stdout"].strip()
-    marker = f"netauto:{name}"
-    server.run(
-        "user=" + shlex.quote(username) + "; "
-        "home=$(getent passwd \"$user\" | cut -d: -f6); "
-        "test -n \"$home\"; "
-        "install -d -m 0700 -o \"$user\" -g \"$(id -gn \"$user\")\" \"$home/.ssh\"; "
-        "touch \"$home/.ssh/authorized_keys\"; "
-        "chown \"$user:$(id -gn \"$user\")\" \"$home/.ssh/authorized_keys\"; "
-        "chmod 600 \"$home/.ssh/authorized_keys\"; "
-        f"sed -i '/{re.escape(marker)}/d' \"$home/.ssh/authorized_keys\"; "
-        f"printf '%s %s\\n' {shlex.quote('no-agent-forwarding,no-X11-forwarding,no-pty')} {shlex.quote(public_key + ' ' + marker)} >> \"$home/.ssh/authorized_keys\"",
-        root=True,
-        timeout=120,
-    )
-    return {
-        "key_dir": key_dir,
-        "key_path": key_path,
-        "known_hosts": known_hosts,
-        "host": host,
-        "port": port,
-        "username": username,
-        "marker": marker,
-    }
+        f"ssh-keygen -q -t ed25519 -N '' -f {shlex.quote(key_path)}; "
+        f"chmod 600 {shlex.quote(key_path)}", root=True, timeout=30)
+    public_key = client.run(f"cat {shlex.quote(key_path)}.pub", root=True)["stdout"].strip()
+    host_key = server.client.get_transport().get_remote_server_key()
+    known = f"[{host}]:{port} {host_key.get_name()} {host_key.get_base64()}\n"
+    write_remote_text(client, known_hosts, known, mode="0600")
+    write_remote_text(server, server_dir + "/authorized_keys", public_key + "\n", mode="0644")
+    server.run(f"chmod 0755 {shlex.quote(server_dir)}; mkdir -p /run/sshd", root=True)
+    key_type = {"ssh-ed25519": "ed25519", "ssh-rsa": "rsa"}.get(host_key.get_name(), "ecdsa")
+    command = (f"exec /usr/sbin/sshd -D -e -f /dev/null -p {port} "
+        f"-h /etc/ssh/ssh_host_{key_type}_key -o ListenAddress={shlex.quote(host)} "
+        f"-o AuthorizedKeysFile={shlex.quote(server_dir + '/authorized_keys')} "
+        "-o PasswordAuthentication=no -o KbdInteractiveAuthentication=no "
+        "-o AuthenticationMethods=publickey -o UsePAM=no -o PermitRootLogin=prohibit-password "
+        "-o PermitTunnel=yes -o AllowTcpForwarding=yes -o GatewayPorts=clientspecified "
+        f"-o PidFile={shlex.quote(server_dir + '/sshd.pid')}")
+    persistent_service(server, server_service, command)
+    wait_listener(server, "tcp", port)
+    return {"key_dir": key_dir, "key_path": key_path, "known_hosts": known_hosts,
+            "host": host, "port": port, "username": username, "marker": "",
+            "server_service": server_service, "server_dir": server_dir}
 
 
 def remove_authorized_marker(remote: Remote, username: str, marker: str):
@@ -1096,10 +1093,10 @@ def deploy_ssh_forward(method: str, run: dict, item: dict, config: dict, remote_
 
     return {
         "method": method,
-        "services_a": [name] if sides["client_side"] == "A" else [],
-        "services_b": [name] if sides["client_side"] == "B" else [],
-        "files_a": [identity["key_dir"]] if sides["client_side"] == "A" else [],
-        "files_b": [identity["key_dir"]] if sides["client_side"] == "B" else [],
+        "services_a": [name] if sides["client_side"] == "A" else [identity["server_service"]],
+        "services_b": [name] if sides["client_side"] == "B" else [identity["server_service"]],
+        "files_a": [identity["key_dir"]] if sides["client_side"] == "A" else [identity["server_dir"]],
+        "files_b": [identity["key_dir"]] if sides["client_side"] == "B" else [identity["server_dir"]],
         "authorized_marker_a": identity["marker"] if sides["server_side"] == "A" else None,
         "authorized_marker_b": identity["marker"] if sides["server_side"] == "B" else None,
         "authorized_user_a": identity["username"] if sides["server_side"] == "A" else None,
@@ -1135,7 +1132,6 @@ def deploy_ssh_tunnel(method: str, run: dict, item: dict, config: dict, remote_a
     server = sides["server"]
     client_endpoint = sides["client_endpoint"]
     server_endpoint = sides["server_endpoint"]
-    ensure_ssh_tunnel_server(server)
     name = f"netauto-sshdev-{run['id']}-{item['id']}"
     identity = prepare_ssh_identity(client, server, server_endpoint, name)
     device_id = int(config.get("ssh_tunnel_id") or (100 + item["id"] % 100))
@@ -1170,12 +1166,12 @@ def deploy_ssh_tunnel(method: str, run: dict, item: dict, config: dict, remote_a
     return {
         "method": method,
         "interface_name": interface_name,
-        "services_a": [name, config_name] if sides["client_side"] == "A" else [config_name],
-        "services_b": [name, config_name] if sides["client_side"] == "B" else [config_name],
+        "services_a": [name, config_name] if sides["client_side"] == "A" else [config_name, identity["server_service"]],
+        "services_b": [name, config_name] if sides["client_side"] == "B" else [config_name, identity["server_service"]],
         "interfaces_a": [interface_name],
         "interfaces_b": [interface_name],
-        "files_a": [identity["key_dir"]] if sides["client_side"] == "A" else [],
-        "files_b": [identity["key_dir"]] if sides["client_side"] == "B" else [],
+        "files_a": [identity["key_dir"]] if sides["client_side"] == "A" else [identity["server_dir"]],
+        "files_b": [identity["key_dir"]] if sides["client_side"] == "B" else [identity["server_dir"]],
         "authorized_marker_a": identity["marker"] if sides["server_side"] == "A" else None,
         "authorized_marker_b": identity["marker"] if sides["server_side"] == "B" else None,
         "authorized_user_a": identity["username"] if sides["server_side"] == "A" else None,
@@ -1195,7 +1191,7 @@ def install_gost(remote: Remote):
 if command -v gost >/dev/null 2>&1 && gost -V 2>&1 | grep -q {shlex.quote(GOST_VERSION)}; then
     exit 0
 fi
-export DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a DEBCONF_NONINTERACTIVE_SEEN=true
+export DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=l DEBCONF_NONINTERACTIVE_SEEN=true
 apt-get update
 apt-get install -y curl ca-certificates tar python3
 TMP=$(mktemp -d)
@@ -1622,7 +1618,8 @@ def deploy_gost_method(method: str, run: dict, item: dict, config: dict, remote_
         return deploy_gost_remote(method, run, item, config, remote_a, remote_b, endpoint_a, endpoint_b)
     if method in {"GOST_TUN", "GOST_TAP"}:
         return deploy_gost_device(method, run, item, config, remote_a, remote_b, endpoint_a, endpoint_b)
-    return deploy_gost_proxy(method, run, item, config, remote_a, remote_b, endpoint_a, endpoint_b)
+    from engines.gost_pair import deploy_gost_proxy_pair
+    return deploy_gost_proxy_pair(method, run, item, config, remote_a, remote_b, endpoint_a, endpoint_b)
 
 
 
@@ -1717,7 +1714,7 @@ if __BINARY_CHECKS__; then
     exit 0
 fi
 
-export DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a DEBCONF_NONINTERACTIVE_SEEN=true
+export DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=l DEBCONF_NONINTERACTIVE_SEEN=true
 apt-get update
 apt-get install -y ca-certificates python3 tar gzip unzip
 
@@ -2013,7 +2010,7 @@ def deploy_frp_method(
     install_release_binary(
         server,
         repo="fatedier/frp",
-        binaries=["frps"],
+        binaries=["frps", "frpc"],
         asset_family="frp",
     )
 
@@ -2708,6 +2705,9 @@ def deploy_chisel_method(
         "CHISEL_REVERSE_SOCKS5",
     }
 
+    listen_port = free_port(server if reverse_enabled else client,
+                            "udp" if "UDP" in method else "tcp", listen_port)
+
     server_command = (
         "/usr/local/bin/chisel server "
         f"--host 0.0.0.0 --port {server_port} "
@@ -2939,6 +2939,8 @@ def deploy_wstunnel_method(
             default=4,
         )
     )
+
+    listen_port = free_port(client, "udp" if "UDP" in method else "tcp", listen_port)
 
     if method == "WSTUNNEL_TCP":
         local_spec = (
@@ -3361,14 +3363,15 @@ do
         "/usr/lib/ipsec/plugins/libstrongswan-${plugin}.so"
 done
 
-systemctl disable --now \
-    strongswan-starter.service \
-    2>/dev/null || true
+if systemctl is-active --quiet strongswan-starter.service; then
+    echo "existing unmanaged strongswan-starter is active" >&2
+    exit 53
+fi
 
 systemctl enable \
     strongswan.service
 
-systemctl restart \
+systemctl start \
     strongswan.service
 
 for i in $(seq 1 60); do
@@ -3462,12 +3465,12 @@ def swanctl_psk_config(
 
     local-psk {{
       auth = psk
-      id = "{local_address}"
+      id = "{connection_name}-{local_address}"
     }}
 
     remote-psk {{
       auth = psk
-      id = "{remote_address}"
+      id = "{connection_name}-{remote_address}"
     }}
 
     children {{
@@ -3477,7 +3480,7 @@ def swanctl_psk_config(
         remote_ts = {remote_ts}
         esp_proposals = aes256-sha256-modp2048
         start_action = {start_action}
-        close_action = restart
+        close_action = none
         dpd_action = restart
         rekey_time = 45m{extra}
       }}
@@ -3487,8 +3490,8 @@ def swanctl_psk_config(
 
 secrets {{
   ike-{connection_name} {{
-    id-a = "{local_address}"
-    id-b = "{remote_address}"
+    id-a = "{connection_name}-{local_address}"
+    id-b = "{connection_name}-{remote_address}"
     secret = "{secret}"
   }}
 }}
@@ -3521,6 +3524,7 @@ def strongswan_start_script(
         *module_commands,
         f"ip link del {shlex.quote(interface_name)} 2>/dev/null || true",
         interface_create,
+        f"ip link set {shlex.quote(interface_name)} mtu 1400",
         f"ip link set {shlex.quote(interface_name)} up",
         address_command(interface_name, interface_address),
     ]
@@ -3532,12 +3536,14 @@ def strongswan_start_script(
     lines += [
         "swanctl --load-all --noprompt",
         (
-            "swanctl --list-conns "
-            f"--ike {shlex.quote(connection_name)} "
-            "| grep -F "
+            "swanctl --list-conns | grep -F "
             f"{shlex.quote(connection_name)}"
         ),
         route_to_peer_command(peer_inner, interface_name),
+        # Only the owned peer bypasses strongSwan's automatic physical route
+        # in table 220. Keep the daemon's global routing settings unchanged.
+        (f"ip {'-6 ' if interface_address.version == 6 else ''}rule add priority 219 "
+         f"to {peer_inner}/{'128' if interface_address.version == 6 else '32'} lookup main"),
     ]
     if initiate:
         lines.append(
@@ -3586,13 +3592,17 @@ def deploy_strongswan_route_based(method: str, run: dict, item: dict, config: di
 
     path_a = f"/etc/swanctl/conf.d/{connection_name}-a.conf"
     path_b = f"/etc/swanctl/conf.d/{connection_name}-b.conf"
-    write_remote_text(remote_a, path_a, swanctl_psk_config(connection_name=connection_name, child_name=child_name, local_address=str(addressing["source_a"]), remote_address=str(addressing["source_b"]), secret=secret, start_action="start", interface_id=interface_option, mark=mark_option), "0600")
-    write_remote_text(remote_b, path_b, swanctl_psk_config(connection_name=connection_name, child_name=child_name, local_address=str(addressing["source_b"]), remote_address=str(addressing["source_a"]), secret=secret, start_action="trap", interface_id=interface_option, mark=mark_option), "0600")
+    write_remote_text(remote_a, path_a, swanctl_psk_config(connection_name=connection_name, child_name=child_name, local_address=str(addressing["source_a"]), remote_address=str(addressing["source_b"]), secret=secret, start_action="none", interface_id=interface_option, mark=mark_option, local_ts=str(addressing["address_a"].ip) + ("/32" if addressing["address_a"].version == 4 else "/128"), remote_ts=str(addressing["address_b"].ip) + ("/32" if addressing["address_b"].version == 4 else "/128")), "0600")
+    write_remote_text(remote_b, path_b, swanctl_psk_config(connection_name=connection_name, child_name=child_name, local_address=str(addressing["source_b"]), remote_address=str(addressing["source_a"]), secret=secret, start_action="none", interface_id=interface_option, mark=mark_option, local_ts=str(addressing["address_b"].ip) + ("/32" if addressing["address_b"].version == 4 else "/128"), remote_ts=str(addressing["address_a"].ip) + ("/32" if addressing["address_a"].version == 4 else "/128")), "0600")
 
     start_b = strongswan_start_script(connection_name=connection_name, child_name=child_name, interface_create=create_b, interface_name=interface_name, address=str(addressing["address_b"]), peer_inner=str(addressing["address_a"].ip), initiate=False, vti=is_vti)
     start_a = strongswan_start_script(connection_name=connection_name, child_name=child_name, interface_create=create_a, interface_name=interface_name, address=str(addressing["address_a"]), peer_inner=str(addressing["address_b"].ip), initiate=True, vti=is_vti)
-    stop_a = f"swanctl --terminate --ike {shlex.quote(connection_name)} 2>/dev/null || true; rm -f {shlex.quote(path_a)}; swanctl --load-all >/dev/null 2>&1 || true; ip link del {shlex.quote(interface_name)} 2>/dev/null || true"
-    stop_b = f"swanctl --terminate --ike {shlex.quote(connection_name)} 2>/dev/null || true; rm -f {shlex.quote(path_b)}; swanctl --load-all >/dev/null 2>&1 || true; ip link del {shlex.quote(interface_name)} 2>/dev/null || true"
+    stop_a = f"swanctl --terminate --ike {shlex.quote(connection_name)} 2>/dev/null || true; ip link del {shlex.quote(interface_name)} 2>/dev/null || true"
+    stop_b = f"swanctl --terminate --ike {shlex.quote(connection_name)} 2>/dev/null || true; ip link del {shlex.quote(interface_name)} 2>/dev/null || true"
+    rule_a = f"ip {'-6 ' if addressing['address_a'].version == 6 else ''}rule del priority 219 to {addressing['address_b'].ip}/{'128' if addressing['address_a'].version == 6 else '32'} lookup main"
+    rule_b = f"ip {'-6 ' if addressing['address_b'].version == 6 else ''}rule del priority 219 to {addressing['address_a'].ip}/{'128' if addressing['address_b'].version == 6 else '32'} lookup main"
+    stop_a += '; ' + rule_a + ' 2>/dev/null || true'
+    stop_b += '; ' + rule_b + ' 2>/dev/null || true'
 
     try:
         oneshot_service(remote_b, service_name, start_b, stop_b)
@@ -3620,6 +3630,8 @@ def deploy_strongswan_route_based(method: str, run: dict, item: dict, config: di
         "files_b": [path_b],
         "interfaces_a": [interface_name],
         "interfaces_b": [interface_name],
+        "cleanup_commands_a": [rule_a],
+        "cleanup_commands_b": [rule_b],
         "source_ip_a": str(addressing["source_a"]),
         "source_ip_b": str(addressing["source_b"]),
         "tunnel_cidr": str(addressing["network"]),
@@ -3658,24 +3670,21 @@ def deploy_l2tp_ipsec(run: dict, item: dict, config: dict, remote_a: Remote, rem
     server_inner = str(addressing["address_b"].ip if client_is_a else addressing["address_a"].ip)
 
     install_strongswan(client); install_strongswan(server)
-    install_packages(client, ["xl2tpd", "ppp"]); install_packages(server, ["xl2tpd", "ppp"])
-    for side in (client, server):
-        side.run(
-            (
-                "systemctl disable --now "
-                "xl2tpd.service "
-                "2>/dev/null || true; "
-                "pkill -x xl2tpd "
-                "2>/dev/null || true; "
-                "rm -f /run/xl2tpd/"
-                "xl2tpd.pid "
-                "/var/run/xl2tpd/"
-                "xl2tpd.pid"
-            ),
-            root=True,
-            check=False,
-            timeout=60,
-        )
+    for remote in (client, server):
+        existed = remote.run('command -v xl2tpd', check=False)['code'] == 0
+        install_packages(remote, ["xl2tpd", "ppp"])
+        if not existed:
+            # Stop only the empty stock daemon that this installation created.
+            # Existing daemon instances are preserved; an occupied server port
+            # below causes a refusal rather than terminating unrelated work.
+            remote.run('systemctl stop xl2tpd.service', root=True)
+    for remote in (client, server):
+        remote.run("modprobe ppp_generic; modprobe pppox", root=True)
+        if remote.run('modprobe l2tp_ppp', root=True, check=False)['code']:
+            kernel = remote.run('uname -r')['stdout'].strip()
+            install_packages(remote, ['linux-modules-extra-' + kernel])
+            remote.run('modprobe l2tp_ppp', root=True)
+    client_port = free_port(client, "udp", 27000)
 
     busy = server.run("ss -H -lun | grep -Eq '[:.]1701[[:space:]]'", root=True, check=False)
     if busy["code"] == 0:
@@ -3693,13 +3702,17 @@ def deploy_l2tp_ipsec(run: dict, item: dict, config: dict, remote_a: Remote, rem
     conf_ipsec_client = f"/etc/swanctl/conf.d/{name}-client.conf"
     conf_ipsec_server = f"/etc/swanctl/conf.d/{name}-server.conf"
 
-    write_remote_text(client, conf_ipsec_client, swanctl_psk_config(connection_name=name, child_name="l2tp", local_address=client_source, remote_address=server_source, secret=psk, start_action="start", mode="transport", ike_version=1, local_ts="dynamic[udp/1701]", remote_ts="dynamic[udp/1701]"), "0600")
-    write_remote_text(server, conf_ipsec_server, swanctl_psk_config(connection_name=name, child_name="l2tp", local_address=server_source, remote_address=client_source, secret=psk, start_action="trap", mode="transport", ike_version=1, local_ts="dynamic[udp/1701]", remote_ts="dynamic[udp/1701]"), "0600")
+    write_remote_text(client, conf_ipsec_client, swanctl_psk_config(connection_name=name, child_name="l2tp", local_address=client_source, remote_address=server_source, secret=psk, start_action="none", mode="transport", ike_version=1, local_ts=f"dynamic[udp/{client_port}]", remote_ts="dynamic[udp/1701]"), "0600")
+    write_remote_text(server, conf_ipsec_server, swanctl_psk_config(connection_name=name, child_name="l2tp", local_address=server_source, remote_address=client_source, secret=psk, start_action="none", mode="transport", ike_version=1, local_ts="dynamic[udp/1701]", remote_ts=f"dynamic[udp/{client_port}]"), "0600")
 
-    server_ppp = f"name {server_name}\nauth\nrequire-mschap-v2\nrefuse-pap\nrefuse-chap\nrefuse-mschap\nmtu 1400\nmru 1400\nproxyarp\nlcp-echo-interval 20\nlcp-echo-failure 4\nlock\n"
-    client_ppp = f"name {username}\npassword {password}\nnoauth\nrefuse-eap\nrefuse-pap\nrefuse-chap\nrefuse-mschap\nmtu 1400\nmru 1400\nipcp-accept-local\nipcp-accept-remote\nlcp-echo-interval 20\nlcp-echo-failure 4\npersist\n"
-    server_xl2tp = f"[global]\nport = 1701\n\n[lns {name}]\nip range = {client_inner}-{client_inner}\nlocal ip = {server_inner}\nrequire authentication = yes\nrequire chap = yes\nrefuse pap = yes\nname = {server_name}\npppoptfile = {base_server}/ppp.options\nlength bit = yes\n"
-    client_xl2tp = f"[global]\nport = 1701\n\n[lac {name}]\nlns = {server_source}\nredial = yes\nredial timeout = 5\nmax redials = 6\npppoptfile = {base_client}/ppp.options\nname = {username}\nrequire chap = yes\n"
+    ppp_interface = short_name("nlp", run["id"], item["id"])
+    for remote in (client, server):
+        if getattr(remote, "journal", None):
+            remote.journal.claim_interface(ppp_interface)
+    server_ppp = f"ifname {ppp_interface}\nname {server_name}\nauth\nrequire-mschap-v2\nrefuse-pap\nrefuse-chap\nrefuse-mschap\nmtu 1400\nmru 1400\nlcp-echo-interval 20\nlcp-echo-failure 4\n"
+    client_ppp = f"ifname {ppp_interface}\nname {username}\npassword {password}\nnoauth\nrefuse-eap\nrefuse-pap\nrefuse-chap\nrefuse-mschap\nmtu 1400\nmru 1400\nipcp-accept-local\nipcp-accept-remote\nlcp-echo-interval 20\nlcp-echo-failure 4\npersist\n"
+    server_xl2tp = f"[global]\nport = 1701\n\n[lns {name}]\nlac = {client_source}\nip range = {client_inner}-{client_inner}\nlocal ip = {server_inner}\nrequire authentication = yes\nrequire chap = yes\nrefuse pap = yes\nname = {server_name}\npppoptfile = {base_server}/ppp.options\nlength bit = yes\n"
+    client_xl2tp = f"[global]\nport = {client_port}\n\n[lac {name}]\nlns = {server_source}\nredial = yes\nredial timeout = 5\nmax redials = 6\npppoptfile = {base_client}/ppp.options\nname = {username}\nrequire chap = yes\n"
     write_remote_text(server, f"{base_server}/ppp.options", server_ppp, "0600")
     write_remote_text(client, f"{base_client}/ppp.options", client_ppp, "0600")
     write_remote_text(server, f"{base_server}/xl2tpd.conf", server_xl2tp, "0600")
@@ -3709,15 +3722,17 @@ def deploy_l2tp_ipsec(run: dict, item: dict, config: dict, remote_a: Remote, rem
 
     start_server = f"set -Eeuo pipefail; swanctl --load-all; xl2tpd -D -c {shlex.quote(base_server + '/xl2tpd.conf')} -p {shlex.quote(base_server + '/xl2tpd.pid')} -C {shlex.quote(base_server + '/control')} > {shlex.quote(base_server + '/xl2tpd.log')} 2>&1 & echo $! > {shlex.quote(base_server + '/launcher.pid')}; for i in $(seq 1 30); do [ -p {shlex.quote(base_server + '/control')} ] && exit 0; sleep 1; done; exit 42"
     start_client = f"set -Eeuo pipefail; swanctl --load-all; swanctl --initiate --ike {shlex.quote(name)} --child l2tp; xl2tpd -D -c {shlex.quote(base_client + '/xl2tpd.conf')} -p {shlex.quote(base_client + '/xl2tpd.pid')} -C {shlex.quote(base_client + '/control')} > {shlex.quote(base_client + '/xl2tpd.log')} 2>&1 & echo $! > {shlex.quote(base_client + '/launcher.pid')}; for i in $(seq 1 30); do [ -p {shlex.quote(base_client + '/control')} ] && break; sleep 1; done; printf 'c {name}\\n' > {shlex.quote(base_client + '/control')}"
-    stop_server = f"[ -f {shlex.quote(base_server + '/launcher.pid')} ] && kill $(cat {shlex.quote(base_server + '/launcher.pid')}) 2>/dev/null || true; sed -i '/{marker}/d' /etc/ppp/chap-secrets; rm -f {shlex.quote(conf_ipsec_server)}; swanctl --load-all >/dev/null 2>&1 || true"
-    stop_client = f"[ -f {shlex.quote(base_client + '/launcher.pid')} ] && kill $(cat {shlex.quote(base_client + '/launcher.pid')}) 2>/dev/null || true; swanctl --terminate --ike {shlex.quote(name)} 2>/dev/null || true; rm -f {shlex.quote(conf_ipsec_client)}; swanctl --load-all >/dev/null 2>&1 || true"
+    stop_server = f"[ -f {shlex.quote(base_server + '/launcher.pid')} ] && kill $(cat {shlex.quote(base_server + '/launcher.pid')}) 2>/dev/null || true"
+    stop_client = f"[ -f {shlex.quote(base_client + '/launcher.pid')} ] && kill $(cat {shlex.quote(base_client + '/launcher.pid')}) 2>/dev/null || true; swanctl --terminate --ike {shlex.quote(name)} 2>/dev/null || true"
 
     try:
         oneshot_service(server, service_name, start_server, stop_server)
         oneshot_service(client, service_name, start_client, stop_client)
         for _ in range(45):
-            result = client.run(f"ip -o -4 addr show | grep -F {shlex.quote(client_inner + '/')} ", root=True, check=False)
-            if result["code"] == 0:
+            result = client.run("ip -j -4 addr show", root=True, check=False)
+            addresses = json.loads(result["stdout"] or "[]")
+            if any(row.get("ifname") == ppp_interface and any(info.get("local") == client_inner
+                   for info in row.get("addr_info", [])) for row in addresses):
                 break
             time.sleep(2)
         else:
@@ -3733,6 +3748,8 @@ def deploy_l2tp_ipsec(run: dict, item: dict, config: dict, remote_a: Remote, rem
 
     return {
         "method": "L2TP_IPSEC",
+        "interface_name": ppp_interface,
+        "interfaces_a": [ppp_interface], "interfaces_b": [ppp_interface],
         "services_a": [service_name],
         "services_b": [service_name],
         "files_a": [base_client, conf_ipsec_client] if client_is_a else [base_server, conf_ipsec_server],
@@ -3781,8 +3798,8 @@ def stable_base64(run_id: int, item_id: int, label: str, length: int) -> str:
 
 def install_xray(remote: Remote):
     script = r'''set -Eeuo pipefail
-if command -v xray >/dev/null 2>&1; then xray version | head -n1; exit 0; fi
-export DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a DEBCONF_NONINTERACTIVE_SEEN=true
+if command -v xray >/dev/null 2>&1; then xray version | sed -n '1p'; exit 0; fi
+export DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=l DEBCONF_NONINTERACTIVE_SEEN=true
 apt-get update
 apt-get install -y ca-certificates python3 unzip
 TMP_DIR="$(mktemp -d)"
@@ -3810,7 +3827,7 @@ if not binary.is_file(): raise SystemExit("XRAY_BINARY_NOT_FOUND")
 shutil.copy2(binary,"/usr/local/bin/xray"); Path("/usr/local/bin/xray").chmod(0o755)
 print(release.get("tag_name","unknown"))
 PYDL
-xray version | head -n1
+xray version | sed -n '1p'
 '''
     return remote.run(script, root=True, timeout=600)["stdout"].strip()
 
@@ -3966,7 +3983,7 @@ def proxy_throughput_test(
         values = (
             result["stdout"]
             .strip()
-            .split("\\t")
+            .replace("\\t", "\t").split()
         )
 
         if len(values) != 4:
@@ -4103,6 +4120,7 @@ def generate_xray_reality(
     server: Remote,
     target: str,
     short_id: str,
+    server_name: str | None = None,
 ) -> tuple[dict, dict]:
     result = server.run(
         "xray x25519",
@@ -4143,6 +4161,7 @@ def generate_xray_reality(
         .rsplit(":", 1)[0]
         .strip("[]")
     )
+    host = server_name or host
 
     return (
         {
@@ -4300,6 +4319,7 @@ def deploy_xray_method(
                 "short-id",
                 16,
             ),
+            config.get("reality_server_name"),
         )
 
     else:
@@ -4364,7 +4384,7 @@ def deploy_xray_method(
         client_settings["flow"] = flow
 
     version_output = server.run(
-        "xray version | head -n1",
+        "xray version | sed -n '1p'",
         root=True,
         timeout=60,
     )["stdout"]
@@ -4501,7 +4521,7 @@ def deploy_xray_method(
             "import hashlib,json,sys\n"
             "data=json.load(open(sys.argv[1]))\n"
             "value=data['inbounds'][0]"
-            "['settings'][inbound_user_key][0]['id']\n"
+            f"['settings'][{inbound_user_key!r}][0]['id']\n"
             "print(hashlib.sha256("
             "str(value).encode()).hexdigest())\n"
             "PYID"
@@ -4728,7 +4748,8 @@ def deploy_singbox_method(method: str, run: dict, item: dict, config: dict, remo
         if not route_cidrs: raise RuntimeError("SINGBOX_TUN_REQUIRES_EXPLICIT_ROUTE_CIDRS")
         for value in route_cidrs: ipaddress.ip_network(value,strict=False)
         tun_interface=short_name("nsb",run["id"],item["id"]); tun_address=str(config.get("tun_address") or "172.31.255.1/30"); ipaddress.ip_interface(tun_address)
-        cin={"type":"tun","tag":"tun-in","interface_name":tun_interface,"address":[tun_address],"mtu":int(config.get("mtu") or 1400),"auto_route":True,"auto_redirect":True,"strict_route":True,"route_address":route_cidrs,"stack":"system"}
+        auto_route = bool(config.get("auto_route", True))
+        cin={"type":"tun","tag":"tun-in","interface_name":tun_interface,"address":[tun_address],"mtu":int(config.get("mtu") or 1400),"auto_route":auto_route,"auto_redirect":auto_route,"strict_route":auto_route,"route_address":route_cidrs,"stack":"system"}
     else: cin={"type":"socks","tag":"socks-in","listen":"127.0.0.1","listen_port":socks_port}
     cconfig={"log":{"level":"warn"},"inbounds":[cin],"outbounds":[cout,{"type":"direct","tag":"direct"}],"route":{"auto_detect_interface":True,"final":"proxy-out"}}
     write_remote_text(server,spath,json.dumps(sconfig,indent=2),"0600"); write_remote_text(client,cpath,json.dumps(cconfig,indent=2),"0600"); validate_json_service(server,"sing-box",spath); validate_json_service(client,"sing-box",cpath)
@@ -5425,7 +5446,7 @@ if [ -x "$RUNTIME/WaterWall" ] && [ -s "$META" ] && grep -q "\"tag\": \"$TAG\"" 
   cat "$META"
   exit 0
 fi
-export DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a DEBCONF_NONINTERACTIVE_SEEN=true
+export DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=l DEBCONF_NONINTERACTIVE_SEEN=true
 if command -v apt-get >/dev/null 2>&1; then
   apt-get update
   apt-get install -y ca-certificates python3 unzip tar gzip
@@ -5704,12 +5725,12 @@ def deploy_waterwall_method(method: str, run: dict, item: dict, config: dict, re
     try:
         server_base, files_server = write_waterwall_instance(
             server, server_name, server_doc,
-            adaptive_workers(server, multiplier=4 if method == "WATERWALL_REVERSE" else 1),
+            1 if method == "WATERWALL_REVERSE" else adaptive_workers(server),
         )
         wait_listener(server, "tcp", transport_port)
         client_base, files_client = write_waterwall_instance(
             client, client_name, client_doc,
-            adaptive_workers(client),
+            1 if method == "WATERWALL_REVERSE" else adaptive_workers(client),
         )
         wait_listener(local_port_remote, "tcp", local_port)
     except Exception:
@@ -5734,6 +5755,7 @@ def deploy_waterwall_method(method: str, run: dict, item: dict, config: dict, re
         "encrypted": True,
         "multiplexed": method == "WATERWALL_TLS_MUX",
         "reverse": method == "WATERWALL_REVERSE",
+        "reverse_workers": 1 if method == "WATERWALL_REVERSE" else None,
         "waterwall_client": metadata_client,
         "waterwall_server": metadata_server,
     }
@@ -5749,7 +5771,7 @@ TAG="__TAG__"
 BIN=/usr/local/bin/paqet
 META=/opt/netauto/paqet/netauto-release.json
 if [ -x "$BIN" ] && [ -s "$META" ] && grep -q "\"tag\": \"$TAG\"" "$META"; then cat "$META"; exit 0; fi
-export DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a DEBCONF_NONINTERACTIVE_SEEN=true
+export DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=l DEBCONF_NONINTERACTIVE_SEEN=true
 if command -v apt-get >/dev/null 2>&1; then apt-get update; apt-get install -y ca-certificates python3 tar gzip unzip iproute2 iputils-ping iptables; fi
 TMP=$(mktemp -d); trap 'rm -rf "$TMP"' EXIT
 python3 - "$TMP" "$TAG" <<'PYPQ'
@@ -5865,6 +5887,10 @@ def deploy_paqet_method(method: str, run: dict, item: dict, config: dict, remote
     server_name=f"netauto-paqet-{run['id']}-{item['id']}-s"; client_name=f"netauto-paqet-{run['id']}-{item['id']}-c"
     rule_add=(f"iptables -t raw -C PREROUTING -p tcp --dport {port} -j NOTRACK 2>/dev/null || iptables -t raw -A PREROUTING -p tcp --dport {port} -j NOTRACK; " f"iptables -t raw -C OUTPUT -p tcp --sport {port} -j NOTRACK 2>/dev/null || iptables -t raw -A OUTPUT -p tcp --sport {port} -j NOTRACK; " f"iptables -t mangle -C OUTPUT -p tcp --sport {port} --tcp-flags RST RST -j DROP 2>/dev/null || iptables -t mangle -A OUTPUT -p tcp --sport {port} --tcp-flags RST RST -j DROP; " f"iptables -C INPUT -p tcp --dport {port} -j ACCEPT 2>/dev/null || iptables -I INPUT -p tcp --dport {port} -j ACCEPT")
     cleanup=(f"iptables -t raw -D PREROUTING -p tcp --dport {port} -j NOTRACK 2>/dev/null || true; " f"iptables -t raw -D OUTPUT -p tcp --sport {port} -j NOTRACK 2>/dev/null || true; " f"iptables -t mangle -D OUTPUT -p tcp --sport {port} --tcp-flags RST RST -j DROP 2>/dev/null || true; " f"iptables -D INPUT -p tcp --dport {port} -j ACCEPT 2>/dev/null || true")
+    rule_add = rule_add.replace(" -j ", f" -m comment --comment {server_name} -j ")
+    cleanup = cleanup.replace(" -j ", f" -m comment --comment {server_name} -j ")
+    if getattr(server, "journal", None):
+        server.journal.record("cleanup_command", cleanup)
     try:
         persistent_service(server,server_name,f"{rule_add}; exec /usr/local/bin/paqet run -c {shlex.quote(server_file)}")
         wait_service(server,server_name)
@@ -5927,6 +5953,9 @@ def deploy_secure_gost_tun_carrier(run: dict, item: dict, config: dict, remote_a
     chain=f"relay+wss://{username}:{password}@{server_host}:{relay_port}"
     try:
         install_gost(client); install_gost(server); allow_firewall_port(server,relay_port,"tcp")
+        tls=prepare_tls_pair(server,client,name=f"netauto-gostc-{run['id']}-{item['id']}",server_host=server_host,pfx_password="unused")
+        relay += f"&certFile={tls['server_cert']}&keyFile={tls['server_key']}"
+        chain += f"?caFile={tls['client_ca']}&secure=true&serverName={server_host}"
         persistent_service(server,server_name,f"exec /usr/local/bin/gost -L {shlex.quote(server_tun)} -L {shlex.quote(relay)}")
         wait_service(server,server_name); wait_listener(server,"tcp",relay_port)
         persistent_service(client,client_name,f"exec /usr/local/bin/gost -L {shlex.quote(client_tun)} -F {shlex.quote(chain)}")
@@ -5935,7 +5964,7 @@ def deploy_secure_gost_tun_carrier(run: dict, item: dict, config: dict, remote_a
         server.run(ping_command(ipaddress.ip_address(client_ip)),root=True,timeout=35)
     except Exception:
         remove_services(client,[client_name],[],[interface]); remove_services(server,[server_name],[],[interface]); raise
-    return {"method":"SECURE_GOST_TUN_CARRIER","services_a":[client_name] if sides["client_side"]=="A" else [server_name],"services_b":[client_name] if sides["client_side"]=="B" else [server_name],"interfaces_a":[interface],"interfaces_b":[interface],"client_side":sides["client_side"],"server_side":sides["server_side"],"relay_port":relay_port,"transport":"relay+wss","encrypted":True,"tunnel_cidr":carrier["tunnel_cidr"],"tunnel_ip_a":carrier["tunnel_ip_a"],"tunnel_ip_b":carrier["tunnel_ip_b"]}
+    return {"method":"SECURE_GOST_TUN_CARRIER","services_a":[client_name] if sides["client_side"]=="A" else [server_name],"services_b":[client_name] if sides["client_side"]=="B" else [server_name],"interfaces_a":[interface],"interfaces_b":[interface],"client_side":sides["client_side"],"server_side":sides["server_side"],"relay_port":relay_port,"transport":"relay+wss","encrypted":True,"certificate_validation":True,"files_a":[tls["client_dir"]] if sides["client_side"]=="A" else [tls["server_dir"]],"files_b":[tls["client_dir"]] if sides["client_side"]=="B" else [tls["server_dir"]],"tunnel_cidr":carrier["tunnel_cidr"],"tunnel_ip_a":carrier["tunnel_ip_a"],"tunnel_ip_b":carrier["tunnel_ip_b"]}
 
 
 def merge_component_artifacts(method: str, components: list[dict], inner: dict) -> dict:
@@ -6074,7 +6103,7 @@ def install_benchmark_tools(remote: Remote):
     remote.run(
         r'''set -Eeuo pipefail
 if command -v iperf3 >/dev/null 2>&1 && command -v ping >/dev/null 2>&1; then exit 0; fi
-export DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a DEBCONF_NONINTERACTIVE_SEEN=true
+export DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=l DEBCONF_NONINTERACTIVE_SEEN=true
 if command -v apt-get >/dev/null 2>&1; then
   apt-get update && apt-get install -y iperf3 iputils-ping
 elif command -v dnf >/dev/null 2>&1; then
@@ -6551,6 +6580,12 @@ def fail_run(connection, run: dict, exc: Exception):
 
 
 def get_run_id():
+    global redis_client
+    if redis_client is None:
+        from redis import Redis
+        if not REDIS_URL:
+            raise RuntimeError("legacy worker REDIS_URL is required")
+        redis_client = Redis.from_url(REDIS_URL, decode_responses=True)
     item = redis_client.blpop("netauto:tunnel-runs", timeout=5)
     if item:
         try:
@@ -6591,77 +6626,23 @@ def main():
 
 # NETAUTO_VALIDATION_COMMON_FIX_BEGIN
 
-def free_udp_port(
-    remote: Remote,
-    preferred: int,
-) -> int:
-    result = remote.run(
-        (
-            "ss -H -lun "
-            "| awk '{print $4}' "
-            "| sed 's/.*://' "
-            "| sort -n -u"
-        ),
-        root=True,
-        check=False,
-    )
-
-    used = {
-        int(line.strip())
-        for line in result["stdout"].splitlines()
-        if line.strip().isdigit()
-    }
-
-    for port in range(
-        max(1025, preferred),
-        min(
-            max(1025, preferred) + 2000,
-            65535,
-        ),
-    ):
-        if port not in used:
-            return port
-
-    raise RuntimeError("NO_FREE_UDP_PORT")
+def free_udp_port(remote: Remote, preferred: int) -> int:
+    return free_port(remote, "udp", preferred)
 
 
-def free_port(
-    remote: Remote,
-    protocol: str,
-    preferred: int,
-) -> int:
-    flag = (
-        "-lun"
-        if protocol.lower() == "udp"
-        else "-ltn"
-    )
-
-    result = remote.run(
-        (
-            "ss -H "
-            + flag
-            + " | awk '{print $4}' "
-            + "| sed 's/.*://' "
-            + "| sort -n -u"
-        ),
-        root=True,
-        check=False,
-    )
-
-    used = {
-        int(line.strip())
-        for line in result["stdout"].splitlines()
-        if line.strip().isdigit()
-    }
-
-    for port in range(
-        max(1025, preferred),
-        65000,
-    ):
-        if port not in used:
-            return port
-
-    raise RuntimeError("NO_FREE_PORT")
+def free_port(remote: Remote, protocol: str, preferred: int) -> int:
+    """Use the canonical port manager and retain same-request reservations."""
+    from deploy.engine.mtf.portmgr import free_port as allocate, _parse_ss
+    result = remote.run("ss -tulnH", root=True)
+    node_id = str(getattr(remote, "endpoint", {}).get("id", "remote"))
+    report = {"sides": {node_id: {"listeners": _parse_ss(result["stdout"])}}}
+    if not hasattr(remote, "reserved_ports"):
+        remote.reserved_ports = set()
+    port = allocate(report, protocol, [node_id], start=preferred, reserved=remote.reserved_ports)
+    if not port:
+        raise RuntimeError("NO_FREE_PORT")
+    remote.reserved_ports.add(port)
+    return port
 
 
 def wait_service(

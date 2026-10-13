@@ -10,7 +10,7 @@
 # Other distributions fail honestly instead of guessing.
 set -Eeuo pipefail
 
-REPO="https://github.com/DashSaman/TunnelPannel"
+REPO="${TUNNELPANNEL_REPO:-https://github.com/DashSaman/TunnelPannel}"
 INSTALL_DIR="/opt/tunnelpannel"
 DATA_DIR="/var/lib/tunnelpannel"
 CONF_DIR="/etc/tunnelpannel"
@@ -33,6 +33,10 @@ TP_VERSION="pending"
 PORT="${TUNNELPANNEL_PORT:-8080}"
 LOG_FILE="$LOG_DIR/install.log"
 
+[[ $EUID -eq 0 ]] || { echo "run as root (curl … | sudo bash)" >&2; exit 1; }
+umask 027
+# Keep operator output separate from the persistent log (bootstrap tokens).
+exec 3>&1
 mkdir -p "$LOG_DIR"
 exec > >(tee -a "$LOG_FILE") 2>&1
 STAGE="preflight"
@@ -57,6 +61,7 @@ note "detected $OS_ID $OS_VERSION_ID ($ARCH); target version: $TP_VERSION"
 # ── 2. base dependencies ──────────────────────────────────────────────
 STAGE="base-deps"
 export DEBIAN_FRONTEND=noninteractive
+export NEEDRESTART_MODE=l
 apt-get update -qq
 apt-get install -y -qq ca-certificates curl git python3 python3-venv python3-pip sqlite3 openssl sudo >/dev/null
 
@@ -77,12 +82,25 @@ else
 fi
 TP_VERSION="$(resolve_tp_version)"
 note "resolved install version: $TP_VERSION"
-git -C "$INSTALL_DIR" checkout -q "$TP_VERSION"
+git -C "$INSTALL_DIR" diff --quiet && git -C "$INSTALL_DIR" diff --cached --quiet \
+  || die "installation has local source changes; preserve them before upgrading"
+if git -C "$INSTALL_DIR" show-ref --verify --quiet "refs/remotes/origin/$TP_VERSION"; then
+  git -C "$INSTALL_DIR" checkout -q --detach "origin/$TP_VERSION"
+else
+  git -C "$INSTALL_DIR" checkout -q --detach "$TP_VERSION"
+fi
 GIT_SHA="$(git -C "$INSTALL_DIR" rev-parse HEAD)"
 note "checked out $TP_VERSION @ ${GIT_SHA:0:12}"
 
 # ── 5. secrets + runtime config (generated once, preserved on reruns) ──
 STAGE="config"
+SAVED_PORT=""
+if [[ -f "$CONF_DIR/tunnelpannel.env" ]]; then
+  SAVED_PORT="$(sed -n 's/^TUNNELPANNEL_PORT=//p' "$CONF_DIR/tunnelpannel.env" | tail -1)"
+fi
+PORT="${TUNNELPANNEL_PORT:-${SAVED_PORT:-8080}}"
+[[ "$PORT" =~ ^[0-9]+$ ]] && (( PORT >= 1024 && PORT <= 65535 )) \
+  || die "TUNNELPANNEL_PORT must be an integer in 1024..65535"
 if [[ ! -f "$CONF_DIR/tunnelpannel.env" ]]; then
   SECRET_KEY="$(openssl rand -hex 32)"
   gen_hash() { printf '%s' "$1" | sha256sum | cut -d' ' -f1; }
@@ -95,6 +113,7 @@ if [[ ! -f "$CONF_DIR/tunnelpannel.env" ]]; then
 DATABASE_URL=sqlite:///$DATA_DIR/tunnelpannel.db
 TP_SECRET_KEY=$SECRET_KEY
 TP_RBAC_TOKENS=VIEWER:$(gen_hash "$V_TOKEN"),OPERATOR:$(gen_hash "$O_TOKEN"),SUPER_ADMIN:$(gen_hash "$A_TOKEN")
+TUNNELPANNEL_PORT=$PORT
 TP_BOT_ALLOWED_IDS=
 TELEGRAM_BOT_TOKEN=
 ENV
@@ -104,6 +123,22 @@ ENV
 else
   note "existing configuration preserved (no secrets regenerated)"
   SHOW_TOKENS=0
+  if [[ "$PORT" != "$SAVED_PORT" ]]; then
+    sed -i '/^TUNNELPANNEL_PORT=/d' "$CONF_DIR/tunnelpannel.env"
+    printf 'TUNNELPANNEL_PORT=%s\n' "$PORT" >> "$CONF_DIR/tunnelpannel.env"
+  fi
+fi
+
+if [[ "$SHOW_TOKENS" == "1" ]]; then
+  {
+  echo
+  echo "  FIRST-RUN RBAC TOKENS (shown ONCE — only their hashes are stored):"
+  echo "    VIEWER:      $V_TOKEN"
+  echo "    OPERATOR:    $O_TOKEN"
+  echo "    SUPER_ADMIN: $A_TOKEN"
+  echo "  Store these now; they cannot be recovered from the server."
+  echo "  This notice appears only on first install (reruns never reset credentials)."
+  } >&3
 fi
 
 # ── 6. python environment ─────────────────────────────────────────────
@@ -111,6 +146,9 @@ STAGE="python-env"
 python3 -m venv "$INSTALL_DIR/.venv"
 "$INSTALL_DIR/.venv/bin/pip" install -q --upgrade pip
 "$INSTALL_DIR/.venv/bin/pip" install -q -r "$INSTALL_DIR/requirements-canonical.txt"
+# The service can read/execute its code, but cannot modify root-owned source.
+chown -R root:tunnelpannel "$INSTALL_DIR"
+chmod -R g+rX "$INSTALL_DIR"
 
 # ── 7. database migrations ────────────────────────────────────────────
 STAGE="migrate"
@@ -179,12 +217,3 @@ RECEIPT
 chown tunnelpannel:tunnelpannel "$DATA_DIR/install-receipt.json"
 
 note "installation complete — API/UI: http://127.0.0.1:$PORT (health OK)"
-if [[ "$SHOW_TOKENS" == "1" ]]; then
-  echo
-  echo "  FIRST-RUN RBAC TOKENS (shown ONCE — only their hashes are stored):"
-  echo "    VIEWER:      $V_TOKEN"
-  echo "    OPERATOR:    $O_TOKEN"
-  echo "    SUPER_ADMIN: $A_TOKEN"
-  echo "  Store these now; they cannot be recovered from the server."
-  echo "  This notice appears only on first install (reruns never reset credentials)."
-fi

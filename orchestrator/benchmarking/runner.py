@@ -68,6 +68,7 @@ class BenchmarkRunner:
         if profile_name not in PROFILES:
             raise ValueError(f"unknown profile {profile_name}")
         self.session = session
+        self.node_a_id, self.node_b_id = node_a_id, node_b_id
         self.profile = PROFILES[profile_name]
         self.max_parallel = max(1, int(max_parallel))
         self.adapter_factory = adapter_factory
@@ -108,16 +109,26 @@ class BenchmarkRunner:
         prof = self.profile
         deadline = time.monotonic() + prof.overall_timeout_s
         with self._db_lock:
-            deployment = Deployment(node_a="bench-a", node_b="bench-b",
+            deployment = Deployment(node_a=self.node_a_id, node_b=self.node_b_id,
                                     state="APPLYING",
                                     desired_state={"benchmark": True, "candidate": cand.legacy_method_id})
             self.session.add(deployment)
             self.session.flush()
         rm = ResourceManager(self.session)
-        adapter = self.adapter_factory(cand) if self.adapter_factory else None
+        adapter = None
         metrics: dict = {"setup_ok": False, "data_plane_ok": False}
         status, reason = "FAILED", ""
+        result = BenchResult(cand, status, metrics, reason)
         try:
+            adapter = self.adapter_factory(cand) if self.adapter_factory else None
+            if hasattr(adapter, "bind"):
+                def persist_resource(node_id, kind, key):
+                    with self._db_lock:
+                        rm.reserve(kind=kind, key=key, node_id=node_id,
+                                   deployment_id=deployment.id,
+                                   meta={"benchmark": True, "candidate": cand.legacy_method_id})
+                        self.session.commit()
+                adapter.bind(persist_resource, self._cancel.is_set)
             # temporary owned resource (benchmark isolation §18)
             with self._db_lock:
                 rm.allocate_temp(key=f"bench-{deployment.id[:8]}-{cand.legacy_method_id}",
@@ -148,8 +159,11 @@ class BenchmarkRunner:
                 raise _StageTimeout("overall")
             metrics["data_plane_ok"] = bool(probe.ok)
             if not probe.ok:
+                if hasattr(adapter, 'failure_metrics'):
+                    metrics.update(adapter.failure_metrics())
                 status, reason = "FAILED", f"data-plane: {probe.evidence[:200]}"
-                return BenchResult(cand, status, metrics, reason)
+                result.status, result.reason = status, reason
+                return result
 
             # metrics collection (adapter.metrics + probe extras)
             m = adapter.metrics() or {}
@@ -160,15 +174,22 @@ class BenchmarkRunner:
                 metrics.setdefault("rtt_avg", probe.rtt_ms)
             metrics["stability_ratio"] = 1.0 if metrics.get("data_plane_ok") else 0.0
             status = "PASS"
-            return BenchResult(cand, status, metrics, reason)
+            result.status, result.reason = status, reason
+            return result
         except _StageTimeout:
             status, reason = "TIMED_OUT", "overall timeout"
-            return BenchResult(cand, status, metrics, reason)
+            result.status, result.reason = status, reason
+            return result
         except Exception as e:
+            if self._cancel.is_set():
+                status = "CANCELLED"
+            elif isinstance(e, TimeoutError):
+                status = "TIMED_OUT"
             if not reason:
                 reason = str(e)[:200]
             metrics.setdefault("reason", reason)
-            return BenchResult(cand, status or "FAILED", metrics, reason)
+            result.status, result.reason = status or "FAILED", reason
+            return result
         finally:
             # cleanup ALWAYS attempted (§18); orphans surfaced
             try:
@@ -186,15 +207,45 @@ class BenchmarkRunner:
                                            context={"candidate": cand.legacy_method_id}))
                     self.session.commit()
                 metrics["cleanup"] = f"ORPHANED: {str(e)[:120]}"
+                result.status, result.reason = "FAILED", "owned resource cleanup failed"
+                metrics["reason"] = result.reason
+
+    def _persist_result(self, res: BenchResult) -> None:
+        with self._db_lock:
+            sample = BenchmarkSample(
+                run_id=self._run.id, candidate=res.candidate.legacy_method_id,
+                candidate_kind="single", status=res.status,
+                reason=res.reason or None,
+                metrics=sanitize(dict(res.metrics)))
+            self.session.add(sample)
+            self.session.flush()
+            self.session.add(BenchmarkReceipt(
+                sample_id=sample.id,
+                document=sanitize({
+                    "benchmark_run_id": self._run.id,
+                    "candidate_id": res.candidate.engine + "/" + res.candidate.profile,
+                    "method_id": res.candidate.legacy_method_id,
+                    "engine": res.candidate.engine, "profile": res.candidate.profile,
+                    "profile_name": self.profile.name,
+                    "methodology": self.profile.methodology,
+                    "status": res.status, "reason": res.reason,
+                    "metrics": dict(res.metrics),
+                    "orphaned": res.candidate.legacy_method_id in self.orphaned,
+                    "ts": dt.datetime.now(dt.timezone.utc).isoformat(),
+                })))
+            self.session.commit()
 
     # ── bounded scheduling ──
     def run(self) -> list[ScoredSample]:
         self._set_job("RUNNING", 0.0)
-        self._run = BenchmarkRun(node_a="bench-a", node_b="bench-b",
+        self._run = BenchmarkRun(node_a=self.node_a_id, node_b=self.node_b_id,
                                  profile=self.profile.name,
                                  methodology=self.profile.methodology,
                                  state="RUNNING")
         self.session.add(self._run)
+        self.session.flush()
+        if self.job is not None:
+            self.job.payload = {**(self.job.payload or {}), "_run_id": self._run.id}
         self.session.commit()
 
         results: list[BenchResult] = []
@@ -215,12 +266,24 @@ class BenchmarkRunner:
                     except Exception as e:               # defensive: never kills the run
                         errors.append(e)
                         res = BenchResult(cand, "FAILED", {"reason": f"runner error: {e}"})
-            with cv:
-                results.append(res)
-                nonlocal done
-                done += 1
-                self._set_job("RUNNING", min(done / total, 0.99) if total else 1.0)
-                cv.notify_all()
+            try:
+                self._persist_result(res)
+            except Exception as e:  # receipt failure must not strand the coordinator
+                errors.append(e)
+                res.status, res.reason = 'FAILED', 'receipt persistence failed'
+                with self._db_lock:
+                    self.session.rollback()
+            finally:
+                with cv:
+                    results.append(res)
+                    nonlocal done
+                    done += 1
+                    try:
+                        self._set_job("RUNNING", min(done / total, 0.99) if total else 1.0)
+                    except Exception as e:
+                        errors.append(e)
+                    finally:
+                        cv.notify_all()
 
         threads = [threading.Thread(target=worker, args=(c,), daemon=True)
                    for c in work]
@@ -232,38 +295,12 @@ class BenchmarkRunner:
                 if self._cancel.is_set() and done < total:
                     cv.wait(timeout=2.0)                 # let in-flight finish/cancel
 
-        # persist raw samples FIRST (§27), then score
-        scored: list[ScoredSample] = []
-        for res in results:
-            sample = BenchmarkSample(
-                run_id=self._run.id, candidate=res.candidate.legacy_method_id,
-                candidate_kind="single", status=res.status,
-                reason=res.reason or None,
-                metrics=sanitize(dict(res.metrics)))
-            self.session.add(sample)
-            self.session.flush()
-            s = score_sample(res.candidate.legacy_method_id, res.metrics, res.status)
-            scored.append(s)
-            self.session.add(BenchmarkReceipt(
-                sample_id=sample.id,
-                document=sanitize({
-                    "benchmark_run_id": self._run.id,
-                    "candidate_id": res.candidate.engine + "/" + res.candidate.profile,
-                    "method_id": res.candidate.legacy_method_id,
-                    "engine": res.candidate.engine, "profile": res.candidate.profile,
-                    "profile_name": self.profile.name,
-                    "methodology": self.profile.methodology,
-                    "status": res.status, "reason": res.reason,
-                    "metrics": dict(res.metrics),
-                    "orphaned": res.candidate.legacy_method_id in self.orphaned,
-                    "ts": dt.datetime.now(dt.timezone.utc).isoformat(),
-                })))
-        self.session.commit()
+        scored = [score_sample(r.candidate.legacy_method_id, r.metrics, r.status) for r in results]
 
         ranked = rank(scored)
-        final = "PASS" if ranked and ranked[0].status in ("PASS", "DEGRADED") else \
+        final = "FAILED" if errors else "PASS" if ranked and ranked[0].status in ("PASS", "DEGRADED") else \
                 "CANCELLED" if self._cancel.is_set() else "FAILED"
         self._run.state = final
         self._run.finished_at = dt.datetime.now(dt.timezone.utc)
-        self._set_job(final, 1.0)
+        self._set_job(final, 1.0, 'benchmark worker or receipt persistence failed' if errors else None)
         return ranked

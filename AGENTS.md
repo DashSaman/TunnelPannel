@@ -93,3 +93,13 @@
   (encrypted, double-confirm; restore must be tested before calling DR "done").
 - Credentials: rotate anything ever committed (see
   `docs/development/CURRENT_STATE.md` §Security + SECRET_HYGIENE.md).
+
+
+## 2026-10-13 disposable-node validation
+
+Historical RC2 baseline (superseded by RC3): 32 PASS / 23 PARTIAL / 27 FAIL in the isolated legacy lab, six real kernel methods and the WG-to-GRE drill. See docs/releases/v0.9.0-rc2/REAL_VALIDATION.md.
+
+
+## 2026-10-14 real panel benchmark verification
+
+Latest two-node NORMAL results: 82 PASS, derived from the full matrix (76 PASS/6 FAILED) and explicit corrected-profile reruns. Fresh software suites: 533 canonical + 100 TunnelGuard + 1 backend PASS. Real canonical node registration, pinned SSH, encrypted credentials and panel jobs are wired. See docs/releases/v0.9.0-rc3/REAL_BENCHMARK.md. Latest five selected DEEP profiles PASS (initial 4 PASS/1 FAILED retained; unchanged sing-box rerun PASS). Public pinned install on both nodes and full node-B lifecycle PASS. Python 3.11/3.12, Linux installer, security and shell CI PASS at e6a2c419; final delivery commit verification follows. Zero live ownership allocations; historical orphan receipt preserved. Native Hedioum rapid short-connection churn remains a documented diagnostic limitation; sustained TUN speed uses bidirectional iperf3. Supplied credentials never belong in tracked files.

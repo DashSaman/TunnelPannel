@@ -36,6 +36,7 @@ import argparse
 import dataclasses
 import datetime as dt
 import json
+import os
 import pathlib
 import re
 import sys
@@ -309,7 +310,9 @@ class RunContext:
         self.orphans: list[dict] = []
         self.events: list[dict] = []
         self.inventory: dict = {}
-        self.mgmt_routes: dict = {}
+        routes_file = self.dir / "management-routes.json"
+        self.mgmt_routes: dict = (json.loads(routes_file.read_text(encoding="utf-8"))
+                                  if routes_file.exists() else {})
 
     # ── events / receipts ──
     def event(self, severity: str, message: str, **ctx) -> None:
@@ -334,15 +337,29 @@ class RunContext:
     def snapshot_management_routes(self) -> None:
         """Preflight-time: record how the operator's SSH reaches each node."""
         for key, ch in self.ensure_channels().items():
-            rc, out = ch.run("echo $SSH_CLIENT; ip route get $(echo $SSH_CLIENT | awk '{print $1}')")
-            self.mgmt_routes[key] = out.strip()
+            self.mgmt_routes[key] = self._management_route(key, ch)
+        self.write_json("management-routes.json", self.mgmt_routes)
+
+    @staticmethod
+    def _management_route(key, ch) -> str:
+        import ipaddress
+        rc, out = ch.run("echo $SSH_CLIENT; ip route get $(echo $SSH_CLIENT | awk '{print $1}')")
+        lines = out.strip().splitlines()
+        try:
+            client = str(ipaddress.ip_address(lines[0].split()[0]))
+        except (IndexError, ValueError):
+            raise SafetyGate(f"management route query failed on {key}: no SSH client address")
+        route = "\n".join(lines[1:]).strip()
+        if rc != 0 or not route or not re.search(r"\b(via|dev|local)\b", route):
+            raise SafetyGate(f"management route query failed on {key}: no valid route")
+        # SSH source ports change on reconnection; routing identity does not.
+        return client + "\n" + route
 
     def verify_management_routes(self) -> None:
         """Hard gate before mutations: the management route must be exactly
         what preflight recorded — never risk operator access."""
         for key, ch in self.ensure_channels().items():
-            _rc, out = ch.run("echo $SSH_CLIENT; ip route get $(echo $SSH_CLIENT | awk '{print $1}')")
-            if out.strip() != self.mgmt_routes.get(key):
+            if self._management_route(key, ch) != self.mgmt_routes.get(key):
                 raise SafetyGate(
                     f"management SSH route changed on {key} since preflight — "
                     "refusing to mutate (restore access route first)")
@@ -439,8 +456,8 @@ def stage_preflight(ctx: RunContext) -> None:
     """Read-only preflight. ZERO mutations — enforced by PreflightGuard."""
     channels = ctx.ensure_channels()
     for key, node in ((n.key, n) for n in ctx.cfg.ordered_nodes()):
-        guard = channels.get(key)
-        raw = guard.inner if isinstance(guard, PreflightGuard) else guard
+        channel = channels[key]
+        guard = channel if isinstance(channel, PreflightGuard) else PreflightGuard(channel, key)
         # host-key pinning must already exist BEFORE we mutate anything
         kh = pathlib.Path(node.known_hosts).expanduser() if node.known_hosts else None
         if not (kh and kh.exists() and node.host in kh.read_text(encoding="utf-8")):
@@ -514,25 +531,34 @@ def _run_one_profile(ctx: RunContext, ident, profile_name: str,
     timed_out = cancelled = False
     probe_ok: bool | None = None
     precheck_problems: list[str] = []
+    detected = False
+    cleanup_failed = False
     metrics: dict = {}
     evidence: list[str] = []
     try:
-        cls = get_adapter(ident.engine, ident.profile)
+        cls = get_adapter(ident.engine, ident.profile) if not adapter_factory else None
         node_a = ctx.cfg.nodes.get("node-a")
         node_b = ctx.cfg.nodes.get("node-b", node_a)
-        ad = cls({"id": "node-a", "name": "node-a", "host": node_a.host},
+        ad = adapter_factory(ident) if adapter_factory else cls(
+                 {"id": "node-a", "name": "node-a", "host": node_a.host},
                  {"id": "node-b", "name": node_b.host and "node-b", "host": node_b.host},
                  executor=channels["node-a"], params={**_adapter_params(ctx, ident)})
         adapters.append(ad)
-        if not ad.detect():
+        detected = ad.detect()
+        if not detected:
             probe_ok = None
             precheck_problems = [f"{ident.engine} not detectable on node-a"]
         else:
             precheck_problems = ad.precheck()
+            if not precheck_problems and adapter_factory is None:
+                precheck_problems = ["real pair adapter factory missing; single-node commands cannot verify a two-node profile"]
             if not precheck_problems:
+                rollback = getattr(ad, "rollback_commands", lambda: [])()
+                if not rollback:
+                    raise SafetyGate(f"{ident.legacy_id}: durable owned-resource cleanup is required")
                 entry = ctx.ledger.add(kind="profile", key=ident.legacy_id,
-                                       node="node-a",
-                                       rollback_cmd="true")
+                                       node="node-a", rollback_cmd="set -e\n" + "\n".join(
+                                           cmd for _why, cmd in reversed(rollback)))
                 if time.monotonic() > deadline:
                     timed_out = True
                 else:
@@ -543,6 +569,8 @@ def _run_one_profile(ctx: RunContext, ident, profile_name: str,
                     evidence.append(probe.evidence[:200])
                     m = ad.metrics() or {}
                     metrics.update({k: v for k, v in m.items() if v is not None})
+                    if time.monotonic() > deadline:
+                        timed_out = True
     except TimeoutError:
         timed_out = True
     except SafetyGate:
@@ -550,23 +578,25 @@ def _run_one_profile(ctx: RunContext, ident, profile_name: str,
     except Exception as e:
         evidence.append(f"error: {str(e)[:200]}")
     finally:
-        for ad in reversed(adapters):
+        for ad in reversed(adapters) if entry else ():
             try:
                 ad.rollback()
             except Exception as e:
+                cleanup_failed = True
                 ctx.orphans.append({"resource_id": f"profile:{ident.legacy_id}",
                                     "error": str(e)[:160]})
                 ctx.event("critical", f"ORPHANED_RESOURCE profile:{ident.legacy_id}: "
                                       f"{str(e)[:160]}")
-        if entry:
+        if entry and not cleanup_failed:
             ctx.ledger.mark_released(entry)
 
+    timed_out = timed_out or time.monotonic() > deadline
     status = _profile_status(probe_ok, precheck_problems,
-                             detect_ok=not (not adapters or precheck_problems and
-                                            not probe_ok and not precheck_problems) and
-                             bool(adapters) and not _hard_missing(precheck_problems),
+                             detect_ok=detected,
                              timed_out=timed_out, cancelled=cancelled)
     if status == "PASS" and profile_name == "QUICK" and not evidence:
+        status = "FAILED"
+    if cleanup_failed:
         status = "FAILED"
     return {"profile": ident.legacy_id, "engine": ident.engine,
             "engine_profile": f"{ident.engine}/{ident.profile}",
@@ -600,7 +630,6 @@ def run_profiles(ctx: RunContext, profile_name: str, adapter_factory=None) -> li
     import engines.adapters.userspace       # noqa: F401
 
     ctx.assert_mutation_allowed()
-    factory = adapter_factory or (lambda ident: None)
     results: list[dict] = []
     for ident in sorted(CATALOG.identities.values(), key=lambda i: i.legacy_id):
         if ident.is_composite:
@@ -610,9 +639,7 @@ def run_profiles(ctx: RunContext, profile_name: str, adapter_factory=None) -> li
                             "reason": "run budget exhausted"})
             assert_finite(results[-1]["status"])
             continue
-        res = _run_one_profile(ctx, ident, profile_name,
-                               factory) if adapter_factory else \
-            _run_one_profile(ctx, ident, profile_name, factory)
+        res = _run_one_profile(ctx, ident, profile_name, adapter_factory)
         results.append(res)
         assert_finite(res["status"])
         ctx.state.add_result("profile", res["profile"], res["status"], res)
@@ -731,43 +758,17 @@ def _benchmark_chain_e2e(ctx, spec, name, adapter_factory) -> dict:
 def stage_failover(ctx: RunContext, adapter_factory=None) -> dict:
     """Real Primary/Backup among deployed routes; repair-before-abandon;
     decision receipt recorded. Uses the P10 FSM."""
-    from orchestrator.failover import (FailoverController, FailoverPolicy,
-                                       MemberRuntime, decide_repair)
     ctx.assert_mutation_allowed()
-    policy = FailoverPolicy(failure_threshold=2, recovery_threshold=2,
-                            cooldown_s=0.0)
-    controller = FailoverController(
-        [MemberRuntime("m0", "primary-route", 1),
-         MemberRuntime("m1", "backup-route", 2)], policy)
-    steps: list[str] = []
-    # 1. primary healthy
-    controller.on_probe("m0", True)
-    controller.on_probe("m1", True)
-    steps.append(f"initial active={controller.active}")
-    # 2. primary fails threshold → switch to backup
-    controller.on_probe("m0", False)
-    controller.on_probe("m0", False)
-    r1 = controller.decide()
-    steps.append(f"switch after threshold: {r1.frm}->{r1.to} ({r1.actor})")
-    # 3. backup carries traffic (probe it)
-    backup_ok = True
-    if adapter_factory:
-        ad = adapter_factory("backup-probe")
-        ad.configure(); ad.start()
-        backup_ok = bool(ad.probe().ok)
-        ad.rollback()
-    # 4. recovery + preemption decision
-    controller.on_probe("m0", True)
-    controller.on_probe("m0", True)
-    r2 = controller.decide()
-    if r2:
-        steps.append(f"preemption: {r2.frm}->{r2.to} ({r2.actor})")
-    # 5. component repair semantics (FRP dead, WG healthy)
-    repair = decide_repair(["frp"], ["wireguard"])
-    steps.append(f"repair decision: {repair.action}")
-    result = {"status": "PASS" if (r1 and backup_ok) else "FAILED",
-              "steps": steps,
-              "receipts": [dataclasses.asdict(x) for x in controller.switch_receipts]}
+    drill = getattr(adapter_factory, "failover_drill", None)
+    if not callable(drill):
+        result = {"status": "BLOCKED_EXTERNAL_DEPENDENCY",
+                  "reason": "REAL_FAILOVER_DRILL_REQUIRED: no deployed paths or observed failover traffic"}
+        ctx.state.add_result("failover", "primary-backup", result["status"], result)
+        ctx.write_json("failover.json", {"run_id": ctx.run_id, **result})
+        return result
+    result = drill(ctx)
+    if not isinstance(result, dict) or not result.get("data_plane_ok") or not result.get("receipts"):
+        result = {"status": "FAILED", "reason": "failover drill supplied no data-plane receipts"}
     assert_finite(result["status"])
     ctx.state.add_result("failover", "primary-backup", result["status"], result)
     ctx.write_json("failover.json", {"run_id": ctx.run_id, **result})
@@ -777,9 +778,6 @@ def stage_failover(ctx: RunContext, adapter_factory=None) -> dict:
 # ═══════════════════ multi-hop (P11 reuse) ════════════════════════════
 
 def stage_multihop(ctx: RunContext) -> dict:
-    from orchestrator.topology import (Topology, TopologyEdge, TopologyPath,
-                                       verify_path_end_to_end,
-                                       derive_path_metrics, path_score)
     nodes = [n.key for n in ctx.cfg.ordered_nodes()]
     if len(nodes) < 3:
         result = {"status": "BLOCKED_EXTERNAL_DEPENDENCY",
@@ -790,20 +788,9 @@ def stage_multihop(ctx: RunContext) -> dict:
         ctx.write_json("multihop.json", {"run_id": ctx.run_id, **result})
         return result
     a, b, c = nodes[:3]
-    topo = Topology("p14", [
-        TopologyEdge("ab", a, b, "WIREGUARD", rtt_ms=40.0, loss_pct=0.5,
-                     throughput_mbps=500.0, availability=0.999, effective_mtu=1420),
-        TopologyEdge("bc", b, c, "GRE", rtt_ms=25.0, loss_pct=0.2,
-                     throughput_mbps=800.0, availability=0.995, effective_mtu=1476),
-    ])
-    path = TopologyPath("abc", ["ab", "bc"])
-    ok, why = verify_path_end_to_end(topo, path,
-                                     {"ab": True, "bc": True}, e2e_probe=True)
-    metrics = derive_path_metrics(topo, ["ab", "bc"]).summary()
-    result = {"status": "PASS" if ok else "FAILED", "reason": why,
-              "path": path.nodes(topo), "metrics": metrics,
-              "score": path_score(derive_path_metrics(topo, ["ab", "bc"]))}
-    assert_finite(result["status"])
+    result = {"status": "BLOCKED_EXTERNAL_DEPENDENCY",
+              "reason": "REAL_MULTIHOP_PROBE_REQUIRED: three hosts alone do not prove a routed path",
+              "path": [a, b, c]}
     ctx.state.add_result("multihop", "a-b-c", result["status"], result)
     ctx.write_json("multihop.json", {"run_id": ctx.run_id, **result})
     return result
@@ -905,9 +892,9 @@ def stage_backup_restore(ctx: RunContext) -> dict:
 def stage_uninstall(ctx: RunContext) -> dict:
     ctx.assert_mutation_allowed()
     ch = ctx.ensure_channels()["node-a"]
-    marker = "/opt/p14-unrelated-marker"
+    marker = f"/opt/p14-unrelated-{ctx.run_id}"
     steps = [
-        ("marker", f"mkdir -p /opt/unrelated-app && echo keep > {marker}", 20),
+        ("marker", f"set -C; echo keep > {marker}", 20),
         ("uninstall", "sudo bash /opt/tunnelpannel/scripts/uninstall.sh", 300),
         ("app-gone", "test ! -d /opt/tunnelpannel && echo gone", 20),
         ("unrelated-kept", f"test -f {marker} && echo kept", 20),
@@ -917,11 +904,16 @@ def stage_uninstall(ctx: RunContext) -> dict:
     for name, cmd, tmo in steps:
         rc, out = ch.run(cmd, timeout=tmo)
         outs[name] = out.strip()[-120:]
+        if rc != 0:
+            ok = False
+            if name == "marker":
+                break   # do not uninstall or remove a marker we did not create
         if name == "app-gone":
             ok = ok and "gone" in out
         if name == "unrelated-kept":
             ok = ok and "kept" in out
-    ch.run(f"rm -rf /opt/unrelated-app {marker}", timeout=20)   # own-marker cleanup
+    if outs.get("marker") is not None and rc == 0:
+        ch.run(f"rm -f {marker}", timeout=20)   # never remove an unrelated directory
     result = {"status": "PASS" if ok else "FAILED", "outputs": outs}
     assert_finite(result["status"])
     ctx.state.add_result("uninstall", "owned-only", result["status"], result)
@@ -949,13 +941,13 @@ def run_stage(ctx: RunContext, stage: str, adapter_factory=None) -> str:
             stage_inventory(ctx); status = "PASS"
         elif stage == "quick":
             res = run_profiles(ctx, "QUICK", adapter_factory)
-            status = "PASS" if any(r["status"] == "PASS" for r in res) else "FAILED"
+            status = aggregate_profiles(res)
         elif stage == "normal":
             res = run_profiles(ctx, "NORMAL", adapter_factory)
-            status = "PASS" if any(r["status"] == "PASS" for r in res) else "FAILED"
+            status = aggregate_profiles(res)
         elif stage == "profiles":
             res = run_profiles(ctx, "QUICK", adapter_factory)
-            status = "PASS" if res else "FAILED"
+            status = aggregate_profiles(res)
         elif stage == "compositions":
             res = stage_compositions(ctx, adapter_factory)
             status = "PASS" if any(r["status"] == "PASS" for r in res) else "FAILED"
@@ -983,9 +975,24 @@ def run_stage(ctx: RunContext, stage: str, adapter_factory=None) -> str:
         ctx.state.finish_stage(stage, "FAILED", str(e)[:200])
         ctx.cleanup()
         raise
-    ctx.cleanup()                                        # ALWAYS after mutation stages
+    if stage not in {"install", "upgrade", "backup-restore"}:
+        ctx.cleanup()
     ctx.state.finish_stage(stage, status)
     return status
+
+
+def aggregate_profiles(results: list[dict]) -> str:
+    """A release stage passes only when every required profile passes."""
+    if not results:
+        return "FAILED"
+    statuses = {r["status"] for r in results}
+    if statuses == {"PASS"}:
+        return "PASS"
+    for status in ("FAILED", "TIMED_OUT", "CANCELLED", "BLOCKED_EXTERNAL_DEPENDENCY",
+                   "INCOMPATIBLE_WITH_TEST_ENVIRONMENT", "NOT_APPLICABLE"):
+        if status in statuses:
+            return status
+    return "FAILED"
 
 
 # ═══════════════════ CLI ══════════════════════════════════════════════
@@ -1020,13 +1027,13 @@ def main(argv=None) -> int:
         released = ctx.cleanup()
         print(f"cleanup complete for run {run_id}: {released} released, "
               f"{len(ctx.orphans)} orphans recorded")
-        return 0
+        return 1 if ctx.orphans else 0
 
     cfg = load_config(args)
     if args.candidate:
         cfg.candidate = args.candidate
 
-    if args.mode == "resume" and args.resume:
+    if args.resume:
         run_id = args.resume
     else:
         run_id = new_run_id()
@@ -1034,7 +1041,7 @@ def main(argv=None) -> int:
     print(f"P14 validation run: {run_id} · artifacts: {ctx.dir}")
 
     stages = args.only_stages or (
-        list(cfg.stages) if args.mode == "all" else [args.mode])
+        list(cfg.stages) if args.mode in {"all", "resume"} else [args.mode])
     if args.resume:
         stages = [s for s in stages
                   if ctx.state.stage_status(s) in (None, "RUNNING", "FAILED")]

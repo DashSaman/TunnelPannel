@@ -89,6 +89,8 @@ def test_routing_capable_is_false():
 def test_precheck_missing_everything_tells_the_truth(monkeypatch):
     t = {"id": 1, "name": "x", "engine": "paqet", "config": "{}"}
     a = PaqetAdapter(t)
+    a.cfg['binary_path'] = '/__tunnelguard_test_missing_paqet__'
+    monkeypatch.setattr(a, '_which', lambda name: None)
     monkeypatch.setattr("tfd.engines.paqet.os.geteuid", lambda: 0)
     problems = a.precheck()
     joined = " | ".join(problems)

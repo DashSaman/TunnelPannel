@@ -75,6 +75,13 @@ class TestModels:
 
 
 class TestAlembic:
+    def test_current_from_an_unrelated_working_directory(self, tmp_path):
+        env = {**__import__("os").environ,
+               "DATABASE_URL": f"sqlite:///{(tmp_path / 'elsewhere.db').as_posix()}"}
+        result = subprocess.run([sys.executable, "-m", "alembic", "-c", str(ROOT / "alembic.ini"), "current"],
+                                cwd=tmp_path, env=env, capture_output=True, text=True)
+        assert result.returncode == 0, result.stderr
+
     def test_upgrade_head_matches_models(self, tmp_path):
         db = tmp_path / "mig.db"
         env = {**__import__("os").environ,

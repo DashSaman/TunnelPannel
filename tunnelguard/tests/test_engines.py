@@ -127,10 +127,12 @@ class TestOpenVPN:
         assert "cipher AES-256-GCM" in conf
         assert any(k.endswith("tfW.secret") for k in art)
 
-    def test_precheck_reports_missing_binary(self):
+    def test_precheck_reports_missing_binary(self, monkeypatch):
         rec = Recorder(fail_on=("openvpn",))
-        problems = get_adapter(make_tunnel("openvpn"), executor=rec, force_sim=False).precheck()
-        assert any("openvpn binary" in p or "/dev/net/tun" in p for p in problems)
+        adapter = get_adapter(make_tunnel("openvpn"), executor=rec, force_sim=False)
+        monkeypatch.setattr(adapter, "_which", lambda name: None)
+        problems = adapter.precheck()
+        assert any("openvpn binary" in p for p in problems)
 
 
 class TestIKEv2:
