@@ -20245,7 +20245,7 @@
   "candidate": "v0.9.0-rc3",
   "software_suites": {
     "canonical": {
-      "tests": 533,
+      "tests": 534,
       "failures": 0,
       "errors": 0,
       "skipped": 0
@@ -21613,5 +21613,6 @@
     "live_allocations": 0,
     "historical_orphan_reconciled": 11,
     "failed_receipt_preserved": true
-  }
+  },
+  "final_access_review": "Node list requires VIEWER/OPERATOR/SUPER_ADMIN authentication; missing-token regression reproduced then passed. Fresh suites: 534+100+1 PASS."
 }

@@ -63,7 +63,7 @@ def public_node(node):
 def create_nodes_router(session_factory):
     router = APIRouter(prefix="/api/nodes", tags=["nodes"], route_class=CredentialSafeRoute)
 
-    @router.get("")
+    @router.get("", dependencies=[Depends(require_role("VIEWER", "OPERATOR", "SUPER_ADMIN"))])
     def list_nodes():
         with session_factory() as session:
             return [public_node(n) for n in session.query(Node).order_by(Node.name).all()]

@@ -39,7 +39,7 @@ Latest NORMAL results: **82 PASS / 0 incomplete / 0 failed**, derived from the c
 
 نتیجهٔ آخرین NORMAL هر ۸۲ روش موفق است. اجرای نخست ۷۶ موفق و ۶ ناموفق بود؛ نتایج ناموفق حذف نشده‌اند و بازآزمایی‌ها جداگانه ثبت شده‌اند. سرعت مثبت، عبور داده، بازیابی و پاک‌سازی برای هر نتیجهٔ نهایی بررسی شده است.
 
-Fresh software verification: **533 canonical + 100 TunnelGuard + 1 backend PASS**, no failures/skips. Canonical lint, shell syntax/ShellCheck and catalog checks passed.
+Fresh software verification: **534 canonical + 100 TunnelGuard + 1 backend PASS**, no failures/skips. Canonical lint, shell syntax/ShellCheck and catalog checks passed.
 
 Five selected DEEP profiles have latest **5 PASS**: WIREGUARD, GOST_SSH, WATERWALL_REVERSE, SINGBOX_TUN and native HEDIOUM_TUN. The initial DEEP job was 4 PASS / 1 FAILED (sing-box repeated HTTP probe); its failed receipt is preserved. An independent 100-probe reproduction and unchanged panel rerun passed. This intermittent failure remains visible; no assertion was relaxed.
 
@@ -158,3 +158,5 @@ The JSON report includes the original attempts, final rows, per-job methodology 
 | SINGBOX_TUN | PASS | 671.11 | 0.281 | ad5f0e04 |
 
 ![Actual panel NORMAL rerun](../../shots/panel-real-benchmark.jpg)
+
+Final access acceptance adds authenticated node listing for VIEWER/OPERATOR/SUPER_ADMIN. The missing-token regression was reproduced before the fix and passed afterward. Fresh complete software suites: 534 canonical + 100 TunnelGuard + 1 backend PASS.

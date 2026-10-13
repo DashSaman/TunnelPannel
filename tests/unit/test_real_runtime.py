@@ -89,6 +89,14 @@ def test_node_list_is_sanitized(nodes_api):
     assert "secret" not in response.text and "ciphertext" not in response.text
 
 
+def test_node_list_requires_authentication_and_accepts_viewer(nodes_api):
+    client, _ = nodes_api
+    assert client.get('/api/nodes').status_code == 401
+    response = client.get('/api/nodes', headers={'Authorization': 'Bearer viewer-test'})
+    assert response.status_code == 200
+    assert response.json() == []
+
+
 def test_node_credentials_can_be_rotated_without_changing_identity(nodes_api):
     client, factory = nodes_api
     created = client.post('/api/nodes', headers=ADMIN, json=NODE).json()
