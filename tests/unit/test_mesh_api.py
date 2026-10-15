@@ -92,3 +92,17 @@ def test_customer_cannot_read_cancel_or_select_owner_campaign(panel):
     assert client.post("/api/mesh/campaigns/owner-job/cancel", headers=headers).status_code == 404
     assert client.put("/api/mesh/campaigns/owner-job/routes/x/selection", headers=headers,
                       json={"methods": ["WIREGUARD"]}).status_code == 404
+
+
+def test_live_progress_includes_partial_child_before_a_direction_finishes(panel):
+    client, factory, _ = panel
+    with factory() as session:
+        session.add(Job(id='half-direction', kind='benchmark', state='RUNNING', progress=.5, payload={}))
+        session.add(Job(id='progress-parent', kind='mesh_campaign', state='RUNNING', progress=0, payload={
+            'profile': 'NORMAL', 'routes': [
+                {'id': 'forward', 'source': 'ir', 'destination': 'de', 'job_id': 'half-direction'},
+                {'id': 'reverse', 'source': 'de', 'destination': 'ir', 'job_id': None}]}))
+        session.commit()
+    result = client.get('/api/mesh/campaigns/progress-parent', headers=HEADERS).json()
+    assert result['routes'][0]['progress'] == .5
+    assert result['progress'] == .25

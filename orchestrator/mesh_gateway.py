@@ -11,6 +11,7 @@ from contextlib import suppress
 import hmac
 import ipaddress
 import json
+import math
 import os
 from pathlib import Path
 import socket
@@ -205,29 +206,82 @@ class Gateway:
         self.server = None
         self.events, self.probes = [], {}
         self.connections_total = 0
+        self.active_connections = dict.fromkeys(ids, 0)
+        self.connections_by_upstream = dict.fromkeys(ids, 0)
+        self.probe_history = {key: [] for key in ids}
+        if config.get('mode', 'failover') not in {'failover', 'balance'}:
+            raise ValueError('unknown gateway mode')
         self._connections = set()
 
-    async def connect(self, host, port):
+    def record_probes(self, readings):
+        self.probes = readings
+        for key in self.policy.order:
+            row = readings.get(key, {})
+            value = row.get('latency_ms')
+            valid = row.get('ok') and isinstance(value, (int, float)) and math.isfinite(value) and value >= 0
+            self.probe_history[key] = (self.probe_history[key] + [value if valid else None])[-10:]
+
+    def effective_weight(self, key):
+        upstream = next(u for u in self.config['upstreams'] if u['id'] == key)
+        weight = upstream.get('weight', 1)
+        if not isinstance(weight, (int, float)) or not math.isfinite(weight) or weight <= 0:
+            weight = 1
+        history = self.probe_history[key]
+        good = [value for value in history if value is not None]
+        if not history:
+            return min(100, weight)
+        if not good:
+            return min(100, weight) * .05
+        mean = sum(good) / len(good)
+        baseline = upstream.get('baseline_rtt_ms', mean)
+        if not isinstance(baseline, (int, float)) or not math.isfinite(baseline) or baseline < 0:
+            baseline = mean
+        jitter = sum(abs(b - a) for a,b in zip(good, good[1:])) / max(1, len(good)-1)
+        quality = len(good) / len(history) * min(1, (baseline + 5) / (mean + 5)) / (1 + jitter / 10)
+        return min(100, weight) * max(.05, quality)
+
+    def connection_order(self):
+        healthy = [key for key in self.policy.order if self.policy.healthy.get(key, False)]
+        if self.config.get('mode', 'failover') == 'balance':
+            healthy.sort(key=lambda key: ((self.active_connections[key] + 1) / self.effective_weight(key),
+                                          self.connections_by_upstream[key]))
+            preferred = self.policy.pin
+        else:
+            preferred = self.policy.pin if self.policy.healthy.get(self.policy.pin, False) else self.policy.active
+        if preferred in healthy:
+            healthy.remove(preferred)
+            healthy.insert(0, preferred)
+        return healthy
+
+    async def connect(self, host, port, selected=None):
         by_id = {upstream['id']: upstream for upstream in self.config['upstreams']}
-        order = [self.policy.active] + self.policy.order
-        tried = set()
-        for key in order:
-            if key in tried or not self.policy.healthy.get(key, False):
-                continue
-            tried.add(key)
+        for key in self.connection_order():
+            # Reserve before awaiting setup so simultaneous clients see the load.
+            self.active_connections[key] += 1
+            retained, writer = False, None
             try:
-                result = await asyncio.wait_for(socks_connect(by_id[key], host, port), 10)
-                if self.policy.active != key:
+                reader, writer = await asyncio.wait_for(socks_connect(by_id[key], host, port), 10)
+                if self.config.get('mode', 'failover') == 'failover' and self.policy.active != key:
                     self.events.append({'at': time.time(), 'from': self.policy.active, 'to': key,
                                         'reason': 'connection failover'})
                     self.policy.active, self.policy.last_switch = key, time.monotonic()
-                    self.write_state()
                 self.connections_total += 1
-                return result
+                self.connections_by_upstream[key] += 1
+                if selected:
+                    selected(key)
+                retained = True
+                return reader, writer
             except (OSError, ValueError, asyncio.TimeoutError, asyncio.IncompleteReadError):
                 # Failure to a particular destination is NOT enough evidence to
                 # mark an entire tunnel down; independent nonce probes do that.
                 continue
+            finally:
+                if not retained or selected is None:
+                    self.active_connections[key] -= 1
+                if not retained and writer:
+                    writer.close()
+                    with suppress(Exception):
+                        await writer.wait_closed()
         raise ConnectionError('no healthy upstream can reach the destination')
 
     async def start_listener(self):
@@ -237,9 +291,14 @@ class Gateway:
                 writer.close()
                 return
             self._connections.add(task)
+            selected = []
             try:
-                await serve_socks(reader, writer, self.connect, self.config['username'], self.config['password'])
+                async def connect(host, port):
+                    return await self.connect(host, port, selected.append)
+                await serve_socks(reader, writer, connect, self.config['username'], self.config['password'])
             finally:
+                for key in selected:
+                    self.active_connections[key] -= 1
                 self._connections.discard(task)
         self.server = await asyncio.start_server(handler, self.config.get('listen_host', '127.0.0.1'),
                                                  self.config['listen_port'], limit=65536)
@@ -274,6 +333,10 @@ class Gateway:
                     'healthy': self.policy.healthy, 'probes': self.probes,
                     'order': self.policy.order, 'pin': self.policy.pin, 'events': self.events,
                     'connections_total': self.connections_total, 'updated_at': time.time(),
+                    'mode': self.config.get('mode', 'failover'),
+                    'active_connections': self.active_connections,
+                    'connections_by_upstream': self.connections_by_upstream,
+                    'effective_weights': {key: round(self.effective_weight(key), 3) for key in self.policy.order},
                     'capability': 'authenticated TCP SOCKS5; existing sessions reconnect after failure'})
 
     async def run(self, config_path):
@@ -285,10 +348,12 @@ class Gateway:
                 ids = [upstream['id'] for upstream in updated['upstreams']]
                 if set(ids) != set(self.policy.order):
                     raise ValueError('upstream membership changes require a reconciled deployment')
+                if updated.get('mode', 'failover') not in {'failover', 'balance'}:
+                    raise ValueError('unknown gateway mode')
                 self.config = updated
                 self.policy.order, self.policy.pin = ids, updated.get('pin')
                 readings = await asyncio.gather(*(self.probe(upstream) for upstream in self.config['upstreams']))
-                self.probes = {upstream['id']: result for upstream, result in zip(self.config['upstreams'], readings)}
+                self.record_probes({upstream['id']: result for upstream, result in zip(self.config['upstreams'], readings)})
                 previous = self.policy.active
                 self.policy.update({key: result['ok'] for key, result in self.probes.items()})
                 if previous != self.policy.active:

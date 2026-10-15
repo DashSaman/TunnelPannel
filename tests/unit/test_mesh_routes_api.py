@@ -87,3 +87,59 @@ def test_reconcile_can_change_order_and_count_using_only_this_routes_measured_re
         assert job.state == 'APPLYING'
         assert job.payload['methods'] == ['IPIP', 'GRE']
         assert job.payload['runtime_secret_id'] == 'keep-stable-endpoint'
+
+
+def test_route_accepts_balance_mode_and_rejects_unknown_modes(panel, monkeypatch):
+    from core.models import Job
+    from test_mesh_campaign import sample
+    client, factory, app = panel
+    monkeypatch.setattr('orchestrator.mesh_routes.route_samples', lambda *args: [sample('GRE')])
+    monkeypatch.setattr(app.state.mesh_routes, 'kick', lambda *args: None)
+    with factory() as session:
+        session.add(Job(id='measured', kind='mesh_campaign', state='PASS', payload={
+            'routes': [{'id': 'pair', 'source': 'ir', 'destination': 'de', 'job_id': 'child'}]}))
+        session.commit()
+    body = {'campaign_id': 'measured', 'route_id': 'pair', 'methods': ['GRE'], 'mode': 'balance'}
+    response = client.post('/api/mesh/routes', headers=HEADERS, json=body)
+    assert response.status_code == 202
+    with factory() as session:
+        assert session.get(Job, response.json()['id']).payload['mode'] == 'balance'
+    assert client.post('/api/mesh/routes', headers=HEADERS,
+        json={**body, 'mode': 'unimplemented-stream-bonding'}).status_code == 422
+
+
+def test_live_mode_change_preserves_entry_credentials_members_and_omitted_pin(panel, monkeypatch):
+    import json
+    from core.models import Job, SecretReference
+    from orchestrator.remote_nodes import encrypt_credentials
+    from orchestrator.mesh_routes import route_private
+    monkeypatch.setenv('TP_SECRET_KEY', 'route-test-installation-secret')
+    client, factory, _ = panel
+    config = {'mode': 'failover', 'pin': 'GRE', 'listen_host': '127.0.0.1', 'listen_port': 24000,
+        'username': 'unit-user', 'password': 'unit-only-not-deployed-password',
+        'upstreams': [{'id': 'GRE', 'weight': 100}, {'id': 'IPIP', 'weight': 50}]}
+    with factory() as session:
+        secret = SecretReference(kind='mesh_runtime', ciphertext=encrypt_credentials(
+            {'directory': '/owned/gateway', 'service': 'owned-unit', 'config': config}))
+        session.add(secret); session.flush()
+        session.add(Job(id='mode-route', kind='mesh_route', state='COMMITTED', payload={
+            'source': 'ir', 'destination': 'de', 'runtime_secret_id': secret.id}))
+        session.commit()
+    monkeypatch.setattr('orchestrator.mesh_routes.node_access', lambda *args: ({}, {}))
+    class Remote:
+        def __init__(self, *args): pass
+        def connect(self): return self
+        def close(self): pass
+        def run(self, *args, **kwargs): return {'code': 0, 'stdout': ''}
+    written = {}
+    monkeypatch.setattr('orchestrator.mesh_routes.NodeRemote', Remote)
+    monkeypatch.setattr('plan_executor.executor.write_remote_text',
+        lambda remote,path,content,mode: written.update(json.loads(content)))
+    url = '/api/mesh/routes/mode-route/policy'
+    assert client.put(url, headers=HEADERS, json={'mode': 'balance'}).status_code == 200
+    assert written == {**config, 'mode': 'balance'}
+    with factory() as session:
+        job = session.get(Job, 'mode-route')
+        assert job.payload['mode'] == 'balance'
+        assert route_private(session, job)['config'] == written
+    assert client.put(url, headers=HEADERS, json={'mode': 'invalid'}).status_code == 422

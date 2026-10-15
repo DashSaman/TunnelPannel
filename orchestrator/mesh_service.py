@@ -48,7 +48,8 @@ def campaign_view(session, job):
                        "progress": child.progress if child else 0,
                        "recommendation": rec, "results": rows,
                        "selection": route.get("selection", rec["selected"])})
-    return {"id": job.id, "state": job.state, "progress": job.progress,
+    progress = sum(route['progress'] for route in routes) / len(routes) if routes else job.progress
+    return {"id": job.id, "state": job.state, "progress": progress,
             "error": job.error, "profile": payload.get("profile"), "routes": routes,
             "created_at": job.created_at, "finished_at": job.finished_at,
             "geography": "measured on the selected physical nodes; locations are operator labels"}

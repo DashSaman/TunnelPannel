@@ -15,7 +15,7 @@ from fastapi import HTTPException
 from core.models import Deployment, Job, SecretReference
 from core.workspaces import freeze_factory
 from orchestrator.host_lease import HostLease
-from orchestrator.mesh_campaign import recommendations, select_methods
+from orchestrator.mesh_campaign import quality_weights, recommendations, select_methods
 from orchestrator.mesh_persistent import PersistentPairAdapter, egress_supported
 from orchestrator.mesh_service import campaign_job, route_samples
 from orchestrator.remote_nodes import NodeRemote, decrypt_credentials, encrypt_credentials, node_access
@@ -32,6 +32,7 @@ def route_public(job):
     return {'id': job.id, 'state': job.state, 'progress': job.progress, 'error': job.error,
             **{key: job.payload.get(key) for key in ('source', 'destination', 'methods', 'members', 'campaign_id')},
             'created_at': job.created_at, 'capability': 'authenticated TCP SOCKS5 egress',
+            'mode': job.payload.get('mode', 'failover'),
             'session_recovery': 'new connections switch; existing TCP sessions reconnect'}
 
 
@@ -108,7 +109,8 @@ class RouteService:
             job = Job(kind='mesh_route', state='APPLYING', payload={
                 'campaign_id': campaign.id, 'campaign_route_id': route['id'],
                 'source': route['source'], 'destination': route['destination'],
-                'methods': methods, 'members': [], 'listen_host': request.listen_host},
+                'methods': methods, 'members': [], 'listen_host': request.listen_host,
+                'mode': request.mode},
                 timeout_s=600 * len(methods))
             session.add(job)
             session.commit()
@@ -198,6 +200,13 @@ class RouteService:
             with factory() as session:
                 previous_config = route_private(session, route_job(session, route_id))['config']
         nonce = secrets.randbelow(900_000_000) + 100_000_000
+        with factory() as session:
+            campaign = campaign_job(session, payload['campaign_id'])
+            pair = next(r for r in campaign.payload['routes'] if r['id'] == payload['campaign_route_id'])
+            samples = [row for row in route_samples(session, pair['job_id'])
+                       if row['candidate'] in payload['methods']]
+        weights = quality_weights(samples)
+        metrics_by_method = {row['candidate']: row['metrics'] for row in samples}
         for index, method in enumerate(payload['methods']):
             with factory() as session:
                 if route_job(session, route_id).state == 'STOPPING':
@@ -217,6 +226,7 @@ class RouteService:
             try:
                 adapter.configure()
                 upstream = adapter.upstream()
+                upstream.update(weight=weights[method], baseline_rtt_ms=metrics_by_method[method]['rtt_avg'])
                 upstreams.append(upstream)
                 members.append({'method': method, 'deployment_id': deployment_id, 'state': 'WARM'})
                 with factory() as session:
@@ -243,6 +253,8 @@ class RouteService:
             from orchestrator.remote_journal import RemoteJournal
             journal = RemoteJournal(remote, nonce, 0, endpoint['id'], persist)
             remote.observer = journal.observe
+            from orchestrator.host_reservations import initialize
+            initialize(remote, journal, nonce, 0)
             directory = f'/var/lib/tunnelpannel/mesh/{route_id}/gateway'
             journal.record('path', directory)
             service = f'tpmesh-{nonce}-0-gateway'
@@ -251,6 +263,7 @@ class RouteService:
             if previous_config and port != previous_config['listen_port']:
                 raise RuntimeError('the stable gateway port is now owned by another listener')
             config = {'listen_host': payload['listen_host'], 'listen_port': port,
+                      'mode': payload.get('mode', (previous_config or {}).get('mode', 'failover')),
                       'username': previous_config['username'] if previous_config else 'tp-' + route_id[:10],
                       'password': previous_config['password'] if previous_config else secrets.token_urlsafe(32),
                       'upstreams': upstreams, 'probe_interval_s': 2, 'probe_timeout_s': 5,
@@ -345,18 +358,18 @@ class RouteService:
             self.kick(factory, route_id)
 
 
-def update_route_policy(factory, route_id, order, pin):
+def update_route_policy(factory, route_id, order=None, pin=None, mode=None, *, preserve_pin=False):
     factory = freeze_factory(factory)
     lease = route_lease(factory, route_id)
     if not lease.acquire(10):
         raise HTTPException(409, 'route controller is busy')
     try:
-        return _update_route_policy(factory, route_id, order, pin)
+        return _update_route_policy(factory, route_id, order, pin, mode, preserve_pin=preserve_pin)
     finally:
         lease.release()
 
 
-def _update_route_policy(factory, route_id, order, pin):
+def _update_route_policy(factory, route_id, order, pin, mode, *, preserve_pin=False):
     from plan_executor import executor as bodies
     with factory() as session:
         job = route_job(session, route_id)
@@ -365,11 +378,17 @@ def _update_route_policy(factory, route_id, order, pin):
         runtime = route_private(session, job)
         endpoint, credentials = node_access(session, job.payload['source'])
     by_id = {u['id']: u for u in runtime['config']['upstreams']}
+    if preserve_pin:
+        pin = runtime['config'].get('pin')
+    mode = mode if mode is not None else runtime['config'].get('mode', 'failover')
+    if mode not in {'failover', 'balance'}:
+        raise HTTPException(400, 'mode must be failover or balance')
     if order is not None and (len(order) != len(set(order)) or set(order) != set(by_id)):
         raise HTTPException(400, 'order must contain every deployed method exactly once')
     if pin is not None and pin not in by_id:
         raise HTTPException(400, 'pin must name a deployed method')
-    config = {**runtime['config'], 'upstreams': [by_id[key] for key in (order or by_id)], 'pin': pin}
+    config = {**runtime['config'], 'upstreams': [by_id[key] for key in (order or by_id)], 'pin': pin,
+              'mode': mode}
     remote = NodeRemote(endpoint, credentials).connect()
     try:
         # Same-directory replace prevents the worker from reading partial JSON.
@@ -381,7 +400,8 @@ def _update_route_policy(factory, route_id, order, pin):
             job = route_job(session, route_id)
             secret = session.get(SecretReference, job.payload['runtime_secret_id'])
             secret.ciphertext = encrypt_credentials(runtime)
+            job.payload = {**job.payload, 'mode': mode}
             session.commit()
     finally:
         remote.close()
-    return {'route_id': route_id, 'order': order or list(by_id), 'pin': pin}
+    return {'route_id': route_id, 'order': order or list(by_id), 'pin': pin, 'mode': mode}

@@ -20,6 +20,9 @@ class RemoteJournal:
             return
         self.persist(self.node_id, kind, key)
         bucket.add(key)
+        if kind == 'interface':
+            from orchestrator.host_reservations import reserve
+            reserve(self.remote, 'interfaces', key)
 
     def observe(self, command):
         # A deployment can fail midway; persist its resources before executing.
@@ -65,6 +68,8 @@ class RemoteJournal:
     def claim_interface(self, name):
         if name in self.interfaces:
             return
+        if name in getattr(self.remote, 'reserved_interfaces', set()):
+            raise RuntimeError('deployment interface already reserved: ' + name)
         if self.remote.run(f"ip link show {shlex.quote(name)}", check=False)["code"] == 0:
             raise RuntimeError("deployment interface already exists: " + name)
         self.record('interface', name)

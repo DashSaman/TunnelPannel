@@ -82,6 +82,7 @@ def choose_prefix(occupied, version=4):
 def unused_prefix(remotes, version=4, exclude=()):
     occupied = list(exclude)
     for remote in remotes:
+        occupied.extend(getattr(remote, 'reserved_prefixes', set()))
         for family in ("-4", "-6"):
             for row in json.loads(remote.run(f"ip -j {family} address show")["stdout"]):
                 occupied.extend(str(ipaddress.ip_network(f"{a['local']}/{a['prefixlen']}", strict=False))
@@ -90,4 +91,8 @@ def unused_prefix(remotes, version=4, exclude=()):
             for row in json.loads(remote.run(f"ip -j {family} route show table all")["stdout"]):
                 if row.get("dst") and row["dst"] != "default":
                     occupied.append(row["dst"])
-    return choose_prefix(occupied, version)
+    prefix = choose_prefix(occupied, version)
+    from orchestrator.host_reservations import reserve
+    for remote in remotes:
+        reserve(remote, 'prefixes', prefix)
+    return prefix

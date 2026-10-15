@@ -14,11 +14,13 @@ class DeployRoute(BaseModel):
     route_id: str
     methods: list[str] | None = Field(default=None, max_length=100)
     listen_host: Literal['127.0.0.1', '::1'] = '127.0.0.1'
+    mode: Literal['failover', 'balance'] = 'failover'
 
 
 class RoutePolicyRequest(BaseModel):
     order: list[str] | None = None
     pin: str | None = None
+    mode: Literal['failover', 'balance'] | None = None
 
 
 class ReconcileRoute(BaseModel):
@@ -53,7 +55,8 @@ def create_mesh_routes_router(factory, service):
 
     @router.put('/{route_id}/policy')
     def policy(route_id: str, body: RoutePolicyRequest, _=Depends(require_role('OPERATOR', 'SUPER_ADMIN'))):
-        return update_route_policy(factory, route_id, body.order, body.pin)
+        return update_route_policy(factory, route_id, body.order, body.pin, body.mode,
+                                   preserve_pin='pin' not in body.model_fields_set)
 
     @router.delete('/{route_id}', status_code=202)
     def stop(route_id: str, _=Depends(require_role('OPERATOR', 'SUPER_ADMIN'))):

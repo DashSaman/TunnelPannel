@@ -15,6 +15,12 @@ Open `/mesh` after installing. The catalog contains 108 identities: 91 profiles 
 
 New TCP connections move to another healthy member after the health threshold. Existing TCP sessions reconnect. Defaults use a two-second interval, five-second probe timeout and three failures, with hold-down to avoid rapid switching. Five warm members consume more memory and services than one. Multiple destination groups coexist; clients choose the appropriate group's outbound. Five protocols to one destination do not survive that destination's complete outage. The implementation does not replace the host's default route or turn SOCKS forwarding into a system-wide VPN.
 
+Choose **Share connections by quality** in an active group's **Connection mode** selector, then **Apply mode and preference**, to distribute concurrent connections. Measured throughput, request loss and jitter establish bounded weights. Current nonce-probe delay, jitter and failures reduce a degraded member's effective weight. Weighted least-active-connection selection reserves capacity during connection setup and releases it when the stream ends; unhealthy members are excluded. A healthy manual pin takes precedence. The UI shows active and total connections per member. Switching modes keeps the entry port, credentials and established connections.
+
+This shares separate TCP connections. A single TCP stream is not striped or bonded across tunnels. Aggregate capacity still depends on endpoint bandwidth, CPU and shared physical bottlenecks; more tunnels do not guarantee more speed. The release evidence records actual concurrent-transfer throughput and integrity checks. API clients can create a route with `mode: "balance"` or send `{"mode":"balance"}` to `PUT /api/mesh/routes/{id}/policy`; `failover` restores preference-based routing. Omitting `pin` preserves an existing pin, while an explicit null clears it.
+
+Managed hosts retain root-owned reservation books in `/var/lib/tunnelpannel-engine-reservations`. Ports, inner prefixes, SSH interfaces and XFRM/VTI identifiers remain reserved while a warm member is stopped. The deployment journal removes its book during owned cleanup. Corrupt or unsafe books block new allocations. Physical-host leases coordinate customer workspaces in one panel installation; independent panel installations must not concurrently manage the same host.
+
 ![Customer onboarding](shots/mesh-customer-onboarding.jpg)
 
 ## Interpreting metrics

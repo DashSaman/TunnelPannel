@@ -145,6 +145,8 @@ class RealPairAdapter:
             self.journals.append(journal)
             remote.journal = journal
             remote.observer = journal.observe
+            from orchestrator.host_reservations import initialize
+            initialize(remote, journal, self.run['id'], self.item['id'])
         a, b = self.remotes
         for remote, peer in ((a, endpoints[1]['host']), (b, endpoints[0]['host'])):
             remote.firewall_peer = peer
@@ -172,6 +174,8 @@ class RealPairAdapter:
             for index in indexes:
                 self.journals[index].claim_interface(bodies.short_name(prefix, self.run['id'], self.item['id']))
         if method in {'SSH_TUN_L3', 'SSH_TAP_L2'} or method.endswith('_OVER_SSH'):
+            from orchestrator.host_reservations import free_tun_id
+            config['ssh_tunnel_id'] = free_tun_id(self.remotes, config['ssh_tunnel_id'])
             name = ('tap' if method == 'SSH_TAP_L2' else 'tun') + str(config['ssh_tunnel_id'])
             for journal in self.journals:
                 journal.claim_interface(name)

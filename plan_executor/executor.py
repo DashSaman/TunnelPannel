@@ -852,9 +852,8 @@ def free_pair_port(remote_a, remote_b, protocol, preferred):
     if not port:
         raise RuntimeError('NO_FREE_PAIR_PORT')
     for remote in remotes:
-        if not hasattr(remote, 'reserved_ports'):
-            remote.reserved_ports = set()
-        remote.reserved_ports.add(port)
+        from orchestrator.host_reservations import reserve
+        reserve(remote, 'ports', port)
     return port
 
 
@@ -3599,6 +3598,33 @@ def strongswan_start_script(
 
 
 
+def free_xfrm_identifiers(remotes, run_id, item_id, method):
+    """Allocate pair-wide IDs while the caller holds both host mutation leases.
+
+    Interface IDs and VTI keys are host-global, not scoped to an item number.
+    Read all numeric IDs/marks from existing links, SAs, policies and rules;
+    conservatively excluding extra numbers is harmless in this large range.
+    """
+    occupied = set()
+    for remote in remotes:
+        occupied.update(getattr(remote, 'reserved_identifiers', set()))
+        for command in ('ip -j -d link show', 'ip xfrm state', 'ip xfrm policy', 'ip rule show'):
+            output = remote.run(command, root=True)['stdout']
+            for value in re.findall(r'(?<![A-Za-z0-9_])(?:0x[0-9a-fA-F]+|[0-9]+)(?![A-Za-z0-9_])', output):
+                occupied.add(int(value, 16 if value.startswith('0x') else 10))
+    floor, size = 0x10000000, 0x60000000
+    seed = int(hashlib.sha256(f'{run_id}:{item_id}:{method}'.encode()).hexdigest()[:8], 16) % size
+    for attempt in range(4096):
+        pair = (floor + (seed + attempt*2) % size, floor + (seed + attempt*2 + 1) % size)
+        if occupied.isdisjoint(pair):
+            from orchestrator.host_reservations import reserve
+            for remote in remotes:
+                for identifier in pair:
+                    reserve(remote, 'identifiers', identifier)
+            return pair
+    raise RuntimeError('no conflict-free XFRM/VTI identifier pair available')
+
+
 def deploy_strongswan_route_based(method: str, run: dict, item: dict, config: dict, remote_a: Remote, remote_b: Remote, endpoint_a: dict, endpoint_b: dict) -> dict:
     addressing = parse_addressing(config)
     install_strongswan(remote_a)
@@ -3613,8 +3639,7 @@ def deploy_strongswan_route_based(method: str, run: dict, item: dict, config: di
     connection_name = f"netauto-{run['id']}-{item['id']}"
     child_name = f"child-{item['id']}"
     service_name = unit_name(run["id"], item["id"])
-    interface_id = 10000 + int(item["id"])
-    mark = 20000 + int(item["id"])
+    interface_id, mark = free_xfrm_identifiers((remote_a, remote_b), run['id'], item['id'], method)
     secret = stable_secret(run["id"], item["id"], method + "-psk", 48)
 
     if method == "IKEV2_IPSEC":
@@ -6705,7 +6730,8 @@ def free_port(remote: Remote, protocol: str, preferred: int) -> int:
     port = allocate(report, protocol, [node_id], start=preferred, reserved=remote.reserved_ports)
     if not port:
         raise RuntimeError("NO_FREE_PORT")
-    remote.reserved_ports.add(port)
+    from orchestrator.host_reservations import reserve
+    reserve(remote, 'ports', port)
     return port
 
 

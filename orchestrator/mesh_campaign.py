@@ -113,6 +113,21 @@ def recommendations(rows, count=5, purpose="any"):
             "endpoint_redundancy": False}
 
 
+def quality_weights(rows):
+    """Normalize measured capacity with request-loss and jitter penalties."""
+    values = {}
+    for row in rows:
+        metrics = row.get('metrics') or {}
+        speed, jitter, loss = (metrics.get(key, 0) for key in ('throughput_mbps', 'jitter', 'loss_pct'))
+        valid = all(isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v)
+                    for v in (speed, jitter, loss))
+        values[row['candidate']] = (speed * (1 - loss / 100) / (1 + jitter / 10)
+            if valid and speed > 0 and jitter >= 0 and 0 <= loss < 100 else 0)
+    best = max(values.values(), default=0)
+    return {key: max(1, min(100, round(value / best * 100, 3))) if best else 1
+            for key, value in values.items()}
+
+
 def select_methods(rows, ordered, limit):
     if not ordered or len(ordered) != len(set(ordered)) or len(ordered) > limit:
         raise HTTPException(400, "selection must be nonempty, unique and within workspace limits")
