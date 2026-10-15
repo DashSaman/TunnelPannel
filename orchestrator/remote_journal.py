@@ -89,7 +89,9 @@ class RemoteJournal:
             r.run(f"ip link del {value} 2>/dev/null || true", root=True)
             if r.run(f"ip link show {value}", check=False)["code"] == 0:
                 raise RuntimeError("owned interface survived cleanup: " + name)
-        for path in sorted(self.paths, key=len, reverse=True):
+        reservation_books = {path for path in self.paths
+                             if path.startswith('/var/lib/tunnelpannel-engine-reservations/')}
+        for path in sorted(self.paths - reservation_books, key=len, reverse=True):
             value = shlex.quote(path)
             r.run(f"rm -rf -- {value}", root=True)
             r.run(f"test ! -e {value}", root=True)
@@ -107,3 +109,8 @@ class RemoteJournal:
                 raise RuntimeError('owned firewall rule survived cleanup')
         if self.units:
             r.run("systemctl daemon-reload", root=True)
+        # Do not make stopped-member allocations reusable after partial cleanup.
+        for path in reservation_books:
+            value = shlex.quote(path)
+            r.run(f'rm -f -- {value}', root=True)
+            r.run(f'test ! -e {value}', root=True)

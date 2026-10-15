@@ -46,3 +46,23 @@ def test_ssh_tun_id_excludes_both_stopped_tap_and_live_tun_on_either_peer():
     a, b = Remote(), Peer()
     a.reserved_interfaces = {'tap100000'}
     assert free_tun_id([a,b], 100000) == 100002
+
+
+def test_failed_cleanup_retains_book_until_every_owned_mutation_is_verified():
+    from orchestrator.remote_journal import RemoteJournal
+    class Peer:
+        def __init__(self): self.commands, self.fail = [], True
+        def run(self, command, **kwargs):
+            self.commands.append(command)
+            if command == 'owned-policy-cleanup' and self.fail: raise RuntimeError('policy remains')
+            return {'code':0, 'stdout':''}
+    remote = Peer()
+    journal = RemoteJournal(remote, 123, 1, 'a', lambda *args:None)
+    book = '/var/lib/tunnelpannel-engine-reservations/tp-123-1.json'
+    journal.paths = {book, '/var/lib/tunnelpannel/bench/owned-proof'}
+    journal.cleanup_commands = {'owned-policy-cleanup'}
+    with pytest.raises(RuntimeError, match='policy remains'): journal.cleanup()
+    assert not any(book in command for command in remote.commands)
+    remote.fail = False
+    journal.cleanup()
+    assert remote.commands[-2:] == ['rm -f -- ' + book, 'test ! -e ' + book]
