@@ -1,4 +1,5 @@
 import pytest
+from uuid import uuid4
 
 pytestmark = pytest.mark.unit_portable
 
@@ -9,7 +10,7 @@ def test_protocols_authenticate_both_sides_and_verify_owned_tls(method):
     client, server = paired_configs(method, '203.0.113.4', 24000, 22000,
         {'server': {'enabled': True, 'certificate_path': '/owned/cert', 'key_path': '/owned/key'},
          'client': {'enabled': True, 'server_name': 'owned-cover.test', 'certificate_path': '/owned/ca'}},
-        'random-password', 'f7df139d-e084-45b4-91ef-e701f238173f', 'ss-key', 25000)
+        'random-password', str(uuid4()), 'ss-key', 25000)
     inbound, outbound = server['inbounds'][0], client['outbounds'][0]
     assert inbound['type'] == outbound['type']
     assert inbound['users']
