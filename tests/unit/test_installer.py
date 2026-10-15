@@ -1,8 +1,4 @@
-"""Installer gate tests (P13 final gate items 4+5) — table-driven.
-
-Extracts the REAL case-pattern and version resolver from install.sh and
-exercises them in bash, so the tests can never drift from the script.
-"""
+"""Exercise the actual package-manager dispatch and version resolver in bash."""
 import pathlib
 import re
 import shlex
@@ -38,53 +34,39 @@ BASH = _bash()
 
 
 
-def _pattern() -> str:
-    head = re.escape('case "$OS_ID:${OS_VERSION_ID%%.*}" in')
-    m = re.search(head + NL + r"\s*([^\n)]+?)\)", SRC)
-    assert m, "OS gate pattern not found in install.sh"
-    return m.group(1).strip().rstrip(";").strip()
+class TestPackageManagerDispatch:
+    @pytest.mark.parametrize("manager", ["apt-get", "dnf", "yum", "zypper", "pacman", "apk"])
+    def test_selected_manager_installs_runtime_without_other_managers(self, manager):
+        start = SRC.index('if command -v apt-get')
+        end = SRC.index("\npython3 -c", start)
+        dispatch = SRC[start:end]
+        stubs = [
+            'command() { [[ "$1" == -v && "$2" == ' + shlex.quote(manager) + ' ]]; }',
+            'die() { echo "$*" >&2; exit 42; }',
+        ]
+        for tool in ["apt-get", "dnf", "yum", "zypper", "pacman", "apk"]:
+            stubs.append(tool + '() { echo "' + tool + ' $*" >&2; }')
+        out = subprocess.run([BASH, "-c", NL.join(stubs) + NL + dispatch],
+                             capture_output=True, text=True)
+        assert out.returncode == 0, out.stderr
+        assert manager + " " in out.stderr
+        assert "python" in out.stderr and "openssl" in out.stderr
+        for other in {"apt-get", "dnf", "yum", "zypper", "pacman", "apk"} - {manager}:
+            assert other + " " not in out.stderr
 
+    def test_unknown_manager_fails_before_source_or_credentials_are_changed(self):
+        start = SRC.index('if command -v apt-get')
+        dispatch = SRC[start:SRC.index("\npython3 -c", start)]
+        out = subprocess.run([BASH, "-c", 'command() { return 1; }; '
+                              'die() { echo "$*" >&2; exit 42; };' + NL + dispatch],
+                             capture_output=True, text=True)
+        assert out.returncode == 42
+        assert "unsupported distribution" in out.stderr
 
-def os_allowed(distro: str, version_id: str) -> bool:
-    code = NL.join([
-        "OS_ID=" + shlex.quote(distro),
-        "OS_VERSION_ID=" + shlex.quote(version_id),
-        'case "$OS_ID:${OS_VERSION_ID%%.*}" in',
-        "  " + _pattern() + ") echo accept;;",
-        "  *) echo reject;;",
-        "esac",
-    ])
-    out = subprocess.run([BASH, "-c", code], capture_output=True, text=True)
-    assert out.returncode == 0, out.stderr
-    return out.stdout.strip().splitlines()[-1] == "accept"
-
-
-class TestOSGateTable:
-    # (distro, version, expected) — exactly what CI/real testing covers
-    TABLE = [
-        ("ubuntu", "22.04", True),      # intended LTS
-        ("ubuntu", "24.04", True),      # CI-verified (ubuntu-latest = 24.04)
-        ("debian", "12", True),         # Debian stable — intended support
-        ("debian", "11", False),        # oldstable — NOT tested, rejected
-        ("debian", "13", False),        # not yet tested, rejected
-        ("ubuntu", "20.04", False),     # older LTS, not supported
-        ("ubuntu", "25.10", False),     # interim release, not supported
-        ("fedora", "40", False),
-        ("centos", "9", False),
-        ("alpine", "3.20", False),
-        ("arch", "rolling", False),
-    ]
-
-    @pytest.mark.parametrize("distro,version,expected", TABLE)
-    def test_os_pair(self, distro, version, expected):
-        assert os_allowed(distro, version) is expected
-
-    def test_gate_documents_the_supported_set_inline(self):
-        assert "exactly what CI/real testing covers" in SRC
-
-    def test_reject_message_lists_only_supported_targets(self):
-        assert "Ubuntu 22.04/24.04, Debian 12" in SRC
-        assert "Debian 11/12" not in SRC
+    def test_systemd_and_python_requirements_are_explicit(self):
+        assert '[[ -d /run/systemd/system ]]' in SRC
+        assert 'sys.version_info >= (3,10)' in SRC
+        assert "Other paths are not a test claim" in SRC
 
 
 class TestVersionResolution:

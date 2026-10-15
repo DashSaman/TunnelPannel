@@ -10,10 +10,12 @@ class RemoteJournal:
         self.namespace = f"{run_id}-"
         self.units, self.paths, self.interfaces, self.auth_markers = set(), set(), set(), set()
         self.cleanup_commands = set()
+        self.firewall_rules = set()
 
     def record(self, kind, key):
         bucket = {"service": self.units, "path": self.paths, "interface": self.interfaces,
-                  "auth_marker": self.auth_markers, "cleanup_command": self.cleanup_commands}[kind]
+                  "auth_marker": self.auth_markers, "cleanup_command": self.cleanup_commands,
+                  "firewall_rule": self.firewall_rules}[kind]
         if key in bucket:
             return
         self.persist(self.node_id, kind, key)
@@ -91,5 +93,12 @@ class RemoteJournal:
             r.run(f"sed -i '/{value}/d' /root/.ssh/authorized_keys", root=True)
         for command in self.cleanup_commands:
             r.run(command, root=True, timeout=20)
+        for key in self.firewall_rules:
+            tool, marker = key.split('|', 1)
+            if tool not in {'iptables', 'ip6tables'} or not re.fullmatch(r'tp-\d+-\d+-[0-9a-f]{12}', marker):
+                raise RuntimeError('invalid owned firewall identity')
+            current = r.run(tool + '-save -t filter', root=True, timeout=20)['stdout']
+            if marker in current:
+                raise RuntimeError('owned firewall rule survived cleanup')
         if self.units:
             r.run("systemctl daemon-reload", root=True)

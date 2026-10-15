@@ -61,6 +61,7 @@ def test_saved_port_survives_rerun_and_explicit_changes_are_persisted(tmp_path, 
     section = source.split('STAGE="config"', 1)[1].split('STAGE="python-env"', 1)[0]
     code = "\n".join(["set -Eeuo pipefail", "note() { :; }", "die() { exit 1; }",
                         "CONF_DIR=" + shlex.quote(tmp_path.as_posix()), "PORT=8080",
+                        "DATA_DIR=" + shlex.quote(tmp_path.as_posix()),
                         ("TUNNELPANNEL_PORT="+override) if override else "unset TUNNELPANNEL_PORT",
                         section, 'echo "$PORT"', '. "$CONF_DIR/tunnelpannel.env"',
                         'echo "$TUNNELPANNEL_PORT"'])
@@ -68,6 +69,7 @@ def test_saved_port_survives_rerun_and_explicit_changes_are_persisted(tmp_path, 
     assert result.returncode == 0, result.stderr
     assert result.stdout.splitlines()[-2:] == [expected, expected]
     assert "TP_SECRET_KEY=unchanged" in config.read_text(encoding="utf-8")
+    assert 'TP_LOCK_DIR=' + tmp_path.as_posix() + '/leases' in config.read_text(encoding='utf-8')
 
 
 def test_bootstrap_tokens_are_shown_before_a_later_install_failure(tmp_path):

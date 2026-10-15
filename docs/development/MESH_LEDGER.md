@@ -1,0 +1,31 @@
+# Mesh evidence ledger — development candidate
+
+Baseline: e73aa88352a1c783aebfcf8f3d615ad33293d409. Owner authorized implementation, disposable-pair testing and publication. Physical evidence is limited to two nearby Ubuntu24.04 amd64 machines, not Iran or intercontinental paths.
+
+## Architecture
+
+Customer databases and hashed keys are separate; SSH and runtime credentials are encrypted with the installation key. Background jobs capture workspace scope. Owner APIs provision, rotate/disable keys and change quotas. Disabled API access does not implicitly stop deployed routes. Physical-host leases serialize changes across customers. Prefix selection checks both address families and all nondefault route tables. Peer-scoped firewall rules have durable exact cleanup identities; unrelated rules and management routes remain intact.
+
+The catalog has108 identities:91 profiles and17 explicit compositions across21 technology families, plus6 aliases. Original82 registry entries are preserved and26 are added. All33 accessible repositories were reviewed. t4 is PBX, t6's WG/SIT concept already exists; private source and duplicates are excluded. See MESH-SOURCES.md and THIRD_PARTY_NOTICES.md. Research-only OpenConnect/SSTP/SoftEther and proprietary protocols are not selectable adapters.
+
+Campaigns measure directed all-pairs, retain progress/history/cancellation/restart cleanup, and recommend only receipt-qualified measurements. Default five prioritizes distinct outer carriers then quality; shortfalls remain explicit. Manual ordered and larger selections are quota bounded. Persistent groups provide independent authenticated loopback TCP SOCKS entries, warm members, actual nonce health probes, hysteresis/hold-down, manual pinning and credential-preserving reconciliation. Existing TCP sessions reconnect after failure; one destination's complete outage requires another destination. Full-IP VPN is not implied by SOCKS egress.
+
+## Verified
+
+- Latest Linux suites: **601 canonical +100 TunnelGuard +1 backend passed**. Canonical Ruff and mesh JavaScript syntax passed. Package-dispatch tests execute actual installer shell branches; other distributions remain unverified physically.
+- Core five both directions:10 NORMAL passes, campaign e9311efac4c54a23af9a9d8445edfc37. Earlier real five-member failover passed through one stable entry with proven destination exit IP, gateway restart and restored health; switches21.424/20.821/20.927/20.928seconds. Final gateway acceptance remains below.
+- Hedioum/WaterWall initial campaign c8171c22f513495abd08e9c5789f9da8 retained18 passes/2 H2 failures. Final WaterWall patch ca1-h2drain3 fixes discarded queued EOF data and bounded response/upload flow control without disabling CA/hostname verification. Eight wrong-CA checks,24 SHA256-verified64MiB downloads and24 uploads passed across4 profiles/both directions. H2 upload RSS about30MiB after the regression. Empty source/build cache compile passed in567.976seconds; earlier16second empty-install-cache run was incremental, not the cold-build proof. Failed attempts retained.
+- VMess TCP/WS TLS, AnyTLS and ShadowTLS3+SS2022:8 passes. Naive required a short-lived leaf certificate for Cronet and removal of an unsupported client option. Corrected Naive + SIT-over-WireGuard campaign3401792554c146a8853fc6faec414733 passed4 NORMAL candidates. Other10 new compositions passed both directions in750695aaf5fc41398c5808ed3ca5b241. Initial failures retained.
+- Owned IPv4/IPv6 firewall allow→stop/block→restart/allow passed, prior effective rules preserved,11 proof allocations released. Earlier raw iptables-save comparison failure retained; final comparison preserves effective rule order/policies and ignores counters/empty default ACCEPT tables.
+- Live workspace lifecycle passed: owner isolation, separate data, key rotation/revocation, quota changes and rejection before SSH, online snapshot restore with decryptable node credentials, tamper rejection and disabled-key rejection.
+- Browser: actual clean customer onboarding of both nodes, cleared passwords, login/history recovery, directed progress, English toggle and full campaign start. Dynamic translations corrected. Mobile header overflow found and CSS changed; final visual check pending because the browser runtime became unavailable.
+- SOCKS rejected method/password/command tests first reproduced erroneous relays; early return fixes them. Five real-socket/policy gateway tests passed and are included above.
+- Six legacy-benchmark boundary/admission regressions pass: ownership is verified before accessing the global runner registry; mesh jobs cannot be cancelled through the legacy endpoint; campaign children use parent cancellation; customer standalone/mesh jobs share admission and method quotas, with a child counting only in its parent's slot. These changes are in the checked source and await the candidate API restart after its running matrix finishes.
+
+## Remaining release gates
+
+- Customer campaign716cd920944b498f8761e95a1638a0ac:108 NORMAL methods in both directions,216 candidates, started through actual UI. Retain every outcome. Campaign PASS means usable routes, not all candidates passed.
+- Latest persistent bidirectional/concurrent groups; manual more-than-five selection; actual exits, reconciliation, pin/failover, API/worker restart and owned cleanup.
+- Final visual checks if runtime recovers, or explicit remaining limitation.
+- Actual installed backup/restore/upgrade/uninstall acceptance; preserve both installations' secrets and data. Never copy A's encrypted DB to B.
+- Sanitized receipts, bilingual final report, publication, pinned installer and archive. This is a development candidate until these gates finish.

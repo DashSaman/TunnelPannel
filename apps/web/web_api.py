@@ -27,6 +27,10 @@ def create_web_router(session_factory) -> APIRouter:
     def ranking_page():
         return HTMLResponse(HTML_PATH.read_text(encoding="utf-8"))
 
+    @router.get('/mesh', response_class=HTMLResponse)
+    def mesh_page():
+        return HTMLResponse(HTML_PATH.with_name('mesh.html').read_text(encoding='utf-8'))
+
     @router.get("/api/nodes")
     def nodes():
         with session_factory() as session:

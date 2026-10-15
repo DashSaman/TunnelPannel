@@ -2,7 +2,9 @@
 
 [فارسی](README.fa.md) · [Real two-node report](docs/releases/v0.9.0-rc3/REAL_BENCHMARK.md)
 
-The canonical panel at `/ranking` runs **82 real tunnel methods between two registered Linux servers**: deployment, actual traffic, latency/loss, measured throughput, service restart/recovery, ownership receipts and cleanup. The earlier 23 partial and 27 failed isolated lab methods were the remediation baseline; retained failed attempts and final real-node results are in the release report.
+The `/mesh` panel registers customer servers, tests every directed pair, recommends up to five measured methods per route, and deploys independent warm failover groups. The catalog contains **108 identities: 91 profiles and 17 supported compositions**, with six additional compatibility names. Customers can select their own order and more than five members within their workspace limit. [Full workflow and owner controls](docs/MESH.md).
+
+The original 82-method remediation of the earlier 23 partial / 27 failed methods remains documented in the [RC3 report](docs/releases/v0.9.0-rc3/REAL_BENCHMARK.md). Current implementation counts and real passing receipts are kept separate.
 
 ## Install
 
@@ -18,7 +20,7 @@ Real-node validation uses Ubuntu 24.04 amd64. Other environments need their own 
 ssh -L 8080:127.0.0.1:8080 root@YOUR_PANEL_SERVER
 ```
 
-Open `http://127.0.0.1:8080/ranking`. First installation displays role tokens once; store them privately. Reinstallation preserves their hashes.
+Open `http://127.0.0.1:8080/mesh` for the customer mesh workflow, or `/ranking` for a single pair. First installation displays role tokens once; store them privately. Reinstallation preserves their hashes.
 
 ## Benchmark workflow
 
@@ -34,7 +36,7 @@ To update credentials, save the same node name and host with new credentials, th
 
 L3 uses bidirectional inner-address ICMP and TCP iperf3. Proxy/forward methods verify a remote nonce and SHA256-checked files. UDP validates echoed datagrams. Composites must fail when the actual carrier is stopped and recover after dependency restoration. Native HajSaman FULL also verifies policy routing and SNAT against an owned remote namespace.
 
-CPU/RAM are whole-node measurements. HTTP timings include SSH execution overhead; compare like measurement bases. Two nearby servers establish behavior on these endpoints, not arbitrary NAT traversal, geographic latency, blocked networks or three-server multi-hop operation.
+CPU/RAM are whole-node measurements. HTTP latency uses the on-node curl timer and excludes SSH round-trip overhead; compare like measurement bases. Two nearby servers establish behavior on these endpoints, not arbitrary NAT traversal, geographic latency, blocked networks or three-server multi-hop operation.
 
 The canonical path is `apps/api`, `apps/web`, `core` and `orchestrator/pair_runtime.py`. Historical `deploy/`, the older single-executor SDK and legacy Docker dashboard remain for reference; their old feature claims and local smoke results are separate from this real-pair evidence.
 
@@ -51,6 +53,6 @@ Keep `/etc/tunnelpannel/tunnelpannel.env` separately and privately with backups:
 
 [Task ledger](docs/development/TASK_LEDGER.md) · [Catalog](docs/development/CATALOG_INVENTORY.md) · [Historical baseline](docs/releases/v0.9.0-rc2/REAL_VALIDATION.md)
 
-The historical executor catalog contains 77 methods; the canonical registry includes 82 profiles. For existing Gen1 Docker installations only, use scripts/export-production-state.sh and scripts/restore-production-state.sh with their documented encrypted PostgreSQL recovery workflow. The canonical installation uses the backup/restore commands above.
+The historical executor catalog contains 77 methods; the preserved base registry has 82 entries and the mesh extension adds 26. The combined catalog has 108 identities. For existing Gen1 Docker installations only, use scripts/export-production-state.sh and scripts/restore-production-state.sh with their documented encrypted PostgreSQL recovery workflow. The canonical installation uses the backup/restore commands above.
 
 ![Real panel benchmark](docs/shots/panel-real-benchmark.jpg)

@@ -26,11 +26,13 @@ class TestHealthAndSurface:
         c = TestClient(app)
         assert c.get("/health").json()["ok"] is True
 
-    def test_status_and_metrics(self, app):
+    def test_status_and_metrics(self, app, monkeypatch):
+        _set_tokens(monkeypatch, {"VIEWER": "status-viewer"})
         c = TestClient(app)
-        s = c.get("/api/status").json()
+        headers = {"Authorization": "Bearer status-viewer"}
+        s = c.get("/api/status", headers=headers).json()
         assert {"nodes", "failover_groups", "active_alerts"} <= set(s)
-        metrics = c.get("/metrics").text
+        metrics = c.get("/metrics", headers=headers).text
         assert "tunnelpannel_nodes_total" in metrics
 
     def test_ranking_and_topology_pages_served(self, app):

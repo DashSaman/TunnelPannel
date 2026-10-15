@@ -42,6 +42,21 @@ NODE = {"name": "test-host", "host": "192.0.2.8", "ssh_username": "root",
 ADMIN = {"Authorization": "Bearer admin-test"}
 
 
+def test_onboarding_pins_first_observed_key_and_never_echoes_password(nodes_api, monkeypatch):
+    client, factory = nodes_api
+    import orchestrator.remote_nodes as remote
+    monkeypatch.setattr(remote, 'observe_host_key', lambda host, port: 'b' * 64)
+    monkeypatch.setattr('apps.api.nodes_api.discover', lambda *args: {'os': 'linux', 'privileged': True})
+    body = {key: value for key, value in NODE.items() if key != 'host_key_fingerprint'}
+    response = client.post('/api/nodes/onboard', headers=ADMIN, json=body)
+    assert response.status_code == 201, response.text
+    assert response.json()['host_key_fingerprint'] == 'b' * 64
+    assert response.json()['trust_basis'] == 'first observed SSH host key'
+    assert NODE['password'] not in response.text
+    with factory() as session:
+        assert session.query(Node).one().host_key_fingerprint == 'b' * 64
+
+
 def test_node_registration_encrypts_and_never_returns_credentials(nodes_api):
     client, factory = nodes_api
     response = client.post("/api/nodes", headers=ADMIN, json=NODE)

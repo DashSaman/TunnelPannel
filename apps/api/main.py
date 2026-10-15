@@ -53,10 +53,52 @@ def demo_adapter_factory(cand):
 
 
 def create_app(factory=None) -> FastAPI:
-    global session_factory
-    session_factory = factory or _session_factory()
-    app = FastAPI(title="TunnelPannel", version="0.1.0")
+    import asyncio
+    from contextlib import asynccontextmanager, suppress
+    import logging
+    from pathlib import Path
+    from core.workspaces import ScopedFactory, install_workspace_boundary
+    from apps.api.workspaces_api import create_workspace_router
+    session_factory = ScopedFactory(factory or _session_factory())
+    # Compatibility for operator scripts; route closures retain this app's own
+    # factory even if another app instance is constructed in the same process.
+    globals()["session_factory"] = session_factory
+    def recover_mesh():
+        factories = [session_factory.default]
+        for workspace in registry.list():
+            if workspace['enabled']:
+                try:
+                    factories.append(registry._factory(workspace['id']))
+                except Exception as error:
+                    logging.getLogger(__name__).error('Workspace recovery unavailable: %s', type(error).__name__)
+        for scoped in factories:
+            app.state.mesh_campaigns.recover(scoped)
+            app.state.mesh_routes.recover(scoped)
+
+    @asynccontextmanager
+    async def lifespan(application):
+        await asyncio.to_thread(recover_mesh)
+        async def recovery_loop():
+            while True:
+                await asyncio.sleep(30)
+                try:
+                    await asyncio.to_thread(recover_mesh)
+                except Exception as error:
+                    logging.getLogger(__name__).error('Mesh recovery deferred: %s', type(error).__name__)
+        recovery = asyncio.create_task(recovery_loop())
+        try:
+            yield
+        finally:
+            recovery.cancel()
+            with suppress(asyncio.CancelledError):
+                await recovery
+
+    app = FastAPI(title="TunnelPannel", version="0.1.0", lifespan=lifespan)
     Base.metadata.create_all(session_factory.kw["bind"])  # dev convenience; installer runs alembic
+    directory = os.environ.get("TP_WORKSPACES_DIR") or str(
+        Path(session_factory.kw["bind"].url.database or ".").parent / "workspaces")
+    registry = install_workspace_boundary(app, session_factory, directory)
+    app.include_router(create_workspace_router(registry))
 
     from orchestrator.pair_runtime import prepare_benchmark
     app.include_router(create_nodes_router(session_factory))
@@ -64,6 +106,14 @@ def create_app(factory=None) -> FastAPI:
                                     prepare=prepare_benchmark(session_factory), secure=True))
     app.include_router(failover_router(session_factory))
     app.include_router(web_router(session_factory))
+    from apps.api.mesh_api import create_mesh_router
+    from orchestrator.mesh_service import CampaignService
+    app.state.mesh_campaigns = CampaignService()
+    app.include_router(create_mesh_router(session_factory, app.state.mesh_campaigns))
+    from apps.api.mesh_routes_api import create_mesh_routes_router
+    from orchestrator.mesh_routes import RouteService
+    app.state.mesh_routes = RouteService()
+    app.include_router(create_mesh_routes_router(session_factory, app.state.mesh_routes))
 
     @app.get("/health")
     def health():

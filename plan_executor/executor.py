@@ -497,7 +497,7 @@ def deploy_kernel(
         create_b = f"ip link add {interface_name} type ip6gretap local {source_b} remote {source_a}"
     elif method == "VXLAN":
         vni = int(config.get("vxlan_vni") or (10000 + run_item["id"]))
-        port = int(config.get("port") or 4789)
+        port = free_pair_port(remote_a, remote_b, 'udp', int(config.get("port") or 4789))
         if not 1 <= vni <= 16777215:
             raise RuntimeError("INVALID_VXLAN_VNI")
         create_a = (
@@ -533,6 +533,16 @@ def deploy_kernel(
     stop = f"ip link del {interface_name} 2>/dev/null || true"
 
     try:
+        if getattr(remote_a, 'journal', None) is not None:
+            from orchestrator.owned_firewall import allow_interface, allow_protocol, allow_port
+            outer_protocol = {'GRE': 47, 'GRETAP': 47, 'IP6GRE': 47, 'IP6GRETAP': 47, 'IPIP': 4, 'SIT_6IN4': 41}
+            for remote, outer_peer, inner_peer in ((remote_a, source_b, addr['address_b'].ip),
+                                                   (remote_b, source_a, addr['address_a'].ip)):
+                if method in outer_protocol:
+                    allow_protocol(remote, outer_peer, outer_protocol[method])
+                elif method == 'VXLAN':
+                    allow_port(remote, port, 'udp', peer=outer_peer)
+                allow_interface(remote, interface_name, str(inner_peer))
         create_unit(remote_a, name, start_a, stop)
         create_unit(remote_b, name, start_b, stop)
         remote_a.run(ping_command(addr["address_b"].ip), root=True, timeout=30)
@@ -599,7 +609,10 @@ def wg_keypair(remote: Remote):
     return lines[0], lines[1]
 
 
-def allow_udp(remote: Remote, port: int):
+def allow_udp(remote: Remote, port: int, peer=None):
+    if getattr(remote, 'journal', None) is not None:
+        from orchestrator.owned_firewall import allow_port
+        return allow_port(remote, port, 'udp', peer)
     remote.run(
         "if command -v ufw >/dev/null 2>&1 && ufw status | grep -q '^Status: active'; "
         f"then ufw allow {port}/udp comment 'TehranNetwork WireGuard'; fi",
@@ -653,13 +666,16 @@ def deploy_wireguard(
 
     allowed_a = f"{addr['address_a'].ip}/{'32' if addr['address_a'].version == 4 else '128'}"
     allowed_b = f"{addr['address_b'].ip}/{'32' if addr['address_b'].version == 4 else '128'}"
+    mtu = int(config.get('mtu') or 1420)
+    if not 1280 <= mtu <= 9000:
+        raise ValueError('invalid WireGuard MTU')
 
     config_a = (
         "[Interface]\n"
         f"Address = {addr['address_a']}\n"
         f"ListenPort = {port_a}\n"
         f"PrivateKey = {private_a}\n"
-        "MTU = 1420\n"
+        f"MTU = {mtu}\n"
         "SaveConfig = false\n\n"
         "[Peer]\n"
         f"PublicKey = {public_b}\n"
@@ -672,7 +688,7 @@ def deploy_wireguard(
         f"Address = {addr['address_b']}\n"
         f"ListenPort = {port_b}\n"
         f"PrivateKey = {private_b}\n"
-        "MTU = 1420\n"
+        f"MTU = {mtu}\n"
         "SaveConfig = false\n\n"
         "[Peer]\n"
         f"PublicKey = {public_a}\n"
@@ -697,8 +713,12 @@ def deploy_wireguard(
         )
 
     try:
-        allow_udp(remote_a, port_a)
-        allow_udp(remote_b, port_b)
+        allow_udp(remote_a, port_a, str(addr['source_b']))
+        allow_udp(remote_b, port_b, str(addr['source_a']))
+        if getattr(remote_a, 'journal', None) is not None:
+            from orchestrator.owned_firewall import allow_interface
+            allow_interface(remote_a, interface_name, str(addr['address_b'].ip))
+            allow_interface(remote_b, interface_name, str(addr['address_a'].ip))
         install_config(remote_a, config_a)
         install_config(remote_b, config_b)
         time.sleep(4)
@@ -819,6 +839,23 @@ def install_packages(
         timeout=600,
     )
 
+
+
+def free_pair_port(remote_a, remote_b, protocol, preferred):
+    from deploy.engine.mtf.portmgr import free_port as allocate, _parse_ss
+    remotes = (remote_a, remote_b)
+    sides, reserved = {}, set()
+    for index, remote in enumerate(remotes):
+        sides[str(index)] = {'listeners': _parse_ss(remote.run('ss -tulnH', root=True)['stdout'])}
+        reserved.update(getattr(remote, 'reserved_ports', set()))
+    port = allocate({'sides': sides}, protocol, list(sides), start=preferred, reserved=reserved)
+    if not port:
+        raise RuntimeError('NO_FREE_PAIR_PORT')
+    for remote in remotes:
+        if not hasattr(remote, 'reserved_ports'):
+            remote.reserved_ports = set()
+        remote.reserved_ports.add(port)
+    return port
 
 
 def free_port(remote: Remote, protocol: str, preferred: int) -> int:
@@ -1230,6 +1267,9 @@ install -m 0755 "$BIN" /usr/local/bin/gost
 
 
 def allow_firewall_port(remote: Remote, port: int, protocol: str):
+    if getattr(remote, 'journal', None) is not None:
+        from orchestrator.owned_firewall import allow_port
+        return allow_port(remote, port, protocol)
     remote.run(
         "if command -v ufw >/dev/null 2>&1 && ufw status | grep -q '^Status: active'; then "
         f"ufw allow {port}/{shlex.quote(protocol)} comment 'TehranNetwork tunnel'; fi",
@@ -1887,7 +1927,10 @@ def prepare_tls_pair(
     name: str,
     server_host: str,
     pfx_password: str,
+    leaf_days: int = 825,
 ) -> dict:
+    if not isinstance(leaf_days, int) or not 1 <= leaf_days <= 825:
+        raise ValueError('invalid owned TLS certificate lifetime')
     install_packages(server, ["openssl", "ca-certificates"])
     install_packages(client, ["ca-certificates"])
 
@@ -1936,7 +1979,7 @@ EXT
         -CAkey ca.key \
         -CAcreateserial \
         -out server.crt \
-        -days 825 \
+        -days {leaf_days} \
         -sha256 \
         -extfile server.ext
 
@@ -5418,7 +5461,12 @@ COMPOSITE_METHODS = {
     "SIT_OVER_SSH",
     "GRE_OVER_SSH",
     "GRE_OVER_WIREGUARD",
+    "IPIP_OVER_WIREGUARD", "IPIP_OVER_SSH", "IPIP_OVER_GOST",
+    "GRETAP_OVER_WIREGUARD", "GRETAP_OVER_SSH", "SIT_OVER_WIREGUARD",
+    "VXLAN_OVER_WIREGUARD", "VXLAN_OVER_SSH", "VXLAN_OVER_GOST",
+    "WIREGUARD_OVER_GOST", "WIREGUARD_OVER_SSH",
 }
+SUPPORTED |= COMPOSITE_METHODS
 
 WATERWALL_RELEASE_TAG = "v1.46.3"
 PAQET_RELEASE_TAG = "v1.0.0-alpha.20"
@@ -5986,7 +6034,15 @@ def merge_component_artifacts(method: str, components: list[dict], inner: dict) 
     return result
 
 
+def mesh_composite_recipe(method):
+    if method not in COMPOSITE_METHODS:
+        raise ValueError('unsupported reviewed composition')
+    overlay, carrier = method.split('_OVER_')
+    return ('SIT_6IN4' if overlay == 'SIT' else overlay), carrier, 1280
+
+
 def deploy_composite_method(method: str, run: dict, item: dict, config: dict, remote_a: Remote, remote_b: Remote, endpoint_a: dict, endpoint_b: dict) -> dict:
+    inner_method, carrier_method, inner_mtu = mesh_composite_recipe(method)
     carrier_addr=allocate_carrier_addressing(remote_a,remote_b,run,item)
     public_config=dict(config)
     public_config.setdefault("source_ip_a",endpoint_a["host"])
@@ -5997,17 +6053,24 @@ def deploy_composite_method(method: str, run: dict, item: dict, config: dict, re
         carrier_artifact=deploy_secure_gost_tun_carrier(run,item,public_config,remote_a,remote_b,endpoint_a,endpoint_b,carrier_addr)
     elif method.endswith("_OVER_SSH"):
         carrier_artifact=deploy_ssh_tunnel("SSH_TUN_L3",run,item,carrier_config,remote_a,remote_b,endpoint_a,endpoint_b)
-    elif method == "GRE_OVER_WIREGUARD":
+    elif carrier_method == "WIREGUARD":
         carrier_artifact=deploy_wireguard(run,item,carrier_config,remote_a,remote_b)
         iface=carrier_artifact["interface_name"]
         carrier_artifact.update({"services_a":[f"wg-quick@{iface}.service"],"services_b":[f"wg-quick@{iface}.service"],"interfaces_a":[iface],"interfaces_b":[iface],"files_a":[f"/etc/wireguard/{iface}.conf"],"files_b":[f"/etc/wireguard/{iface}.conf"]})
     else: raise RuntimeError("UNSUPPORTED_COMPOSITE_CARRIER")
-    inner_method="SIT_6IN4" if method.startswith("SIT_") else "GRETAP" if method.startswith("GRETAP_") else "GRE"
     inner_config=dict(config)
+    inner_config['mtu'] = min(int(config.get('mtu') or inner_mtu), inner_mtu)
     inner_config["source_ip_a"]=str(ipaddress.ip_interface(carrier_addr["tunnel_ip_a"]).ip)
     inner_config["source_ip_b"]=str(ipaddress.ip_interface(carrier_addr["tunnel_ip_b"]).ip)
     try:
-        inner=deploy_kernel(inner_method,run,item,inner_config,remote_a,remote_b)
+        if inner_method == 'WIREGUARD':
+            inner=deploy_wireguard(run,item,inner_config,remote_a,remote_b)
+            iface=inner['interface_name']
+            inner.update(services_a=[f'wg-quick@{iface}'], services_b=[f'wg-quick@{iface}'],
+                         interfaces_a=[iface], interfaces_b=[iface],
+                         files_a=[f'/etc/wireguard/{iface}.conf'], files_b=[f'/etc/wireguard/{iface}.conf'])
+        else:
+            inner=deploy_kernel(inner_method,run,item,inner_config,remote_a,remote_b)
     except Exception:
         rollback_artifact(remote_a,remote_b,carrier_artifact)
         raise
@@ -6024,6 +6087,7 @@ BENCHMARK_L3_METHODS = {
     "GRE_OVER_SSH",
     "GRE_OVER_WIREGUARD",
 }
+BENCHMARK_L3_METHODS |= COMPOSITE_METHODS
 
 PLATFORM_RULES = {
     "OPENVPN": {"os": {"linux"}},

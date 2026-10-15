@@ -20,12 +20,16 @@ from dataclasses import dataclass, field
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 REGISTRY_PATH = ROOT / "deploy" / "methods_registry.json"
+EXTENSIONS_PATH = ROOT / "deploy" / "mesh_methods.json"
 
 # legacy-prefix → engine. Order matters (longest first).
 _ENGINE_PREFIXES: list[tuple[str, str]] = [
     ("AUTOSSH_", "ssh"),
     ("GOST_", "gost"),
     ("VLESS_", "xray"),
+    ("VMESS_", "singbox"),
+    ("SHADOWTLS", "singbox"),
+    ("NAIVE_", "singbox"),
     ("CHISEL_", "chisel"),
     ("RATHOLE_", "rathole"),
     ("WSTUNNEL_", "wstunnel"),
@@ -58,6 +62,7 @@ _EXACT: dict[str, tuple[str, str]] = {
     "TROJAN_TLS": ("singbox", "trojan_tls"),
     "TUIC": ("singbox", "tuic"),
     "HYSTERIA2": ("singbox", "hysteria2"),
+    "ANYTLS": ("singbox", "anytls"),
 }
 
 # Gen3 bare adapter names → canonical registry IDs (alias resolution)
@@ -75,7 +80,7 @@ _OVER_RE = re.compile(r"^(?P<overlay>[A-Z0-9]+)_OVER_(?P<underlay>[A-Z0-9]+)$")
 # canonical overlay/underlay tokens → engine ids for composite templates
 _TOKEN_ENGINE = {
     "WIREGUARD": "wireguard", "GRE": "gre", "GRETAP": "gretap", "SIT": "sit",
-    "SSH": "ssh", "GOST": "gost", "FRP": "frp",
+    "SSH": "ssh", "GOST": "gost", "FRP": "frp", "IPIP": "ipip", "VXLAN": "vxlan",
 }
 
 
@@ -145,6 +150,8 @@ def load_catalog(path: pathlib.Path | None = None) -> Catalog:
     src = pathlib.Path(path or REGISTRY_PATH)
     reg = json.loads(src.read_text(encoding="utf-8"))
     methods = reg["methods"] if isinstance(reg, dict) else reg
+    if path is None and EXTENSIONS_PATH.exists():
+        methods = methods + json.loads(EXTENSIONS_PATH.read_text(encoding="utf-8"))["methods"]
 
     cat = Catalog()
     for m in methods:

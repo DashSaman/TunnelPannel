@@ -8,7 +8,7 @@ from fastapi.routing import APIRoute
 from pydantic import BaseModel, Field, model_validator
 
 from core.models import Node, NodeInventory, SecretReference
-from core.security import require_role
+from core.security import rate_limit, require_role
 from orchestrator.remote_nodes import discover, encrypt_credentials, node_access
 
 
@@ -54,6 +54,20 @@ class NodeRegistration(BaseModel):
         return self
 
 
+class NodeOnboarding(BaseModel):
+    name: str = Field(min_length=1, max_length=120)
+    host: str = Field(min_length=1, max_length=255)
+    ssh_port: int = Field(default=22, ge=1, le=65535)
+    ssh_username: str = "root"
+    password: str = ""
+    private_key: str = ""
+
+    @model_validator(mode="after")
+    def validate_access(self):
+        NodeRegistration(**self.model_dump(), host_key_fingerprint="0" * 64)
+        return self
+
+
 def public_node(node):
     return {"id": node.id, "name": node.name, "host": node.host,
             "ssh_port": node.ssh_port, "ssh_username": node.ssh_username,
@@ -70,6 +84,8 @@ def create_nodes_router(session_factory):
 
     @router.post("", status_code=201)
     def register(body: NodeRegistration, _=Depends(require_role("SUPER_ADMIN"))):
+        from core.workspaces import scope_limits, validate_customer_target
+        validate_customer_target(body.host)
         credentials = {"auth_method": "PASSWORD" if body.password else "KEY",
                        "secret": body.password or body.private_key, "sudo_mode": "NOPASSWD"}
         try:
@@ -77,6 +93,11 @@ def create_nodes_router(session_factory):
         except ValueError as e:
             raise HTTPException(503, str(e)) from None
         with session_factory() as session:
+            if session.bind.dialect.name == 'sqlite':
+                from sqlalchemy import text
+                session.execute(text('BEGIN IMMEDIATE'))
+            if session.query(Node).count() >= scope_limits()["max_nodes"]:
+                raise HTTPException(409, "workspace node limit reached")
             if session.query(Node).filter_by(name=body.name).first():
                 raise HTTPException(409, "node name already exists")
             secret = SecretReference(kind="ssh_password" if body.password else "ssh_key",
@@ -90,6 +111,33 @@ def create_nodes_router(session_factory):
             session.add(node)
             session.commit()
             return public_node(node)
+
+    @router.post("/onboard", status_code=201)
+    def onboard(body: NodeOnboarding, user=Depends(require_role("SUPER_ADMIN")),
+                _limit=Depends(rate_limit('ssh_onboarding', limit=12))):
+        from core.workspaces import scope_limits, validate_customer_target
+        from orchestrator.remote_nodes import observe_host_key
+        validate_customer_target(body.host)
+        with session_factory() as session:
+            if session.query(Node).count() >= scope_limits()['max_nodes']:
+                raise HTTPException(409, 'workspace node limit reached')
+        try:
+            fingerprint = observe_host_key(body.host, body.ssh_port)
+            registration = NodeRegistration(**body.model_dump(), host_key_fingerprint=fingerprint)
+            # Authenticate and discover before persisting an unusable node.
+            endpoint = {"id": "onboarding", "host": body.host, "port": body.ssh_port,
+                        "ssh_username": body.ssh_username, "host_key_fingerprint": fingerprint}
+            credentials = {"auth_method": "PASSWORD" if body.password else "KEY",
+                           "secret": body.password or body.private_key, "sudo_mode": "NOPASSWD"}
+            snapshot = discover(endpoint, credentials)
+        except Exception:
+            raise HTTPException(400, "SSH onboarding failed; verify address, credentials and root/sudo access") from None
+        result = register(registration, user)
+        with session_factory() as session:
+            snapshot["node_id"] = result["id"]
+            session.add(NodeInventory(node_id=result["id"], snapshot=snapshot, summary=snapshot))
+            session.commit()
+        return {**result, "trust_basis": "first observed SSH host key", "inventory": snapshot}
 
     @router.post("/{node_id}/discover")
     def inventory(node_id: str, _=Depends(require_role("SUPER_ADMIN", "OPERATOR"))):
