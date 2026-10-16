@@ -1,0 +1,8 @@
+{
+  "source_commit": "613bb32c93db40b09cb915070e5f7ff09ad3c81d",
+  "patchset": "ca1-h2drain3",
+  "kind": "cold-source-build",
+  "empty_source_and_build_cache": true,
+  "status": "PASS",
+  "elapsed_s": 567.976
+}

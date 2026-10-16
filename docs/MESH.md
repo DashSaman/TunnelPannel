@@ -2,6 +2,8 @@
 
 [فارسی](MESH-fa.md) · [Source inventory](MESH-SOURCES.md) · [Engine licenses](../THIRD_PARTY_NOTICES.md)
 
+[Complete Persian panel manual](PANEL-GUIDE-fa.md) · [Mesh validation](MESH-VALIDATION.md)
+
 Open `/mesh` after installing. The catalog contains 108 identities: 91 profiles and 17 supported compositions across 21 technology families. Six compatibility aliases are additional names, not additional methods. Availability and successful measurements depend on the actual endpoints. Historical 82-method results remain in the RC3 report; an implementation count is not a passing-test count.
 
 ## Use the panel
@@ -63,6 +65,8 @@ The canonical backup command includes an online SQLite copy of the owner databas
 sudo bash /opt/tunnelpannel/scripts/backup.sh /private/path/panel.tar.gz
 sudo env RESTORE_TUNNELPANNEL=YES_I_UNDERSTAND bash /opt/tunnelpannel/scripts/restore.sh /private/path/panel.tar.gz
 ```
+
+Restoring the registry also restores API-key hashes from the snapshot. Review access and rotate keys again if a key was revoked or replaced after that snapshot; a previously revoked key can otherwise become valid again.
 
 Restore validates the workspace snapshot before stopping the API and retains a safety copy of existing workspace storage. It replaces the database state. The installation uses systemd, Python 3.10+, and package paths for apt/dnf/yum/zypper/pacman/apk. Actual installation evidence is limited to the tested Ubuntu machines; those package paths do not establish equivalent results on every distribution. OpenRC-only hosts are rejected because the tunnel lifecycle uses systemd.
 
