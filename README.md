@@ -11,10 +11,10 @@ The original 82-method remediation of the earlier 23 partial / 27 failed methods
 ## Install
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/d757fa836db2ddf838bb1f6897fbb3e30cde3a9c/install.sh | sudo env TUNNELPANNEL_VERSION=d757fa836db2ddf838bb1f6897fbb3e30cde3a9c bash
 ```
 
-This installs the current main branch. For the exact delivered revision, use the pinned command in `install-one-line.txt`. Re-running preserves credentials and data. The installer creates the application account, installs dependencies, migrates the database, starts systemd and verifies HTTP health. It refuses to overwrite local source changes.
+This installs the tested commercial beta revision, also recorded in `install-one-line.txt`. Re-running preserves credentials and data. The installer creates the application account, installs dependencies, migrates the database, starts systemd and verifies HTTP health. It refuses to overwrite local source changes.
 
 Real-node validation uses Ubuntu 24.04 amd64. Other environments need their own validation. The API binds to **127.0.0.1:8080**. From your computer:
 
@@ -22,7 +22,7 @@ Real-node validation uses Ubuntu 24.04 amd64. Other environments need their own 
 ssh -L 8080:127.0.0.1:8080 root@YOUR_PANEL_SERVER
 ```
 
-Open `http://127.0.0.1:8080/mesh` for the customer mesh workflow, or `/ranking` for a single pair. First installation displays role tokens once; store them privately. Reinstallation preserves their hashes.
+Open `http://127.0.0.1:8080/portal` for owner and customer setup, `/mesh` for warm routes and `/ranking` for a single pair. First installation displays role tokens once; store them privately. Reinstallation preserves their hashes.
 
 ## Benchmark workflow
 
@@ -68,3 +68,7 @@ Starter/Pro/Team define bounded server, route, member and daily-test ceilings. T
 Dedicated per-node SSH key rotation verifies replacement access before removing old credentials. Optional unprivileged mTLS telemetry accepts typed reports only. Opt-in history retains bounded state and latency observations; support exports exclude raw configuration and credentials. Explicit expiry cleanup stops only the opted-in customer's owned routes. Existing installations and bearer API keys remain compatible.
 
 Billing is sandboxed: no payment is collected and checkout/prices are unconfigured. Public sessions require a configured HTTPS origin; SSH-forwarded loopback previews support local HTTP. Input bodies are capped at64KiB, signed events/telemetry at16KiB. See the [execution ledger](docs/development/COMMERCIAL_LEDGER.md) for installed acceptance status; presence of a feature is separate from a passing hardware result.
+
+[Commercial acceptance report](docs/COMMERCIAL-VALIDATION.md):70 installed checks,10 representative paired passes,12 preserved public exits, restart/queue, key/mTLS and expiry/backup acceptance. This remains an invitation-only TCP beta; payments and public HTTPS are unconfigured.
+
+![Live Persian portal](docs/evidence/commercial/screenshots/live-portal-fa.jpg)

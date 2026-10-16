@@ -59,18 +59,18 @@ Files: orchestrator/node_keys.py, core/agent_identity.py, apps/api/agent_api.py,
 Interfaces: provision_managed_key(factory,node_id), rotate/revoke exact owned key, issue/revoke_node_certificate(...), accept_telemetry(cert_identity,nonce,body). Agent accepts no arbitrary command payload.
 - [x] RED: exact foreign-key/collision/rollback preservation, cert wrong tenant/revoked/replay/malformed report; POSIX no-follow test added (runs on Linux).
 - [x] Implement owned bootstrap/key lifecycle and optional unprivileged typed telemetry services/install/revoke; real local mutual TLS verified.
-- [ ] GREEN: portable checkpoint665 PASS/22 Windows skips, lint PASS; actual pair key/TLS/restart/revoke/cleanup remains Task7. Commit and ledger checkpoint only.
+- [x] GREEN: actual pair key lifecycle/rollback and unprivileged cross-server mTLS/restart/revoke/cleanup PASS in Task7; final runtime Linux692+100+1 PASS.
 
 ### Task6: Guided customer/owner UI and product clarity
 Files: apps/web/portal.html, apps/web/portal.js, apps/web/portal.css, apps/web/web_api.py, apps/web/mesh.html, apps/web/ranking.html, apps/web/topology.html, tests/unit/test_portal_api.py.
 Interfaces: session login/invite/MFA/logout; owner invitation/plans/usage; customer wizard/estimate/objective/history/support with existing Mesh route controls. All pages can use a scoped cookie+CSRF; bearer login remains.
 - [x] RED: portal route/static assets/session integration and authorization outcomes at API boundaries (no source-string tests).
 - [x] Implement local assets, Persian/English RTL/LTR responsive controls, DOM text rendering and memory-only access, sandbox/TCP limits visible.
-- [ ] GREEN: local browser customer/owner/session continuity/plan/logout and390px verified; API gates PASS. Actual server onboarding/budget/export and final UI shots remain Task7. Local software checkpoint committed separately.
+- [x] GREEN: actual server onboarding/account/owner/budget/export PASS; real long fingerprint mobile overflow fixed and390px375/375 verified in FA/EN. Actual screenshots published with Task7 evidence.
 
 ### Task7: Two-server acceptance, docs and publication
 Files: scripts/commercial_acceptance.py, docs/COMMERCIAL-BETA.md, docs/COMMERCIAL-BETA-fa.md, docs/evidence/commercial/, README.md, README.fa.md, AGENTS.md, docs/development/COMMERCIAL_LEDGER.md, install-one-line.txt.
-- [ ] Run isolated actual beta-tenant lifecycle and representative paired data/restart checks, preserve existing7+5 groups; record every failure and fix.
-- [ ] Test installed upgrade/idempotence/backup/restore with new account/billing tables and both independent keys; full canonical/TunnelGuard/backend suites, Ruff/catalog/shell and CI.
-- [ ] Review full relevant diff, verify native Git blobs/commit/tree, publish without credentials, validate pinned installation and final UI; update bilingual docs/screenshots/report with honest scope.
-- [ ] Report only verified outcomes. If long-term monitoring is running, label elapsed time and remaining duration explicitly.
+- [x] Isolated actual lifecycle/paired receipts/crash/queue/expiry/keys/mTLS PASS. Preserved original7+5 and12 public exits. Harness and mobile failures/fixes recorded in ledger/report.
+- [x] Both-node installed upgrade/idempotence/backup-mutate-restore and independent identities PASS. Final runtime CI692+100+1 eachPython, installer/security/lint PASS; fresh Windows counts in report.
+- [x] Reviewed relevant source/docs/evidence; native runtime blob/tree/lease verified, final documentation tree published separately without credentials. Pinned installed d757fa8; bilingual guides/reports and actual screenshots complete. Main/PR metadata gate recorded.
+- [x] Snapshot858.1s/28samples/6transitions explicitly labelled;7days retention is not an elapsed SLA test. Public HTTPS/payment/real Iran/multi-country/scale/long soak remain external prerequisites.

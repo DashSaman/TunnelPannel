@@ -1,8 +1,10 @@
 # Mesh release validation — 2026-10-16
 
+> Historical transport release report. The current installed commercial runtime and installer pin are documented in [Commercial acceptance](COMMERCIAL-VALIDATION.md).
+
 [فارسی](MESH-VALIDATION-fa.md) · [Panel manual](PANEL-GUIDE-fa.md) · [Workflow/API](MESH.md) · [Public evidence index](evidence/mesh/INDEX.md)
 
-The delivered functional revision is `a115027e357f5ea5ce279445e40a678a06949c5b`. Both disposable Ubuntu 24.04.4 amd64 servers passed installation acceptance at that revision. The one-line installer is [pinned to this tested code](../install-one-line.txt). Documentation-only publication commits can follow it without changing the installed runtime.
+This historical transport release used `a115027e357f5ea5ce279445e40a678a06949c5b`. Both disposable Ubuntu 24.04.4 amd64 servers passed installation acceptance at that revision. The [current installer](../install-one-line.txt) now pins the later commercial beta described above; the transport evidence below retains its original revisions.
 
 Physical scope: two nearby Hetzner HEL1 machines, labelled A and B in the matrix. These results do not establish Iran connectivity, intercontinental performance, arbitrary NAT traversal, a three-server physical path, every Linux distribution, or production SaaS/payment readiness.
 

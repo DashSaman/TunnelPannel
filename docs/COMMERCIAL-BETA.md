@@ -77,3 +77,7 @@ The installer uses systemd DynamicUser, read-only system protection and LoadCred
 ## Validation boundaries
 
 See the commercial acceptance report and the earlier [mesh report](MESH-VALIDATION.md) for exact evidence. Two nearby test hosts cannot establish Iran access, multi-country failure domains, many-customer capacity, a seven-day SLA, payment settlement or a universal throughput improvement. Public commercial launch needs the corresponding real pilot and provider/domain configuration.
+
+## Installed acceptance
+
+[Two-server report, exact values, screenshots and boundaries](COMMERCIAL-VALIDATION.md). The pinned command is in `install-one-line.txt`.

@@ -1,0 +1,41 @@
+{
+  "runtime": "d757fa836db2ddf838bb1f6897fbb3e30cde3a9c",
+  "functional_acceptance": "284adda64cce51ab6acc71cc25efbd02cbe7fa58",
+  "runtime_delta": [
+    "apps/web/portal.css: wrap long fingerprints",
+    "scripts/commercial_acceptance.py: opt-in QA harness"
+  ],
+  "linux_python_311": {
+    "canonical": 692,
+    "tunnelguard": 100,
+    "backend": 1
+  },
+  "linux_python_312": {
+    "canonical": 692,
+    "tunnelguard": 100,
+    "backend": 1
+  },
+  "windows_python_312": {
+    "canonical_pass": 670,
+    "canonical_platform_skips": 22,
+    "tunnelguard_pass": 89,
+    "tunnelguard_platform_skips": 11,
+    "backend_pass": 1
+  },
+  "ruff": "PASS",
+  "catalog_and_manifest_invariants": "PASS",
+  "bash_syntax": "PASS",
+  "shellcheck": "PASS",
+  "linux_fresh_idempotence_restore_safe_uninstall": "PASS",
+  "security_run": 38963184676,
+  "portable_run": 38963184697,
+  "mobile": {
+    "viewport_width": 390,
+    "client_width": 375,
+    "content_width": 375,
+    "languages": [
+      "fa",
+      "en"
+    ]
+  }
+}

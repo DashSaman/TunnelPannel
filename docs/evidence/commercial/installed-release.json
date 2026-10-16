@@ -1,0 +1,18 @@
+{
+  "peer": {
+    "commit": "d757fa836db2ddf838bb1f6897fbb3e30cde3a9c",
+    "service": "active",
+    "health": {
+      "ok": true
+    },
+    "identity_preserved": true
+  },
+  "controller": {
+    "commit": "d757fa836db2ddf838bb1f6897fbb3e30cde3a9c",
+    "service": "active",
+    "health": {
+      "ok": true
+    },
+    "identity_preserved": true
+  }
+}
