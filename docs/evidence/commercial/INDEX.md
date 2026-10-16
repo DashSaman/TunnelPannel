@@ -11,3 +11,5 @@ Runtime `d757fa836db2ddf838bb1f6897fbb3e30cde3a9c`. Collected `2026-10-16T20:40:
 - [installed-release.json](installed-release.json)
 - [verification.json](verification.json)
 - [representative-metrics.csv](representative-metrics.csv)
+
+- [Actual live original-group history screenshot](screenshots/live-operations-fa.jpg)

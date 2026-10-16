@@ -66,8 +66,10 @@ curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/d757fa836db2
 
 دامنه و HTTPS مورد اعتماد، درگاه و checkout واقعی، آزمایش ایران و چند کشور، آزمون طولانی‌تر و بار چندمشتری به اطلاعات یا زمان جدا نیاز دارند. قیمت و checkout تنظیم نشده و هیچ پولی دریافت نشده است. SMTP و اعلان بیرونی هم تنظیم نشده‌اند. این نسخه برای بتای دعوتی آماده شده و هنوز سرویس عمومی پولی با SLA تأییدشده نیست.
 
-کد و شواهد در [شاخه PR2](https://github.com/DashSaman/TunnelPannel/pull/2) منتشر می‌شوند؛ دستور ثابت مستقل از merge شدن main کار می‌کند. محدودیت تأیید ابزار گیت‌هاب برای مشخصات PR/main دور زده نشده است.
+کد و شواهد در [شاخه PR2](https://github.com/DashSaman/TunnelPannel/pull/2) منتشر می‌شوند؛ دستور ثابت مستقل از merge شدن main کار می‌کند. عنوان و توضیحات PR با ابزار اصلی به‌روز شده‌اند؛ ادغام main برای بازبینی صاحب پروژه باقی مانده و شاخه و ورک‌تری حفظ شده‌اند.
 
 ![پنل زنده فارسی](evidence/commercial/screenshots/live-portal-fa.jpg)
 
 [انگلیسی](evidence/commercial/screenshots/live-portal-en.jpg) · [موبایل فارسی](evidence/commercial/screenshots/live-mobile-fa.jpg) · [موبایل انگلیسی](evidence/commercial/screenshots/live-mobile-en.jpg) · [نشست مدیر اصلی](evidence/commercial/screenshots/live-owner-fa.jpg)
+
+[تاریخچه مشاهده‌شده گروه‌های اصلی۷+۵](evidence/commercial/screenshots/live-operations-fa.jpg).

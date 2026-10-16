@@ -66,8 +66,10 @@ The workflow is owner workspace→invite→sandbox activation→customer SSH onb
 
 Public domain/trusted HTTPS, actual payment checkout/provider callbacks, real Iran and multi-country pilots, longer soak and many-customer load testing need inputs/time outside this two-host acceptance. Prices and checkout are unconfigured; no payment was collected. SMTP and external notifications are unconfigured. Do not present this closed beta as a paid public SLA service yet.
 
-Code and evidence are on the existing [PR2 branch](https://github.com/DashSaman/TunnelPannel/pull/2); the immutable installer works independently of a main merge. Main/PR metadata were not forced around a native connector approval gate.
+Code and evidence are on the existing [PR2 branch](https://github.com/DashSaman/TunnelPannel/pull/2); the immutable installer works independently of a main merge. The native PR title and description were refreshed. Main remains unmerged and the working branch is preserved for review.
 
 ![Live Persian portal](evidence/commercial/screenshots/live-portal-fa.jpg)
 
 [English view](evidence/commercial/screenshots/live-portal-en.jpg) · [Persian mobile](evidence/commercial/screenshots/live-mobile-fa.jpg) · [English mobile](evidence/commercial/screenshots/live-mobile-en.jpg) · [Owner session](evidence/commercial/screenshots/live-owner-fa.jpg)
+
+[Live observed history of the original7+5 groups](evidence/commercial/screenshots/live-operations-fa.jpg).
