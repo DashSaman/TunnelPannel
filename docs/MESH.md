@@ -21,7 +21,13 @@ This shares separate TCP connections. A single TCP stream is not striped or bond
 
 Managed hosts retain root-owned reservation books in `/var/lib/tunnelpannel-engine-reservations`. Ports, inner prefixes, SSH interfaces and XFRM/VTI identifiers remain reserved while a warm member is stopped. The deployment journal removes its book during owned cleanup. Corrupt or unsafe books block new allocations. Physical-host leases coordinate customer workspaces in one panel installation; independent panel installations must not concurrently manage the same host.
 
+When logical groups use keyless GRE, IP6GRE, IPIP or SIT between the same outer endpoints, they share one owned kernel carrier. Each member retains its own inner address, peer route, service and durable reference. Host-side locking serializes starts/stops, and only the last reference removes the carrier. Foreign matching interfaces are rejected before mutation. L2 GRE uses separately reserved keys. This follows Linux's [outer-endpoint/key tunnel lookup](https://github.com/torvalds/linux/blob/master/net/ipv4/ip_tunnel.c); creating differently named keyless interfaces does not establish separate receive paths. Shared carriers are not additional physical failure domains.
+
 ![Customer onboarding](shots/mesh-customer-onboarding.jpg)
+
+![Customer panel at390×844](shots/mesh-customer-mobile.jpg)
+
+Protection depends on the selected protocol. GRE, IPIP, SIT and VXLAN add encapsulation without encryption. Use WireGuard, an authenticated TLS profile or a supported encrypted composition when confidentiality is required. Quality rankings measure connectivity and performance; they do not assign an encryption level.
 
 ## Interpreting metrics
 

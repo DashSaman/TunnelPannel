@@ -25,10 +25,11 @@ def deploy_hajsaman(method, run, item, config, a, b, endpoint_a, endpoint_b, jou
     sit = bodies.deploy_kernel('SIT_6IN4', run, {'id': item['id'] * 100 + 31}, sit_cfg, a, b)
     for side in ('a', 'b'):
         sit['services_' + side] = [sit['systemd_unit']]
-        sit['interfaces_' + side] = [sit['interface_name']]
+        sit['interfaces_' + side] = [] if sit.get('shared_kernel') else [sit['interface_name']]
     sit['mtu'] = 1480
-    for remote in (a, b):
-        remote.run(f"ip link set {sit['interface_name']} mtu 1480", root=True)
+    if not sit.get('shared_kernel'):
+        for remote in (a, b):
+            remote.run(f"ip link set {sit['interface_name']} mtu 1480", root=True)
     if method == 'HAJSAMAN_SIT':
         return {**sit, 'method': method, 'stack': ['sit']}
     wg_cfg = {**config, 'source_ip_a': str(ipaddress.ip_interface(sit_cfg['tunnel_ip_a']).ip),

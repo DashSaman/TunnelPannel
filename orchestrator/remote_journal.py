@@ -11,11 +11,12 @@ class RemoteJournal:
         self.units, self.paths, self.interfaces, self.auth_markers = set(), set(), set(), set()
         self.cleanup_commands = set()
         self.firewall_rules = set()
+        self.shared_kernel_refs = set()
 
     def record(self, kind, key):
         bucket = {"service": self.units, "path": self.paths, "interface": self.interfaces,
                   "auth_marker": self.auth_markers, "cleanup_command": self.cleanup_commands,
-                  "firewall_rule": self.firewall_rules}[kind]
+                  "firewall_rule": self.firewall_rules, 'shared_kernel_ref':self.shared_kernel_refs}[kind]
         if key in bucket:
             return
         self.persist(self.node_id, kind, key)
@@ -84,6 +85,9 @@ class RemoteJournal:
                   f"rm -f /etc/systemd/system/{unit}", root=True, timeout=25)
             if r.run(f"systemctl is-active --quiet {unit}", check=False)["code"] == 0:
                 raise RuntimeError("owned service survived cleanup: " + name)
+        from engines.shared_kernel import remote_script
+        for owner in self.shared_kernel_refs:
+            r.run(remote_script('detach',owner),root=True,timeout=30)
         for name in self.interfaces:
             value = shlex.quote(name)
             r.run(f"ip link del {value} 2>/dev/null || true", root=True)

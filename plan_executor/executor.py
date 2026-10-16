@@ -449,6 +449,10 @@ def deploy_kernel(
     ):
         raise RuntimeError("SIT_REQUIRES_INNER_IPV6")
 
+    from engines.shared_kernel import METHODS as shared_methods, deploy as deploy_shared
+    if method in shared_methods and all(getattr(remote,'journal',None) is not None for remote in (remote_a,remote_b)):
+        return deploy_shared(method,run,run_item,config,remote_a,remote_b,addr)
+
     prefixes = {
         "GRE": "ngr",
         "GRETAP": "ngt",
@@ -511,6 +515,11 @@ def deploy_kernel(
     else:
         raise RuntimeError("UNSUPPORTED_KERNEL_METHOD")
 
+    gre_key = None
+    if method in {'GRETAP','IP6GRETAP'} and all(getattr(remote,'journal',None) for remote in (remote_a,remote_b)):
+        gre_key = free_xfrm_identifiers((remote_a,remote_b),run['id'],run_item['id'],method)[0]
+        create_a += f' key {gre_key}'
+        create_b += f' key {gre_key}'
     mtu = int(config.get("mtu") or (1360 if method == "SIT_6IN4" else 1400))
     start_a = "; ".join(
         [
@@ -564,6 +573,7 @@ def deploy_kernel(
         "mtu": mtu,
         "vxlan_vni": vni,
         "vxlan_port": port,
+        'gre_key': gre_key,
     }
 
 
@@ -5318,6 +5328,12 @@ def register_artifact_guardian(
     }
 
 def rollback_artifact(remote_a: Remote, remote_b: Remote, artifact: dict):
+    if artifact.get('shared_kernel') and not artifact.get('components'):
+        from engines.shared_kernel import remote_script
+        for remote in (remote_a,remote_b):
+            remove_services(remote,[artifact['systemd_unit']])
+            remote.run(remote_script('detach',artifact['shared_kernel_owner']),root=True)
+        return
     resilience = artifact.get("resilience") or {}
 
     for remote, side in (
@@ -6048,14 +6064,17 @@ def merge_component_artifacts(method: str, components: list[dict], inner: dict) 
             values.extend(list(art.get(key) or []))
         result[key]=list(dict.fromkeys(str(v) for v in values if v))
     if inner.get("systemd_unit"):
-        result["services_a"].append(inner["systemd_unit"]); result["services_b"].append(inner["systemd_unit"])
-    if inner.get("interface_name"):
+        for side in ('a','b'):
+            if inner['systemd_unit'] not in result['services_'+side]:
+                result['services_'+side].append(inner['systemd_unit'])
+    if inner.get("interface_name") and not inner.get('shared_kernel'):
         result["interfaces_a"].append(inner["interface_name"]); result["interfaces_b"].append(inner["interface_name"])
     for side in ("a","b"):
         for field in ("authorized_marker","authorized_user"):
             key=f"{field}_{side}"
             for art in components:
                 if art.get(key): result[key]=art[key]
+    result['shared_kernel']=False
     return result
 
 

@@ -30,7 +30,8 @@ def reconcile_benchmark(factory, job_id):
                     journal = RemoteJournal(remote, 0, 0, endpoint['id'], lambda *args: None)
                     buckets = {"service": journal.units, "path": journal.paths,
                                "interface": journal.interfaces, "auth_marker": journal.auth_markers,
-                               "cleanup_command": journal.cleanup_commands, "firewall_rule": journal.firewall_rules}
+                               "cleanup_command": journal.cleanup_commands, "firewall_rule": journal.firewall_rules,
+                               'shared_kernel_ref':journal.shared_kernel_refs}
                     for row in resources:
                         if row.node_id == endpoint['id'] and row.kind in buckets:
                             buckets[row.kind].add(row.key)
