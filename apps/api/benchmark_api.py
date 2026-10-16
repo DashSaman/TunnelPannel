@@ -15,7 +15,7 @@ from __future__ import annotations
 import threading
 
 from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from core.models import BenchmarkReceipt, BenchmarkSample, Job
 from core.security import require_role
@@ -27,7 +27,7 @@ class StartRequest(BaseModel):
     node_a: dict            # NodeCaps-like snapshot (binaries, modules, ...)
     node_b: dict
     profile: str = "NORMAL"
-    max_parallel: int = 2
+    max_parallel: int = Field(default=2, ge=1, le=2)
     methods: list[str] | None = None
 
 
@@ -37,6 +37,9 @@ def create_router(session_factory, caps_from_dict, adapter_factory,
     router = APIRouter(prefix="/benchmarks", tags=["benchmark"])
     runners: dict[str, BenchmarkRunner] = {}
     lock = threading.Lock()
+    from orchestrator.standalone_benchmarks import StandaloneBenchmarkService
+    service = StandaloneBenchmarkService(lambda: BenchmarkRunner) if secure else None
+    router.service = service
 
     mutations = [Depends(require_role("SUPER_ADMIN", "OPERATOR"))] if secure else []
     reads = [Depends(require_role("SUPER_ADMIN", "OPERATOR", "VIEWER"))] if secure else []
@@ -46,9 +49,11 @@ def create_router(session_factory, caps_from_dict, adapter_factory,
         from core.catalog import CATALOG
         from orchestrator.mesh_campaign import capability, failure_domain
         from orchestrator.mesh_persistent import egress_supported
+        from orchestrator.mesh_quality import encryption
         return [{"id": i.legacy_id, "engine": i.engine, "profile": i.profile,
                  "composite": i.is_composite, "capability": capability(i.legacy_id),
                  "failure_domain": failure_domain(i.legacy_id),
+                 'encryption': encryption(i.legacy_id),
                  "persistent_tcp_egress": egress_supported(i.legacy_id)} for i in CATALOG.identities.values()]
 
     @router.get("", dependencies=reads)
@@ -81,6 +86,8 @@ def create_router(session_factory, caps_from_dict, adapter_factory,
             factory = adapter_factory
         if customer and len(candidates) > limits['max_campaign_methods']:
             raise HTTPException(400, 'workspace method limit exceeded')
+        if service:
+            return service.create(session_factory, req, caps_a, caps_b, candidates, limits)
         with session_factory() as session:
             if customer:
                 if session.bind.dialect.name == 'sqlite':
@@ -147,6 +154,8 @@ def create_router(session_factory, caps_from_dict, adapter_factory,
 
     @router.post("/{job_id}/cancel", dependencies=mutations)
     def cancel(job_id: str):
+        if service:
+            return service.cancel(session_factory, job_id)
         # Ownership must precede access to the process-wide runner registry.
         with session_factory() as session:
             job = _job(job_id, session)

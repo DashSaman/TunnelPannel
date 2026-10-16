@@ -22,7 +22,7 @@ jobs:
           pip install -r requirements-dev.txt
           pip install -r backend/requirements.txt   # root tests import backend.app
       - name: Ruff lint (canonical packages)
-        run: ruff check core engines orchestrator apps tests migrations scripts --select E9,F63,F7,F82,F401
+        run: ruff check core engines orchestrator apps tests migrations scripts agent --select E9,F63,F7,F82,F401
       - name: Canonical count + manifest invariants
         run: |
           python scripts/generate_catalog_inventory.py

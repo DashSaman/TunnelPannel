@@ -60,6 +60,7 @@ button:disabled{opacity:.5;cursor:default}#node-list{overflow-wrap:anywhere}.tab
 <h2>Shared failure domains</h2>
 <div id="shared" class="warn" style="display:none"></div>
 </main>
+<script src="/assets/auth.js"></script>
 <script>
 "use strict";
 let topo = {edges: []};
@@ -69,7 +70,7 @@ const field = id => document.getElementById(id);
 function message(value){field('feedback').textContent=value;}
 async function api(path,options={}){
   const epoch=authEpoch;
-  const response=await fetch(path,{...options,headers:{...options.headers,Authorization:'Bearer '+apiKey}});
+  const response=await TPAuth.request(path,{...options,headers:{...options.headers,...(apiKey&&apiKey!=='@cookie'?{Authorization:'Bearer '+apiKey}:{})}});
   const value=await response.json();
   if(epoch!==authEpoch)throw new Error('Session changed; response ignored.');
   if(!response.ok)throw new Error(typeof value.detail==='string'?value.detail:'Request failed: '+response.status);
@@ -159,7 +160,7 @@ function clearView(){
   field('logout').disabled=field('add').disabled=field('search').disabled=true;
 }
 field('authentication').onsubmit=async ev=>{
-  ev.preventDefault();authEpoch++;apiKey=field('access-key').value.trim();field('access-key').value='';clearView();
+  ev.preventDefault();authEpoch++;apiKey=field('access-key').value.trim()||(TPAuth.principal?'@cookie':'');field('access-key').value='';clearView();
   const epoch=authEpoch;
   await action(field('connect'),async()=>{
     try{await refresh();message('Connected / متصل');field('logout').disabled=false;
@@ -168,10 +169,13 @@ field('authentication').onsubmit=async ev=>{
   });
   if(epoch===authEpoch)field('connect').disabled=false;
 };
-field('logout').onclick=()=>{
+field('logout').onclick=async()=>{
+  if(apiKey==='@cookie')await TPAuth.logout();
   authEpoch++;apiKey='';clearView();field('connect').disabled=false;
   message('Disconnected / خارج شدید');
 };
+TPAuth.ready.then(()=>{if(TPAuth.principal)field('authentication').dispatchEvent(new Event('submit',{cancelable:true}))});
+addEventListener('pagehide',()=>{authEpoch++;apiKey='';clearView()});
 </script>
 </body>
 </html>

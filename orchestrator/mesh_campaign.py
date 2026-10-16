@@ -6,6 +6,7 @@ import math
 from fastapi import HTTPException
 
 from orchestrator.benchmarking.scoring import rank, score_sample
+from orchestrator.mesh_quality import OBJECTIVES, encryption
 
 
 def directed_routes(nodes):
@@ -68,7 +69,7 @@ def qualification(row):
         return "verified cleanup is required"
     for key in ("rtt_avg", "jitter", "loss_pct", "throughput_mbps", "reconnect_s"):
         value = m.get(key)
-        if not isinstance(value, (int, float)) or not math.isfinite(value) or value < 0:
+        if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value < 0:
             return "missing or invalid measured " + key
     if m["throughput_mbps"] <= 0 or m["loss_pct"] > 20:
         return "insufficient throughput or excessive request loss"
@@ -77,13 +78,17 @@ def qualification(row):
     return None
 
 
-def recommendations(rows, count=5, purpose="any"):
+def recommendations(rows, count=5, purpose="any", objective="balanced", encrypted_only=False):
     if not 1 <= count <= 1000:
         raise ValueError("recommendation count out of range")
+    if objective not in OBJECTIVES:
+        raise ValueError('unknown quality objective')
     eligible, excluded = [], []
     for row in rows:
         method = row["candidate"]
         why = qualification(row)
+        if not why and encrypted_only and encryption(method) != 'protocol_encrypted':
+            why = 'the template does not establish protocol encryption'
         if not why and purpose == 'tcp_egress':
             from orchestrator.mesh_persistent import egress_supported
             if not egress_supported(method):
@@ -93,7 +98,7 @@ def recommendations(rows, count=5, purpose="any"):
         if why:
             excluded.append({"candidate": method, "reason": why})
         else:
-            eligible.append(score_sample(method, row["metrics"], "PASS"))
+            eligible.append(score_sample(method, row["metrics"], "PASS", OBJECTIVES[objective]))
     ranked = rank(eligible)
     selected, seen, deferred = [], set(), []
     for item in ranked:
@@ -108,7 +113,9 @@ def recommendations(rows, count=5, purpose="any"):
             "shortfall": max(0, count - len(selected)), "excluded": excluded,
             "ranked": [{"candidate": r.candidate, "score": r.score,
                         "metrics": r.metrics, "failure_domain": failure_domain(r.candidate),
-                        "capability": capability(r.candidate)} for r in ranked],
+                        "capability": capability(r.candidate), 'reasons': r.reasons,
+                        'encryption': encryption(r.candidate)} for r in ranked],
+            'objective': objective, 'weights': OBJECTIVES[objective], 'encrypted_only': encrypted_only,
             "policy": "quality rank, distinct outer carriers first, then remaining quality rank",
             "endpoint_redundancy": False}
 

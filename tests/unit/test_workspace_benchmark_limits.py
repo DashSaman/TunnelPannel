@@ -129,3 +129,21 @@ def test_campaign_child_uses_parent_cancellation_and_only_one_admission_slot(pan
         assert client.post('/benchmarks', headers=customer, json=payload).status_code == 409
     finally:
         release.set()
+
+
+def test_legacy_queue_cannot_bypass_daily_budget_or_persist_untrusted_secrets(panel, monkeypatch):
+    client, _, factory, owner, customer, payload, _, _, _ = panel
+    monkeypatch.setattr('orchestrator.worker_slots.dispatch', lambda *args: False)
+    account = client.get('/api/workspaces', headers=owner).json()[0]
+    client.patch('/api/workspaces/'+account['id'], headers=owner,
+                 json={'limits': {'max_daily_candidate_units': 1, 'max_active_campaigns': 2}})
+    payload['node_a']['password'] = 'SECRET_CANARY_NOT_QUEUED'
+    first = client.post('/benchmarks', headers=customer, json=payload)
+    assert first.status_code == 200
+    with factory() as session:
+        job = session.get(Job, first.json()['job_id'])
+        assert job.state == 'QUEUED' and job.payload['candidate_units'] == 1
+        assert 'SECRET_CANARY' not in str(job.payload)
+    assert client.post('/benchmarks/'+first.json()['job_id']+'/cancel', headers=customer).status_code == 200
+    assert client.post('/benchmarks', headers=customer, json=payload).status_code == 429
+    assert client.post('/benchmarks', headers=customer, json={**payload, 'max_parallel': 5000}).status_code == 422

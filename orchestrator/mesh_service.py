@@ -9,12 +9,13 @@ from types import SimpleNamespace
 
 from fastapi import HTTPException
 
-from core.models import BenchmarkReceipt, BenchmarkSample, Job, Node, NodeInventory
+from core.models import BenchmarkReceipt, BenchmarkSample, Job
 from core.workspaces import active_test_count, freeze_factory
 from orchestrator.benchmarking import PROFILES
 from orchestrator.benchmarking.runner import BenchmarkRunner
 from orchestrator.host_lease import HostLease
-from orchestrator.mesh_campaign import directed_routes, recommendations
+from orchestrator.mesh_campaign import recommendations
+from orchestrator.campaign_budget import campaign_quote, reserve_fields
 
 TERMINAL = {"PASS", "FAILED", "CANCELLED", "TIMED_OUT", "INTERRUPTED"}
 
@@ -43,7 +44,8 @@ def campaign_view(session, job):
     for route in payload.get("routes", []):
         child = session.get(Job, route.get("job_id")) if route.get("job_id") else None
         rows = route_samples(session, route.get("job_id"))
-        rec = recommendations(rows, payload.get("recommend_count", 5), payload.get("purpose", "any"))
+        rec = recommendations(rows, payload.get("recommend_count", 5), payload.get("purpose", "any"),
+                              payload.get('objective', 'balanced'), payload.get('recommend_encrypted_only', False))
         routes.append({**route, "state": child.state if child else "QUEUED",
                        "progress": child.progress if child else 0,
                        "recommendation": rec, "results": rows,
@@ -51,6 +53,9 @@ def campaign_view(session, job):
     progress = sum(route['progress'] for route in routes) / len(routes) if routes else job.progress
     return {"id": job.id, "state": job.state, "progress": progress,
             "error": job.error, "profile": payload.get("profile"), "routes": routes,
+            'objective': payload.get('objective', 'balanced'),
+            'candidate_units': payload.get('candidate_units'), 'budget_day': payload.get('budget_day'),
+            'recommend_encrypted_only': payload.get('recommend_encrypted_only', False),
             "created_at": job.created_at, "finished_at": job.finished_at,
             "geography": "measured on the selected physical nodes; locations are operator labels"}
 
@@ -61,43 +66,33 @@ class CampaignService:
         self._threads = {}
         self._lock = threading.Lock()
 
+    def preview(self, factory, request, limits):
+        with factory() as session:
+            return campaign_quote(session, request, limits)[0]
+
     def create(self, factory, request, limits):
         factory = freeze_factory(factory)
-        try:
-            routes = directed_routes(request.nodes)
-        except ValueError as error:
-            raise HTTPException(400, str(error)) from None
-        if len(request.nodes) > limits["max_nodes"]:
-            raise HTTPException(400, "workspace node limit exceeded")
-        from core.catalog import CATALOG
-        methods = request.methods if request.methods is not None else list(CATALOG.identities)
-        if not methods or len(methods) != len(set(methods)) or not set(methods) <= set(CATALOG.identities):
-            raise HTTPException(400, "select unique known methods")
-        if len(methods) > limits["max_campaign_methods"] or request.recommend_count > limits["max_tunnels_per_route"]:
-            raise HTTPException(400, "workspace method limit exceeded")
         with factory() as session:
             # Serialize admission across threads/processes, not just this instance.
             if session.bind.dialect.name == "sqlite":
                 from sqlalchemy import text
                 session.execute(text("BEGIN IMMEDIATE"))
-            nodes = [session.get(Node, node) for node in request.nodes]
-            if any(node is None for node in nodes):
-                raise HTTPException(400, "all nodes must belong to this workspace")
-            fingerprints = [HostLease({'host': node.host, 'host_key_fingerprint': node.host_key_fingerprint}).key
-                            for node in nodes]
-            if len(set(fingerprints)) != len(nodes) or len({node.host for node in nodes}) != len(nodes):
-                raise HTTPException(400, "register distinct physical hosts, not duplicate aliases")
-            if any(not session.query(NodeInventory).filter_by(node_id=node.id).first() for node in nodes):
-                raise HTTPException(400, "discover every selected node before starting")
+            quote, methods = campaign_quote(session, request, limits)
+            if (getattr(request, 'estimate_fingerprint', None)
+                    and request.estimate_fingerprint != quote['fingerprint']):
+                raise HTTPException(409, 'estimate changed; preview and confirm the current workload')
+            reservation = reserve_fields(session, quote['candidate_units'], limits)
             active = active_test_count(session)
             if active >= limits["max_active_campaigns"]:
                 raise HTTPException(409, "workspace already has its allowed active campaigns")
             payload = {"nodes": request.nodes, "methods": methods, "profile": request.profile,
                        "recommend_count": request.recommend_count, "purpose": request.purpose,
-                       "routes": [{"id": uuid.uuid4().hex, "source": a, "destination": b,
-                                   "job_id": None} for a, b in routes]}
+                       **reservation, 'objective': getattr(request, 'objective', 'balanced'),
+                       'recommend_encrypted_only': getattr(request, 'recommend_encrypted_only', False),
+                       "routes": [{"id": uuid.uuid4().hex, **direction,
+                                   "job_id": None} for direction in quote['directions']]}
             job = Job(kind="mesh_campaign", state="QUEUED", payload=payload,
-                      timeout_s=len(routes) * len(methods) * PROFILES[request.profile].overall_timeout_s)
+                      timeout_s=quote['candidate_timeout_ceiling_s'])
             session.add(job)
             session.commit()
             job_id = job.id
@@ -105,6 +100,7 @@ class CampaignService:
         return job_id
 
     def kick(self, factory, job_id):
+        from orchestrator.worker_slots import dispatch
         factory = freeze_factory(factory)
         key = str(factory.kw["bind"].url) + ":" + job_id
         with self._lock:
@@ -116,9 +112,9 @@ class CampaignService:
                 finally:
                     with self._lock:
                         self._threads.pop(key, None)
-            thread = threading.Thread(target=work, daemon=True, name="mesh-" + job_id[:8])
-            self._threads[key] = thread
-            thread.start()
+            self._threads[key] = True
+            if not dispatch(work, 'mesh-' + job_id[:8]):
+                self._threads.pop(key, None)
 
     def run(self, factory, job_id):
         identity = hashlib.sha256((str(factory.kw["bind"].url) + job_id).encode()).hexdigest()

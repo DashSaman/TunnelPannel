@@ -72,8 +72,24 @@ def create_app(factory=None) -> FastAPI:
                 except Exception as error:
                     logging.getLogger(__name__).error('Workspace recovery unavailable: %s', type(error).__name__)
         for scoped in factories:
-            app.state.mesh_campaigns.recover(scoped)
-            app.state.mesh_routes.recover(scoped)
+            from orchestrator.node_keys import recover_managed_keys
+            try:
+                recover_managed_keys(scoped)
+                app.state.benchmarks.recover(scoped)
+                app.state.mesh_campaigns.recover(scoped)
+                app.state.mesh_routes.recover(scoped)
+                app.state.operations_monitor.tick(scoped)
+            except Exception as error:
+                logging.getLogger(__name__).error('Scoped recovery deferred: %s',type(error).__name__)
+        # Opt-in expiry cleanup remains scoped even for disabled workspaces.
+        from orchestrator.operations_monitor import expire_workspace_routes
+        for item in app.state.subscriptions.expiry_candidates():
+            try:
+                scoped = registry._factory(item['workspace_id'])
+                app.state.subscriptions.run_expiry_action(item['workspace_id'], item['revision'],
+                    lambda: expire_workspace_routes(scoped, app.state.mesh_routes))
+            except Exception as error:
+                logging.getLogger(__name__).error('Expiry cleanup deferred: %s', type(error).__name__)
 
     @asynccontextmanager
     async def lifespan(application):
@@ -98,12 +114,24 @@ def create_app(factory=None) -> FastAPI:
     directory = os.environ.get("TP_WORKSPACES_DIR") or str(
         Path(session_factory.kw["bind"].url.database or ".").parent / "workspaces")
     registry = install_workspace_boundary(app, session_factory, directory)
+    from apps.api.body_limit import BodyLimit
+    app.add_middleware(BodyLimit, max_bytes=65536)
     app.include_router(create_workspace_router(registry))
+    from apps.api.accounts_api import create_account_router
+    app.include_router(create_account_router(app.state.accounts))
+    from apps.api.billing_api import create_billing_router
+    app.include_router(create_billing_router(app.state.subscriptions))
 
     from orchestrator.pair_runtime import prepare_benchmark
     app.include_router(create_nodes_router(session_factory))
-    app.include_router(bench_router(session_factory, caps_from_dict, None,
-                                    prepare=prepare_benchmark(session_factory), secure=True))
+    from apps.api.agent_api import create_agent_router
+    from core.agent_identity import AgentIdentityStore
+    app.state.agent_identities=AgentIdentityStore(registry)
+    app.include_router(create_agent_router(session_factory,app.state.agent_identities))
+    benchmarks = bench_router(session_factory, caps_from_dict, None,
+                              prepare=prepare_benchmark(session_factory), secure=True)
+    app.state.benchmarks = benchmarks.service
+    app.include_router(benchmarks)
     app.include_router(failover_router(session_factory))
     app.include_router(web_router(session_factory))
     from apps.api.mesh_api import create_mesh_router
@@ -114,6 +142,10 @@ def create_app(factory=None) -> FastAPI:
     from orchestrator.mesh_routes import RouteService
     app.state.mesh_routes = RouteService()
     app.include_router(create_mesh_routes_router(session_factory, app.state.mesh_routes))
+    from apps.api.operations_api import create_operations_router
+    from orchestrator.operations_monitor import OperationsMonitor
+    app.state.operations_monitor = OperationsMonitor()
+    app.include_router(create_operations_router(session_factory))
 
     @app.get("/health")
     def health():

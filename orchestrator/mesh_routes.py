@@ -61,7 +61,7 @@ def observe_route(factory, route_id):
         worker = remote.run('systemctl show --property=MainPID --value ' +
                             shlex.quote(runtime['service'] + '.service'), root=True, check=False)
         pid_matches = str(state.get('worker_pid', '')) == worker['stdout'].strip() and worker['stdout'].strip() != '0'
-        return {**result, 'observed': pid_matches and time.time() - state.get('updated_at', 0) < 30, 'runtime': state,
+        return {**result, 'observed': pid_matches and 0 <= time.time() - state.get('updated_at', 0) < 30, 'runtime': state,
                 'listen_host': runtime['config']['listen_host'], 'listen_port': runtime['config']['listen_port']}
     except Exception:  # remote outage/authentication is an unavailable observation
         return {**result, 'observed': False, 'observation_error': 'gateway observation failed'}
@@ -102,7 +102,9 @@ class RouteService:
                 selected = route['selection']
             else:
                 selected = recommendations([r for r in samples if egress_supported(r['candidate'])],
-                    count=campaign.payload.get('recommend_count', 5))['selected']
+                    count=campaign.payload.get('recommend_count', 5),
+                    objective=campaign.payload.get('objective', 'balanced'),
+                    encrypted_only=campaign.payload.get('recommend_encrypted_only', False))['selected']
             methods = select_methods(samples, selected, limits['max_tunnels_per_route'])
             if not all(egress_supported(method) for method in methods):
                 raise HTTPException(400, 'selection contains a profile without persistent TCP egress support')

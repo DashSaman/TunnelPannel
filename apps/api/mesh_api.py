@@ -17,6 +17,10 @@ class CampaignRequest(BaseModel):
     methods: list[str] | None = None
     recommend_count: int = Field(default=5, ge=1, le=100)
     purpose: Literal["any", "ip", "socks", "tcp_forward", "udp_forward", "tcp_egress"] = "any"
+    directions: list[dict[str, str]] | None = Field(default=None, max_length=10000)
+    objective: Literal['balanced', 'latency', 'throughput', 'stability'] = 'balanced'
+    recommend_encrypted_only: bool = False
+    estimate_fingerprint: str | None = Field(default=None, pattern=r'^[0-9a-f]{64}$')
 
 
 class RouteSelection(BaseModel):
@@ -38,6 +42,10 @@ def create_mesh_router(factory, service):
         job_id = service.create(factory, body, scope_limits())
         return {"id": job_id, "state": "QUEUED"}
 
+    @router.post('/estimate')
+    def estimate(body: CampaignRequest):
+        return service.preview(factory, body, scope_limits())
+
     @router.get("/campaigns")
     def history():
         with factory() as session:
@@ -54,6 +62,9 @@ def create_mesh_router(factory, service):
         with factory() as session:
             job = campaign_job(session, campaign_id)
             job.cancel_requested = True
+            if job.state=='QUEUED':
+                import datetime as dt
+                job.state,job.finished_at='CANCELLED',dt.datetime.now(dt.timezone.utc)
             session.commit()
             return {"id": job.id, "state": job.state, "cancel_requested": True}
 

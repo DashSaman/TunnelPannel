@@ -58,3 +58,13 @@ Keep `/etc/tunnelpannel/tunnelpannel.env` separately and privately with backups:
 The historical executor catalog contains 77 methods; the preserved base registry has 82 entries and the mesh extension adds 26. The combined catalog has 108 identities. For existing Gen1 Docker installations only, use scripts/export-production-state.sh and scripts/restore-production-state.sh with their documented encrypted PostgreSQL recovery workflow. The canonical installation uses the backup/restore commands above.
 
 ![Real panel benchmark](docs/shots/panel-real-benchmark.jpg)
+
+## Commercial beta portal
+
+Open `/portal` for invitation accounts, MFA, server onboarding, workload confirmation, objective-based recommendations, subscription controls and operations history. The same cookie session opens Mesh, Benchmark and Topology. [Complete owner/customer guide](docs/COMMERCIAL-BETA.md) · [راهنمای فارسی](docs/COMMERCIAL-BETA-fa.md).
+
+Starter/Pro/Team define bounded server, route, member and daily-test ceilings. The durable queue and atomic reservation protect both Mesh and standalone test APIs. Latency, capacity, stability and balanced objectives retain real receipt qualification and carrier diversity. Recommendations can be limited to protocol-encrypted templates; shortfall is visible.
+
+Dedicated per-node SSH key rotation verifies replacement access before removing old credentials. Optional unprivileged mTLS telemetry accepts typed reports only. Opt-in history retains bounded state and latency observations; support exports exclude raw configuration and credentials. Explicit expiry cleanup stops only the opted-in customer's owned routes. Existing installations and bearer API keys remain compatible.
+
+Billing is sandboxed: no payment is collected and checkout/prices are unconfigured. Public sessions require a configured HTTPS origin; SSH-forwarded loopback previews support local HTTP. Input bodies are capped at64KiB, signed events/telemetry at16KiB. See the [execution ledger](docs/development/COMMERCIAL_LEDGER.md) for installed acceptance status; presence of a feature is separate from a passing hardware result.
