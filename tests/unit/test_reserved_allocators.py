@@ -38,6 +38,21 @@ def test_stopped_xfrm_ids_are_excluded_even_when_ip_command_returns_no_live_stat
     assert set(chosen) <= a.reserved_identifiers & b.reserved_identifiers
 
 
+@pytest.mark.parametrize('field',['ikey','okey','key'])
+def test_existing_dotted_iproute_key_is_excluded_as_a_full_32_bit_identifier(field):
+    import ipaddress
+    from plan_executor.executor import free_xfrm_identifiers
+    initial=free_xfrm_identifiers([Remote(),Remote()],123,1,'GRETAP')
+    class Peer(Remote):
+        def run(self,command,**kwargs):
+            if command=='ip -j -d link show':
+                return {'code':0,'stdout':json.dumps([{'linkinfo':{'info_data':{
+                    field:str(ipaddress.IPv4Address(initial[0]))}}}])}
+            return super().run(command,**kwargs)
+    chosen=free_xfrm_identifiers([Remote(),Peer()],123,1,'GRETAP')
+    assert set(chosen).isdisjoint(initial)
+
+
 def test_ssh_tun_id_excludes_both_stopped_tap_and_live_tun_on_either_peer():
     from orchestrator.host_reservations import free_tun_id
     class Peer(Remote):

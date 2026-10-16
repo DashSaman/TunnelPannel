@@ -3620,6 +3620,11 @@ def free_xfrm_identifiers(remotes, run_id, item_id, method):
         occupied.update(getattr(remote, 'reserved_identifiers', set()))
         for command in ('ip -j -d link show', 'ip xfrm state', 'ip xfrm policy', 'ip rule show'):
             output = remote.run(command, root=True)['stdout']
+            if command == 'ip -j -d link show':
+                # iproute can render GRE/VTI keys as dotted IPv4 strings.
+                # Their octets are one 32-bit key, not four unrelated numbers.
+                for value in re.findall(r'"(?:i|o)?key"\s*:\s*"([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)"',output):
+                    occupied.add(int(ipaddress.IPv4Address(value)))
             for value in re.findall(r'(?<![A-Za-z0-9_])(?:0x[0-9a-fA-F]+|[0-9]+)(?![A-Za-z0-9_])', output):
                 occupied.add(int(value, 16 if value.startswith('0x') else 10))
     floor, size = 0x10000000, 0x60000000
