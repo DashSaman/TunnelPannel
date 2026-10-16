@@ -189,6 +189,30 @@ class RouteService:
                 session.commit()
         return deployment_id, persist
 
+    def _hold_entry_port(self, factory, route_id, payload, nonce, port):
+        """Reserve the previous entry before a rebuilt member can allocate it."""
+        from orchestrator.host_reservations import initialize
+        from orchestrator.remote_journal import RemoteJournal
+        from plan_executor import executor as bodies
+        deployment_id,persist=self._deployment(factory,route_id,payload['source'],payload['destination'],'entry')
+        with factory() as session:
+            endpoint,credentials=node_access(session,payload['source'])
+        lease=HostLease(endpoint)
+        if not lease.acquire(120):raise RuntimeError('source host busy before entry reservation')
+        remote=None
+        try:
+            remote=NodeRemote(endpoint,credentials).connect()
+            journal=RemoteJournal(remote,nonce,0,endpoint['id'],persist)
+            initialize(remote,journal,nonce,0)
+            if bodies.free_port(remote,'tcp',port)!=port:
+                raise RuntimeError('the stable gateway port is now owned by another listener')
+            with factory() as session:
+                session.get(Deployment,deployment_id).state='COMMITTED'
+                session.commit()
+        finally:
+            if remote:remote.close()
+            lease.release()
+
     def _deploy(self, factory, route_id, payload):
         from plan_executor import executor as bodies
         from orchestrator.pair_runtime import prepare_benchmark
@@ -200,6 +224,8 @@ class RouteService:
             with factory() as session:
                 previous_config = route_private(session, route_job(session, route_id))['config']
         nonce = secrets.randbelow(900_000_000) + 100_000_000
+        if previous_config:
+            self._hold_entry_port(factory,route_id,payload,nonce,previous_config['listen_port'])
         with factory() as session:
             campaign = campaign_job(session, payload['campaign_id'])
             pair = next(r for r in campaign.payload['routes'] if r['id'] == payload['campaign_route_id'])
@@ -251,14 +277,18 @@ class RouteService:
         try:
             remote = NodeRemote(endpoint, credentials).connect()
             from orchestrator.remote_journal import RemoteJournal
-            journal = RemoteJournal(remote, nonce, 0, endpoint['id'], persist)
+            journal = RemoteJournal(remote, nonce, len(payload['methods'])+1, endpoint['id'], persist)
             remote.observer = journal.observe
             from orchestrator.host_reservations import initialize
-            initialize(remote, journal, nonce, 0)
+            initialize(remote, journal, nonce, len(payload['methods'])+1)
             directory = f'/var/lib/tunnelpannel/mesh/{route_id}/gateway'
             journal.record('path', directory)
             service = f'tpmesh-{nonce}-0-gateway'
             journal.record('service', service)
+            if previous_config:
+                # Our separate entry book still excludes this port from member
+                # allocations. The listener check must still reject foreign use.
+                remote.reserved_ports.discard(previous_config['listen_port'])
             port = bodies.free_port(remote, 'tcp', previous_config['listen_port'] if previous_config else 22000)
             if previous_config and port != previous_config['listen_port']:
                 raise RuntimeError('the stable gateway port is now owned by another listener')

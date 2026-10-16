@@ -12,6 +12,9 @@ def reconcile_benchmark(factory, job_id):
     with factory() as session:
         deployments = [d for d in session.query(Deployment).all()
                        if d.desired_state.get("job_id") == job_id]
+        # Keep the stable entry unavailable to other allocations until every
+        # member and gateway of this route has finished its owned cleanup.
+        deployments.sort(key=lambda item:item.desired_state.get('candidate')=='entry')
         for deployment in deployments:
             resources = session.query(ResourceAllocation).filter_by(
                 deployment_id=deployment.id, released_at=None).all()
