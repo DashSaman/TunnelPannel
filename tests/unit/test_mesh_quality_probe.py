@@ -28,7 +28,7 @@ def test_quality_probe_checks_real_nonce_and_reports_loss_without_credentials(tm
             'upstreams':[{'id':'WIREGUARD','probe':{'host':'127.0.0.1',
                 'port':server.sockets[0].getsockname()[1], 'nonce':'owned-nonce'}}]}))
         try:
-            result = await run_probe(config, levels=[1,4], rounds=2, interval=0, timeout=1)
+            result = await run_probe(config, levels=[1,4], rounds=2, interval=0, timeout=.14)
             assert result['status'] == ('PASS' if valid else 'FAILED')
             assert result['attempts'] == 10
             assert result['successes'] == (10 if valid else 0)

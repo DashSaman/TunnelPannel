@@ -87,8 +87,8 @@ async def run_probe(path, *, levels, rounds, interval, timeout=15):
                 if body != nonce:
                     raise ValueError('health receipt mismatch')
                 latency = (time.monotonic()-began)*1000
-                await asyncio.sleep(.15)  # keep concurrent sessions overlapping.
             await asyncio.wait_for(exchange(), timeout)
+            await asyncio.sleep(.15)  # overlap sessions without consuming the network deadline.
             return True, latency
         except (OSError, ValueError, asyncio.TimeoutError, asyncio.IncompleteReadError, asyncio.LimitOverrunError):
             return False, None
