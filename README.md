@@ -23,10 +23,10 @@ The original 82-method remediation of the earlier 23 partial / 27 failed methods
 ## Install
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/c300a4a9b2036b9701c8dcebdcc9b3be06676f86/install.sh | sudo env TUNNELPANNEL_VERSION=c300a4a9b2036b9701c8dcebdcc9b3be06676f86 bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/8f1e425c38c76f8b1acb570a2392c060f7c3a5c1/install.sh | sudo env TUNNELPANNEL_VERSION=8f1e425c38c76f8b1acb570a2392c060f7c3a5c1 bash
 ```
 
-This installs the tested commercial beta revision, also recorded in `install-one-line.txt`. Re-running preserves credentials and data. The installer creates the application account, installs dependencies, migrates the database, starts systemd and verifies HTTP health. It refuses to overwrite local source changes.
+This installs the CI-verified shared-host candidate, also recorded in `install-one-line.txt`. The existing test APIs remain on the previous revision until the owner's active campaign finishes; wait for active work before upgrading. Re-running preserves credentials and data. The installer creates the application account, installs dependencies, migrates the database, starts systemd and verifies HTTP health. It refuses to overwrite local source changes.
 
 Real-node validation uses Ubuntu 24.04 amd64. Other environments need their own validation. The API binds to loopback. The default is **127.0.0.1:8080**; a fresh installation can choose a free canonical port when that implicit default is occupied. Explicit/saved port conflicts refuse installation; use the port in the install receipt. From your computer:
 

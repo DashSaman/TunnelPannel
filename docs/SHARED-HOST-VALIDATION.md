@@ -7,13 +7,15 @@ coexistence feature is published and candidate-tested, not claimed installed.
 The Tehran Network/MyTel host was inspected read-only; its site, containers,
 reverse proxy, legacy panel and existing tunnels were not changed.
 
+Available immutable revision including the Tehran Network introduction: `8f1e425c38c76f8b1acb570a2392c060f7c3a5c1`. Its complete CI succeeded after the functional98e2424 baseline. A thread heartbeat checks every10 minutes and resumes the deferred two-node rollout after the owner's campaign and other active work finish; it does not cancel them.
+
 [Usage, capacity and limits](SHARED-HOST.md) · [Allowlisted evidence](evidence/commercial/coexistence-candidate.json).
 
 | Check | Observed result |
 |---|---|
 | Functional commit with successful CI | `98e2424dc1bdeb085688350304dee6fe3a751243` |
-| Portable CI | [39039167798](https://github.com/DashSaman/TunnelPannel/actions/runs/39039167798), SUCCESS |
-| Security CI | [39039167803](https://github.com/DashSaman/TunnelPannel/actions/runs/39039167803), SUCCESS |
+| Portable CI | [39039902316](https://github.com/DashSaman/TunnelPannel/actions/runs/39039902316), SUCCESS |
+| Security CI | [39039902280](https://github.com/DashSaman/TunnelPannel/actions/runs/39039902280), SUCCESS |
 | Python3.11 and3.12, each | 718 canonical +100 TunnelGuard +1 backend PASS |
 | Linux installation | Fresh, rerun, backup/mutate/restore, unrelated-safe uninstall, syntax and ShellCheck PASS |
 | Windows | 696 PASS /22 platform skips |

@@ -138,5 +138,13 @@
     "No tunnel endpoint replacement by a database backup",
     "No SSO or WordPress account integration implemented",
     "No domain or payment provisioning"
-  ]
+  ],
+  "available_immutable_revision": "8f1e425c38c76f8b1acb570a2392c060f7c3a5c1",
+  "available_revision_ci_run": 39039902316,
+  "available_revision_security_ci_run": 39039902280,
+  "deferred_heartbeat": {
+    "status": "ACTIVE",
+    "interval_minutes": 10,
+    "wait_for_owner_campaign_and_job_drain": true
+  }
 }
