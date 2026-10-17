@@ -1,5 +1,7 @@
 # Two-node test mode
 
+[Installed results, runtime pin and screenshots](TEST-ONLY-VALIDATION.md).
+
 [فارسی](TEST-ONLY-fa.md)
 
 The owner selected private testing without a domain or payment processor. Keep the canonical API on loopback and use the existing SSH preview. Accounts, invitations and sandbox plans remain available; no purchase or charge occurs. The original two warm groups stay active with their entry credentials and membership preserved.

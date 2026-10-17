@@ -2,6 +2,10 @@
 
 [حالت تست خصوصی، خلاصه پایش و آزمون کیفیت اتصال](docs/TEST-ONLY-fa.md). انتخاب فعلی مالک: بدون دامنه و درگاه پرداخت.
 
+[تازه‌ترین گزارش نصب‌شده](docs/TEST-ONLY-VALIDATION-fa.md):۱۶٫۸۰ ساعت مشاهده نگهداری‌شده،۲۰۱۴ رسید معتبر TCP دوطرفه، حفظ۱۲ عضو آماده و۷۰۰ تست اصلی لینوکس. خلاصه، فاصله ثبت و صدک تأخیر را نشان می‌دهد و سلامت پیوسته را فرض نمی‌کند.
+
+![خلاصه پایش زنده](docs/evidence/commercial/screenshots/observation-fa.png)
+
 [English](README.md) · [گزارش آزمون واقعی](docs/releases/v0.9.0-rc3/REAL_BENCHMARK.md)
 
 [راهنمای کامل همهٔ بخش‌های پنل](docs/PANEL-GUIDE-fa.md) · [گزارش Mesh و تقسیم بار](docs/MESH-VALIDATION-fa.md) · [نصب نسخهٔ ثابت](install-one-line.txt)
@@ -13,7 +17,7 @@
 ## نصب تک‌خطی
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/d757fa836db2ddf838bb1f6897fbb3e30cde3a9c/install.sh | sudo env TUNNELPANNEL_VERSION=d757fa836db2ddf838bb1f6897fbb3e30cde3a9c bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/c300a4a9b2036b9701c8dcebdcc9b3be06676f86/install.sh | sudo env TUNNELPANNEL_VERSION=c300a4a9b2036b9701c8dcebdcc9b3be06676f86 bash
 ```
 
 این دستور نسخهٔ ثابت و تست‌شدهٔ بتای تجاری را نصب می‌کند و در `install-one-line.txt` هم ثبت شده است. نصب‌کننده وابستگی‌ها، کاربر برنامه، دیتابیس و systemd را آماده و سلامت HTTP را بررسی می‌کند. نصب مجدد اطلاعات ورود و داده‌ها را حفظ می‌کند و سورس دارای تغییرات محلی را بازنویسی نمی‌کند.

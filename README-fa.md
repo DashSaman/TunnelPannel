@@ -2,6 +2,10 @@
 
 [حالت تست خصوصی، خلاصه پایش و آزمون کیفیت اتصال](docs/TEST-ONLY-fa.md). انتخاب فعلی مالک: بدون دامنه و درگاه پرداخت.
 
+[تازه‌ترین گزارش نصب‌شده](docs/TEST-ONLY-VALIDATION-fa.md):۱۶٫۸۰ ساعت مشاهده نگهداری‌شده،۲۰۱۴ رسید معتبر TCP دوطرفه، حفظ۱۲ عضو آماده و۷۰۰ تست اصلی لینوکس.
+
+![خلاصه پایش زنده](docs/evidence/commercial/screenshots/observation-fa.png)
+
 [پنل تجاری، حساب‌ها و راهنمای کامل](docs/COMMERCIAL-BETA-fa.md) · [راهنمای فارسی به‌روز](README.fa.md)
 
 [English](README.md) · [گزارش آزمون واقعی](docs/releases/v0.9.0-rc3/REAL_BENCHMARK.md)

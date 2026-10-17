@@ -2,6 +2,10 @@
 
 [Private two-node test mode, observation summary and connection-quality probe](docs/TEST-ONLY.md). Current owner scope: no domain and no payment processor.
 
+[Latest installed test report](docs/TEST-ONLY-VALIDATION.md):16.80h of retained observations,2,014 valid paired TCP receipts, preserved12 warm members and700-test Linux suites. The summary reports sampling gaps and probe percentiles; it does not infer continuous uptime.
+
+![Live observation summary](docs/evidence/commercial/screenshots/observation-fa.png)
+
 [فارسی](README.fa.md) · [Real two-node report](docs/releases/v0.9.0-rc3/REAL_BENCHMARK.md)
 
 [Complete Persian panel manual](docs/PANEL-GUIDE-fa.md) · [Mesh and connection-sharing validation](docs/MESH-VALIDATION.md) · [Pinned installer](install-one-line.txt)
@@ -13,7 +17,7 @@ The original 82-method remediation of the earlier 23 partial / 27 failed methods
 ## Install
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/d757fa836db2ddf838bb1f6897fbb3e30cde3a9c/install.sh | sudo env TUNNELPANNEL_VERSION=d757fa836db2ddf838bb1f6897fbb3e30cde3a9c bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/c300a4a9b2036b9701c8dcebdcc9b3be06676f86/install.sh | sudo env TUNNELPANNEL_VERSION=c300a4a9b2036b9701c8dcebdcc9b3be06676f86 bash
 ```
 
 This installs the tested commercial beta revision, also recorded in `install-one-line.txt`. Re-running preserves credentials and data. The installer creates the application account, installs dependencies, migrates the database, starts systemd and verifies HTTP health. It refuses to overwrite local source changes.

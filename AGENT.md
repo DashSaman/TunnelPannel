@@ -1,5 +1,9 @@
 # AGENT.md — Multi-Tunnel Failover System (mtf)
 
+## Current test-only handoff — 2026-10-17
+
+Only the two currently authorized disposable nodes65.109.209.194 and65.109.213.64 apply; historical hosts below are not continuation targets. Runtime c300a4a9b2036b9701c8dcebdcc9b3be06676f86 installed on both. No domain or payments requested. See [current validation](docs/TEST-ONLY-VALIDATION.md), [Persian report](docs/TEST-ONLY-VALIDATION-fa.md) and AGENTS.md top. Original7+5 balance members/entries/workers preserved.2010 paired main receipts+4 final installed receipts PASS;720 separate localhost-origin controls.987 samples per route/16.7979h, all retained UP, no continuous-SLA claim. Runtime CI700+100+1 each Python3.11/3.12; Windows678/22skips. Keep PR2 unmerged for owner review. Backups/checksums and credentials remain private.
+
 > **فایل پیشرفت پروژه — این فایل را هر ایجنت/دستیار قبل از ادامه کار بخواند.**
 > **Project progress file — every agent MUST read this before continuing work.**
 
