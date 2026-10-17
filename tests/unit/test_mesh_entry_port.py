@@ -20,6 +20,10 @@ def test_rebuild_reserves_entry_before_ssh_like_member_allocation(panel,monkeypa
     from test_mesh_campaign import sample
     _,factory,_=panel
     monkeypatch.setenv('TP_SECRET_KEY','entry-port-unit-test')
+    # This test exercises durable entry reservations, not host inspection.
+    # Keep the real allocator while giving it a known empty socket snapshot.
+    monkeypatch.setattr('orchestrator.host_inventory.scan',lambda *args,**kwargs: {
+        'schema':1,'complete':True,'listeners':[],'reserved_ranges':{}})
     config={'listen_host':'127.0.0.1','listen_port':22000,'username':'unit-entry','password':'unit-only-secret'}
     with factory() as session:
         secret=SecretReference(kind='mesh_runtime',ciphertext=encrypt_credentials({'config':config}))
@@ -42,7 +46,6 @@ def test_rebuild_reserves_entry_before_ssh_like_member_allocation(panel,monkeypa
         def connect(self):return self
         def close(self):pass
         def run(self,command,**kwargs):
-            if command=='ss -tulnH':return {'code':0,'stdout':''}
             if command.startswith('cat '):return {'code':0,'stdout':json.dumps({
                 'healthy':{'GRE':True},'active':'GRE','updated_at':time.time()})}
             return super().run(command,**kwargs)
