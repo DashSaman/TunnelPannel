@@ -28,4 +28,6 @@ The output omits credentials, target addresses, nonce bodies, raw exception mess
 
 ## Scope and evidence
 
+Choose a new report file outside the gateway runtime directory. Existing files and symlinks are refused; a report cannot overwrite the gateway configuration. The deliberate150ms overlap hold does not consume the network deadline.
+
 The prior [installed commercial acceptance](COMMERCIAL-VALIDATION.md) remains the baseline:70 named checks,10 representative paired receipts and12 preserved warm members. The new observation and load evidence will record its exact runtime, timestamp, duration, counts and limitations separately. Two nearby test nodes cannot establish Iran-route behavior, destination/datacenter failure independence, seven-day availability, many-customer capacity or payment settlement.

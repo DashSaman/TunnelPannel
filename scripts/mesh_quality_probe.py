@@ -144,10 +144,14 @@ def main():
     parser.add_argument('--output', type=Path, required=True, help='allowlisted report destination')
     args = parser.parse_args()
     try:
+        if (args.output.resolve().is_relative_to(args.config.resolve().parent)
+                or args.output.exists() or args.output.is_symlink()):
+            raise ValueError('report must be a new file outside the gateway directory')
         levels = [int(n) for n in args.levels.split(',')]
         result = asyncio.run(run_probe(args.config, levels=levels, rounds=args.rounds,
                                       interval=args.interval, timeout=args.timeout))
-        args.output.write_text(json.dumps(result, indent=2, allow_nan=False)+'\n', encoding='utf8')
+        with args.output.open('x', encoding='utf8') as stream:
+            stream.write(json.dumps(result, indent=2, allow_nan=False)+'\n')
         print(json.dumps({'status':result['status'], 'attempts':result['attempts'], 'successes':result['successes']}))
         return 0 if result['status'] == 'PASS' else 1
     except (OSError, ValueError, KeyError, StopIteration):

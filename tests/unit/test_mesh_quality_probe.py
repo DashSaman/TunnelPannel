@@ -47,3 +47,15 @@ def test_quality_probe_rejects_unbounded_work_before_connecting(tmp_path):
     from scripts.mesh_quality_probe import run_probe
     with pytest.raises(ValueError):
         asyncio.run(run_probe(tmp_path/'missing.json', levels=[1000], rounds=1, interval=0, timeout=1))
+
+
+def test_cli_cannot_write_a_report_over_the_gateway_config(tmp_path, monkeypatch):
+    from scripts import mesh_quality_probe
+    config = tmp_path/'config.json'
+    config.write_text('SECRET_CANARY')
+    async def forbidden(*args, **kwargs):
+        raise AssertionError('an unsafe output path reached network execution')
+    monkeypatch.setattr(mesh_quality_probe, 'run_probe', forbidden)
+    monkeypatch.setattr('sys.argv', ['probe','--config',str(config),'--output',str(config)])
+    assert mesh_quality_probe.main() == 2
+    assert config.read_text() == 'SECRET_CANARY'
