@@ -1,5 +1,7 @@
 # TunnelPannel
 
+[حالت تست خصوصی، خلاصه پایش و آزمون کیفیت اتصال](docs/TEST-ONLY-fa.md). انتخاب فعلی مالک: بدون دامنه و درگاه پرداخت.
+
 [English](README.md) · [گزارش آزمون واقعی](docs/releases/v0.9.0-rc3/REAL_BENCHMARK.md)
 
 [راهنمای کامل همهٔ بخش‌های پنل](docs/PANEL-GUIDE-fa.md) · [گزارش Mesh و تقسیم بار](docs/MESH-VALIDATION-fa.md) · [نصب نسخهٔ ثابت](install-one-line.txt)

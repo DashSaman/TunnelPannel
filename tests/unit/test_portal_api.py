@@ -31,6 +31,11 @@ def test_portal_assets_csp_and_scoped_customer_journey(tmp_path,monkeypatch):
     csrf={'X-CSRF-Token':login.json()['csrf']}
     assert client.get('/api/billing/status').json()['workspace_id']==workspace['id']
     assert client.get('/api/operations/support').status_code==200
+    summary=client.get('/api/operations/summary?window_s=3600')
+    assert summary.status_code==200 and summary.headers['cache-control']=='no-store'
+    assert summary.json()['routes']==[]
+    assert client.get('/api/operations/summary?window_s=604801').status_code==422
+    assert client.get('/api/operations/summary?window_s=nan').status_code==422
     assert client.get('/api/operations/audit').status_code==200
     assert client.get('/api/accounts').status_code==403
     assert client.put('/api/operations/policy',json={'enabled':True}).status_code==403
@@ -42,3 +47,4 @@ def test_portal_assets_csp_and_scoped_customer_journey(tmp_path,monkeypatch):
     assert client.post('/api/mesh/campaigns/queued/cancel',headers=csrf).json()['state']=='CANCELLED'
     assert client.post('/auth/logout',headers=csrf).status_code==200
     assert client.get('/api/nodes').status_code==401
+    assert client.get('/api/operations/summary').status_code==401

@@ -4,7 +4,13 @@ import time
 
 from fastapi import HTTPException
 
-from core.models import BenchmarkRun, BenchmarkSample, Job, OperationPolicy, OperationRecord
+from core.models import (
+    BenchmarkRun,
+    BenchmarkSample,
+    Job,
+    OperationPolicy,
+    OperationRecord,
+)
 from core.workspaces import freeze_factory
 
 METRICS = ('rtt_avg', 'rtt_p95', 'jitter', 'loss_pct', 'throughput_mbps', 'reconnect_s',
@@ -91,6 +97,60 @@ class OperationsStore:
                 OperationRecord.id.desc()).limit(max(1,min(limit,1000))).all()
             return [{'id': r.id, 'route_id': r.route_id, 'at': r.ts, **r.document} for r in rows]
 
+    def summary(self, window_s=86400):
+        """Summarize retained point observations, never infer uptime between samples."""
+        from core.catalog import CATALOG
+        if isinstance(window_s, bool) or not isinstance(window_s, int) or not 60 <= window_s <= 7*86400:
+            raise ValueError('summary window must be 60..604800 seconds')
+        now, policy = self.clock(), self.policy()
+        with self.factory() as session:
+            route_ids = [r.id for r in session.query(Job.id).filter_by(kind='mesh_route').order_by(
+                Job.created_at.desc(), Job.id).limit(100)]
+            rows = session.query(OperationRecord).filter(
+                OperationRecord.kind == 'sample', OperationRecord.route_id.in_(route_ids),
+                OperationRecord.ts >= now-window_s, OperationRecord.ts <= now).order_by(
+                OperationRecord.ts.desc(), OperationRecord.id.desc()).limit(5000).all()
+            groups = {identity: [] for identity in route_ids}
+            for row in reversed(rows):
+                groups[row.route_id].append((row.ts, row.document))
+        routes = []
+        for identity, samples in groups.items():
+            counts = dict.fromkeys(('UP', 'DEGRADED', 'DOWN', 'UNAVAILABLE'), 0)
+            latency = {}
+            for _, raw in samples:
+                doc = raw if isinstance(raw, dict) else {}
+                health = doc.get('health')
+                health = health if doc.get('observed') is True and health in ('UP','DEGRADED','DOWN') else 'UNAVAILABLE'
+                counts[health] += 1
+                probes = doc.get('probe_latency_ms')
+                if health == 'UNAVAILABLE' or not isinstance(probes, dict):
+                    continue
+                for method, value in probes.items():
+                    value = numeric(value)
+                    if method in CATALOG.identities and value is not None and value >= 0:
+                        latency.setdefault(method, []).append(value)
+            first, last = (samples[0][0], samples[-1][0]) if samples else (None, None)
+            gaps = [b[0]-a[0] for a, b in zip(samples, samples[1:])]
+            age = max(0., now-last) if last is not None else None
+            metrics = {}
+            for method, values in sorted(latency.items()):
+                values.sort()
+                metrics[method] = {'samples':len(values), 'p50':values[math.ceil(len(values)*.5)-1],
+                                   'p95':values[math.ceil(len(values)*.95)-1], 'max':values[-1]}
+            latest = samples[-1][1] if samples and isinstance(samples[-1][1], dict) else {}
+            health = latest.get('health')
+            health = health if latest.get('observed') is True and health in ('UP','DEGRADED','DOWN') else 'UNAVAILABLE'
+            routes.append({'route_id':identity, 'samples':len(samples), 'first_at':first, 'last_at':last,
+                'span_s':last-first if samples else 0., 'last_age_s':age,
+                'fresh':bool(policy['enabled'] and age is not None and age <= 2*policy['interval_s']+10),
+                'latest_health':health, 'health_counts':counts,
+                'up_sample_pct':100*counts['UP']/len(samples) if samples else None,
+                'gap_count':sum(gap > 2*policy['interval_s'] for gap in gaps),
+                'max_gap_s':max(gaps, default=0.), 'probe_latency_ms':metrics})
+        return {'generated_at':now, 'window_s':window_s, 'interval_s':policy['interval_s'],
+                'monitor_enabled':policy['enabled'], 'routes':routes,
+                'scope':'latest100 workspace routes, latest5000 retained samples within window; point observations, not continuous uptime or SLA'}
+
     def support_export(self):
         from core.catalog import CATALOG
         with self.factory() as session:
@@ -103,5 +163,5 @@ class OperationsStore:
                        if r.candidate in CATALOG.identities]
         return {'schema': 'tunnelpannel-support-v1', 'generated_at': self.clock(), 'policy': self.policy(),
                 'routes': routes, 'samples': samples, 'observations': self.history(),
-                'events': self.history('transition'),
+                'events': self.history('transition'), 'summary': self.summary(),
                 'scope': 'current workspace only; addresses, names, raw errors, credentials and configs omitted'}

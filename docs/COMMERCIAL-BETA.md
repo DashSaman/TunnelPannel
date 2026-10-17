@@ -50,6 +50,8 @@ Preference/failover uses healthy warm alternatives for new sessions. Balance sha
 
 ## Operations, history and recovery
 
+The [private test-mode guide](TEST-ONLY.md) covers the retained observation summary, time-window selector and optional bounded connection-quality probe. The owner currently requests testing without a public domain or payment provider.
+
 Monitoring is off until opted in. Set a60..3600-second sample interval. The panel stores up to7days,5000 samples and1000 transitions per workspace. UP/DEGRADED/DOWN require a current observed gateway state; unavailable/stale/failed observation is UNAVAILABLE. Transition records survive controller restart and do not duplicate every polling tick. External notification delivery is unconfigured.
 
 **Download safe support export** contains allowlisted numeric measurements and state, excluding addresses, names, raw errors, full receipts, runtime configuration and secrets. Administrative audit shows scoped mutation patterns and hashed principals; it is local operational history, not a tamper-proof compliance log. Failed audit writes are logged generically. Never substitute a support export for an encrypted recovery backup.

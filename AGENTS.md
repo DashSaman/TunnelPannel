@@ -1,5 +1,9 @@
 # AGENTS.md — Permanent Agent Rules / قوانین همیشگی ایجنت
 
+## 2026-10-17 test-only continuation
+
+Owner explicitly selected private TEST ONLY: no domain or payment provider now. Continue only with the same authorized two nodes. Bounded extension: retained operations summary/UI (not continuous SLA), nonce connection-quality probe and longer actual observation/load evidence. Prior70-check beta remains accepted; do not replay bootstrap/baseline or mutate original7+5 route membership/entries. One read-only native mapping assistant used for this request. Public-launch proxy/domain/payment work deferred by direct user instruction. New revision/physical verification follows in the test-mode report; preserve the existing PR for review and main unmerged.
+
 ## 2026-10-17 commercial beta handoff / تحویل بتای تجاری
 
 Active source worktree: work/saas-source, codex/commercial-beta-20261016. Final functional runtime d757fa836db2ddf838bb1f6897fbb3e30cde3a9c installed and rechecked on BOTH authorized disposable nodes:65.109.209.194 and65.109.213.64. Never use historical hosts listed below for this continuation. Preserve independent installation keys and original7+5 warm groups. Credentials are private, never publish them.

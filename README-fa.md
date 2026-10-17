@@ -1,5 +1,7 @@
 # TunnelPannel
 
+[حالت تست خصوصی، خلاصه پایش و آزمون کیفیت اتصال](docs/TEST-ONLY-fa.md). انتخاب فعلی مالک: بدون دامنه و درگاه پرداخت.
+
 [پنل تجاری، حساب‌ها و راهنمای کامل](docs/COMMERCIAL-BETA-fa.md) · [راهنمای فارسی به‌روز](README.fa.md)
 
 [English](README.md) · [گزارش آزمون واقعی](docs/releases/v0.9.0-rc3/REAL_BENCHMARK.md)

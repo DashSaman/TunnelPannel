@@ -1,10 +1,10 @@
 """Scoped operation history, opt-in monitoring and safe support export."""
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-from core.operations import OperationsStore
 from core.models import AuditLog
+from core.operations import OperationsStore
 from core.security import require_role
 
 
@@ -32,6 +32,10 @@ def create_operations_router(factory):
     @router.get('/events')
     def events():
         return OperationsStore(factory).history('transition')
+
+    @router.get('/summary')
+    def summary(window_s: int = Query(default=86400, ge=60, le=604800)):
+        return JSONResponse(OperationsStore(factory).summary(window_s), headers={'Cache-Control':'no-store'})
 
     @router.get('/audit')
     def audit():

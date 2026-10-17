@@ -1,5 +1,7 @@
 # TunnelPannel
 
+[Private two-node test mode, observation summary and connection-quality probe](docs/TEST-ONLY.md). Current owner scope: no domain and no payment processor.
+
 [فارسی](README.fa.md) · [Real two-node report](docs/releases/v0.9.0-rc3/REAL_BENCHMARK.md)
 
 [Complete Persian panel manual](docs/PANEL-GUIDE-fa.md) · [Mesh and connection-sharing validation](docs/MESH-VALIDATION.md) · [Pinned installer](install-one-line.txt)
