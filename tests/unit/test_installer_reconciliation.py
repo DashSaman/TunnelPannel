@@ -60,6 +60,7 @@ def test_saved_port_survives_rerun_and_explicit_changes_are_persisted(tmp_path, 
     source = (ROOT / "install.sh").read_text(encoding="utf-8")
     section = source.split('STAGE="config"', 1)[1].split('STAGE="python-env"', 1)[0]
     code = "\n".join(["set -Eeuo pipefail", "note() { :; }", "die() { exit 1; }",
+                        'INSTALL_DIR=unused', 'python3() { echo "$3"; }',
                         "CONF_DIR=" + shlex.quote(tmp_path.as_posix()), "PORT=8080",
                         "DATA_DIR=" + shlex.quote(tmp_path.as_posix()),
                         ("TUNNELPANNEL_PORT="+override) if override else "unset TUNNELPANNEL_PORT",
@@ -76,6 +77,7 @@ def test_bootstrap_tokens_are_shown_before_a_later_install_failure(tmp_path):
     source = (ROOT / "install.sh").read_text(encoding="utf-8")
     section = source.split('STAGE="config"', 1)[1].split('STAGE="python-env"', 1)[0]
     code = "\n".join(["set -Eeuo pipefail", "exec 3>&1", "note() { :; }", "die() { exit 1; }",
+                       'INSTALL_DIR=unused', 'python3() { echo "$3"; }',
                        "chown() { :; }", "CONF_DIR=" + shlex.quote(tmp_path.as_posix()),
                        "DATA_DIR=" + shlex.quote(tmp_path.as_posix()), "PORT=8080",
                        "unset TUNNELPANNEL_PORT", section, "false"])

@@ -144,9 +144,12 @@ def discover(endpoint, credentials):
                               "do command -v \"$b\" >/dev/null && echo \"$b\"; done; true")["stdout"].split()
         modules = remote.run("ls /sys/module")["stdout"].split()
         ipv6 = remote.run("ip -6 -o addr show scope global")["stdout"]
+        from orchestrator.host_inventory import scan
+        coexistence = scan(remote)
         return {"node_id": endpoint["id"], "os": os_name,
                 "arch": {"x86_64": "amd64", "aarch64": "arm64"}.get(machine, machine),
                 "privileged": privileged, "binaries": binaries,
-                "kernel_modules": modules, "ipv6_addresses": ipv6.strip()}
+                "kernel_modules": modules, "ipv6_addresses": ipv6.strip(),
+                "coexistence": coexistence}
     finally:
         remote.close()

@@ -139,6 +139,10 @@ class RealPairAdapter:
         for endpoint, credentials in self.access:
             remote = NodeRemote(endpoint, credentials, deadline=deadline, cancelled=self.cancelled).connect()
             self.remotes.append(remote)
+            from orchestrator.host_inventory import scan, require_safe
+            require_safe(scan(remote), self.candidate.legacy_method_id)
+        # Inspect BOTH hosts before creating the first owned reservation journal.
+        for remote, (endpoint, _) in zip(self.remotes, self.access):
             from orchestrator.remote_journal import RemoteJournal
             journal = RemoteJournal(remote, self.run["id"], self.item["id"], endpoint["id"],
                                     self.persist_resource)

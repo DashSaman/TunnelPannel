@@ -65,17 +65,17 @@ export DEBIAN_FRONTEND=noninteractive
 export NEEDRESTART_MODE=l
 if command -v apt-get >/dev/null 2>&1; then
   apt-get update -qq
-  apt-get install -y -qq ca-certificates curl git python3 python3-venv python3-pip sqlite3 openssl sudo >/dev/null
+  apt-get install -y -qq ca-certificates curl git python3 python3-venv python3-pip sqlite3 openssl sudo iproute2 procps >/dev/null
 elif command -v dnf >/dev/null 2>&1; then
-  dnf install -y ca-certificates curl git python3 python3-pip sqlite openssl sudo shadow-utils
+  dnf install -y ca-certificates curl git python3 python3-pip sqlite openssl sudo shadow-utils iproute procps-ng
 elif command -v yum >/dev/null 2>&1; then
-  yum install -y ca-certificates curl git python3 python3-pip sqlite openssl sudo shadow-utils
+  yum install -y ca-certificates curl git python3 python3-pip sqlite openssl sudo shadow-utils iproute procps-ng
 elif command -v zypper >/dev/null 2>&1; then
-  zypper --non-interactive install ca-certificates curl git python3 python3-pip sqlite3 openssl sudo shadow
+  zypper --non-interactive install ca-certificates curl git python3 python3-pip sqlite3 openssl sudo shadow iproute2 procps
 elif command -v pacman >/dev/null 2>&1; then
-  pacman -Sy --noconfirm --needed ca-certificates curl git python python-pip sqlite openssl sudo shadow
+  pacman -Sy --noconfirm --needed ca-certificates curl git python python-pip sqlite openssl sudo shadow iproute2 procps-ng
 elif command -v apk >/dev/null 2>&1; then
-  apk add --no-cache ca-certificates curl git python3 py3-pip sqlite openssl sudo shadow
+  apk add --no-cache ca-certificates curl git python3 py3-pip sqlite openssl sudo shadow iproute2 procps
 else
   die "unsupported distribution: supported package manager not found"
 fi
@@ -119,6 +119,11 @@ fi
 PORT="${TUNNELPANNEL_PORT:-${SAVED_PORT:-8080}}"
 [[ "$PORT" =~ ^[0-9]+$ ]] && (( PORT >= 1024 && PORT <= 65535 )) \
   || die "TUNNELPANNEL_PORT must be an integer in 1024..65535"
+STRICT_PORT=0
+[[ -z "${TUNNELPANNEL_PORT:-}${SAVED_PORT}" ]] || STRICT_PORT=1
+PORT="$(python3 "$INSTALL_DIR/scripts/panel_port.py" --port "$PORT" --strict "$STRICT_PORT")" \
+  || die "panel port inspection failed; no config or service has been replaced"
+note "checked panel entry: 127.0.0.1:$PORT"
 if [[ ! -f "$CONF_DIR/tunnelpannel.env" ]]; then
   SECRET_KEY="$(openssl rand -hex 32)"
   gen_hash() { printf '%s' "$1" | sha256sum | cut -d' ' -f1; }
@@ -190,6 +195,10 @@ note "schema at revision: ${SCHEMA_REV:-unknown}"
 
 # ── 8. systemd service (idempotent: enable + restart, never duplicate) ─
 STAGE="service"
+# A second snapshot narrows the race with unrelated installers; bind failure
+# still fails safely, and health below proves the listener belongs to our PID.
+python3 "$INSTALL_DIR/scripts/panel_port.py" --port "$PORT" --strict 1 >/dev/null \
+  || die "panel port became occupied; existing service unit preserved"
 cat > "/etc/systemd/system/$SERVICE.service" <<UNIT
 [Unit]
 Description=TunnelPannel canonical API + web UI
@@ -216,7 +225,9 @@ systemctl restart "$SERVICE"
 STAGE="health"
 HEALTH=""
 for i in $(seq 1 30); do
-  if curl -fsS "http://127.0.0.1:$PORT/health" >/dev/null 2>&1; then HEALTH=ok; break; fi
+  if systemctl is-active --quiet "$SERVICE" \
+    && python3 "$INSTALL_DIR/scripts/panel_port.py" --port "$PORT" --strict 1 --verify-owned >/dev/null 2>&1 \
+    && curl -fsS "http://127.0.0.1:$PORT/health" >/dev/null 2>&1; then HEALTH=ok; break; fi
   sleep 1
 done
 [[ "$HEALTH" == "ok" ]] || die "service did not become healthy on :$PORT (inspect: journalctl -u $SERVICE -n 50)"

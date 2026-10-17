@@ -27,6 +27,8 @@ def prepare_engines(access, candidates, cancelled):
             remote = NodeRemote(endpoint, credentials).connect()
             try:
                 if not cancelled():
+                    from orchestrator.host_inventory import scan, require_safe
+                    require_safe(scan(remote), 'WATERWALL_H_PREPARATION')
                     install(remote)
             finally:
                 remote.close()

@@ -21,8 +21,8 @@ def _bash() -> str:
     import os
     import shutil
     if os.name == "nt":
-        for cand in (r"C:\Program Files\Gitinash.exe",
-                     r"C:\Program Files (x86)\Gitinash.exe"):
+        for cand in (r"C:\Program Files\Git\bin\bash.exe",
+                     r"C:\Program Files (x86)\Git\bin\bash.exe"):
             if os.path.exists(cand):
                 return cand
     found = shutil.which("bash")

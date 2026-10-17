@@ -6745,10 +6745,12 @@ def free_udp_port(remote: Remote, preferred: int) -> int:
 
 def free_port(remote: Remote, protocol: str, preferred: int) -> int:
     """Use the canonical port manager and retain same-request reservations."""
-    from deploy.engine.mtf.portmgr import free_port as allocate, _parse_ss
-    result = remote.run("ss -tulnH", root=True)
+    from deploy.engine.mtf.portmgr import free_port as allocate
+    from orchestrator.host_inventory import scan, require_safe
+    inventory = scan(remote, ports_only=True)
+    require_safe(inventory, '')
     node_id = str(getattr(remote, "endpoint", {}).get("id", "remote"))
-    report = {"sides": {node_id: {"listeners": _parse_ss(result["stdout"])}}}
+    report = {"sides": {node_id: inventory}}
     if not hasattr(remote, "reserved_ports"):
         remote.reserved_ports = set()
     port = allocate(report, protocol, [node_id], start=preferred, reserved=remote.reserved_ports)

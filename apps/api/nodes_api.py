@@ -2,7 +2,7 @@
 import base64
 import re
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
 from pydantic import BaseModel, Field, model_validator
@@ -149,6 +149,19 @@ def create_nodes_router(session_factory):
             session.add(NodeInventory(node_id=result["id"], snapshot=snapshot, summary=snapshot))
             session.commit()
         return {**result, "trust_basis": "first observed SSH host key", "inventory": snapshot}
+
+    @router.get('/{node_id}/inventory')
+    def cached_inventory(node_id: str, response: Response,
+                         _=Depends(require_role('SUPER_ADMIN','OPERATOR','VIEWER'))):
+        response.headers['Cache-Control'] = 'no-store'
+        with session_factory() as session:
+            if session.get(Node,node_id) is None:
+                raise HTTPException(404,'node not found')
+            latest = (session.query(NodeInventory).filter_by(node_id=node_id,source='ssh')
+                      .order_by(NodeInventory.collected_at.desc()).first())
+            return {'node_id':node_id,
+                    'collected_at':latest.collected_at if latest else None,
+                    'coexistence':latest.snapshot.get('coexistence') if latest else None}
 
     @router.post("/{node_id}/discover")
     def inventory(node_id: str, _=Depends(require_role("SUPER_ADMIN", "OPERATOR"))):

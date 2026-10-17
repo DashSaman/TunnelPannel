@@ -112,6 +112,25 @@ def test_node_list_requires_authentication_and_accepts_viewer(nodes_api):
     assert response.json() == []
 
 
+def test_cached_inventory_is_authenticated_timestamped_and_read_only(nodes_api, monkeypatch):
+    client, _ = nodes_api
+    created = client.post('/api/nodes',headers=ADMIN,json=NODE).json()
+    path = '/api/nodes/'+created['id']+'/inventory'
+    assert client.get(path).status_code == 401
+    assert client.get(path,headers=ADMIN).json()['coexistence'] is None
+    snapshot = {'os':'linux','coexistence':{'complete':True,'observed_at':1234,
+                                         'listeners':[], 'tunnels':[{'name':'tun9','kind':'tun'}]}}
+    monkeypatch.setattr('apps.api.nodes_api.discover',lambda *a:snapshot)
+    assert client.post('/api/nodes/'+created['id']+'/discover',headers=ADMIN).status_code == 200
+    def forbidden(*args):
+        raise AssertionError('GET must not make an SSH connection')
+    monkeypatch.setattr('apps.api.nodes_api.discover',forbidden)
+    response = client.get(path,headers={'Authorization':'Bearer viewer-test'})
+    assert response.status_code == 200 and response.headers['cache-control']=='no-store'
+    assert response.json()['coexistence'] == snapshot['coexistence']
+    assert client.get('/api/nodes/absent/inventory',headers=ADMIN).status_code == 404
+
+
 def test_node_credentials_can_be_rotated_without_changing_identity(nodes_api):
     client, factory = nodes_api
     created = client.post('/api/nodes', headers=ADMIN, json=NODE).json()
