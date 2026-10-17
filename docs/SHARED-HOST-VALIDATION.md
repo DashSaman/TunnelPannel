@@ -1,60 +1,35 @@
-# Shared-host candidate checkpoint — 2026-10-17
+# Installed shared-host validation — 2026-10-17
 
-**Live API upgrade is deferred at the owner's request until campaign
-`757cdb8cd8ff45afa05a55aa4395a919` finishes.** Both test APIs still run
-`c300a4a9b2036b9701c8dcebdcc9b3be06676f86` at this checkpoint. The new
-coexistence feature is published and candidate-tested, not claimed installed.
-The Tehran Network/MyTel host was inspected read-only; its site, containers,
-reverse proxy, legacy panel and existing tunnels were not changed.
+Immutable runtime `8f1e425c38c76f8b1acb570a2392c060f7c3a5c1` is now installed on BOTH authorized test nodes. The owner's campaign finished before either API was restarted; every workspace's job queue on both nodes was checked empty. Only those two test installations were upgraded. The Tehran Network/MyTel host remains inspection-only.
 
-Available immutable revision including the Tehran Network introduction: `8f1e425c38c76f8b1acb570a2392c060f7c3a5c1`. Its complete CI succeeded after the functional98e2424 baseline. A thread heartbeat checks every10 minutes and resumes the deferred two-node rollout after the owner's campaign and other active work finish; it does not cancel them.
-
-[Usage, capacity and limits](SHARED-HOST.md) · [Allowlisted evidence](evidence/commercial/coexistence-candidate.json).
+[Usage and limits](SHARED-HOST.md) · [Installed evidence](evidence/commercial/coexistence-installed.json) · [Earlier candidate evidence](evidence/commercial/coexistence-candidate.json).
 
 | Check | Observed result |
 |---|---|
-| Functional commit with successful CI | `98e2424dc1bdeb085688350304dee6fe3a751243` |
-| Portable CI | [39039902316](https://github.com/DashSaman/TunnelPannel/actions/runs/39039902316), SUCCESS |
+| Immutable revision portable CI | [39039902316](https://github.com/DashSaman/TunnelPannel/actions/runs/39039902316), SUCCESS rechecked before install |
 | Security CI | [39039902280](https://github.com/DashSaman/TunnelPannel/actions/runs/39039902280), SUCCESS |
 | Python3.11 and3.12, each | 718 canonical +100 TunnelGuard +1 backend PASS |
-| Linux installation | Fresh, rerun, backup/mutate/restore, unrelated-safe uninstall, syntax and ShellCheck PASS |
-| Windows | 696 PASS /22 platform skips |
-| Isolated physical canaries | 12 named checks on EACH test node PASS |
-| Existing warm groups at canary entry | 2 groups /10 healthy members; entries, methods, modes and worker PIDs preserved |
-| Shared host inventory | 2 CPUs,3.73GiB RAM, about1.84GiB available;10 containers,23 services,31 tunnel-class links including kernel defaults |
-| Real existing container publications | 3 bindings read, no container changes |
-| UI | Actual saved shared-host report in isolated local candidate API; FA/EN, export and390px mobile PASS; document375/content375; viewport reset |
-| Recovery | Both backup archives plus separate installation env/keys rescued locally; DPAPI encrypt/decrypt equality verified; same Windows account/machine required |
+| Linux installer | Fresh/rerun, backup/mutate/restore, safe uninstall, syntax and ShellCheck PASS in CI |
+| Installed identity and health | Independent encryption/RBAC hashes preserved, loopback HTTP health PASS on both |
+| Installed canaries | 12 checks EACH node PASS; scoped cleanup, original tunnel links preserved |
+| Fresh inventory | Controller20 links/49 bindings/41 services; peer20/34/38. Both complete, fresh SSH result equals cached authenticated no-store API |
+| Existing active groups | Two groups/10 healthy members; entry hashes, ordered methods, failover/balance modes and gateway PIDs unchanged |
+| Existing paired upstreams | 20/20 nonce HTTP receipts, two for each of10 methods in both directions |
+| UI on installed controller | Persian/English report, JSON download and390px mobile PASS; document375/content375; viewport reset |
+| Recovery | Fresh pre/post archives plus separate per-install env/keys; rescued privately and DPAPI encrypt/decrypt equality verified |
 
-The entering10-member baseline reflects existing owner-visible state: the
-historical7-member source route had already been stopped and a5-member
-failover route created before this acceptance. The5-member reverse balance
-group remained. No historical route was recreated or its credentials reset.
+The current source group has5 methods in failover mode; reverse has5 in balance mode. The historical7-member group was already stopped by the owner before this work and was not recreated. The gateway worker PIDs remained1140595/873935. Existing upstream receipts prove bounded nonce transport through those warm tunnels, not bulk throughput, public exit identity or a continuous SLA.
 
-Initial candidate CI39038813751 had717 PASS/1 FAIL per Python version because
-a POSIX reservation test's narrow fake remote did not recognize the new host
-inspection command. The test now supplies its known empty socket snapshot
-while retaining the real allocator and durable reservation logic. The original
-failure is retained; the corrected test passed on a physical Linux test node,
-then both complete CI matrices passed. Initial installer CI already passed.
+The owner's complete campaign contains216 candidate results:215 PASS and one FAILED (`WATERWALL_H_HTTP2_TLS`, peer→controller). Setup and initial data-plane proof passed, but a later HTTP transfer closed with112bytes remaining (curl18). This historical failure is retained. A new installed one-method campaign `0400961401bf4d3b94f394a4951ee33d` passed BOTH directions with SHA256-verified transfer, latency/jitter samples, recovery and26 owned resources released per direction. Observed rates were300.73/290.18Mbps during10-second tests. The intermittent cause was not established; this retest is not presented as a permanent protocol fix or a guaranteed rate.
 
-Screenshots below are **local candidate previews with the actual saved report**,
-not screenshots of a completed remote upgrade. The preview database contains
-no SSH secret or copied jobs and exposes a viewer-only role. The service
-introduction identifies this as a Tehran Network offering. SSO, WordPress
-accounts, live checkout and website/reverse-proxy integration remain pending.
+Pre-upgrade and final backups were each checksum verified and rescued with separate installation keys before/after rollout. Original snapshots remain. The new snapshots were not restored over live customer data; prior physical restore and immutable CI restore evidence remain the restore proof. DPAPI requires this Windows account/machine. A database backup does not replace deleted live endpoints.
 
-![Persian inventory preview](evidence/commercial/screenshots/preview-fa.png)
+The earlier candidate checks and local shared-host previews remain historical evidence, not live screenshots. The existing real container publications on the third host were read only; Docker NAT behavior was unit tested, not injected on these two Docker-free nodes. Initial functional CI717/1 failed because a narrow POSIX test fake did not recognize the inventory command; the corrected test passed physically and both full718 matrices passed.
 
-![Tehran Network service introduction](evidence/commercial/screenshots/tehnet-service-fa.png)
+Installed screenshots:
 
-Further previews: [English](evidence/commercial/screenshots/preview-en.png),
-[Persian mobile](evidence/commercial/screenshots/preview-mobile-fa.png),
-[English mobile](evidence/commercial/screenshots/preview-mobile-en.png).
+![Installed Persian inventory](evidence/commercial/screenshots/installed-fa.png)
 
-After the owner's campaign ends, capture the then-current active groups,
-take fresh backups, install the verified immutable revision, rerun owned
-canaries and fresh discovery, verify actual data-plane receipts and preserve
-the then-current entries and workers. Refresh installed-version evidence and
-recovery material afterward. Do not cancel the owner's campaign, delete test
-servers, merge main or migrate the shared host as part of that deferred step.
+[English](evidence/commercial/screenshots/installed-en.png) · [Persian mobile](evidence/commercial/screenshots/installed-mobile-fa.png) · [English mobile](evidence/commercial/screenshots/installed-mobile-en.png).
+
+This remains the Tehran Network private test service: no domain, checkout, WordPress/SSO integration, server deletion, shared-host migration or main merge. Sharing distributes new TCP connections; it does not bond a single download or provide full UDP/IP VPN. Inspection is conservative and cannot guarantee compatibility with every unknown service or future bind race.

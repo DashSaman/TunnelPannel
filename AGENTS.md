@@ -1,6 +1,14 @@
 # AGENTS.md — Permanent Agent Rules / قوانین همیشگی ایجنت
 
 
+## 2026-10-17 installed shared-host continuation (supersedes deferred checkpoint below)
+
+Both authorized test APIs65.109.209.194/65.109.213.64 now run immutable8f1e425c38c76f8b1acb570a2392c060f7c3a5c1. Owner campaign757cdb8 finished, then all workspaces on both nodes were confirmed drained before restart. CI39039902316/security39039902280 SUCCESS freshly checked. Updated LOCAL rollout helper was inspected/uploaded and SHA256 checked; obsolete remote helper was not executed. Fresh pre/post backups + separate per-install env/keys preserved privately and rescued with DPAPI equality checks; originals retained, same Windows machine/account required. New backups were not restored over live data.
+
+Installed12 canaries EACH node PASS; fresh SSH/cache no-store inventory20/49/41 and20/34/38;20/20 nonce receipts through10 EXISTING paired upstreams PASS. FA/EN installed report/export and390px375/375 PASS, viewport reset. Current2groups10members preserve entries/ordered methods/failover+balance and worker PIDs1140595/873935. Never recreate historical stopped7group. Original owner campaign has215PASS/1FAILED WaterWallHHTTP2TLS reverse curl18 truncated112bytes; history retained. New installed campaign0400961401bf4d3b94f394a4951ee33d BOTH PASS with SHA256 transfer/recovery and26 owned resources released each. Cause of intermittent failure unconfirmed; do not claim a permanent fix or100% full-run success. No retry masking or result rewriting.
+
+Only owned QA canaries/resources cleaned. Third91.107.138.246 remains inspection-only, no site/proxy changes. No server deletion/domain/payment/SSO/main merge. Evidence docs/SHARED-HOST-VALIDATION*.md and coexistence-installed.json. Heartbeat must be PAUSED after final verified docs/PR publication; private work/coexist-deferred-handoff.json is authoritative for final publication state.
+
 ## 2026-10-17 shared-host / Tehran Network continuation
 
 Available pinned runtime8f1e425c38c76f8b1acb570a2392c060f7c3a5c1 (Tehran Network intro included), full CI39039902316/security39039902280 SUCCESS; each Python718+100+1, installer/restore/uninstall all PASS. This is AVAILABLE, NOT YET INSTALLED on the live test APIs. Heartbeat id automation, ACTIVE every10minutes in THIS thread, created because owner explicitly requested waiting until the running test finishes. It reads private work/coexist-deferred-handoff.json, drains all work before upgrade, and must be PAUSED after completion. No duplicate automation; no unchanged-status chatter. Current runtime and user campaign remain untouched.

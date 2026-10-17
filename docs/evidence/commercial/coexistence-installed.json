@@ -1,0 +1,300 @@
+{
+  "status": "PASS",
+  "runtime": "8f1e425c38c76f8b1acb570a2392c060f7c3a5c1",
+  "canaries": {
+    "controller": {
+      "status": "PASS",
+      "checks": [
+        "ipv4_ipv6_tcp_udp_canary_detection",
+        "existing_tun_link_detection",
+        "existing_service_detection",
+        "allocator_skips_foreign_listeners",
+        "explicit_panel_port_conflict_refused",
+        "fresh_panel_default_conflict_selects_free_port",
+        "operator_reserved_range_skipped",
+        "missing_inspection_tool_fails_closed",
+        "existing_ipsec_policy_protected",
+        "existing_api_listener_owner_verified",
+        "foreign_canary_and_original_api_pid_preserved",
+        "owned_canary_cleanup_only"
+      ],
+      "observed_at": 1792253499.4199557,
+      "before": {
+        "tunnels": 20,
+        "listeners": 49,
+        "services": 41,
+        "containers": 0
+      },
+      "after": {
+        "tunnels": 20,
+        "listeners": 49,
+        "services": 41,
+        "containers": 0
+      },
+      "memory_before": {
+        "MemTotal": 977788928,
+        "MemAvailable": 349245440,
+        "SwapTotal": 1073737728,
+        "SwapFree": 779350016
+      },
+      "docker_live_tested": false,
+      "original_tunnels_unchanged": true
+    },
+    "peer": {
+      "status": "PASS",
+      "checks": [
+        "ipv4_ipv6_tcp_udp_canary_detection",
+        "existing_tun_link_detection",
+        "existing_service_detection",
+        "allocator_skips_foreign_listeners",
+        "explicit_panel_port_conflict_refused",
+        "fresh_panel_default_conflict_selects_free_port",
+        "operator_reserved_range_skipped",
+        "missing_inspection_tool_fails_closed",
+        "existing_ipsec_policy_protected",
+        "existing_api_listener_owner_verified",
+        "foreign_canary_and_original_api_pid_preserved",
+        "owned_canary_cleanup_only"
+      ],
+      "observed_at": 1792253501.1608875,
+      "before": {
+        "tunnels": 20,
+        "listeners": 34,
+        "services": 38,
+        "containers": 0
+      },
+      "after": {
+        "tunnels": 20,
+        "listeners": 34,
+        "services": 38,
+        "containers": 0
+      },
+      "memory_before": {
+        "MemTotal": 977788928,
+        "MemAvailable": 366047232,
+        "SwapTotal": 0,
+        "SwapFree": 0
+      },
+      "docker_live_tested": false,
+      "original_tunnels_unchanged": true
+    }
+  },
+  "inventory": {
+    "controller": {
+      "complete": true,
+      "observed_at": 1792253500.0054133,
+      "counts": {
+        "tunnels": 20,
+        "listeners": 49,
+        "services": 41,
+        "containers": 0
+      },
+      "fresh_cached_api_equal": true,
+      "no_store": true
+    },
+    "peer": {
+      "complete": true,
+      "observed_at": 1792253501.7759352,
+      "counts": {
+        "tunnels": 20,
+        "listeners": 34,
+        "services": 38,
+        "containers": 0
+      },
+      "fresh_cached_api_equal": true,
+      "no_store": true
+    }
+  },
+  "owner_campaign": {
+    "state": "PASS",
+    "routes": [
+      {
+        "results": 108,
+        "status_counts": {
+          "PASS": 108
+        }
+      },
+      {
+        "results": 108,
+        "status_counts": {
+          "PASS": 107,
+          "FAILED": 1
+        }
+      }
+    ]
+  },
+  "entries_methods_modes_workers_preserved": true,
+  "healthy_members": 10,
+  "observed_at": 1792253502.7963428,
+  "receipt_scope": "Two nonce HTTP receipts per existing paired warm upstream; no config/policy change; not bulk throughput or public-exit proof",
+  "receipts": [
+    {
+      "side": "controller",
+      "methods": [
+        {
+          "method": "IP6GRETAP",
+          "receipts": 2,
+          "latency_ms": [
+            4.559,
+            4.028
+          ]
+        },
+        {
+          "method": "SIT_OVER_WIREGUARD",
+          "receipts": 2,
+          "latency_ms": [
+            4.202,
+            2.934
+          ]
+        },
+        {
+          "method": "HAJSAMAN_WG",
+          "receipts": 2,
+          "latency_ms": [
+            4.613,
+            4.889
+          ]
+        },
+        {
+          "method": "GRE",
+          "receipts": 2,
+          "latency_ms": [
+            5.788,
+            3.248
+          ]
+        },
+        {
+          "method": "GRETAP",
+          "receipts": 2,
+          "latency_ms": [
+            3.135,
+            2.791
+          ]
+        }
+      ]
+    },
+    {
+      "side": "peer",
+      "methods": [
+        {
+          "method": "IP6GRE",
+          "receipts": 2,
+          "latency_ms": [
+            6.257,
+            2.923
+          ]
+        },
+        {
+          "method": "SIT_6IN4",
+          "receipts": 2,
+          "latency_ms": [
+            3.048,
+            2.905
+          ]
+        },
+        {
+          "method": "VXLAN",
+          "receipts": 2,
+          "latency_ms": [
+            2.869,
+            3.018
+          ]
+        },
+        {
+          "method": "IPIP",
+          "receipts": 2,
+          "latency_ms": [
+            3.134,
+            3.854
+          ]
+        },
+        {
+          "method": "IKEV2_IPSEC",
+          "receipts": 2,
+          "latency_ms": [
+            4.723,
+            3.581
+          ]
+        }
+      ]
+    }
+  ],
+  "waterwall_retest": {
+    "campaign": "0400961401bf4d3b94f394a4951ee33d",
+    "state": "PASS",
+    "results": [
+      {
+        "method": "WATERWALL_H_HTTP2_TLS",
+        "status": "PASS",
+        "receipt": true,
+        "metrics": {
+          "throughput_mbps": 300.7255962327983,
+          "rtt_avg": 4.8919999999999995,
+          "jitter": 0.7988620689655171,
+          "loss_pct": 0.0,
+          "recovery_ok": true,
+          "throughput_evidence": {
+            "tool": "curl",
+            "integrity": "SHA256",
+            "verified_bytes": 376438784,
+            "elapsed_s": 10.014146815985441,
+            "transfers": 359,
+            "throughput_mbps": 300.7255962327983
+          },
+          "cleanup": "released 26"
+        }
+      },
+      {
+        "method": "WATERWALL_H_HTTP2_TLS",
+        "status": "PASS",
+        "receipt": true,
+        "metrics": {
+          "throughput_mbps": 290.184360893539,
+          "rtt_avg": 7.417066666666667,
+          "jitter": 0.8294482758620689,
+          "loss_pct": 0.0,
+          "recovery_ok": true,
+          "throughput_evidence": {
+            "tool": "curl",
+            "integrity": "SHA256",
+            "verified_bytes": 363855872,
+            "elapsed_s": 10.031026369018946,
+            "transfers": 347,
+            "throughput_mbps": 290.184360893539
+          },
+          "cleanup": "released 26"
+        }
+      }
+    ]
+  },
+  "historical_failure": {
+    "method": "WATERWALL_H_HTTP2_TLS",
+    "direction": "peer to controller",
+    "error": "curl18: HTTP transfer closed with112bytes remaining",
+    "root_cause": "not established; bounded installed retest passes, not a claimed permanent fix"
+  },
+  "ui": {
+    "environment": "installed controller API via SSH loopback forward",
+    "languages": [
+      "fa",
+      "en"
+    ],
+    "fresh_report_export_verified": true,
+    "mobile_client_width": 375,
+    "mobile_scroll_width": 375,
+    "viewport_reset": true
+  },
+  "recovery": {
+    "fresh_before_and_after_backups_both_nodes": true,
+    "separate_install_env_keys": true,
+    "windows_dpapi_roundtrip_verified": true,
+    "requires_same_windows_account_machine": true,
+    "new_snapshot_restore_replayed": false
+  },
+  "scope": {
+    "third_host": "inspection only; no installation or site/proxy changes",
+    "main": "unmerged",
+    "domain_payment_sso_added": false,
+    "server_deleted": false
+  }
+}
