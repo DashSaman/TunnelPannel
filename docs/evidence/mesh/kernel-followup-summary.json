@@ -1,0 +1,20 @@
+{
+  "campaign_id": "723d39050d6f4fbfa2aba9c3387012b5",
+  "profile": "NORMAL",
+  "methods": [
+    "GRE",
+    "GRETAP",
+    "IP6GRETAP",
+    "GRE_OVER_WIREGUARD",
+    "GRETAP_OVER_WIREGUARD",
+    "IPIP_OVER_WIREGUARD",
+    "SIT_OVER_WIREGUARD",
+    "HAJSAMAN_WG",
+    "HAJSAMAN_FULL"
+  ],
+  "candidates": 18,
+  "statuses": {
+    "PASS": 18
+  },
+  "status": "PASS"
+}

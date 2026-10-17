@@ -1,0 +1,325 @@
+{
+  "schema": 1,
+  "checks": {
+    "account_admin_scoped": true,
+    "account_operator_scoped": true,
+    "account_viewer_scoped": true,
+    "viewer_and_logout": true,
+    "account_mfa_scoped": true,
+    "mfa_replay_password_and_session_revocation": true,
+    "csrf_and_sandbox_activation": true,
+    "bootstrap_complete": true,
+    "actual_nodes_allowlisted": true,
+    "quota_quote_10_above_9": true,
+    "over_budget_created_no_job": true,
+    "managed_bootstrap_17a814cb": true,
+    "managed_rotation_preserves_foreign_17a814cb": true,
+    "managed_real_root_access_17a814cb": true,
+    "managed_revocation_verified_replacement_17a814cb": true,
+    "managed_bootstrap_c079291c": true,
+    "managed_rotation_preserves_foreign_c079291c": true,
+    "managed_real_root_access_c079291c": true,
+    "managed_revocation_verified_replacement_c079291c": true,
+    "managed_crash_boundary_injected": true,
+    "managed_recovery_drained_owned_pending_keys": true,
+    "managed_recovery_preserves_current_and_foreign": true,
+    "ui_budget_low_set": true,
+    "ui_budget_restored": true,
+    "ui_started_one_actual_campaign": true,
+    "ui_campaign_parameters_persisted": true,
+    "actual_stale_estimate_cannot_duplicate_ui_job": true,
+    "second_tenant_waits_durably_without_worker": true,
+    "ready_for_controller_restart": true,
+    "initial_five_method_bidirectional_receipts": true,
+    "restarted_mesh_resumes_with_new_child": true,
+    "queued_other_tenant_dispatches_after_restart": true,
+    "interrupted_child_owned_allocations_released": true,
+    "controller_pid_changed_and_health_returned": true,
+    "standalone_ready_for_controller_restart": true,
+    "standalone_interrupted_once_and_owned_resources_released": true,
+    "verified_https_hub_configured": true,
+    "actual_unprivileged_linux_agent_reports": true,
+    "agent_dynamic_user_and_filesystem_protection": true,
+    "cross_server_mtls_trust_hostname_client_replay_command_gates": true,
+    "actual_revoked_certificate_denied": true,
+    "rotation_preserves_installation_ca": true,
+    "hub_and_client_restart_keep_rotated_identity": true,
+    "actual_warm_route_0": true,
+    "actual_warm_route_1": true,
+    "failover_targets_only_owned_test_member_services": true,
+    "stable_entry_parallel_data_nonce_receipts": true,
+    "actual_connection_distribution_across_two_methods": true,
+    "actual_member_outage_switches_new_connections": true,
+    "mode_and_failover_preserve_entry_and_worker": true,
+    "restored_balance_data_receipts": true,
+    "installed_signed_events_idempotent": true,
+    "actual_grace_keeps_entitlements": true,
+    "actual_expiry_blocks_new_paid_work": true,
+    "default_expiry_preserves_running_groups": true,
+    "support_export_after_expiry_excludes_live_credentials": true,
+    "actual_transition_history_contains_degraded_and_restored": true,
+    "explicit_expiry_cleanup_releases_only_qa_routes": true,
+    "actual_owner_cancellation_blocks_new_work": true,
+    "actual_renewal_restores_entitlements": true,
+    "expiry_preserves_original_twelve_members": true,
+    "exact_foreign_canary_cleanup_17a814cb": true,
+    "current_managed_access_survives_canary_cleanup_17a814cb": true,
+    "exact_foreign_canary_cleanup_c079291c": true,
+    "current_managed_access_survives_canary_cleanup_c079291c": true,
+    "predictable_demo_api_key_revoked": true,
+    "rotated_demo_api_access": true,
+    "demo_handoff_account_scoped": true,
+    "owner_handoff_account_scoped": true,
+    "actual_hub_restart_retains_replay_gate": true
+  },
+  "workspace": "820310a647ed4623811a6480a464792f",
+  "scope": "only the two explicitly allowlisted disposable seed hosts",
+  "key_file_sha256_after_tests": "d9caeca50a731a4576733b4f57dc308685284dbf136199464c6ae43997259b00",
+  "campaign": "c59afe9f8a8e401fbf9c46888b2a10be",
+  "restart_boundary": {
+    "child": "6dfec67b0305439e88fe2ada117a38a6",
+    "active_owned_allocations": 2
+  },
+  "primary_campaign": {
+    "id": "c59afe9f8a8e401fbf9c46888b2a10be",
+    "state": "PASS",
+    "routes": [
+      {
+        "qualified": 5,
+        "selected": [
+          "WIREGUARD",
+          "WATERWALL_H_HTTP2_TLS",
+          "VMESS_TCP_TLS",
+          "HYSTERIA2",
+          "SSH_REMOTE_FORWARD"
+        ],
+        "results": [
+          {
+            "candidate": "HYSTERIA2",
+            "status": "PASS",
+            "metrics": {
+              "rtt_avg": 3.7624666666666666,
+              "rtt_p95": 4.383749999999999,
+              "jitter": 0.6140689655172413,
+              "loss_pct": 0.0,
+              "throughput_mbps": 158.09808633428423,
+              "reconnect_s": 0.17,
+              "stability_ratio": 1.0,
+              "cpu_pct": 90.86799276672694,
+              "ram_mb": 709.1484375
+            },
+            "data_plane_ok": true,
+            "recovery_ok": true
+          },
+          {
+            "candidate": "SSH_REMOTE_FORWARD",
+            "status": "PASS",
+            "metrics": {
+              "rtt_avg": 3.501666666666667,
+              "rtt_p95": 3.153699999999999,
+              "jitter": 2.5706896551724143,
+              "loss_pct": 0.0,
+              "throughput_mbps": 166.01278451387682,
+              "reconnect_s": 5.983,
+              "stability_ratio": 1.0,
+              "cpu_pct": 36.52121936640766,
+              "ram_mb": 687.47265625
+            },
+            "data_plane_ok": true,
+            "recovery_ok": true
+          },
+          {
+            "candidate": "VMESS_TCP_TLS",
+            "status": "PASS",
+            "metrics": {
+              "rtt_avg": 9.614266666666667,
+              "rtt_p95": 12.82955,
+              "jitter": 2.424137931034483,
+              "loss_pct": 0.0,
+              "throughput_mbps": 343.01473242154276,
+              "reconnect_s": 0.152,
+              "stability_ratio": 1.0,
+              "cpu_pct": 68.0679785330948,
+              "ram_mb": 695.3125
+            },
+            "data_plane_ok": true,
+            "recovery_ok": true
+          },
+          {
+            "candidate": "WATERWALL_H_HTTP2_TLS",
+            "status": "PASS",
+            "metrics": {
+              "rtt_avg": 7.065633333333333,
+              "rtt_p95": 8.716600000000001,
+              "jitter": 0.8198965517241382,
+              "loss_pct": 0.0,
+              "throughput_mbps": 292.1646283991178,
+              "reconnect_s": 0.731,
+              "stability_ratio": 1.0,
+              "cpu_pct": 77.07275803722504,
+              "ram_mb": 706.765625
+            },
+            "data_plane_ok": true,
+            "recovery_ok": true
+          },
+          {
+            "candidate": "WIREGUARD",
+            "status": "PASS",
+            "metrics": {
+              "rtt_avg": 2.7304666666666666,
+              "rtt_p95": 3.2009499999999997,
+              "jitter": 0.730448275862069,
+              "loss_pct": 0.0,
+              "throughput_mbps": 603.93858738834,
+              "reconnect_s": 0.44,
+              "stability_ratio": 1.0,
+              "cpu_pct": 67.82426778242679,
+              "ram_mb": 691.3828125
+            },
+            "data_plane_ok": true,
+            "recovery_ok": true
+          }
+        ]
+      },
+      {
+        "qualified": 5,
+        "selected": [
+          "WIREGUARD",
+          "WATERWALL_H_HTTP2_TLS",
+          "HYSTERIA2",
+          "VMESS_TCP_TLS",
+          "SSH_REMOTE_FORWARD"
+        ],
+        "results": [
+          {
+            "candidate": "HYSTERIA2",
+            "status": "PASS",
+            "metrics": {
+              "rtt_avg": 2.3832,
+              "rtt_p95": 3.3503499999999997,
+              "jitter": 0.42841379310344824,
+              "loss_pct": 0.0,
+              "throughput_mbps": 160.9157856155737,
+              "reconnect_s": 0.146,
+              "stability_ratio": 1.0,
+              "cpu_pct": 90.87591240875912,
+              "ram_mb": 694.91796875
+            },
+            "data_plane_ok": true,
+            "recovery_ok": true
+          },
+          {
+            "candidate": "SSH_REMOTE_FORWARD",
+            "status": "PASS",
+            "metrics": {
+              "rtt_avg": 4.739366666666667,
+              "rtt_p95": 22.094849999999923,
+              "jitter": 4.868586206896553,
+              "loss_pct": 0.0,
+              "throughput_mbps": 169.35725390201503,
+              "reconnect_s": 5.957,
+              "stability_ratio": 1.0,
+              "cpu_pct": 35.20286396181385,
+              "ram_mb": 689.18359375
+            },
+            "data_plane_ok": true,
+            "recovery_ok": true
+          },
+          {
+            "candidate": "VMESS_TCP_TLS",
+            "status": "PASS",
+            "metrics": {
+              "rtt_avg": 12.866666666666667,
+              "rtt_p95": 16.941549999999996,
+              "jitter": 2.1286206896551723,
+              "loss_pct": 0.0,
+              "throughput_mbps": 342.7583098653971,
+              "reconnect_s": 0.141,
+              "stability_ratio": 1.0,
+              "cpu_pct": 67.84765279007972,
+              "ram_mb": 696.09765625
+            },
+            "data_plane_ok": true,
+            "recovery_ok": true
+          },
+          {
+            "candidate": "WATERWALL_H_HTTP2_TLS",
+            "status": "PASS",
+            "metrics": {
+              "rtt_avg": 7.336966666666667,
+              "rtt_p95": 9.082849999999999,
+              "jitter": 1.1301724137931033,
+              "loss_pct": 0.0,
+              "throughput_mbps": 312.40715830689476,
+              "reconnect_s": 0.688,
+              "stability_ratio": 1.0,
+              "cpu_pct": 74.07407407407408,
+              "ram_mb": 706.41796875
+            },
+            "data_plane_ok": true,
+            "recovery_ok": true
+          },
+          {
+            "candidate": "WIREGUARD",
+            "status": "PASS",
+            "metrics": {
+              "rtt_avg": 2.5012,
+              "rtt_p95": 2.6948499999999993,
+              "jitter": 0.5692413793103449,
+              "loss_pct": 0.0,
+              "throughput_mbps": 614.3014597392811,
+              "reconnect_s": 0.375,
+              "stability_ratio": 1.0,
+              "cpu_pct": 71.71194480379475,
+              "ram_mb": 687.609375
+            },
+            "data_plane_ok": true,
+            "recovery_ok": true
+          }
+        ]
+      }
+    ]
+  },
+  "restart_drill_campaign": "0e5fb9885b1840cea851296d3b92c0e3",
+  "restart": {
+    "live_owned_resources": 2,
+    "health_recovered": true,
+    "started_at": 1792181143.3149142
+  },
+  "agent": {
+    "ca_sha256": "c7455efc1a8a8fd0d7bdbfddc33f78e2aeef26f785ed53822dbd173d7c4c6a0e",
+    "cross_server": true,
+    "last_seen": 1792181569.1388464,
+    "report_fields": [
+      "arch",
+      "load1",
+      "memory_available_bytes",
+      "memory_total_bytes",
+      "os",
+      "sent_at",
+      "sequence",
+      "uptime_s",
+      "version"
+    ],
+    "checks": {
+      "accepted": true,
+      "replay_denied": true,
+      "commands_denied": true,
+      "wrong_ca_denied": true,
+      "missing_client_denied": true,
+      "wrong_hostname_denied": true
+    }
+  },
+  "failover": {
+    "detection_and_new_connections_s": 8.502,
+    "parallel_nonce_receipts": 20,
+    "existing_sessions": "client reconnect required"
+  },
+  "support": {
+    "sha256": "9f6ddf97c4630d26783f683880c5dcde647e748f2c148a3e9b72650ea0a9e08a",
+    "sample_count": 11,
+    "observation_count": 4,
+    "transition_count": 4
+  },
+  "original_groups_monitor_started_at": 1792182394.5753217
+}

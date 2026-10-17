@@ -1,0 +1,55 @@
+{
+  "status": "PASS",
+  "version": "a115027e357f5ea5ce279445e40a678a06949c5b",
+  "checks": [
+    "B_pinned_upgrade_idempotence_backup_restore_uninstall_reinstall_and_engine_preservation",
+    "A_pinned_upgrade_and_second_install_preserve_identity_history_and_warm_groups",
+    "A_installed_backup_manifest_workspace_auth_and_both_real_decryptable_SSH_nodes"
+  ],
+  "backup": {
+    "sha256": "0a81d63dd7cb88d6e0625566a7a269f63cc4ad1633d79ff7039a31bd23df8ad7",
+    "workspaces": 3,
+    "verified_real_nodes": 2,
+    "installation_key_included": false
+  },
+  "routes": [
+    {
+      "id": "7812cdf792a84bd18c6993890548c778",
+      "methods": [
+        "IP6GRE",
+        "SIT_6IN4",
+        "VXLAN",
+        "IPIP",
+        "IKEV2_IPSEC"
+      ],
+      "healthy": {
+        "IP6GRE": true,
+        "SIT_6IN4": true,
+        "VXLAN": true,
+        "IPIP": true,
+        "IKEV2_IPSEC": true
+      }
+    },
+    {
+      "id": "35c3b76628054350a5f4f94dcd151db8",
+      "methods": [
+        "SSH_REMOTE_FORWARD",
+        "IPIP",
+        "SIT_6IN4",
+        "WIREGUARD",
+        "GOST_SOCKS5",
+        "WATERWALL_H_HTTP2_TLS",
+        "VMESS_TCP_TLS"
+      ],
+      "healthy": {
+        "SSH_REMOTE_FORWARD": true,
+        "IPIP": true,
+        "SIT_6IN4": true,
+        "WIREGUARD": true,
+        "GOST_SOCKS5": true,
+        "WATERWALL_H_HTTP2_TLS": true,
+        "VMESS_TCP_TLS": true
+      }
+    }
+  ]
+}

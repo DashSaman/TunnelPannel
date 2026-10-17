@@ -139,7 +139,8 @@ def rtt_stats(samples_ms: list[float]) -> dict:
             return xs[int(k)]
         return xs[f] + (xs[c] - xs[f]) * (k - f)
 
-    diffs = [abs(b - a) for a, b in zip(xs, xs[1:])] if n >= 2 else [0.0]
+    # Percentiles need sorting; jitter measures changes in chronological order.
+    diffs = [abs(b - a) for a, b in zip(samples_ms, samples_ms[1:])] if n >= 2 else [0.0]
     return {
         "rtt_min": xs[0],
         "rtt_avg": statistics.fmean(xs),

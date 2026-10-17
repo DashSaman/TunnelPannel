@@ -1,0 +1,187 @@
+{
+  "scope": "New real-pair implementations under validation; original 82 identities remain stable.",
+  "methods": [
+    {
+      "id": "HEDIOUM_POOL_SSH",
+      "set": "HEDIOUM_METHODS",
+      "name": "Hedioum SSH pool",
+      "binary": "hedioum",
+      "default_port": 0
+    },
+    {
+      "id": "HEDIOUM_POOL_SMTP",
+      "set": "HEDIOUM_METHODS",
+      "name": "Hedioum SMTP STARTTLS pool",
+      "binary": "hedioum",
+      "default_port": 0
+    },
+    {
+      "id": "HEDIOUM_POOL_IMAP",
+      "set": "HEDIOUM_METHODS",
+      "name": "Hedioum IMAP STARTTLS pool",
+      "binary": "hedioum",
+      "default_port": 0
+    },
+    {
+      "id": "HEDIOUM_POOL_POSTGRES",
+      "set": "HEDIOUM_METHODS",
+      "name": "Hedioum PostgreSQL STARTTLS pool",
+      "binary": "hedioum",
+      "default_port": 0
+    },
+    {
+      "id": "HEDIOUM_POOL_MYSQL",
+      "set": "HEDIOUM_METHODS",
+      "name": "Hedioum MySQL STARTTLS pool",
+      "binary": "hedioum",
+      "default_port": 0
+    },
+    {
+      "id": "HEDIOUM_POOL_MIXED",
+      "set": "HEDIOUM_METHODS",
+      "name": "Hedioum TLS + SSH + SMTP pool",
+      "binary": "hedioum",
+      "default_port": 0
+    },
+    {
+      "id": "WATERWALL_H_WS_TLS",
+      "set": "WATERWALL_METHODS",
+      "name": "WaterWall-H authenticated WebSocket over verified TLS",
+      "binary": "waterwall-h",
+      "default_port": 0
+    },
+    {
+      "id": "WATERWALL_H_HTTP2_TLS",
+      "set": "WATERWALL_METHODS",
+      "name": "WaterWall-H authenticated HTTP2 over verified TLS",
+      "binary": "waterwall-h",
+      "default_port": 0
+    },
+    {
+      "id": "WATERWALL_H_REALITY",
+      "set": "WATERWALL_METHODS",
+      "name": "WaterWall-H Reality v2",
+      "binary": "waterwall-h",
+      "default_port": 0
+    },
+    {
+      "id": "WATERWALL_H_VLESS_REALITY",
+      "set": "WATERWALL_METHODS",
+      "name": "WaterWall-H VLESS over Reality v2",
+      "binary": "waterwall-h",
+      "default_port": 0
+    },
+    {
+      "id": "VMESS_TCP_TLS",
+      "set": "SINGBOX_METHODS",
+      "name": "VMESS TCP TLS",
+      "binary": "sing-box",
+      "default_port": 0
+    },
+    {
+      "id": "VMESS_WS_TLS",
+      "set": "SINGBOX_METHODS",
+      "name": "VMESS WS TLS",
+      "binary": "sing-box",
+      "default_port": 0
+    },
+    {
+      "id": "ANYTLS",
+      "set": "SINGBOX_METHODS",
+      "name": "ANYTLS",
+      "binary": "sing-box",
+      "default_port": 0
+    },
+    {
+      "id": "SHADOWTLS3_SS2022",
+      "set": "SINGBOX_METHODS",
+      "name": "SHADOWTLS3 SS2022",
+      "binary": "sing-box",
+      "default_port": 0
+    },
+    {
+      "id": "NAIVE_HTTPS",
+      "set": "SINGBOX_METHODS",
+      "name": "NAIVE HTTPS",
+      "binary": "sing-box",
+      "default_port": 0
+    },
+    {
+      "id": "IPIP_OVER_WIREGUARD",
+      "set": "COMPOSITE_METHODS",
+      "name": "IPIP OVER WIREGUARD",
+      "binary": "ip",
+      "default_port": 0
+    },
+    {
+      "id": "IPIP_OVER_SSH",
+      "set": "COMPOSITE_METHODS",
+      "name": "IPIP OVER SSH",
+      "binary": "ip",
+      "default_port": 0
+    },
+    {
+      "id": "IPIP_OVER_GOST",
+      "set": "COMPOSITE_METHODS",
+      "name": "IPIP OVER GOST",
+      "binary": "ip",
+      "default_port": 0
+    },
+    {
+      "id": "GRETAP_OVER_WIREGUARD",
+      "set": "COMPOSITE_METHODS",
+      "name": "GRETAP OVER WIREGUARD",
+      "binary": "ip",
+      "default_port": 0
+    },
+    {
+      "id": "GRETAP_OVER_SSH",
+      "set": "COMPOSITE_METHODS",
+      "name": "GRETAP OVER SSH",
+      "binary": "ip",
+      "default_port": 0
+    },
+    {
+      "id": "SIT_OVER_WIREGUARD",
+      "set": "COMPOSITE_METHODS",
+      "name": "SIT OVER WIREGUARD",
+      "binary": "ip",
+      "default_port": 0
+    },
+    {
+      "id": "VXLAN_OVER_WIREGUARD",
+      "set": "COMPOSITE_METHODS",
+      "name": "VXLAN OVER WIREGUARD",
+      "binary": "ip",
+      "default_port": 0
+    },
+    {
+      "id": "VXLAN_OVER_SSH",
+      "set": "COMPOSITE_METHODS",
+      "name": "VXLAN OVER SSH",
+      "binary": "ip",
+      "default_port": 0
+    },
+    {
+      "id": "VXLAN_OVER_GOST",
+      "set": "COMPOSITE_METHODS",
+      "name": "VXLAN OVER GOST",
+      "binary": "ip",
+      "default_port": 0
+    },
+    {
+      "id": "WIREGUARD_OVER_GOST",
+      "set": "COMPOSITE_METHODS",
+      "name": "WIREGUARD OVER GOST",
+      "binary": "ip",
+      "default_port": 0
+    },
+    {
+      "id": "WIREGUARD_OVER_SSH",
+      "set": "COMPOSITE_METHODS",
+      "name": "WIREGUARD OVER SSH",
+      "binary": "ip",
+      "default_port": 0
+    }
+  ]
+}

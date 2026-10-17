@@ -18,16 +18,18 @@ def full_xray_config(port, mark):
 
 def deploy_hajsaman(method, run, item, config, a, b, endpoint_a, endpoint_b, journals):
     from plan_executor import executor as bodies
-    subnet = run['id'] % 200 + 20
-    sit_cfg = {**config, 'tunnel_cidr': f'fd45:5a1:{subnet}::/64',
-               'tunnel_ip_a': f'fd45:5a1:{subnet}::1/64', 'tunnel_ip_b': f'fd45:5a1:{subnet}::2/64'}
+    from orchestrator.host_lease import unused_prefix
+    inner6 = ipaddress.ip_network(unused_prefix((a, b), version=6))
+    sit_cfg = {**config, 'tunnel_cidr': str(inner6),
+               'tunnel_ip_a': f'{inner6[1]}/64', 'tunnel_ip_b': f'{inner6[2]}/64'}
     sit = bodies.deploy_kernel('SIT_6IN4', run, {'id': item['id'] * 100 + 31}, sit_cfg, a, b)
     for side in ('a', 'b'):
         sit['services_' + side] = [sit['systemd_unit']]
-        sit['interfaces_' + side] = [sit['interface_name']]
+        sit['interfaces_' + side] = [] if sit.get('shared_kernel') else [sit['interface_name']]
     sit['mtu'] = 1480
-    for remote in (a, b):
-        remote.run(f"ip link set {sit['interface_name']} mtu 1480", root=True)
+    if not sit.get('shared_kernel'):
+        for remote in (a, b):
+            remote.run(f"ip link set {sit['interface_name']} mtu 1480", root=True)
     if method == 'HAJSAMAN_SIT':
         return {**sit, 'method': method, 'stack': ['sit']}
     wg_cfg = {**config, 'source_ip_a': str(ipaddress.ip_interface(sit_cfg['tunnel_ip_a']).ip),
@@ -48,8 +50,8 @@ def deploy_hajsaman(method, run, item, config, a, b, endpoint_a, endpoint_b, jou
     namespace = bodies.short_name('hns', run['id'], item['id'])
     veth = bodies.short_name('hv', run['id'], item['id'])
     ns_peer = bodies.short_name('hp', run['id'], item['id'])
-    origin = f'10.252.{subnet}.2'
-    gateway = f'10.252.{subnet}.1'
+    namespace_net = ipaddress.ip_network(unused_prefix((a, b), exclude=[config['tunnel_cidr']]))
+    origin, gateway = str(namespace_net[2]), str(namespace_net[1])
     source = str(ipaddress.ip_interface(wg['tunnel_ip_a']).ip)
     payload = secrets.token_hex(24)
     directory = f'/var/lib/tunnelpannel/bench/{tag}'

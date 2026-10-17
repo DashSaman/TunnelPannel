@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "at": 1792182521.7223198,
+  "pre_upgrade_archive_compared": true,
+  "original_groups": {
+    "35c3b76628054350a5f4f94dcd151db8": {
+      "methods": [
+        "SSH_REMOTE_FORWARD",
+        "IPIP",
+        "SIT_6IN4",
+        "WIREGUARD",
+        "GOST_SOCKS5",
+        "WATERWALL_H_HTTP2_TLS",
+        "VMESS_TCP_TLS"
+      ],
+      "entry_sha256": "fd9df0a066c1a0b80478042e77c489eb735525a9bc7afb6cc4f9c8f122b96331"
+    },
+    "7812cdf792a84bd18c6993890548c778": {
+      "methods": [
+        "IP6GRE",
+        "SIT_6IN4",
+        "VXLAN",
+        "IPIP",
+        "IKEV2_IPSEC"
+      ],
+      "entry_sha256": "f0dedaa5000f3d8939d9ea8054a87a98c16e0bf0f96a66d51b08e26c7ac2941d"
+    }
+  },
+  "entry_credentials_and_ports_unchanged": true,
+  "all_twelve_methods_preserved": true,
+  "test_workers_default_restored": true
+}

@@ -8,7 +8,7 @@ from __future__ import annotations
 import pathlib
 
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, Response
 from pydantic import BaseModel
 
 from core.models import Deployment, Job
@@ -23,9 +23,28 @@ class SelectionBody(BaseModel):
 def create_web_router(session_factory) -> APIRouter:
     router = APIRouter(tags=["ranking-ui"])
 
+    @router.get('/',response_class=HTMLResponse)
+    @router.get('/portal',response_class=HTMLResponse)
+    def portal():
+        return HTMLResponse(HTML_PATH.with_name('portal.html').read_text(encoding='utf-8'),headers={
+            'Cache-Control':'no-store', 'Referrer-Policy':'no-referrer', 'X-Content-Type-Options':'nosniff',
+            'Content-Security-Policy':"default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"})
+
+    @router.get('/assets/{name}')
+    def portal_asset(name:str):
+        types={'portal.js':'application/javascript','portal.css':'text/css','auth.js':'application/javascript'}
+        if name not in types:
+            raise HTTPException(404,'asset not found')
+        return Response(HTML_PATH.with_name(name).read_text(encoding='utf-8'),media_type=types[name],
+                        headers={'Cache-Control':'no-cache','X-Content-Type-Options':'nosniff'})
+
     @router.get("/ranking", response_class=HTMLResponse)
     def ranking_page():
         return HTMLResponse(HTML_PATH.read_text(encoding="utf-8"))
+
+    @router.get('/mesh', response_class=HTMLResponse)
+    def mesh_page():
+        return HTMLResponse(HTML_PATH.with_name('mesh.html').read_text(encoding='utf-8'))
 
     @router.get("/api/nodes")
     def nodes():

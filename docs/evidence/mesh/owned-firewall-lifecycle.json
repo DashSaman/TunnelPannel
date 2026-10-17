@@ -1,0 +1,20 @@
+{
+  "checks": [
+    {
+      "family": 4,
+      "allowed": true,
+      "blocked_when_owned_allow_stopped": true,
+      "allowed_after_restart": true
+    },
+    {
+      "family": 6,
+      "allowed": true,
+      "blocked_when_owned_allow_stopped": true,
+      "allowed_after_restart": true
+    }
+  ],
+  "prior_rules_preserved": true,
+  "prior_rules_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "released_resources": 11,
+  "status": "PASS"
+}

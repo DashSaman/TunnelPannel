@@ -6,8 +6,8 @@
 # Installs the CANONICAL application (apps/api + web UI). The legacy
 # Gen1 docker stack remains available in git history and deploy/.
 # Idempotent: a second run reconciles (keeps config/secrets/DB), never resets.
-# Supported/tested: Ubuntu LTS (22.04/24.04), Debian stable (11/12).
-# Other distributions fail honestly instead of guessing.
+# Package-manager paths: apt/dnf/yum/zypper/pacman/apk on systemd hosts.
+# Real pair validation: Ubuntu 24.04 amd64. Other paths are not a test claim.
 set -Eeuo pipefail
 
 REPO="${TUNNELPANNEL_REPO:-https://github.com/DashSaman/TunnelPannel}"
@@ -48,28 +48,46 @@ trap 'die "unexpected error (see log above)"' ERR
 # ── 1. OS / arch detection ────────────────────────────────────────────
 STAGE="detect-os"
 [[ $EUID -eq 0 ]] || die "run as root (curl … | sudo bash)"
-command -v apt-get >/dev/null 2>&1 || die "only apt-based hosts are supported (Ubuntu LTS / Debian stable); refusing to guess"
+command -v systemctl >/dev/null 2>&1 && [[ -d /run/systemd/system ]] \
+  || die "a running systemd host is required for owned tunnel services"
 OS_ID="$(. /etc/os-release >/dev/null 2>&1; echo "$ID")"
-OS_VERSION_ID="$(. /etc/os-release >/dev/null 2>&1; echo "$VERSION_ID")"
-case "$OS_ID:${OS_VERSION_ID%%.*}" in
-  ubuntu:22|ubuntu:24|debian:12) ;;   # exactly what CI/real testing covers
-  *) die "unsupported distribution: $OS_ID $OS_VERSION_ID (tested: Ubuntu 22.04/24.04, Debian 12)" ;;
+OS_VERSION_ID="$(. /etc/os-release >/dev/null 2>&1; echo "${VERSION_ID:-rolling}")"
+case "$(uname -m)" in
+  x86_64|amd64) ARCH=amd64 ;;
+  aarch64|arm64) ARCH=arm64 ;;
+  *) ARCH="$(uname -m)" ;;
 esac
-ARCH="$(dpkg --print-architecture)"
 note "detected $OS_ID $OS_VERSION_ID ($ARCH); target version: $TP_VERSION"
 
 # ── 2. base dependencies ──────────────────────────────────────────────
 STAGE="base-deps"
 export DEBIAN_FRONTEND=noninteractive
 export NEEDRESTART_MODE=l
-apt-get update -qq
-apt-get install -y -qq ca-certificates curl git python3 python3-venv python3-pip sqlite3 openssl sudo >/dev/null
+if command -v apt-get >/dev/null 2>&1; then
+  apt-get update -qq
+  apt-get install -y -qq ca-certificates curl git python3 python3-venv python3-pip sqlite3 openssl sudo iproute2 procps >/dev/null
+elif command -v dnf >/dev/null 2>&1; then
+  dnf install -y ca-certificates curl git python3 python3-pip sqlite openssl sudo shadow-utils iproute procps-ng
+elif command -v yum >/dev/null 2>&1; then
+  yum install -y ca-certificates curl git python3 python3-pip sqlite openssl sudo shadow-utils iproute procps-ng
+elif command -v zypper >/dev/null 2>&1; then
+  zypper --non-interactive install ca-certificates curl git python3 python3-pip sqlite3 openssl sudo shadow iproute2 procps
+elif command -v pacman >/dev/null 2>&1; then
+  pacman -Sy --noconfirm --needed ca-certificates curl git python python-pip sqlite openssl sudo shadow iproute2 procps-ng
+elif command -v apk >/dev/null 2>&1; then
+  apk add --no-cache ca-certificates curl git python3 py3-pip sqlite openssl sudo shadow iproute2 procps
+else
+  die "unsupported distribution: supported package manager not found"
+fi
+python3 -c 'import sys; assert sys.version_info >= (3,10), "Python 3.10 or newer required"' \
+  || die "install a maintained Python 3.10+ runtime before retrying"
 
 # ── 3. service user + directories (idempotent) ─────────────────────────
 STAGE="user-dirs"
 id tunnelpannel >/dev/null 2>&1 || useradd --system --home "$DATA_DIR" --shell /usr/sbin/nologin tunnelpannel
 mkdir -p "$INSTALL_DIR" "$DATA_DIR" "$CONF_DIR" "$LOG_DIR"
 chown -R tunnelpannel:tunnelpannel "$DATA_DIR" "$LOG_DIR"
+install -d -o tunnelpannel -g tunnelpannel -m 700 "$DATA_DIR/leases" "$DATA_DIR/workspaces"
 
 # ── 4. obtain source ──────────────────────────────────────────────────
 STAGE="fetch-source"
@@ -101,6 +119,11 @@ fi
 PORT="${TUNNELPANNEL_PORT:-${SAVED_PORT:-8080}}"
 [[ "$PORT" =~ ^[0-9]+$ ]] && (( PORT >= 1024 && PORT <= 65535 )) \
   || die "TUNNELPANNEL_PORT must be an integer in 1024..65535"
+STRICT_PORT=0
+[[ -z "${TUNNELPANNEL_PORT:-}${SAVED_PORT}" ]] || STRICT_PORT=1
+PORT="$(python3 "$INSTALL_DIR/scripts/panel_port.py" --port "$PORT" --strict "$STRICT_PORT")" \
+  || die "panel port inspection failed; no config or service has been replaced"
+note "checked panel entry: 127.0.0.1:$PORT"
 if [[ ! -f "$CONF_DIR/tunnelpannel.env" ]]; then
   SECRET_KEY="$(openssl rand -hex 32)"
   gen_hash() { printf '%s' "$1" | sha256sum | cut -d' ' -f1; }
@@ -114,6 +137,8 @@ DATABASE_URL=sqlite:///$DATA_DIR/tunnelpannel.db
 TP_SECRET_KEY=$SECRET_KEY
 TP_RBAC_TOKENS=VIEWER:$(gen_hash "$V_TOKEN"),OPERATOR:$(gen_hash "$O_TOKEN"),SUPER_ADMIN:$(gen_hash "$A_TOKEN")
 TUNNELPANNEL_PORT=$PORT
+TP_LOCK_DIR=$DATA_DIR/leases
+TP_WORKSPACES_DIR=$DATA_DIR/workspaces
 TP_BOT_ALLOWED_IDS=
 TELEGRAM_BOT_TOKEN=
 ENV
@@ -128,6 +153,10 @@ else
     printf 'TUNNELPANNEL_PORT=%s\n' "$PORT" >> "$CONF_DIR/tunnelpannel.env"
   fi
 fi
+
+# Add mesh storage defaults to existing installations without rotating secrets.
+grep -q '^TP_LOCK_DIR=' "$CONF_DIR/tunnelpannel.env" || printf 'TP_LOCK_DIR=%s/leases\n' "$DATA_DIR" >> "$CONF_DIR/tunnelpannel.env"
+grep -q '^TP_WORKSPACES_DIR=' "$CONF_DIR/tunnelpannel.env" || printf 'TP_WORKSPACES_DIR=%s/workspaces\n' "$DATA_DIR" >> "$CONF_DIR/tunnelpannel.env"
 
 if [[ "$SHOW_TOKENS" == "1" ]]; then
   {
@@ -166,6 +195,10 @@ note "schema at revision: ${SCHEMA_REV:-unknown}"
 
 # ── 8. systemd service (idempotent: enable + restart, never duplicate) ─
 STAGE="service"
+# A second snapshot narrows the race with unrelated installers; bind failure
+# still fails safely, and health below proves the listener belongs to our PID.
+python3 "$INSTALL_DIR/scripts/panel_port.py" --port "$PORT" --strict 1 >/dev/null \
+  || die "panel port became occupied; existing service unit preserved"
 cat > "/etc/systemd/system/$SERVICE.service" <<UNIT
 [Unit]
 Description=TunnelPannel canonical API + web UI
@@ -192,7 +225,9 @@ systemctl restart "$SERVICE"
 STAGE="health"
 HEALTH=""
 for i in $(seq 1 30); do
-  if curl -fsS "http://127.0.0.1:$PORT/health" >/dev/null 2>&1; then HEALTH=ok; break; fi
+  if systemctl is-active --quiet "$SERVICE" \
+    && python3 "$INSTALL_DIR/scripts/panel_port.py" --port "$PORT" --strict 1 --verify-owned >/dev/null 2>&1 \
+    && curl -fsS "http://127.0.0.1:$PORT/health" >/dev/null 2>&1; then HEALTH=ok; break; fi
   sleep 1
 done
 [[ "$HEALTH" == "ok" ]] || die "service did not become healthy on :$PORT (inspect: journalctl -u $SERVICE -n 50)"

@@ -1,24 +1,40 @@
 # TunnelPannel
 
+TunnelPannel is the tunnel-management service for **Tehran Network**. Current service boundaries and shared-host checks: [English](docs/SHARED-HOST.md) · [فارسی](docs/SHARED-HOST-fa.md).
+
+[Installed shared-host report](docs/SHARED-HOST-VALIDATION.md): both test nodes upgraded after the owner campaign drained;24 installed canary checks and20 existing paired receipts passed. The full owner run retained215/216 successes; the one WaterWall failure passed a separate two-direction retest, with its intermittent cause still unconfirmed.
+
+![Installed Persian inventory](docs/evidence/commercial/screenshots/installed-fa.png)
+
+[Private two-node test mode, observation summary and connection-quality probe](docs/TEST-ONLY.md). Current owner scope: no domain and no payment processor.
+
+[Previous installed test report](docs/TEST-ONLY-VALIDATION.md):16.80h of retained observations,2,014 valid paired TCP receipts, preserved12 warm members and700-test Linux suites. The summary reports sampling gaps and probe percentiles; it does not infer continuous uptime.
+
+![Live observation summary](docs/evidence/commercial/screenshots/observation-fa.png)
+
 [فارسی](README.fa.md) · [Real two-node report](docs/releases/v0.9.0-rc3/REAL_BENCHMARK.md)
 
-The canonical panel at `/ranking` runs **82 real tunnel methods between two registered Linux servers**: deployment, actual traffic, latency/loss, measured throughput, service restart/recovery, ownership receipts and cleanup. The earlier 23 partial and 27 failed isolated lab methods were the remediation baseline; retained failed attempts and final real-node results are in the release report.
+[Complete Persian panel manual](docs/PANEL-GUIDE-fa.md) · [Mesh and connection-sharing validation](docs/MESH-VALIDATION.md) · [Pinned installer](install-one-line.txt)
+
+The `/mesh` panel registers customer servers, tests every directed pair, recommends up to five measured methods per route, and deploys independent warm failover groups. Quality-weighted connection sharing distributes concurrent TCP streams across healthy tunnels. The catalog contains **108 identities: 91 profiles and 17 supported compositions**, with six additional compatibility names. Customers can select their own order and more than five members within their workspace limit. [Full workflow and owner controls](docs/MESH.md).
+
+The original 82-method remediation of the earlier 23 partial / 27 failed methods remains documented in the [RC3 report](docs/releases/v0.9.0-rc3/REAL_BENCHMARK.md). Current implementation counts and real passing receipts are kept separate.
 
 ## Install
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/8f1e425c38c76f8b1acb570a2392c060f7c3a5c1/install.sh | sudo env TUNNELPANNEL_VERSION=8f1e425c38c76f8b1acb570a2392c060f7c3a5c1 bash
 ```
 
-This installs the current main branch. For the exact delivered revision, use the pinned command in `install-one-line.txt`. Re-running preserves credentials and data. The installer creates the application account, installs dependencies, migrates the database, starts systemd and verifies HTTP health. It refuses to overwrite local source changes.
+This installs the CI-verified shared-host candidate, also recorded in `install-one-line.txt`. The existing test APIs remain on the previous revision until the owner's active campaign finishes; wait for active work before upgrading. Re-running preserves credentials and data. The installer creates the application account, installs dependencies, migrates the database, starts systemd and verifies HTTP health. It refuses to overwrite local source changes.
 
-Real-node validation uses Ubuntu 24.04 amd64. Other environments need their own validation. The API binds to **127.0.0.1:8080**. From your computer:
+Real-node validation uses Ubuntu 24.04 amd64. Other environments need their own validation. The API binds to loopback. The default is **127.0.0.1:8080**; a fresh installation can choose a free canonical port when that implicit default is occupied. Explicit/saved port conflicts refuse installation; use the port in the install receipt. From your computer:
 
 ```sh
 ssh -L 8080:127.0.0.1:8080 root@YOUR_PANEL_SERVER
 ```
 
-Open `http://127.0.0.1:8080/ranking`. First installation displays role tokens once; store them privately. Reinstallation preserves their hashes.
+Open `http://127.0.0.1:8080/portal` for owner and customer setup, `/mesh` for warm routes and `/ranking` for a single pair. First installation displays role tokens once; store them privately. Reinstallation preserves their hashes.
 
 ## Benchmark workflow
 
@@ -34,7 +50,7 @@ To update credentials, save the same node name and host with new credentials, th
 
 L3 uses bidirectional inner-address ICMP and TCP iperf3. Proxy/forward methods verify a remote nonce and SHA256-checked files. UDP validates echoed datagrams. Composites must fail when the actual carrier is stopped and recover after dependency restoration. Native HajSaman FULL also verifies policy routing and SNAT against an owned remote namespace.
 
-CPU/RAM are whole-node measurements. HTTP timings include SSH execution overhead; compare like measurement bases. Two nearby servers establish behavior on these endpoints, not arbitrary NAT traversal, geographic latency, blocked networks or three-server multi-hop operation.
+CPU/RAM are whole-node measurements. HTTP latency uses the on-node curl timer and excludes SSH round-trip overhead; compare like measurement bases. Two nearby servers establish behavior on these endpoints, not arbitrary NAT traversal, geographic latency, blocked networks or three-server multi-hop operation.
 
 The canonical path is `apps/api`, `apps/web`, `core` and `orchestrator/pair_runtime.py`. Historical `deploy/`, the older single-executor SDK and legacy Docker dashboard remain for reference; their old feature claims and local smoke results are separate from this real-pair evidence.
 
@@ -51,6 +67,20 @@ Keep `/etc/tunnelpannel/tunnelpannel.env` separately and privately with backups:
 
 [Task ledger](docs/development/TASK_LEDGER.md) · [Catalog](docs/development/CATALOG_INVENTORY.md) · [Historical baseline](docs/releases/v0.9.0-rc2/REAL_VALIDATION.md)
 
-The historical executor catalog contains 77 methods; the canonical registry includes 82 profiles. For existing Gen1 Docker installations only, use scripts/export-production-state.sh and scripts/restore-production-state.sh with their documented encrypted PostgreSQL recovery workflow. The canonical installation uses the backup/restore commands above.
+The historical executor catalog contains 77 methods; the preserved base registry has 82 entries and the mesh extension adds 26. The combined catalog has 108 identities. For existing Gen1 Docker installations only, use scripts/export-production-state.sh and scripts/restore-production-state.sh with their documented encrypted PostgreSQL recovery workflow. The canonical installation uses the backup/restore commands above.
 
 ![Real panel benchmark](docs/shots/panel-real-benchmark.jpg)
+
+## Commercial beta portal
+
+Open `/portal` for invitation accounts, MFA, server onboarding, workload confirmation, objective-based recommendations, subscription controls and operations history. The same cookie session opens Mesh, Benchmark and Topology. [Complete owner/customer guide](docs/COMMERCIAL-BETA.md) · [راهنمای فارسی](docs/COMMERCIAL-BETA-fa.md).
+
+Starter/Pro/Team define bounded server, route, member and daily-test ceilings. The durable queue and atomic reservation protect both Mesh and standalone test APIs. Latency, capacity, stability and balanced objectives retain real receipt qualification and carrier diversity. Recommendations can be limited to protocol-encrypted templates; shortfall is visible.
+
+Dedicated per-node SSH key rotation verifies replacement access before removing old credentials. Optional unprivileged mTLS telemetry accepts typed reports only. Opt-in history retains bounded state and latency observations; support exports exclude raw configuration and credentials. Explicit expiry cleanup stops only the opted-in customer's owned routes. Existing installations and bearer API keys remain compatible.
+
+Billing is sandboxed: no payment is collected and checkout/prices are unconfigured. Public sessions require a configured HTTPS origin; SSH-forwarded loopback previews support local HTTP. Input bodies are capped at64KiB, signed events/telemetry at16KiB. See the [execution ledger](docs/development/COMMERCIAL_LEDGER.md) for installed acceptance status; presence of a feature is separate from a passing hardware result.
+
+[Commercial acceptance report](docs/COMMERCIAL-VALIDATION.md):70 installed checks,10 representative paired passes,12 preserved public exits, restart/queue, key/mTLS and expiry/backup acceptance. This remains an invitation-only TCP beta; payments and public HTTPS are unconfigured.
+
+![Live Persian portal](docs/evidence/commercial/screenshots/live-portal-fa.jpg)

@@ -1,0 +1,80 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "route_id": "35c3b76628054350a5f4f94dcd151db8",
+      "method": "SSH_REMOTE_FORWARD",
+      "public_destination_exit_verified": true,
+      "latency_ms": 7.445
+    },
+    {
+      "route_id": "35c3b76628054350a5f4f94dcd151db8",
+      "method": "IPIP",
+      "public_destination_exit_verified": true,
+      "latency_ms": 4.528
+    },
+    {
+      "route_id": "35c3b76628054350a5f4f94dcd151db8",
+      "method": "SIT_6IN4",
+      "public_destination_exit_verified": true,
+      "latency_ms": 5.152
+    },
+    {
+      "route_id": "35c3b76628054350a5f4f94dcd151db8",
+      "method": "WIREGUARD",
+      "public_destination_exit_verified": true,
+      "latency_ms": 7.234
+    },
+    {
+      "route_id": "35c3b76628054350a5f4f94dcd151db8",
+      "method": "GOST_SOCKS5",
+      "public_destination_exit_verified": true,
+      "latency_ms": 7.33
+    },
+    {
+      "route_id": "35c3b76628054350a5f4f94dcd151db8",
+      "method": "WATERWALL_H_HTTP2_TLS",
+      "public_destination_exit_verified": true,
+      "latency_ms": 13.013
+    },
+    {
+      "route_id": "35c3b76628054350a5f4f94dcd151db8",
+      "method": "VMESS_TCP_TLS",
+      "public_destination_exit_verified": true,
+      "latency_ms": 15.745
+    },
+    {
+      "route_id": "7812cdf792a84bd18c6993890548c778",
+      "method": "IP6GRE",
+      "public_destination_exit_verified": true,
+      "latency_ms": 5.707
+    },
+    {
+      "route_id": "7812cdf792a84bd18c6993890548c778",
+      "method": "SIT_6IN4",
+      "public_destination_exit_verified": true,
+      "latency_ms": 6.762
+    },
+    {
+      "route_id": "7812cdf792a84bd18c6993890548c778",
+      "method": "VXLAN",
+      "public_destination_exit_verified": true,
+      "latency_ms": 5.738
+    },
+    {
+      "route_id": "7812cdf792a84bd18c6993890548c778",
+      "method": "IPIP",
+      "public_destination_exit_verified": true,
+      "latency_ms": 6.214
+    },
+    {
+      "route_id": "7812cdf792a84bd18c6993890548c778",
+      "method": "IKEV2_IPSEC",
+      "public_destination_exit_verified": true,
+      "latency_ms": 5.98
+    }
+  ],
+  "stable_entries_preserved": true,
+  "owned_proof_cleaned": true,
+  "restoration_errors": []
+}
