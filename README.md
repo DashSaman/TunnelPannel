@@ -1,8 +1,14 @@
 # TunnelPannel
 
+TunnelPannel is the tunnel-management service for **Tehran Network**. Current service boundaries and shared-host checks: [English](docs/SHARED-HOST.md) · [فارسی](docs/SHARED-HOST-fa.md).
+
+[Shared-host candidate report](docs/SHARED-HOST-VALIDATION.md): existing tunnels, services, ports and container bindings are inspected. The owner requested waiting for the active campaign before upgrading the test APIs.
+
+![Local candidate preview of the actual saved report; remote upgrade pending](docs/evidence/commercial/screenshots/preview-fa.png)
+
 [Private two-node test mode, observation summary and connection-quality probe](docs/TEST-ONLY.md). Current owner scope: no domain and no payment processor.
 
-[Latest installed test report](docs/TEST-ONLY-VALIDATION.md):16.80h of retained observations,2,014 valid paired TCP receipts, preserved12 warm members and700-test Linux suites. The summary reports sampling gaps and probe percentiles; it does not infer continuous uptime.
+[Previous installed test report](docs/TEST-ONLY-VALIDATION.md):16.80h of retained observations,2,014 valid paired TCP receipts, preserved12 warm members and700-test Linux suites. The summary reports sampling gaps and probe percentiles; it does not infer continuous uptime.
 
 ![Live observation summary](docs/evidence/commercial/screenshots/observation-fa.png)
 
@@ -22,7 +28,7 @@ curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/c300a4a9b203
 
 This installs the tested commercial beta revision, also recorded in `install-one-line.txt`. Re-running preserves credentials and data. The installer creates the application account, installs dependencies, migrates the database, starts systemd and verifies HTTP health. It refuses to overwrite local source changes.
 
-Real-node validation uses Ubuntu 24.04 amd64. Other environments need their own validation. The API binds to **127.0.0.1:8080**. From your computer:
+Real-node validation uses Ubuntu 24.04 amd64. Other environments need their own validation. The API binds to loopback. The default is **127.0.0.1:8080**; a fresh installation can choose a free canonical port when that implicit default is occupied. Explicit/saved port conflicts refuse installation; use the port in the install receipt. From your computer:
 
 ```sh
 ssh -L 8080:127.0.0.1:8080 root@YOUR_PANEL_SERVER

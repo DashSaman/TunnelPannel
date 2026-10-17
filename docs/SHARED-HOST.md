@@ -1,5 +1,22 @@
 # Shared hosts: inspection and limits
 
+## Tehran Network service boundary
+
+The owner selected this panel as a **Tehran Network service**. The portal and
+mesh introduction identify that service; TunnelPannel remains the engine name.
+Keep customer workspaces and server credentials isolated even when the public
+entry is part of the existing Tehran Network website. The current milestone
+is private testing without a new domain or payment provider. Existing panel
+invitations, roles and sessions are in use; shared WordPress login, single
+sign-on, site navigation and payment integration are future integration work,
+not implemented contracts. Do not share WordPress database access or send root
+SSH credentials through a public marketing form as a shortcut.
+
+The shared host has existing Tehran Network/MyTel applications and a legacy
+MTF panel. Read-only inspection is authorized here. Moving controller data,
+changing the website/reverse proxy or replacing an existing panel is a separate
+cutover; the coexistence report itself does not perform that migration.
+
 Use **Portal → Servers → Discover → Existing tunnels, ports and services**.
 Discovery saves a timestamped, workspace-scoped report. Reading the saved
 report makes no SSH connection. Download includes all rows; tables display

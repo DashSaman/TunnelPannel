@@ -1,0 +1,142 @@
+{
+  "phase": "candidate; live API upgrade deferred until owner campaign finishes",
+  "functional_ci_commit": "98e2424dc1bdeb085688350304dee6fe3a751243",
+  "installed_runtime_at_checkpoint": "c300a4a9b2036b9701c8dcebdcc9b3be06676f86",
+  "canonical_ci_run": 39039167798,
+  "security_ci_run": 39039167803,
+  "python311": {
+    "canonical": 718,
+    "tunnelguard": 100,
+    "backend": 1,
+    "status": "PASS"
+  },
+  "python312": {
+    "canonical": 718,
+    "tunnelguard": 100,
+    "backend": 1,
+    "status": "PASS"
+  },
+  "windows": {
+    "passed": 696,
+    "platform_skips": 22
+  },
+  "canary_nodes": {
+    "controller": {
+      "status": "PASS",
+      "checks": [
+        "ipv4_ipv6_tcp_udp_canary_detection",
+        "existing_tun_link_detection",
+        "existing_service_detection",
+        "allocator_skips_foreign_listeners",
+        "explicit_panel_port_conflict_refused",
+        "fresh_panel_default_conflict_selects_free_port",
+        "operator_reserved_range_skipped",
+        "missing_inspection_tool_fails_closed",
+        "existing_ipsec_policy_protected",
+        "existing_api_listener_owner_verified",
+        "foreign_canary_and_original_api_pid_preserved",
+        "owned_canary_cleanup_only"
+      ],
+      "observed_at": 1792245289.9060826,
+      "before": {
+        "tunnels": 20,
+        "listeners": 52,
+        "services": 43,
+        "containers": 0
+      },
+      "after": {
+        "tunnels": 20,
+        "listeners": 52,
+        "services": 43,
+        "containers": 0
+      },
+      "original_tunnels_unchanged": true
+    },
+    "peer": {
+      "status": "PASS",
+      "checks": [
+        "ipv4_ipv6_tcp_udp_canary_detection",
+        "existing_tun_link_detection",
+        "existing_service_detection",
+        "allocator_skips_foreign_listeners",
+        "explicit_panel_port_conflict_refused",
+        "fresh_panel_default_conflict_selects_free_port",
+        "operator_reserved_range_skipped",
+        "missing_inspection_tool_fails_closed",
+        "existing_ipsec_policy_protected",
+        "existing_api_listener_owner_verified",
+        "foreign_canary_and_original_api_pid_preserved",
+        "owned_canary_cleanup_only"
+      ],
+      "observed_at": 1792245290.7612314,
+      "before": {
+        "tunnels": 20,
+        "listeners": 37,
+        "services": 40,
+        "containers": 0
+      },
+      "after": {
+        "tunnels": 20,
+        "listeners": 37,
+        "services": 40,
+        "containers": 0
+      },
+      "original_tunnels_unchanged": true
+    }
+  },
+  "entering_active_member_count": 10,
+  "entering_active_groups_preserved": true,
+  "shared_host": {
+    "inspection_only": true,
+    "complete": true,
+    "observed_at": 1792245151.3261578,
+    "cpus": 2,
+    "memory": {
+      "MemTotal": 4005449728,
+      "MemAvailable": 1971539968,
+      "SwapTotal": 2147479552,
+      "SwapFree": 1544810496
+    },
+    "counts": {
+      "listeners": 62,
+      "tunnels": 31,
+      "services": 23,
+      "containers": 10
+    },
+    "container_published_bindings": 3,
+    "kernel_default_links_included": true,
+    "installation_performed": false
+  },
+  "ui": {
+    "environment": "isolated local candidate API; actual saved shared-host report; no SSH credentials",
+    "role": "VIEWER",
+    "report_languages": [
+      "fa",
+      "en"
+    ],
+    "export_verified": true,
+    "mobile": {
+      "viewport_width": 390,
+      "document_client_width": 375,
+      "document_scroll_width": 375
+    },
+    "viewport_reset": true
+  },
+  "recovery": {
+    "two_backups_and_separate_install_env_keys_rescued": true,
+    "windows_dpapi_roundtrip_verified": true,
+    "requires_same_windows_account_machine": true,
+    "private_material_published": false
+  },
+  "owner_wait_request": {
+    "campaign": "757cdb8cd8ff45afa05a55aa4395a919",
+    "cancel_authorized": false,
+    "update_after_completion": true
+  },
+  "limits": [
+    "No zero-interference guarantee",
+    "No tunnel endpoint replacement by a database backup",
+    "No SSO or WordPress account integration implemented",
+    "No domain or payment provisioning"
+  ]
+}
