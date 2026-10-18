@@ -168,6 +168,22 @@ def owned_port(port, unit):
         return False
 
 
+def prepare_directories(user):
+    for path in (CONF, DATA):
+        path.mkdir(mode=0o750, exist_ok=True)
+        # The bootstrap uses umask077. mkdir(mode=750) alone becomes700 and
+        # prevents the unprivileged SSH/nginx processes reading root-owned config.
+        path.chmod(0o750)
+    os.chown(CONF, 0, user.pw_gid)
+    os.chown(DATA, user.pw_uid, user.pw_gid)
+    for directory in ('client', 'proxy', 'fastcgi', 'uwsgi', 'scgi'):
+        path = DATA/directory
+        safe_directory(path)
+        path.mkdir(mode=0o700, exist_ok=True)
+        path.chmod(0o700)
+        os.chown(path, user.pw_uid, user.pw_gid)
+
+
 def install(args):
     import pwd
     if os.geteuid() != 0:
@@ -218,15 +234,7 @@ def install(args):
     except KeyError:
         run(['useradd','--system','--user-group','--home-dir',str(DATA),'--shell','/usr/sbin/nologin',USER])
         user = pwd.getpwnam(USER)
-    for path in (CONF, DATA):
-        path.mkdir(mode=0o750,exist_ok=True)
-    os.chown(CONF,0,user.pw_gid)
-    os.chown(DATA,user.pw_uid,user.pw_gid)
-    for directory in ('client','proxy','fastcgi','uwsgi','scgi'):
-        path=DATA/directory
-        safe_directory(path)
-        path.mkdir(mode=0o700,exist_ok=True)
-        os.chown(path,user.pw_uid,user.pw_gid)
+    prepare_directories(user)
     files = {str(CONF/'nginx.conf'):nginx_config(config),
              **{str(Path('/etc/systemd/system')/name):body for name,body in units(config).items()}}
     if old:
