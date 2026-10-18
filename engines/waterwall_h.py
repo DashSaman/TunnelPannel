@@ -13,8 +13,162 @@ import uuid
 PIN = '613bb32c93db40b09cb915070e5f7ff09ad3c81d'
 METHODS = {'WATERWALL_H_WS_TLS', 'WATERWALL_H_HTTP2_TLS', 'WATERWALL_H_REALITY',
            'WATERWALL_H_VLESS_REALITY'}
-PATCHSET = 'ca1-h2drain3'
+PATCHSET = 'ca1-h2drain6'
 RUNTIME = '/opt/tunnelpannel-engines/waterwall-h/' + PIN + '-' + PATCHSET
+
+
+def patch_http2_receive(source):
+    """Deliver parsed DATA before a control write can close the transport.
+
+    nghttp2 queues received application events. Sending its WINDOW_UPDATE/ACK
+    first can re-enter downstream Finish through the transport and destroy it.
+    Drain received events first; an aborted consumer must also prevent writes
+    through the receive state it just destroyed. WebSocket handling is unchanged.
+    """
+    before = '''    if (! sendNghttp2Outbound(t, l, ls))
+    {
+        return false;
+    }
+
+    httpclient_tstate_t *ts = tunnelGetState(t);
+    if (! ts->websocket_enabled)
+    {
+        if (! drainDownEvents(t, l, ls))
+        {
+            return false;
+        }
+    }
+'''
+    after = '''    /* TunnelPannel: deliver received DATA before a re-entrant control write. */
+    httpclient_tstate_t *ts = tunnelGetState(t);
+    if (! ts->websocket_enabled)
+    {
+        if (! drainDownEvents(t, l, ls))
+        {
+            return false;
+        }
+    }
+
+    if (! sendNghttp2Outbound(t, l, ls))
+    {
+        return false;
+    }
+'''
+    if source.count(after) == 1:
+        return source
+    if source.count(before) != 1:
+        raise ValueError('unexpected WaterWall-H HTTP2 client receive source')
+    return source.replace(before, after)
+
+
+def patch_tcp_close_source(source):
+    """Opt-in Linux close: send FIN, then consume late control until peer EOF.
+
+    close(fd) with unread WINDOW_UPDATE sends RST even when all application
+    output reached send(). That reset can discard the peer's unread tail.
+    The detached listener owns no more application callbacks during this drain.
+    """
+    def replace(before, after):
+        nonlocal source
+        if source.count(after) == 1:
+            return
+        if source.count(before) != 1:
+            raise ValueError('unexpected WaterWall-H TCP close source')
+        source = source.replace(before, after)
+
+    replace('    if (! write_queue_empty(&io->write_queue) && io->error == 0 && io->close == 0 && io->destroy == 0)',
+            '''#if defined(OS_LINUX)
+    /* TunnelPannel: repeated close/EOF cannot abort an owned write drain. */
+    if (io->drain_close && io->close && io->error == 0 && ! io->destroy &&
+        (! write_queue_empty(&io->write_queue) || (io->drain_close == 2 && ! io->read_eof)))
+    {
+        return 0;
+    }
+#endif
+    if (! write_queue_empty(&io->write_queue) && io->error == 0 && io->close == 0 && io->destroy == 0)''')
+    replace('    const bool freeing    = io->destroy;',
+            '''#if defined(OS_LINUX)
+    /* TunnelPannel: a software-empty queue is not a completed TCP close. */
+    if (io->drain_close && ! io->read_eof && io->error == 0 && ! io->destroy &&
+        io->io_type == WIO_TYPE_TCP && shutdown(wioGetFD(io), SHUT_WR) == 0)
+    {
+        io->drain_close = 2;
+        io->close = 1;
+        wioDel(io, WW_WRITE);
+        int timeout_ms = io->close_timeout ? io->close_timeout : 2000;
+        wioDelCloseTimer(io);
+        io->close_timer = wtimerAdd(io->loop, __close_timeout_cb, (uint32_t) timeout_ms, 1);
+        if (io->close_timer != NULL)
+        {
+            io->close_timer->privdata = io;
+            return wioRead(io);
+        }
+        io->error = ECANCELED;
+    }
+#endif
+    const bool freeing    = io->destroy;''')
+    before = '\n\n    return 0;\n}'
+    # Anchor to the final close body rather than every return in the full file.
+    before = '        wioFinalizeNow(io);\n    }' + before
+    replace(before, before + '''
+
+#if defined(OS_LINUX)
+int wioCloseDrain(wio_t *io)
+{
+    if (! io->drain_close) io->drain_close = 1;
+    /* Caller has detached the application owner before requesting this close. */
+    wioSetCallBackRead(io, NULL);
+    wioSetCallBackWrite(io, NULL);
+    io->read_flags = 0;
+    return wioClose(io);
+}
+#endif''')
+    return source
+
+
+def patch_tcp_close(directory):
+    root = Path(directory)
+
+    def replace(path, before, after):
+        target = root / path
+        text = target.read_text()
+        if text.count(after) == 1:
+            return
+        if text.count(before) != 1:
+            raise ValueError('unexpected WaterWall-H TCP close source: ' + path)
+        target.write_text(text.replace(before, after))
+
+    replace('ww/event/wevent.h', '    unsigned close : 1;', '''    unsigned close : 1;
+#if defined(OS_LINUX)
+    unsigned drain_close : 2; /* TunnelPannel: requested / FIN sent */
+    unsigned read_eof : 1;
+#endif''')
+    replace('ww/event/wevent.c', '    io->close                 = 0;', '''    io->close                 = 0;
+#if defined(OS_LINUX)
+    io->drain_close = 0;
+    io->read_eof = 0;
+#endif''')
+    replace('ww/event/wloop.h', 'WW_EXPORT int wioClose(wio_t *io);', '''WW_EXPORT int wioClose(wio_t *io);
+#if defined(OS_LINUX)
+/* Detached TCP owner only: flush output, FIN, discard input until EOF/timeout. */
+WW_EXPORT int wioCloseDrain(wio_t *io);
+#endif''')
+    replace('ww/event/nio.c', '''        goto disconnect;
+    }
+    // printf("%d \\n",nread);''', '''#if defined(OS_LINUX)
+        io->read_eof = 1;
+        if (io->drain_close) wioDel(io, WW_READ);
+#endif
+        goto disconnect;
+    }
+    // printf("%d \\n",nread);''')
+    target = root / 'ww/event/nio.c'
+    target.write_text(patch_tcp_close_source(target.read_text()))
+    replace('tunnels/TcpListener/downstream/fin.c', '    wioClose(ls->io);', '''#if defined(OS_LINUX)
+    wioCloseDrain(ls->io);
+#else
+    wioClose(ls->io);
+#endif''')
 
 
 def patch_http2_drain(directory):
@@ -156,6 +310,9 @@ static httpserver_h2_data_item_t *httpserverH2DataItemCreate''')
 }
 
 static httpclient_h2_data_item_t *httpclientH2DataItemCreate''')
+    target = root / 'common/transport.c'
+    target.write_text(patch_http2_receive(target.read_text()))
+    patch_tcp_close(directory)
 
 
 def patch_owned_ca(source):
@@ -278,7 +435,8 @@ def install(remote):
         return
     from plan_executor import executor as bodies
     # Build code lives outside the panel's private customer-data directory.
-    root = '/var/cache/tunnelpannel-build/waterwall-h/' + PIN
+    # Keep source/build trees separate from older patches and archive-only caches.
+    root = '/var/cache/tunnelpannel-build/waterwall-h/' + PIN + '-' + PATCHSET
     remote.run('install -d -m 0755 /var/cache/tunnelpannel-build/waterwall-h', root=True)
     bodies.write_remote_text(remote, root + '/owned_ca_module.py', Path(__file__).read_text(encoding='utf-8'), '0644')
     remote.run('chmod 0755 ' + shlex.quote(root), root=True)
@@ -307,7 +465,7 @@ test "$(git -C source remote get-url origin)" = 'https://github.com/DashSaman/Wa
 git -C source fetch --depth=1 origin '__PIN__'
 git -C source checkout --detach '__PIN__'
 test "$(git -C source rev-parse HEAD)" = '__PIN__'
-git -C source restore --source='__PIN__' tunnels/TlsClient/instance/create.c tunnels/HttpServer tunnels/HttpClient
+git -C source restore --source='__PIN__' tunnels/TlsClient/instance/create.c tunnels/HttpServer tunnels/HttpClient tunnels/TcpListener/downstream/fin.c ww/event/nio.c ww/event/wevent.c ww/event/wevent.h ww/event/wloop.h
 python3 - <<'PATCH'
 import pathlib,runpy
 module=runpy.run_path('__ROOT__/owned_ca_module.py')

@@ -28,3 +28,23 @@ def test_paired_recipes_are_strict_tls_and_have_no_loopback_transport_shortcut(m
     assert tcp['settings']['address'] == '198.51.100.9'
     assert tcp['settings']['port'] == 24321
     assert server['nodes'][0]['settings']['port'] == 24321
+
+
+def test_new_patch_build_preserves_previous_mutable_source_cache(monkeypatch):
+    from engines import waterwall_h
+    from plan_executor import executor
+    calls = iter([False, True])
+    monkeypatch.setattr(waterwall_h, 'installed', lambda remote: next(calls))
+    writes = []
+    monkeypatch.setattr(executor, 'write_remote_text',
+                        lambda remote, path, text, mode: writes.append(path))
+
+    class Remote:
+        def run(self, *args, **kwargs):
+            return {'code': 0, 'stdout': '', 'stderr': ''}
+
+    waterwall_h.install(Remote())
+    legacy_cache = '/var/cache/tunnelpannel-build/waterwall-h/' + waterwall_h.PIN + '/'
+    assert writes
+    assert all(not path.startswith(legacy_cache) for path in writes), \
+        'a new patch build must not overwrite the previous patch source/build cache'
