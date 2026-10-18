@@ -1,5 +1,9 @@
 # Shared hosts: inspection and limits
 
+Owner's2026-10-18 deployment topology supersedes the earlier controller-placement suggestion below: the Tehran Network host is a [website gateway only](WEB-GATEWAY.md). API/database/queue and all benchmark/build/tunnel processing stay on separate servers. Existing website proxy configuration remains independent.
+
+Install/uninstall also refuse symlink or unmarked occupied canonical paths and foreign effective API units. A root-owned managed-path marker supports safe retries; older installations need a matching install receipt and canonical source identity before adoption. Configuration/data are preserved by uninstall.
+
 ## Tehran Network service boundary
 
 The owner selected this panel as a **Tehran Network service**. The portal and

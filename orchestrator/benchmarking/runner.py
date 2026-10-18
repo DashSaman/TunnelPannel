@@ -198,11 +198,13 @@ class BenchmarkRunner:
                     adapter.rollback()
                 with self._db_lock:
                     n = rm.release_deployment(deployment.id)
+                    deployment.state = "ROLLED_BACK"
                     self.session.commit()
                 metrics["cleanup"] = f"released {n}"
             except Exception as e:
                 with self._db_lock:
                     self.orphaned.append(cand.legacy_method_id)
+                    deployment.state = "FAILED"
                     self.session.add(Event(severity="critical", source="benchmark",
                                            message=f"ORPHANED_RESOURCE after {cand.legacy_method_id}: {str(e)[:200]}",
                                            context={"candidate": cand.legacy_method_id}))

@@ -2,6 +2,8 @@
 
 TunnelPannel is the tunnel-management service for **Tehran Network**. Current service boundaries and shared-host checks: [English](docs/SHARED-HOST.md) · [فارسی](docs/SHARED-HOST-fa.md).
 
+Website-only deployment: [web gateway](docs/WEB-GATEWAY.md) · [راهنمای فارسی درگاه](docs/WEB-GATEWAY-fa.md). The website host runs only isolated nginx/SSH forwarding; the API, customer databases, queues, benchmarks, builds and tunnels remain on separate servers. Future pay-per-use checkout is not enabled by the gateway.
+
 [Installed shared-host report](docs/SHARED-HOST-VALIDATION.md): both test nodes upgraded after the owner campaign drained;24 installed canary checks and20 existing paired receipts passed. The full owner run retained215/216 successes; the one WaterWall failure passed a separate two-direction retest, with its intermittent cause still unconfirmed.
 
 ![Installed Persian inventory](docs/evidence/commercial/screenshots/installed-fa.png)
