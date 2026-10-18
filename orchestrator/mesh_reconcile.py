@@ -1,5 +1,6 @@
 """Restart cleanup uses only the durable physical ownership ledger."""
-from core.models import Deployment, ResourceAllocation
+import datetime as dt
+from core.models import BenchmarkRun, Deployment, Job, ResourceAllocation
 from orchestrator.host_lease import HostLease
 from orchestrator.remote_journal import RemoteJournal
 from orchestrator.remote_nodes import NodeRemote, node_access
@@ -48,3 +49,12 @@ def reconcile_benchmark(factory, job_id):
                     remote.close()
                 for lease in reversed(acquired):
                     lease.release()
+        # Recovery owns the lost worker's lease. Finish its metadata only after
+        # all owned cleanup succeeded; preserve samples and already-final runs.
+        job = session.get(Job, job_id)
+        run_id = (job.payload or {}).get('_run_id') if job else None
+        run = session.get(BenchmarkRun, run_id) if run_id else None
+        if run is not None and run.state in {'QUEUED', 'RUNNING'}:
+            run.state = 'INTERRUPTED'
+            run.finished_at = dt.datetime.now(dt.timezone.utc)
+            session.commit()
