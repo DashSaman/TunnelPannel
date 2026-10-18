@@ -8,7 +8,7 @@ TunnelPannel API installation or customer database.
 
 ## Revisions and reproducibility
 
-- Installed API on both nodes: `882e69d8af31616f4022ca5ddabb11f31c5b587d`,
+- Installed controller revision on both nodes: `882e69d8af31616f4022ca5ddabb11f31c5b587d`,
   tree `9b2e61253f2cae51e04585f29ea43baafc1ec812`.
 - Installed website gateway / complete installer pin:
   `d68556d17f8b4a8276bc4c2344139bffc9329042`,
