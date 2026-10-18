@@ -38,10 +38,10 @@ The controller's sshd policy for this dedicated user must additionally set
 Validate with `sshd -t` and inspect effective policy before reloading sshd.
 `permitopen` alone does not disable remote forwarding.
 
-Use a verified immutable40-character commit in both places below:
+The command below pins the CI-verified complete revision. For a later release, replace both commit identifiers together:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/COMMIT/scripts/install-web-gateway.sh | sudo env TP_GATEWAY_VERSION=COMMIT TP_GATEWAY_CONTROLLER_HOST=192.0.2.10 TP_GATEWAY_SSH_USER=tp-web-gateway TP_GATEWAY_KEY_FILE=/root/gateway.key TP_GATEWAY_KNOWN_HOSTS_FILE=/root/gateway.known_hosts bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/d68556d17f8b4a8276bc4c2344139bffc9329042/scripts/install-web-gateway.sh | sudo env TP_GATEWAY_VERSION=d68556d17f8b4a8276bc4c2344139bffc9329042 TP_GATEWAY_CONTROLLER_HOST=192.0.2.10 TP_GATEWAY_SSH_USER=tp-web-gateway TP_GATEWAY_KEY_FILE=/root/gateway.key TP_GATEWAY_KNOWN_HOSTS_FILE=/root/gateway.known_hosts bash
 ```
 
 Optional variables: `TP_GATEWAY_SSH_PORT`, `TP_GATEWAY_API_PORT`,
@@ -71,3 +71,6 @@ Moving a website entry does not migrate those resources. Back up the controller
 databases plus its separate install key; keep a separate private gateway-key
 backup and verify the encrypted rescue. Do not restore backups over live tunnel
 workspaces merely to configure the website entry.
+
+
+Installed two-node and website acceptance: [English report](WATERWALL-GATEWAY-VALIDATION.md).

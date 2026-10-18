@@ -1,1 +1,1 @@
-curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/8f1e425c38c76f8b1acb570a2392c060f7c3a5c1/install.sh | sudo env TUNNELPANNEL_VERSION=8f1e425c38c76f8b1acb570a2392c060f7c3a5c1 bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/d68556d17f8b4a8276bc4c2344139bffc9329042/install.sh | sudo env TUNNELPANNEL_VERSION=d68556d17f8b4a8276bc4c2344139bffc9329042 bash

@@ -4,7 +4,7 @@ TunnelPannel is the tunnel-management service for **Tehran Network**. Current se
 
 Website-only deployment: [web gateway](docs/WEB-GATEWAY.md) · [راهنمای فارسی درگاه](docs/WEB-GATEWAY-fa.md). The website host runs only isolated nginx/SSH forwarding; the API, customer databases, queues, benchmarks, builds and tunnels remain on separate servers. Future pay-per-use checkout is not enabled by the gateway.
 
-[Installed shared-host report](docs/SHARED-HOST-VALIDATION.md): both test nodes upgraded after the owner campaign drained;24 installed canary checks and20 existing paired receipts passed. The full owner run retained215/216 successes; the one WaterWall failure passed a separate two-direction retest, with its intermittent cause still unconfirmed.
+[Latest installed repair and gateway report](docs/WATERWALL-GATEWAY-VALIDATION.md): WaterWall response-tail loss reproduced and fixed; all four profiles passed both directions through the installed API. Existing ten warm members, complete route configurations and worker PIDs were preserved. The earlier [215/216 campaign](docs/SHARED-HOST-VALIDATION.md) remains historical evidence.
 
 ![Installed Persian inventory](docs/evidence/commercial/screenshots/installed-fa.png)
 
@@ -25,10 +25,10 @@ The original 82-method remediation of the earlier 23 partial / 27 failed methods
 ## Install
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/8f1e425c38c76f8b1acb570a2392c060f7c3a5c1/install.sh | sudo env TUNNELPANNEL_VERSION=8f1e425c38c76f8b1acb570a2392c060f7c3a5c1 bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/d68556d17f8b4a8276bc4c2344139bffc9329042/install.sh | sudo env TUNNELPANNEL_VERSION=d68556d17f8b4a8276bc4c2344139bffc9329042 bash
 ```
 
-This installs the CI-verified shared-host candidate, also recorded in `install-one-line.txt`. The existing test APIs remain on the previous revision until the owner's active campaign finishes; wait for active work before upgrading. Re-running preserves credentials and data. The installer creates the application account, installs dependencies, migrates the database, starts systemd and verifies HTTP health. It refuses to overwrite local source changes.
+This installs the complete CI-verified repair, also recorded in `install-one-line.txt`. Both test APIs have been upgraded after draining work; the website-only gateway runs separately. Install this backend on a controller/execution host. Wait for active jobs to drain before any later upgrade. Re-running preserves credentials and data. The installer creates the application account, installs dependencies, migrates the database, starts systemd and verifies HTTP health. It refuses to overwrite local source changes.
 
 Real-node validation uses Ubuntu 24.04 amd64. Other environments need their own validation. The API binds to loopback. The default is **127.0.0.1:8080**; a fresh installation can choose a free canonical port when that implicit default is occupied. Explicit/saved port conflicts refuse installation; use the port in the install receipt. From your computer:
 

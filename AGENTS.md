@@ -1,6 +1,21 @@
 # AGENTS.md — Permanent Agent Rules / قوانین همیشگی ایجنت
 
 
+## 2026-10-18 WaterWall repair + WEBSITE-ONLY Tehran Network (authoritative)
+
+Owner clarified:91.107.138.246 serves ONLY the website gateway. ALL API, customer databases, queues, entitlement/usage checks, scoring, builds, benchmarks and tunnels remain on OTHER servers. This supersedes old main-host role wording and inspection-only checkpoints below. No actual payment/domain/SSO/public website cutover is authorized in the current test scope. Future pay-per-use requires priced orders, credit reservation and idempotent settlement/refund/provider integration before charging.
+
+Both authorized execution nodes65.109.209.194/65.109.213.64 run882e69d8af31616f4022ca5ddabb11f31c5b587d, tree9b2e61253f2cae51e04585f29ea43baafc1ec812. Website-only gateway runsd68556d17f8b4a8276bc4c2344139bffc9329042, tree05cecf03ee7293badc10dadb5f4941587b498d96; this complete installer pin adds only gateway chmod regression/fix over backend882. CI39147966187/security39147966116 SUCCESS, each Python749+100+1; Windows717PASS/32skips. Final publication is documentation/evidence only; do not restart installed APIs to install docs. Main e73aa88352a1c783aebfcf8f3d615ad33293d409 remains unmerged; PR2 head must use native blob/tree verification and expected-head lease.
+
+WaterWall intermittent truncation reproduced: Linux hard close with unread HTTP2 control sends RST and loses peer response tail. Earlier receive-only fix failed and is historical. Acceptedca1-h2drain6 drains parsed DATA before reentrant writes and uses bounded detached TCP FIN/input drain, retaining original write deadline and separate read grace. Same binary4244a3b394d73a2629d0d2912e5f4ae12acfe1d791e32ce6c116a1b82dc6e9cb on both nodes, source613bb32c93db40b09cb915070e5f7ff09ad3c81d. Physical3000 full each direction+3000reverseH2/AEAD no integrity failure;40/40 baseline drops versus40/40 patched complete tails on EACH node; all4profiles both directions50hash+60sec throughput+owned restart PASS. Installed DEEP campaign e8343d0dbe544ee6b1e749daa2377c90 PASS8/8,100RTTs/hash transfer/recovery/released allocations each. Fresh12 canaries EACH,20 nonce receipts through10 CURRENT upstreams PASS. Complete entries/config hashes/method order/failover+balance/pins/PIDs1140595/873935 preserved. Never rebuild historical7group or claim full original campaign100%:215/216 history retained. Finite same-datacenter tests do not prove Iran quality or SLA.
+
+Both nodes drained after acceptance, no stale benchmark metadata. Cleanup finalizes released deployments, recovery interrupts unfinished abandoned runs only after cleanup. One-time backed repair1091 already-released deployments+3unfinished runs kept jobs/samples/receipts/allocations fingerprints unchanged. NEVER replay final_repair helpers. Fresh pre/post backups with EACH installation env/key separately rescued and DPAPI equality checked; gateway key/config rescued independently. Private work/private-backups/webgatewayfinal2-{pre,post}.dpapi and gateway-private-recovery.dpapi require SAME Windows account/machine; server originals retained. Do not restore over live data or delete endpoints.
+
+Gateway dedicated units tunnelpannel-web-{http,transport}, usertp-web-gateway, loopback21000/21001; SSH key permits only controller127.0.0.1:8080 with no sessions, remote/stream-local forwarding, tunnel, password or agent forwarding. Root SSH policy/access preserved. No canonical backend/customer DB on website. Selected5servicePIDs/11container IDs+starts/50links/29nginxfiles matched current baseline; external snippet drift BEFORE install recorded separately, never overwritten. First gateway umask permission failure retained; explicit750 fix/retry same key/ports PASS. Main nginx/site not edited/reloaded. FA/EN/mobile/auth proxy401+authorized2nodes/campaign PASS, viewport reset. Private preview localhost57461/portal; keep user tabs and forward. Do not expose public port/domain automatically.
+
+Authoritative installed evidence docs/WATERWALL-GATEWAY-VALIDATION{,-fa}.md and docs/evidence/commercial/waterwall-gateway-installed.json. Private continuation work/final-active-handoff.json. Old operational scripts/checkpoints below are HISTORICAL, not instructions to replay. Heartbeat automation remains PAUSED. One focused read-only assistant already used for this request; no duplicate/recursive advice. Only owned QA resources cleaned; unrelated tunnels/services untouched. Next task after publication: owner review; future payments only when separately selected.
+
+
 ## 2026-10-17 installed shared-host continuation (supersedes deferred checkpoint below)
 
 Both authorized test APIs65.109.209.194/65.109.213.64 now run immutable8f1e425c38c76f8b1acb570a2392c060f7c3a5c1. Owner campaign757cdb8 finished, then all workspaces on both nodes were confirmed drained before restart. CI39039902316/security39039902280 SUCCESS freshly checked. Updated LOCAL rollout helper was inspected/uploaded and SHA256 checked; obsolete remote helper was not executed. Fresh pre/post backups + separate per-install env/keys preserved privately and rescued with DPAPI equality checks; originals retained, same Windows machine/account required. New backups were not restored over live data.
@@ -71,7 +86,7 @@ No actual payment, public HTTPS domain, Iran/multi-country hardware pilot, many-
 
 | Server | Role / نقش |
 |---|---|
-| `91.107.138.246` | **اصلی:** فقط موتور، پنل و اسکریپت. روی آن تانل دائمی نساز. / **Main:** engine, panel and scripts only — no permanent tunnels. |
+| `91.107.138.246` | **فقط درگاه وب:** بدون API، دیتابیس، صف، کامپایل، تست یا اجرای تونل. / **Website gateway only:** all application execution remains on separate servers; see authoritative 2026-10-18 section. |
 | `45.141.148.59` | **تست:** همه ساخت/تست/نصب تانل‌ها اینجا انجام شود. / **Test:** build/test/install tunnels here. |
 | سرورهای تست جدید که کاربر می‌دهد | همان نقش تست. / Same test role. |
 
