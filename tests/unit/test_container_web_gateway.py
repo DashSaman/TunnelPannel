@@ -25,6 +25,7 @@ def test_package_namespaces_pages_assets_and_inline_code(tmp_path):
     assert "TPAuth.url('/portal')" in portal
     manifest = json.loads((out / 'manifest.json').read_text())
     assert manifest['controller_on_gateway'] is False
+    assert all('\\' not in name for name in manifest['files'])
     with pytest.raises(FileExistsError):
         package(ROOT, out, '/tunnels', 'https://tehnet.ir', 21100, 21001, IMAGE)
 

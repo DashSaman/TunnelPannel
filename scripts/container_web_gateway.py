@@ -50,6 +50,9 @@ http {{
     access_log off;
     client_body_temp_path /tmp/client;
     proxy_temp_path /tmp/proxy;
+    fastcgi_temp_path /tmp/fastcgi;
+    uwsgi_temp_path /tmp/uwsgi;
+    scgi_temp_path /tmp/scgi;
     server {{
         listen 127.0.0.1:{port};
         server_name {parsed.hostname};
@@ -136,7 +139,7 @@ location ^~ {prefix}/ {{
 '''
     (output/'host-location.conf').write_text(host,encoding='utf8')
     manifest={'prefix':prefix,'origin':origin,'port':port,'upstream_port':upstream_port,'image':image,
-              'controller_on_gateway':False,'files':{str(p.relative_to(output)):hashlib.sha256(p.read_bytes()).hexdigest() for p in output.rglob('*') if p.is_file()}}
+              'controller_on_gateway':False,'files':{p.relative_to(output).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in output.rglob('*') if p.is_file()}}
     (output/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf8')
     return manifest
 
