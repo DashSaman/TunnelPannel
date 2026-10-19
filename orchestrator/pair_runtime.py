@@ -197,7 +197,8 @@ class RealPairAdapter:
         self.config = config
         self.prepare_deployment(config, bodies)
         from engines.singbox_extra import METHODS as extra_protocols
-        if method not in bodies.SUPPORTED and method not in extra_protocols and not method.startswith(("HEDIOUM_", "HAJSAMAN_", "WATERWALL_H_")):
+        canonical_extensions = {'BACKHAUL_TCP', 'AMNEZIAWG', 'IP4IN6'}
+        if method not in bodies.SUPPORTED and method not in extra_protocols and method not in canonical_extensions and not method.startswith(("HEDIOUM_", "HAJSAMAN_", "WATERWALL_H_")):
             raise RuntimeError(f"real deployment body is required for {method}")
         if method in extra_protocols:
             from engines.singbox_extra import deploy

@@ -46,6 +46,9 @@ def test_rebuild_reserves_entry_before_ssh_like_member_allocation(panel,monkeypa
         def connect(self):return self
         def close(self):pass
         def run(self,command,**kwargs):
+            if command == 'install -d -m 700 /var/lib/tunnelpannel/route-usage':
+                assert kwargs.get('root') is True
+                return {'code':0,'stdout':''}
             if command.startswith('cat '):return {'code':0,'stdout':json.dumps({
                 'healthy':{'GRE':True},'active':'GRE','updated_at':time.time()})}
             return super().run(command,**kwargs)

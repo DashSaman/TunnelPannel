@@ -106,7 +106,7 @@ with socket.socket(socket.AF_UNIX,socket.SOCK_STREAM) as sock:
  if data!=b'errno=0\\n\\n':raise RuntimeError('AmneziaWG rejected owned UAPI configuration')
 """
         bodies.write_remote_text(remote, directory + '/apply.py', apply, '0600')
-        command = (f'{RUNTIME} -f {interface} & child=$!; trap \'kill "$child" 2>/dev/null || true\' EXIT; '
+        command = (f'set -Eeuo pipefail; {RUNTIME} -f {interface} & child=$!; trap \'kill "$child" 2>/dev/null || true\' EXIT; '
                    f'python3 {directory}/apply.py {directory} {interface}; '
                    f'ip address replace {address["address_" + side]} dev {interface}; '
                    f'ip link set {interface} mtu 1380 up; wait "$child"')

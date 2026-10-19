@@ -29,7 +29,6 @@ logging.basicConfig(
 log = logging.getLogger("netauto-plan-executor")
 
 SUPPORTED = {
-    "BACKHAUL_TCP", "AMNEZIAWG", "IP4IN6",
     "GRE",
     "GRETAP",
     "IPIP",
