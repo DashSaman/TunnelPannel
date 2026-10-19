@@ -10,6 +10,8 @@ Implementation and acceptance are in progress. This document describes the contr
 
 4in6 is distinct from existing SIT/6in4 and IP6GRE. Matching foreign keyless carriers are rejected. Proven-owned carriers share references; deleting a QA member cannot remove another member. No default route, global forwarding, BBR/fq or operator binary is changed. Backhaul uses skip_optz=true, sniffer=false and web_port=0. Official binary archives are SHA256 pinned. AmneziaWG builds single-threaded with a pinned, digest-verified private Go toolchain and source commit. Preparation is excluded from performance measurement.
 
+Build preparation retains at least 128 MiB of then-available host memory, requires at least 256 MiB available, and caps its own transient cgroup memory, existing swap use and CPU. It never creates swap or changes host memory settings. For matching architectures, a verified engine is built once on the roomier execution node and transferred over pinned SSH with source and binary-hash checks; the smaller peer does not compile it. Insufficient resources or unsupported cgroups block preparation rather than consuming unbounded host memory.
+
 ## Traffic policy
 
 Route creation accepts `traffic: {rate_mbps, quota_bytes, max_connections}`. Active v1 workers accept `PUT /api/mesh/routes/{id}/traffic`; requests remain workspace/role scoped. Zero rate/allowance uses the workspace/plan ceiling. Owner caps are `max_route_mbps`, `max_route_bytes`, `max_route_connections`. They are per-route ceilings, not a pooled monthly customer allowance. Existing commercial limits and paid admission remain independent; offline payment receipts do not reset traffic counters.

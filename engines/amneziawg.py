@@ -1,12 +1,96 @@
 """Pinned official userspace AmneziaWG, with private owned UAPI configuration."""
 import ipaddress
+import json
 from pathlib import Path
+import shlex
+import uuid
 
 PIN = 'b5928efb6ca19f0153958460c3d141f04abc5c2e'
 RUNTIME = '/opt/tunnelpannel-engines/amneziawg/' + PIN + '/amneziawg-go'
 GO_VERSION = '1.27.2'
 GO_DIGESTS = {'x86_64': ('amd64', 'ecbadb99091a3f46e31f5f934b068b1864eafa7995211b39eaddf76996045fe5'),
               'aarch64': ('arm64', '94f3e30b8e374bc285e7dadc11e0865726b9bc6e85b841ccceaabc0214c6b7c8')}
+
+
+def memory_snapshot(remote):
+    value = remote.run("python3 - <<'MEMORY'\nimport json,pathlib\nv={r.split(':')[0]:int(r.split()[1])*1024 for r in pathlib.Path('/proc/meminfo').read_text().splitlines() if r.split(':')[0] in {'MemAvailable','SwapFree'}}\nprint(json.dumps(v))\nMEMORY")
+    return json.loads(value['stdout'])
+
+
+def build_budget(memory):
+    unit = 1024**2
+    available = memory.get('MemAvailable', 0)
+    if type(available) is not int or available < 256*unit:
+        raise RuntimeError('insufficient available memory for isolated AmneziaWG build')
+    return min(512*unit, available - 128*unit), min(512*unit, memory.get('SwapFree', 0)//2)
+
+
+def artifact(remote):
+    script = ("import hashlib,json,pathlib\np=pathlib.Path(" + repr(RUNTIME) + ")\n"
+              "m=json.loads(p.with_name('build.json').read_text())\nassert m['source']==" + repr(PIN) +
+              "\nassert hashlib.sha256(p.read_bytes()).hexdigest()==m['sha256']\nprint(json.dumps(m))")
+    result = remote.run("python3 - <<'VERIFY'\n" + script + '\nVERIFY', root=True, check=False)
+    return None if result['code'] else json.loads(result['stdout'])
+
+
+def copy_artifact(source, target):
+    """Pinned SSH transfer of verified public engine bytes; no credentials/config."""
+    meta = artifact(source)
+    if not meta:
+        raise RuntimeError('source AmneziaWG artifact is not verified')
+    if source.run('uname -m')['stdout'].strip() != target.run('uname -m')['stdout'].strip():
+        raise RuntimeError('cannot copy AmneziaWG across architectures')
+    temporary = '/tmp/.tp-awg-' + uuid.uuid4().hex
+    try:
+        with source.client.open_sftp() as reader, target.client.open_sftp() as writer:
+            reader.get_channel().settimeout(60); writer.get_channel().settimeout(60)
+            with reader.open(RUNTIME, 'rb') as src, writer.open(temporary, 'wx') as dst:
+                writer.chmod(temporary, 0o600)
+                while chunk := src.read(1024*1024):
+                    dst.write(chunk)
+        code = r'''import hashlib,json,os,pathlib,shutil,stat,tempfile
+source=pathlib.Path(__TEMP__);target=pathlib.Path(__TARGET__);meta=__META__
+fd=os.open(source,os.O_RDONLY|os.O_NOFOLLOW)
+with os.fdopen(fd,'rb') as data:
+ info=os.fstat(data.fileno())
+ if not stat.S_ISREG(info.st_mode) or info.st_mode&0o077:raise RuntimeError('unsafe engine transfer')
+ if hashlib.file_digest(data,'sha256').hexdigest()!=meta['sha256']:raise RuntimeError('engine transfer digest mismatch')
+ data.seek(0);target.parent.mkdir(mode=0o755,parents=True,exist_ok=True)
+ out,name=tempfile.mkstemp(dir=target.parent)
+ with os.fdopen(out,'wb') as file:shutil.copyfileobj(data,file);file.flush();os.fsync(file.fileno())
+ os.chmod(name,0o755);os.replace(name,target)
+target.with_name('build.json').write_text(json.dumps(meta));target.with_name('build.json').chmod(0o600)
+'''.replace('__TEMP__', repr(temporary)).replace('__TARGET__', repr(RUNTIME)).replace('__META__', repr(meta))
+        target.run("python3 - <<'TRANSFER'\n" + code + '\nTRANSFER', root=True)
+        if artifact(target) != meta:
+            raise RuntimeError('installed engine transfer verification failed')
+    finally:
+        target.run('rm -f -- ' + shlex.quote(temporary), check=False)
+
+
+def prepare_pair(access):
+    """Build once per architecture on the best available execution node."""
+    from orchestrator.remote_nodes import NodeRemote
+    remotes = []
+    try:
+        for endpoint, credentials in access:
+            remotes.append(NodeRemote(endpoint, credentials).connect())
+        groups = {}
+        for remote in remotes:
+            arch = remote.run('uname -m')['stdout'].strip()
+            groups.setdefault(arch, []).append(remote)
+        for cohort in groups.values():
+            source = next((remote for remote in cohort if artifact(remote)), None)
+            if source is None:
+                resources = [(remote, memory_snapshot(remote)) for remote in cohort]
+                source, _ = max(resources, key=lambda item: item[1].get('MemAvailable', 0) + min(item[1].get('SwapFree', 0), 512*1024**2))
+                install(source)
+            for remote in cohort:
+                if remote is not source and not artifact(remote):
+                    copy_artifact(source, remote)
+    finally:
+        for remote in remotes:
+            remote.close()
 
 
 def uapi_config(private, public, port, host, peer_port, peer_ip):
@@ -21,11 +105,9 @@ def uapi_config(private, public, port, host, peer_port, peer_ip):
 
 def install(remote):
     from plan_executor import executor as bodies
-    check = remote.run("python3 - <<'VERIFY'\nimport hashlib,json,pathlib\np=pathlib.Path(" + repr(RUNTIME) + ")\n"
-        "m=json.loads(p.with_name('build.json').read_text())\nassert m['source']==" + repr(PIN) +
-        "\nassert hashlib.sha256(p.read_bytes()).hexdigest()==m['sha256']\nVERIFY", root=True, check=False)
-    if not check['code']:
+    if artifact(remote):
         return RUNTIME
+    memory, swap = build_budget(memory_snapshot(remote))
     root = '/var/cache/tunnelpannel-build/amneziawg/' + PIN
     bootstrap = r'''import hashlib,io,os,pathlib,platform,tarfile,urllib.request
 arch,expected=__DIGESTS__[platform.machine()]
@@ -49,7 +131,7 @@ install -d -m 0700 -o tp-awgbuild -g tp-awgbuild {root}/work
 runuser -u tp-awgbuild -- bash -s <<'COMPILE'
 set -Eeuo pipefail
 cd {root}/work
-export HOME={root}/work GOPATH={root}/work/gopath GOCACHE={root}/work/cache GOTOOLCHAIN=local GOSUMDB=sum.golang.org GOPROXY=https://proxy.golang.org GOMAXPROCS=1 GOMEMLIMIT=512MiB
+export HOME={root}/work GOPATH={root}/work/gopath GOCACHE={root}/work/cache GOTOOLCHAIN=local GOSUMDB=sum.golang.org GOPROXY=https://proxy.golang.org GOMAXPROCS=1 GOMEMLIMIT={max(64,memory*3//5//1024**2)}MiB
 if [ ! -d source/.git ]; then git init -q source; git -C source remote add origin https://github.com/amnezia-vpn/amneziawg-go.git; fi
 git -C source fetch --depth 1 origin {PIN}
 git -C source checkout --detach FETCH_HEAD
@@ -65,7 +147,9 @@ p=pathlib.Path({RUNTIME!r});p.with_name('build.json').write_text(json.dumps({{'s
 META
 '''
     bodies.write_remote_text(remote, root + '/build.sh', script, '0700')
-    remote.run(f'timeout -s TERM 1700 bash {root}/build.sh > {root}/build.log 2>&1 || '
+    remote.run(f'systemd-run --quiet --wait --pipe --collect --unit=tp-awg-build-{PIN[:12]} '
+               f'--property=MemoryMax={memory} --property=MemorySwapMax={swap} --property=CPUQuota=100% '
+               f'--property=TasksMax=128 timeout -s TERM 1700 bash {root}/build.sh > {root}/build.log 2>&1 || '
                f'{{ tail -n 25 {root}/build.log; exit 1; }}', root=True, timeout=1800)
     return RUNTIME
 

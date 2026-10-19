@@ -31,14 +31,14 @@ def prepare_engines(access, candidates, cancelled):
                     require_safe(scan(remote), 'ENGINE_PREPARATION')
                     if any(c.legacy_method_id in METHODS for c in targets):
                         install(remote)
-                    if any(c.legacy_method_id == 'AMNEZIAWG' for c in targets):
-                        from engines.amneziawg import install as install_awg
-                        install_awg(remote)
             finally:
                 remote.close()
         with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
             for future in [executor.submit(provision, item) for item in access]:
                 future.result()
+        if any(c.legacy_method_id == 'AMNEZIAWG' for c in targets) and not cancelled():
+            from engines.amneziawg import prepare_pair
+            prepare_pair(access)
     except Exception as error:
         for candidate in targets:
             candidate.status = 'BLOCKED'

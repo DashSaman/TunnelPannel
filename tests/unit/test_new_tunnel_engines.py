@@ -50,6 +50,41 @@ def test_awg_real_uapi_is_not_plain_wireguard():
     assert '0.0.0.0/0' not in value
 
 
+def test_awg_build_reserves_host_memory_and_never_invents_swap():
+    from engines.amneziawg import build_budget
+    unit = 1024**2
+    memory, swap = build_budget({'MemAvailable': 350*unit, 'SwapFree': 0})
+    assert memory <= 222*unit and swap == 0
+    memory, swap = build_budget({'MemAvailable': 410*unit, 'SwapFree': 700*unit})
+    assert memory <= 282*unit and swap <= 350*unit
+    with pytest.raises(RuntimeError, match='available memory'):
+        build_budget({'MemAvailable': 150*unit, 'SwapFree': 0})
+
+
+def test_awg_pair_builds_once_on_roomier_node_and_copies_verified_artifact(monkeypatch):
+    from engines import amneziawg as awg
+    made, copied, closed, cached = [], [], [], set()
+    class Remote:
+        def __init__(self, endpoint, credentials): self.name = endpoint['name']
+        def connect(self): return self
+        def close(self): closed.append(self.name)
+        def run(self, command):
+            assert command == 'uname -m'
+            return {'stdout':'x86_64\n'}
+    monkeypatch.setattr('orchestrator.remote_nodes.NodeRemote', Remote)
+    monkeypatch.setattr(awg, 'artifact', lambda r: {'source':awg.PIN} if r.name in cached else None)
+    monkeypatch.setattr(awg, 'memory_snapshot', lambda r: {'MemAvailable':(400 if r.name=='builder' else 350)*1024**2,'SwapFree':700*1024**2 if r.name=='builder' else 0})
+    def build(remote): made.append(remote.name); cached.add(remote.name)
+    def copy(source, target): copied.append((source.name,target.name)); cached.add(target.name)
+    monkeypatch.setattr(awg, 'install', build); monkeypatch.setattr(awg, 'copy_artifact', copy)
+    access=[({'name':'small'},{}),({'name':'builder'},{})]
+    awg.prepare_pair(access)
+    assert made == ['builder'] and copied == [('builder','small')]
+    assert sorted(closed) == ['builder','small']
+    awg.prepare_pair(access)
+    assert made == ['builder'] and copied == [('builder','small')]
+
+
 def test_4in6_requires_ipv6_outer_ipv4_inner_and_distinct_next_header():
     from orchestrator.shared_kernel_runtime import normalized
     from engines.shared_kernel import METHODS
