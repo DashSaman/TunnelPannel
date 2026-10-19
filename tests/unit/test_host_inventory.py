@@ -95,6 +95,16 @@ def test_reserved_ranges_validated_and_fixed_protocol_port_blocked():
             inventory.validate_reservations(invalid)
 
 
+@pytest.mark.parametrize('method', ['HAJSAMAN_SIT', 'HAJSAMAN_WG'])
+def test_host_local_hajsaman_stacks_do_not_require_global_forwarding(method):
+    inventory.require_safe({'complete': True, 'ip_forward': '0'}, method)
+
+
+def test_full_hajsaman_still_refuses_a_global_forwarding_change():
+    with pytest.raises(RuntimeError, match='forwarding'):
+        inventory.require_safe({'complete': True, 'ip_forward': '0'}, 'HAJSAMAN_FULL')
+
+
 def test_tunnel_detection_is_evidence_based_and_has_no_private_config():
     links = [{'ifname':'wg-existing','linkinfo':{'info_kind':'wireguard','info_data':{'secret':'omit'}}},
              {'ifname':'eth0','linkinfo':{}}, {'ifname':'tun9','linkinfo':{'info_kind':'tun'}}]

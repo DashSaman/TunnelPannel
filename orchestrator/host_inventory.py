@@ -196,7 +196,10 @@ def require_safe(report, method):
                            for lo,hi in report.get('reserved_ranges',{}).get('UDP',[]))
         if busy:
             raise RuntimeError('coexistence conflict: existing IPsec daemon, policy or fixed port; preserved')
-    if method.startswith('HAJSAMAN_') and report.get('ip_forward') != '1':
+    # SIT and WG terminate on the host; only FULL adds a forwarded namespace origin.
+    # Keep unknown future stacks fail-closed until their forwarding needs are known.
+    if (method.startswith('HAJSAMAN_') and method not in {'HAJSAMAN_SIT','HAJSAMAN_WG'}
+            and report.get('ip_forward') != '1'):
         raise RuntimeError('coexistence conflict: method would change global IPv4 forwarding')
 
 
