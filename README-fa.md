@@ -1,5 +1,7 @@
 # TunnelPannel
 
+[مقایسهٔ طراحی و امکانات Arange و اولویت کمبودها](docs/ARANGE-COMPARISON-20261019-fa.md): SIT/6in4 و IP6GRE موجودند؛ Backhaul، AmneziaWG و4in6 خالص پیشنهاد توسعه‌اند و هنوز نصب نشده‌اند.
+
 سرویس اشتراکی تهران‌نتورک: [مدیریت کاربران، سهمیه، پلن و پرداخت دستی](docs/COMMERCIAL-OWNER-fa.md) · [شواهد نصب فعلی](docs/COMMERCIAL-OWNER-VALIDATION-fa.md). ورود با نام کاربری و رمز: **https://tehnet.ir/tunnels/**. ثبت دریافت وجه و فعال‌سازی دستی مدیر؛ بدون درگاه آنلاین. اصلاح تازهٔ کنترل SIT/WG تا CI موفق هنوز نصب نشده است.
 
 [تازه‌ترین شواهد رفع WaterWall و نصب درگاه وب](docs/WATERWALL-GATEWAY-VALIDATION-fa.md): چهار روش در دو جهت موفق؛ حفظ ده عضو فعلی و اجرای همهٔ پردازش‌ها خارج از سرور سایت.

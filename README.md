@@ -1,5 +1,7 @@
 # TunnelPannel
 
+[Arange-tun design/capability comparison and prioritised gaps](docs/ARANGE-COMPARISON-20261019.md) · [فارسی](docs/ARANGE-COMPARISON-20261019-fa.md). Configured SIT/6in4 and IP6GRE exist; Backhaul, AmneziaWG and native4in6 remain proposed additions, not installed features.
+
 Paid TehNet service: [owner accounts, quotas, plans and manual payments](docs/COMMERCIAL-OWNER.md) · [installed validation](docs/COMMERCIAL-OWNER-VALIDATION.md). Sign in at **https://tehnet.ir/tunnels/** with your assigned username/password. Offline receipts and activation are handled manually by the administrator; no online gateway. The latest SIT/WG guard fix is published but awaits CI before rollout.
 
 Public panel: **https://tehnet.ir/tunnels/** · site menu **مدیریت تونل**. [Installed validation](docs/TEHNET-PUBLIC-VALIDATION.md) · [Container deployment](docs/TEHNET-CONTAINER.md). Only static UI/proxying runs on the website; all application processing stays on other nodes. Existing customer credentials remain valid; manual payment confirmation is enabled; online checkout and WordPress SSO are disabled.
