@@ -16,34 +16,52 @@ def full_xray_config(port, mark):
                            "streamSettings": {"sockopt": {"mark": mark}}}]}
 
 
+def stack_mtu(remotes, interface):
+    """Use the current SIT ceiling; inspecting a shared carrier never changes it."""
+    values = []
+    for remote in remotes:
+        result = remote.run('ip -j link show dev '+shlex.quote(interface))
+        try:
+            rows = json.loads(result['stdout'])
+            value = rows[0]['mtu']
+            if len(rows)!=1 or type(value) is not int or not 656<=value<=65535:
+                raise ValueError('invalid carrier MTU')
+        except (ValueError,KeyError,IndexError,TypeError) as error:
+            raise RuntimeError('SIT MTU inventory unavailable; refuse an unsafe fixed MTU') from error
+        values.append(value)
+    sit = min(1480,*values)
+    return sit,min(1400,sit-80)  # WireGuard over IPv6 carries80 bytes of overhead.
+
+
 def deploy_hajsaman(method, run, item, config, a, b, endpoint_a, endpoint_b, journals):
-    from plan_executor import executor as bodies
     from orchestrator.host_lease import unused_prefix
+    from plan_executor import executor as bodies
     inner6 = ipaddress.ip_network(unused_prefix((a, b), version=6))
-    sit_cfg = {**config, 'tunnel_cidr': str(inner6),
+    sit_cfg = {**config, 'mtu':min(1480,int(config.get('mtu') or 1400)+80), 'tunnel_cidr': str(inner6),
                'tunnel_ip_a': f'{inner6[1]}/64', 'tunnel_ip_b': f'{inner6[2]}/64'}
     sit = bodies.deploy_kernel('SIT_6IN4', run, {'id': item['id'] * 100 + 31}, sit_cfg, a, b)
     for side in ('a', 'b'):
         sit['services_' + side] = [sit['systemd_unit']]
         sit['interfaces_' + side] = [] if sit.get('shared_kernel') else [sit['interface_name']]
-    sit['mtu'] = 1480
+    sit_mtu,wg_mtu = stack_mtu((a,b),sit['interface_name'])
+    sit['mtu'] = sit_mtu
     if not sit.get('shared_kernel'):
         for remote in (a, b):
-            remote.run(f"ip link set {sit['interface_name']} mtu 1480", root=True)
+            remote.run(f"ip link set {sit['interface_name']} mtu {sit_mtu}", root=True)
     if method == 'HAJSAMAN_SIT':
         return {**sit, 'method': method, 'stack': ['sit']}
     wg_cfg = {**config, 'source_ip_a': str(ipaddress.ip_interface(sit_cfg['tunnel_ip_a']).ip),
-              'source_ip_b': str(ipaddress.ip_interface(sit_cfg['tunnel_ip_b']).ip)}
+              'source_ip_b': str(ipaddress.ip_interface(sit_cfg['tunnel_ip_b']).ip), 'mtu':wg_mtu}
     wg = bodies.deploy_wireguard(run, {'id': item['id'] * 100 + 32}, wg_cfg, a, b)
     for side in ('a', 'b'):
         wg['services_' + side] = [f"wg-quick@{wg['interface_name']}"]
         wg['interfaces_' + side] = [wg['interface_name']]
         wg['files_' + side] = [f"/etc/wireguard/{wg['interface_name']}.conf"]
     for remote in (a, b):
-        remote.run(f"ip link set {wg['interface_name']} mtu 1400", root=True)
+        remote.run(f"ip link set {wg['interface_name']} mtu {wg_mtu}", root=True)
     artifact = bodies.merge_component_artifacts(method, [sit, wg], wg)
     artifact.update(interface_name=wg['interface_name'], carrier_interface=sit['interface_name'],
-                    stack=['sit', 'wireguard'])
+                    stack=['sit', 'wireguard'],mtu=wg_mtu,carrier_mtu=sit_mtu)
     if method != 'HAJSAMAN_FULL':
         return artifact
     tag = f"tpbench-{run['id']}-{item['id']}-haj"

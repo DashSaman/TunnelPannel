@@ -1,18 +1,20 @@
 """Replay-safe subscription entitlements; the default sandbox never collects money."""
 from __future__ import annotations
 
-from contextlib import contextmanager
 import hashlib
 import hmac
 import json
 import os
 import re
 import time
-from typing import Literal
 import uuid
+from contextlib import contextmanager
+from typing import Literal
 
 from fastapi import HTTPException
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
+
+from core.manual_commerce import ManualCommerce, initialize_commerce
 
 PLAN_LIMITS = {
     'starter': {'max_nodes': 2, 'max_tunnels_per_route': 5, 'max_campaign_methods': 108,
@@ -43,13 +45,13 @@ class BillingEvent(BaseModel):
         return self
 
 
-class SubscriptionStore:
+class SubscriptionStore(ManualCommerce):
     def __init__(self, registry, *, clock=time.time, webhook_secret=None, mode=None):
         self.registry, self.clock = registry, clock
         self.webhook_secret = webhook_secret if webhook_secret is not None else os.environ.get('TP_BILLING_WEBHOOK_SECRET', '')
         self.mode = mode or os.environ.get('TP_BILLING_MODE', 'sandbox')
-        if self.mode not in {'sandbox', 'bridge'}:
-            raise ValueError('TP_BILLING_MODE must be sandbox or bridge')
+        if self.mode not in {'sandbox', 'bridge', 'manual'}:
+            raise ValueError('TP_BILLING_MODE must be sandbox, bridge or manual')
         with self._db() as db:
             db.executescript('''
                 CREATE TABLE IF NOT EXISTS billing_subscriptions (
@@ -66,6 +68,7 @@ class SubscriptionStore:
                 CREATE UNIQUE INDEX IF NOT EXISTS billing_pending_request
                     ON billing_requests(workspace_id,plan) WHERE state='PENDING_OWNER_ACTIVATION';
             ''')
+            initialize_commerce(db)
 
     @contextmanager
     def _db(self):
@@ -80,9 +83,9 @@ class SubscriptionStore:
         return {'mode': self.mode, 'payment_processor_configured': False,
                 'external_bridge_configured': self.mode == 'bridge' and len(self.webhook_secret) >= 32,
                 'checkout_available': False,
-                'plans': [{'id': key, 'limits': dict(value), 'price_minor': None, 'currency': None}
-                          for key, value in PLAN_LIMITS.items()],
+                'plans': self.commercial_plans(),
                 'notice': 'sandbox entitlements do not represent collected payments' if self.mode == 'sandbox'
+                          else 'owner-confirmed offline payments; no online checkout' if self.mode == 'manual'
                           else 'external billing bridge; configure your provider checkout separately'}
 
     def _base_limits(self, workspace_id):
@@ -100,17 +103,20 @@ class SubscriptionStore:
         with self._db() as db:
             row = db.execute('SELECT * FROM billing_subscriptions WHERE workspace_id=?', (workspace_id,)).fetchone()
         if row is None:
-            return {'workspace_id': workspace_id, 'state': 'legacy', 'plan': None, 'revision': 0,
-                    'mode': 'legacy', 'limits': base, 'can_start_work': True, 'stop_on_expiry': False,
+            paid_required = self.mode == 'manual' and workspace_id != 'system'
+            return {'workspace_id': workspace_id, 'state': 'pending_payment' if paid_required else 'legacy', 'plan': None, 'revision': 0,
+                    'mode': self.mode if paid_required else 'legacy', 'limits': base, 'can_start_work': not paid_required, 'stop_on_expiry': False,
                     'payment_collected': False}
         state, now = row['state'], self.clock()
         if state != 'cancelled':
             state = ('expired' if now >= row['grace_until'] else
                      'past_due' if now >= row['paid_through'] or state == 'past_due' else state)
+        if self.mode == 'manual' and row['mode'] == 'sandbox':
+            state = 'pending_payment'
         return {'workspace_id': workspace_id, 'state': state, 'plan': row['plan'], 'revision': row['revision'],
                 'mode': row['mode'], 'paid_through': row['paid_through'], 'grace_until': row['grace_until'],
-                'limits': {key: min(value, PLAN_LIMITS[row['plan']].get(key, value)) for key, value in base.items()},
-                'can_start_work': state not in {'expired', 'cancelled'},
+                'limits': {key: min(value, (json.loads(row['entitlement_limits']) if row['entitlement_limits'] else PLAN_LIMITS.get(row['plan'], {})).get(key, value)) for key, value in base.items()},
+                'can_start_work': state not in {'expired', 'cancelled', 'pending_payment'},
                 'stop_on_expiry': bool(row['stop_on_expiry']),
                 'payment_collected': False if row['mode'] == 'sandbox' else None}
 
@@ -213,7 +219,7 @@ class SubscriptionStore:
         return False
 
     def request_plan(self, workspace_id, plan):
-        if workspace_id == 'system' or plan not in PLAN_LIMITS:
+        if workspace_id == 'system' or plan not in {p['id'] for p in self.commercial_plans()}:
             raise HTTPException(400, 'select a known customer plan')
         with self._db() as db:
             db.execute('INSERT OR IGNORE INTO billing_requests VALUES(?,?,?,?,?)',

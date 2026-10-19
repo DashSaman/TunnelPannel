@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import base64
-from contextlib import contextmanager
 import hashlib
 import hmac
 import re
@@ -11,6 +10,7 @@ import sqlite3
 import struct
 import time
 import uuid
+from contextlib import contextmanager
 
 from fastapi import HTTPException
 
@@ -47,10 +47,18 @@ def verify_password(password, encoded):
 
 
 def email_address(value):
+    if not isinstance(value, str):
+        raise HTTPException(400, 'a valid email address is required')
     value = value.strip().lower()
     if len(value) > 254 or not re.fullmatch(r'[^\s@]+@[^\s@]+\.[^\s@]+', value):
         raise HTTPException(400, 'a valid email address is required')
     return value
+
+
+def account_username(value):
+    if not isinstance(value, str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]{2,63}', value):
+        raise HTTPException(400, 'username must contain3 to64 letters, digits, dots, hyphens or underscores')
+    return value.lower()
 
 
 def totp_code(seed, timestamp):
@@ -68,7 +76,8 @@ def csrf_token(token):
 
 def public_account(row):
     return {key: row[key] for key in ('id', 'email', 'workspace_id', 'role')} | {
-        'mfa_enabled': bool(row['totp_secret'])}
+        'mfa_enabled': bool(row['totp_secret']), 'username': row['username'],
+        'display_name': row['display_name'], 'enabled': bool(row['enabled'])}
 
 
 class AccountStore:
@@ -95,6 +104,13 @@ class AccountStore:
                 CREATE TABLE IF NOT EXISTS auth_attempts (
                     bucket TEXT PRIMARY KEY, started REAL NOT NULL, hits INTEGER NOT NULL);
             ''')
+            db.execute('BEGIN IMMEDIATE')
+            columns = {r['name'] for r in db.execute('PRAGMA table_info(accounts)')}
+            if 'username' not in columns:
+                db.execute('ALTER TABLE accounts ADD COLUMN username TEXT')
+            if 'display_name' not in columns:
+                db.execute("ALTER TABLE accounts ADD COLUMN display_name TEXT NOT NULL DEFAULT ''")
+            db.execute('CREATE UNIQUE INDEX IF NOT EXISTS account_username ON accounts(username COLLATE NOCASE)')
 
     @contextmanager
     def _db(self):
@@ -177,11 +193,12 @@ class AccountStore:
         return False
 
     def login(self, email, password, *, otp='', peer='unknown'):
-        email = email_address(email)
+        email = email_address(email) if '@' in email else account_username(email.strip())
         self._attempt(peer, email)
         with self._db() as db:
             db.execute('BEGIN IMMEDIATE')
-            row = db.execute('SELECT * FROM accounts WHERE email=?', (email,)).fetchone()
+            row = db.execute('SELECT * FROM accounts WHERE email=? OR username=? COLLATE NOCASE',
+                             (email, email)).fetchone()
             if row is None:
                 # Do the same expensive derivation for unknown accounts.
                 password_hash('unknown-account-dummy-password')
@@ -263,3 +280,62 @@ class AccountStore:
     def list_accounts(self):
         with self._db() as db:
             return [public_account(row) for row in db.execute('SELECT * FROM accounts ORDER BY email')]
+
+    def create_managed(self, workspace_id, *, username, password, email=None,
+                       display_name='', role='SUPER_ADMIN'):
+        username = account_username(username)
+        if role not in {'SUPER_ADMIN', 'OPERATOR', 'VIEWER'}:
+            raise HTTPException(400, 'invalid account role')
+        if workspace_id != 'system':
+            with self._db() as db:
+                if not db.execute('SELECT id FROM workspaces WHERE id=?', (workspace_id,)).fetchone():
+                    raise HTTPException(404, 'workspace not found')
+        email = email_address(email) if email else username+'@customers.tehnet.invalid'
+        encoded = password_hash(password)
+        if not isinstance(display_name, str) or len(display_name) > 120:
+            raise HTTPException(400, 'invalid display name')
+        identity = uuid.uuid4().hex
+        with self._db() as db:
+            try:
+                db.execute('INSERT INTO accounts(id,email,workspace_id,role,password_hash,username,display_name) '
+                           'VALUES(?,?,?,?,?,?,?)', (identity,email,workspace_id,role,encoded,username,display_name))
+            except sqlite3.IntegrityError:
+                raise HTTPException(409, 'username or email already exists') from None
+            return public_account(db.execute('SELECT * FROM accounts WHERE id=?', (identity,)).fetchone())
+
+    def update_managed(self, account_id, changes):
+        if not changes or set(changes)-{'username','email','display_name','role','enabled','password'}:
+            raise HTTPException(400, 'invalid account changes')
+        with self._db() as db:
+            db.execute('BEGIN IMMEDIATE')
+            row = db.execute('SELECT * FROM accounts WHERE id=?', (account_id,)).fetchone()
+            if row is None:
+                raise HTTPException(404, 'account not found')
+            values = dict(row)
+            for key, value in changes.items():
+                if key == 'username': value = account_username(value)
+                elif key == 'email': value = email_address(value)
+                elif key == 'display_name':
+                    if not isinstance(value, str) or len(value)>120:
+                        raise HTTPException(400, 'invalid display name')
+                elif key == 'role' and value not in {'SUPER_ADMIN','OPERATOR','VIEWER'}:
+                    raise HTTPException(400, 'invalid account role')
+                elif key == 'enabled' and not isinstance(value, bool):
+                    raise HTTPException(400, 'enabled must be boolean')
+                elif key == 'password':
+                    values['password_hash'] = password_hash(value)
+                    continue
+                values[key] = value
+            if (row['workspace_id']=='system' and row['enabled'] and row['role']=='SUPER_ADMIN'
+                    and (not values['enabled'] or values['role']!='SUPER_ADMIN')):
+                count = db.execute("SELECT count(*) FROM accounts WHERE workspace_id='system' "
+                                   "AND role='SUPER_ADMIN' AND enabled=1").fetchone()[0]
+                if count <= 1:
+                    raise HTTPException(409, 'the last active system administrator must be preserved')
+            try:
+                db.execute('UPDATE accounts SET username=?,email=?,display_name=?,role=?,enabled=?,password_hash=? WHERE id=?',
+                    (values['username'],values['email'],values['display_name'],values['role'],int(values['enabled']),values['password_hash'],account_id))
+            except sqlite3.IntegrityError:
+                raise HTTPException(409, 'username or email already exists') from None
+            db.execute('DELETE FROM account_sessions WHERE account_id=?', (account_id,))
+            return public_account(db.execute('SELECT * FROM accounts WHERE id=?', (account_id,)).fetchone())

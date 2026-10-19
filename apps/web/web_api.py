@@ -32,7 +32,7 @@ def create_web_router(session_factory) -> APIRouter:
 
     @router.get('/assets/{name}')
     def portal_asset(name:str):
-        types={'portal.js':'application/javascript','portal.css':'text/css','auth.js':'application/javascript'}
+        types={'portal.js':'application/javascript','portal.css':'text/css','auth.js':'application/javascript','admin.js':'application/javascript'}
         if name not in types:
             raise HTTPException(404,'asset not found')
         return Response(HTML_PATH.with_name(name).read_text(encoding='utf-8'),media_type=types[name],

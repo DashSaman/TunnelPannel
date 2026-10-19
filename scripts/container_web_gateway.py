@@ -24,7 +24,7 @@ def package(source, output, prefix, origin, port, upstream_port, image):
     output.mkdir(parents=True,exist_ok=False)
     public=output/'public';assets=public/'assets';assets.mkdir(parents=True)
     frontend=source/'apps/web'
-    for name in ['auth.js','portal.js','portal.css']:
+    for name in ['auth.js','portal.js','portal.css','admin.js']:
         (assets/name).write_bytes((frontend/name).read_bytes())
     for page in ['portal','mesh','ranking','topology']:
         body=(frontend/(page+'.html')).read_text(encoding='utf8')

@@ -6,7 +6,7 @@ from typing import Literal
 from urllib.parse import urlsplit
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from apps.api.nodes_api import CredentialSafeRoute
 from core.accounts import SESSION_SECONDS, csrf_token
@@ -75,9 +75,36 @@ class RegisterRequest(BaseModel):
 
 
 class LoginRequest(BaseModel):
-    email: str = Field(min_length=3, max_length=254)
+    email: str | None = Field(default=None, min_length=3, max_length=254)
+    username: str | None = Field(default=None, min_length=3, max_length=64)
     password: str = Field(max_length=256)
     otp: str = Field(default='', max_length=100)
+
+    @model_validator(mode='after')
+    def identifier(self):
+        if bool(self.email) == bool(self.username):
+            raise ValueError('provide exactly one username or email')
+        return self
+
+
+class ManagedAccountCreate(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    workspace_id: str = Field(min_length=1, max_length=32)
+    username: str = Field(min_length=3, max_length=64)
+    password: str = Field(min_length=12, max_length=256)
+    email: str | None = Field(default=None, max_length=254)
+    display_name: str = Field(default='', max_length=120)
+    role: Literal['SUPER_ADMIN','OPERATOR','VIEWER'] = 'SUPER_ADMIN'
+
+
+class ManagedAccountUpdate(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    username: str | None = Field(default=None, min_length=3, max_length=64)
+    email: str | None = Field(default=None, min_length=3, max_length=254)
+    display_name: str | None = Field(default=None, max_length=120)
+    password: str | None = Field(default=None, min_length=12, max_length=256)
+    enabled: bool | None = Field(default=None, strict=True)
+    role: Literal['SUPER_ADMIN','OPERATOR','VIEWER'] | None = None
 
 
 class PasswordRequest(BaseModel):
@@ -116,6 +143,16 @@ def create_account_router(store):
     def listing():
         return store.list_accounts()
 
+    @router.post('/api/accounts', status_code=201, dependencies=[Depends(require_role('SUPER_ADMIN'))])
+    def create_managed(body: ManagedAccountCreate):
+        values = body.model_dump()
+        workspace_id = values.pop('workspace_id')
+        return store.create_managed(workspace_id, **values)
+
+    @router.patch('/api/accounts/{account_id}', dependencies=[Depends(require_role('SUPER_ADMIN'))])
+    def edit_managed(account_id: str, body: ManagedAccountUpdate):
+        return store.update_managed(account_id, body.model_dump(exclude_unset=True))
+
     @router.post('/auth/register', status_code=201)
     def register(body: RegisterRequest, request: Request, response: Response):
         auth_request(request)
@@ -125,7 +162,7 @@ def create_account_router(store):
     @router.post('/auth/login')
     def login(body: LoginRequest, request: Request, response: Response):
         secure = auth_request(request)
-        result = store.login(body.email, body.password, otp=body.otp,
+        result = store.login(body.username or body.email, body.password, otp=body.otp,
                              peer=request.client.host if request.client else 'unknown')
         response.set_cookie(COOKIE_NAME, result['token'], max_age=SESSION_SECONDS,
                             httponly=True, secure=secure, samesite='strict', path='/')

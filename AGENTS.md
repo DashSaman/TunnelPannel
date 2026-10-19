@@ -1,5 +1,13 @@
 # AGENTS.md — Permanent Agent Rules / قوانین همیشگی ایجنت
 
+## 2026-10-19 owner console and MANUAL paid service — active continuation
+
+Latest owner request extends existing accounts/billing into username login, account create/edit, priced editable plans, per-customer caps and owner-confirmed OFFLINE receipts. Owner explicitly chose manual payment/activation, no online gateway. This supersedes old sandbox-only wording; do not invent received money or prices for real customers. Website remains ONLY static UI/proxy; execution/data/queue remain on other nodes. Public origin stays tehnet.ir. Requested administrator credentials are in the human message/private handoff only; NEVER put a plaintext password in Git. Preserve existing customer identities, keys, live routes and workers. Paid mode blocks unpaid new work, keeps read/export/owned stop, and does not convert old sandbox credit into paid time.
+
+ACTIVE work is NOT YET installed at this checkpoint. Read private work/commercial-owner-handoff.json before continuing; work/tehnet-public-handoff.json records the prior completed release. One focused helper upstream_tunnel_delta already completed this request; no new/recursive/duplicate delegation. T6 updated privately; no private source copied. Gold changes are standalone verified-binary packaging, not new measured transport performance. WaterWall-H upstream pin matches existing accepted engine; keep original failure history. New independent SIT/WG MTU clamp and generated-service output/umask policy affect NEW resources only. Do not purge existing journals or modify old live units. Root on a customer node can inspect runtime files/memory; never promise zero footprint or prevention of copying public/source/runtime material. Central business logic is not shipped to customer nodes; retain central payment/audit records.
+
+Before rollout: finish local UI/regressions, publish immutable code with verified native blobs/tree and expected-head lease, verify CI; then fresh drain/current-worker baseline and private before backups+separate per-install env on BOTH authorized nodes. Do not replay old repair/install scripts or reuse old baseline groups. Server-resident encrypted backup verification is the approved safer path; sensitive local export was rejected previously. Update only own website container release, preserve menu/other services, verify real paired receipts and public owner/customer UI. Keep main unmerged and heartbeat PAUSED. Publish installed bilingual evidence only after actual verification.
+
 
 ## 2026-10-19 PUBLIC tehnet.ir container (authoritative latest owner scope)
 
