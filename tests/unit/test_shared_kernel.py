@@ -22,7 +22,8 @@ class Kernel:
         if args[:3]==['ip','link','add']:
             name=args[4];kind=args[args.index('type')+1]
             self.links[name]={'ifname':name,'ifindex':len(self.links)+10,'ifalias':args[args.index('alias')+1],
-                'linkinfo':{'info_kind':kind,'info_data':{'local':args[args.index('local')+1],'remote':args[args.index('remote')+1]}}}
+                'linkinfo':{'info_kind':kind,'info_data':{'local':args[args.index('local')+1],'remote':args[args.index('remote')+1],
+                                                       **({'proto':'ipip'} if kind=='ip6tnl' else {})}}}
         elif args[:3]==['ip','link','del']: self.links.pop(args[3]);self.addresses.clear();self.routes.clear()
         elif args[:3]==['ip','link','set'] and 'alias' in args:
             self.links[args[3]]['ifalias']=args[args.index('alias')+1]
@@ -40,10 +41,10 @@ def params(owner='123-1-IPIP', **changes):
             'address':'10.246.0.1/30','peer':'10.246.0.2','mtu':1400,**changes}
 
 
-@pytest.mark.parametrize('kind',['ipip','sit','gre','ip6gre'])
+@pytest.mark.parametrize('kind',['ipip','sit','gre','ip6gre','ip6tnl'])
 def test_last_owner_alone_deletes_shared_carrier_and_other_owners_keep_addresses(tmp_path,kind):
     kernel=Kernel();manager=SharedKernel(tmp_path/'shared',run=kernel,boot='boot-one')
-    outer={'local':'2001:db8::1','remote':'2001:db8::2'} if kind=='ip6gre' else {}
+    outer={'local':'2001:db8::1','remote':'2001:db8::2'} if kind in {'ip6gre','ip6tnl'} else {}
     inner={'address':'fd45:246::1/64','peer':'fd45:246::2'} if kind=='sit' else {}
     first=params(kind=kind,**outer,**inner)
     second=params('124-1-IPIP',kind=kind,**outer,**({'address':'fd45:247::1/64','peer':'fd45:247::2'} if kind=='sit' else {'address':'10.246.0.5/30','peer':'10.246.0.6'}))

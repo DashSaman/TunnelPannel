@@ -7,17 +7,102 @@ reconnection after a transport outage; new sessions use the healthy selection.
 from __future__ import annotations
 
 import asyncio
-from contextlib import suppress
 import hmac
 import ipaddress
 import json
 import math
 import os
-from pathlib import Path
 import socket
+import sqlite3
 import struct
 import time
 import uuid
+from contextlib import contextmanager, suppress
+from pathlib import Path
+
+
+def validate_traffic(value):
+    value = value or {}
+    if not isinstance(value, dict) or set(value) - {'rate_mbps', 'quota_bytes', 'max_connections'}:
+        raise ValueError('invalid traffic policy')
+    result = {'rate_mbps': 0, 'quota_bytes': 0, 'max_connections': 256, **value}
+    rate = result['rate_mbps']
+    if isinstance(rate, bool) or not isinstance(rate, (float, int)) or not math.isfinite(rate) or not 0 <= rate <= 100000:
+        raise ValueError('invalid aggregate Mbps')
+    for key, low, high in [('quota_bytes', 0, 10**16), ('max_connections', 1, 10000)]:
+        if type(result[key]) is not int or not low <= result[key] <= high:
+            raise ValueError('invalid ' + key)
+    return result
+
+
+class TrafficLedger:
+    """Durable payload debit before forwarding; never silently replace a bad DB.
+
+    Separate connections serialize using BEGIN IMMEDIATE, including across a
+    worker restart. Counts are bytes accepted for relay, not TCP acknowledgements.
+    """
+    def __init__(self, path):
+        self.path = str(path)
+        if Path(path).is_symlink():
+            raise ValueError('usage ledger must not be a symlink')
+        with self.connection() as db:
+            db.execute('CREATE TABLE IF NOT EXISTS usage (id INTEGER PRIMARY KEY CHECK(id=1), '
+                       'upload INTEGER NOT NULL CHECK(upload>=0), download INTEGER NOT NULL CHECK(download>=0))')
+            db.execute('INSERT OR IGNORE INTO usage VALUES(1,0,0)')
+            db.commit()
+        os.chmod(path, 0o600)
+
+    @contextmanager
+    def connection(self):
+        db = sqlite3.connect(self.path, timeout=10)
+        try:
+            db.execute('PRAGMA synchronous=FULL')
+            yield db
+        finally:
+            db.close()
+
+    def charge(self, direction, size, quota):
+        if direction not in {'upload', 'download'} or type(size) is not int or size < 0:
+            raise ValueError('invalid payload debit')
+        with self.connection() as db:
+            db.execute('BEGIN IMMEDIATE')
+            upload, download = db.execute('SELECT upload,download FROM usage WHERE id=1').fetchone()
+            allowed = min(size, max(0, quota - upload - download)) if quota else size
+            db.execute('UPDATE usage SET ' + direction + '=' + direction + '+? WHERE id=1', (allowed,))
+            db.commit()
+        return allowed
+
+    def snapshot(self):
+        with self.connection() as db:
+            upload, download = db.execute('SELECT upload,download FROM usage WHERE id=1').fetchone()
+        return {'upload_bytes': upload, 'download_bytes': download, 'total_bytes': upload + download}
+
+
+class TrafficController:
+    def __init__(self, ledger, policy):
+        self.ledger, self.policy = ledger, policy
+        self.lock = asyncio.Lock()
+        self.next_at = 0
+
+    async def relay(self, chunk, writer, direction):
+        # Small slices bound burst size, cancellation latency and live edits.
+        for offset in range(0, len(chunk), 16384):
+            part = chunk[offset:offset + 16384]
+            async with self.lock:
+                policy = validate_traffic(self.policy())
+                allowed = self.ledger.charge(direction, len(part), policy['quota_bytes'])
+                if not allowed:
+                    raise ConnectionError('route byte allowance exhausted')
+                rate = policy['rate_mbps'] * 1000000 / 8
+                now = time.monotonic()
+                self.next_at = max(now, self.next_at) + allowed / rate if rate else now
+                deadline = self.next_at
+            if deadline > now:
+                await asyncio.sleep(deadline - now)
+            writer.write(part[:allowed])
+            await writer.drain()
+            if allowed < len(part):
+                raise ConnectionError('route byte allowance exhausted')
 
 
 class RoutePolicy:
@@ -110,7 +195,7 @@ async def direct_connect(host, port):
     return await asyncio.open_connection(host, port)
 
 
-async def serve_socks(reader, writer, connect, username, password):
+async def serve_socks(reader, writer, connect, username, password, *, traffic=None):
     remote_reader = None
     remote_writer = None
     relays = []
@@ -153,16 +238,20 @@ async def serve_socks(reader, writer, connect, username, password):
         if not replied:
             return
 
-        async def pipe(source, destination):
+        async def pipe(source, destination, direction):
             while True:
                 chunk = await asyncio.wait_for(source.read(65536), 300)
                 if not chunk:
                     with suppress(Exception):
                         destination.write_eof()
                     return
-                destination.write(chunk)
-                await destination.drain()
-        relays = [asyncio.create_task(pipe(reader, remote_writer)), asyncio.create_task(pipe(remote_reader, writer))]
+                if traffic:
+                    await traffic.relay(chunk, destination, direction)
+                else:
+                    destination.write(chunk)
+                    await destination.drain()
+        relays = [asyncio.create_task(pipe(reader, remote_writer, 'upload')),
+                  asyncio.create_task(pipe(remote_reader, writer, 'download'))]
         await asyncio.gather(*relays)
     except (OSError, ValueError, asyncio.TimeoutError, asyncio.IncompleteReadError):
         if not replied:
@@ -212,6 +301,9 @@ class Gateway:
         if config.get('mode', 'failover') not in {'failover', 'balance'}:
             raise ValueError('unknown gateway mode')
         self._connections = set()
+        validate_traffic(config.get('traffic'))
+        self.traffic = TrafficController(TrafficLedger(config.get('usage_path') or
+            str(self.state_path.with_name('usage.sqlite3'))), lambda: self.config.get('traffic', {}))
 
     def record_probes(self, readings):
         self.probes = readings
@@ -287,7 +379,9 @@ class Gateway:
     async def start_listener(self):
         async def handler(reader, writer):
             task = asyncio.current_task()
-            if len(self._connections) >= self.config.get('max_connections', 256):
+            policy = validate_traffic(self.config.get('traffic', {'max_connections': self.config.get('max_connections', 256)}))
+            if (len(self._connections) >= policy['max_connections'] or
+                    policy['quota_bytes'] and self.traffic.ledger.snapshot()['total_bytes'] >= policy['quota_bytes']):
                 writer.close()
                 return
             self._connections.add(task)
@@ -295,7 +389,7 @@ class Gateway:
             try:
                 async def connect(host, port):
                     return await self.connect(host, port, selected.append)
-                await serve_socks(reader, writer, connect, self.config['username'], self.config['password'])
+                await serve_socks(reader, writer, connect, self.config['username'], self.config['password'], traffic=self.traffic)
             finally:
                 for key in selected:
                     self.active_connections[key] -= 1
@@ -336,6 +430,10 @@ class Gateway:
                     'mode': self.config.get('mode', 'failover'),
                     'active_connections': self.active_connections,
                     'connections_by_upstream': self.connections_by_upstream,
+                    'traffic_control_version': 1,
+                    'traffic': {'limits': validate_traffic(self.config.get('traffic')),
+                                'used': self.traffic.ledger.snapshot(),
+                                'basis': 'combined payload accepted before forwarding; excludes probes and SOCKS negotiation'},
                     'effective_weights': {key: round(self.effective_weight(key), 3) for key in self.policy.order},
                     'capability': 'authenticated TCP SOCKS5; existing sessions reconnect after failure'})
 
@@ -350,6 +448,7 @@ class Gateway:
                     raise ValueError('upstream membership changes require a reconciled deployment')
                 if updated.get('mode', 'failover') not in {'failover', 'balance'}:
                     raise ValueError('unknown gateway mode')
+                validate_traffic(updated.get('traffic'))
                 self.config = updated
                 self.policy.order, self.policy.pin = ids, updated.get('pin')
                 readings = await asyncio.gather(*(self.probe(upstream) for upstream in self.config['upstreams']))

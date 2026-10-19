@@ -12,9 +12,9 @@ def encryption(method):
         parts = method.split('_OVER_', 1)
         return ('protocol_encrypted' if any(encryption(p) == 'protocol_encrypted' for p in parts)
                 else 'configuration_dependent')
-    if method in {'GRE', 'GRETAP', 'IP6GRE', 'IP6GRETAP', 'IPIP', 'SIT_6IN4', 'VXLAN', 'VTI', 'VTI6', 'HAJSAMAN_SIT'}:
+    if method in {'BACKHAUL_TCP', 'IP4IN6', 'GRE', 'GRETAP', 'IP6GRE', 'IP6GRETAP', 'IPIP', 'SIT_6IN4', 'VXLAN', 'VTI', 'VTI6', 'HAJSAMAN_SIT'}:
         return 'none'
-    if (method in {'WIREGUARD', 'OPENVPN', 'IKEV2_IPSEC', 'L2TP_IPSEC', 'GOST_SSH',
+    if (method in {'AMNEZIAWG', 'WIREGUARD', 'OPENVPN', 'IKEV2_IPSEC', 'L2TP_IPSEC', 'GOST_SSH',
                    'HYSTERIA2', 'TUIC', 'SHADOWSOCKS', 'HAJSAMAN_WG', 'HAJSAMAN_FULL'}
             or method.startswith(('SSH_', 'AUTOSSH_', 'TROJAN_', 'VMESS_', 'ANYTLS', 'SHADOWTLS', 'NAIVE_'))
             or 'TLS' in method or 'REALITY' in method):

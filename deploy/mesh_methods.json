@@ -182,6 +182,27 @@
       "name": "WIREGUARD OVER SSH",
       "binary": "ip",
       "default_port": 0
+    },
+    {
+      "id": "BACKHAUL_TCP",
+      "set": "BACKHAUL_METHODS",
+      "name": "Backhaul TCP reverse transport",
+      "binary": "backhaul",
+      "default_port": 0
+    },
+    {
+      "id": "AMNEZIAWG",
+      "set": "AMNEZIAWG_METHODS",
+      "name": "AmneziaWG userspace with obfuscation",
+      "binary": "amneziawg-go",
+      "default_port": 0
+    },
+    {
+      "id": "IP4IN6",
+      "set": "KERNEL_METHODS",
+      "name": "Native 4in6 (IPv4 inside IPv6)",
+      "binary": "ip",
+      "default_port": 0
     }
   ]
 }

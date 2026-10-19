@@ -16,6 +16,8 @@ def directed_routes(nodes):
 
 
 def failure_domain(method):
+    if method == 'IP4IN6':
+        return 'ipv6:4'
     # Describe the OUTER carrier: overlays cannot survive their carrier's loss.
     if method.startswith("HAJSAMAN_") or method in {"SIT_6IN4", "SIT_OVER_SSH"}:
         return "ip:41" if method != "SIT_OVER_SSH" else "tcp:ssh"
@@ -27,7 +29,7 @@ def failure_domain(method):
         return "ip:4"
     if method in {"VTI", "VTI6", "IKEV2_IPSEC", "L2TP_IPSEC"}:
         return "udp:ipsec"
-    if method in {"WIREGUARD", "VXLAN", "OPENVPN"}:
+    if method in {"WIREGUARD", "AMNEZIAWG", "VXLAN", "OPENVPN"}:
         return "udp:" + method.lower()
     if method.startswith("PAQET_"):
         return "raw:tcp"
@@ -45,7 +47,7 @@ def failure_domain(method):
 
 
 def capability(method):
-    if method in {"WIREGUARD", "GRE", "GRETAP", "IPIP", "IP6GRE", "IP6GRETAP", "SIT_6IN4",
+    if method in {"WIREGUARD", "AMNEZIAWG", "IP4IN6", "GRE", "GRETAP", "IPIP", "IP6GRE", "IP6GRETAP", "SIT_6IN4",
                   "VXLAN", "VTI", "VTI6", "IKEV2_IPSEC", "L2TP_IPSEC", "OPENVPN",
                   "SSH_TUN_L3", "SSH_TAP_L2", "GOST_TUN", "GOST_TAP", "HEDIOUM_TUN",
                   "SINGBOX_TUN", "HAJSAMAN_SIT", "HAJSAMAN_WG", "HAJSAMAN_FULL"} or "_OVER_" in method:

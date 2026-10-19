@@ -37,16 +37,16 @@ def test_hand_derived_all_pairs_units_and_honest_duration_uncertainty():
     from orchestrator.campaign_budget import estimate_campaign
     methods = list(CATALOG.identities)
     two = estimate_campaign(['a','b'], methods, 'NORMAL')
-    assert two['candidate_units'] == 216
-    assert two['route_count'] == 2 and two['method_count'] == 108
-    assert two['candidate_timeout_ceiling_s'] == 129600
+    assert two['candidate_units'] == 222
+    assert two['route_count'] == 2 and two['method_count'] == 111
+    assert two['candidate_timeout_ceiling_s'] == 133200
     assert two['profile_config']['throughput_seconds'] == 10
     assert two['traffic_bytes_estimate'] is None and two['preparation_included'] is False
     ten = estimate_campaign([str(i) for i in range(10)], methods, 'NORMAL')
-    assert ten['candidate_units'] == 9720
+    assert ten['candidate_units'] == 9990
     selected = estimate_campaign(['a','b','c'], methods, 'NORMAL',
         directions=[{'source':'a','destination':'b'}, {'source':'b','destination':'a'}])
-    assert selected['candidate_units'] == 216 and selected['route_count'] == 2
+    assert selected['candidate_units'] == 222 and selected['route_count'] == 2
 
 
 @pytest.mark.parametrize('directions', [[], [{'source':'a','destination':'a'}],

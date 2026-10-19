@@ -7,7 +7,7 @@ import shlex
 from orchestrator.shared_kernel_runtime import carrier_identity
 
 
-METHODS={'GRE':'gre','IP6GRE':'ip6gre','IPIP':'ipip','SIT_6IN4':'sit'}
+METHODS={'GRE':'gre','IP6GRE':'ip6gre','IPIP':'ipip','SIT_6IN4':'sit','IP4IN6':'ip6tnl'}
 
 
 def remote_script(action,value):

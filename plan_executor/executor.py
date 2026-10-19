@@ -29,6 +29,7 @@ logging.basicConfig(
 log = logging.getLogger("netauto-plan-executor")
 
 SUPPORTED = {
+    "BACKHAUL_TCP", "AMNEZIAWG", "IP4IN6",
     "GRE",
     "GRETAP",
     "IPIP",
@@ -435,7 +436,7 @@ def deploy_kernel(
     ensure_source(remote_b, addr["source_b"])
 
     ipv4_outer = {"GRE", "GRETAP", "IPIP", "SIT_6IN4", "VXLAN"}
-    ipv6_outer = {"IP6GRE", "IP6GRETAP"}
+    ipv6_outer = {"IP6GRE", "IP6GRETAP", "IP4IN6"}
     if method in ipv4_outer and (
         addr["source_a"].version != 4 or addr["source_b"].version != 4
     ):
@@ -448,6 +449,10 @@ def deploy_kernel(
         addr["address_a"].version != 6 or addr["address_b"].version != 6
     ):
         raise RuntimeError("SIT_REQUIRES_INNER_IPV6")
+    if method == 'IP4IN6' and any(addr[key].version != 4 for key in ('address_a','address_b')):
+        raise RuntimeError('IP4IN6_REQUIRES_INNER_IPV4')
+    if method == 'IP4IN6' and not all(getattr(remote, 'journal', None) for remote in (remote_a, remote_b)):
+        raise RuntimeError('native4in6 requires canonical shared-carrier ownership')
 
     from engines.shared_kernel import METHODS as shared_methods, deploy as deploy_shared
     if method in shared_methods and all(getattr(remote,'journal',None) is not None for remote in (remote_a,remote_b)):

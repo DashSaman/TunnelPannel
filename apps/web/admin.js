@@ -1,14 +1,14 @@
 /* Tehran Network owner console. Credentials stay in form memory only. */
 (()=>{'use strict';
 let active='users',generation=0;
-const labels={max_nodes:['سرور','Servers'],max_tunnels_per_route:['تونل در هر مسیر','Members per route'],max_campaign_methods:['روش در هر تست','Methods per test'],max_active_campaigns:['تست هم‌زمان','Concurrent tests'],max_active_routes:['مسیر فعال','Active routes'],max_daily_candidate_units:['واحد تست روزانه','Daily test units']};
+const labels={max_route_mbps:['سقف سرعت هر مسیر · Mbps','Route rate ceiling · Mbps'],max_route_bytes:['سقف مصرف هر مسیر · بایت','Route payload ceiling · bytes'],max_route_connections:['اتصال هم‌زمان هر مسیر','Connections per route'],max_nodes:['سرور','Servers'],max_tunnels_per_route:['تونل در هر مسیر','Members per route'],max_campaign_methods:['روش در هر تست','Methods per test'],max_active_campaigns:['تست هم‌زمان','Concurrent tests'],max_active_routes:['مسیر فعال','Active routes'],max_daily_candidate_units:['واحد تست روزانه','Daily test units']};
 const el=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e};
 const add=(parent,...children)=>{parent.append(...children);return parent};
 function input(form,name,title,value='',type='text',required=true){const label=el('label'),field=el('input');field.name=name;field.type=type;field.value=value??'';field.required=required;if(type==='password'){field.autocomplete='new-password';field.minLength=12;field.maxLength=256}else if(type==='number'){field.min=1;field.step=1}field.dir='auto';add(label,el('span',title),field);form.append(label);return field}
 function select(form,name,title,options,value){const label=el('label'),field=el('select');field.name=name;for(const [v,text]of options)field.add(new Option(text,v));if(value!==undefined)field.value=value;add(label,el('span',title),field);form.append(label);return field}
 function check(form,name,title,value){const label=el('label',undefined,'check'),field=el('input');field.name=name;field.type='checkbox';field.checked=!!value;add(label,field,el('span',title));form.append(label);return field}
 function form(parent,title){const box=el('section',undefined,'card'),f=el('form',undefined,'admin-form');add(box,el('h3',title),f);parent.append(box);return f}
-function limitsForm(f,values,t){const fields={};for(const [key,names]of Object.entries(labels)){fields[key]=input(f,key,t(...names),values[key],'number');fields[key].max=key==='max_daily_candidate_units'?1000000:1000}return()=>Object.fromEntries(Object.entries(fields).map(([key,field])=>[key,Number(field.value)]))}
+function limitsForm(f,values,t){const fields={};for(const [key,names]of Object.entries(labels)){fields[key]=input(f,key,t(...names),values[key],'number');fields[key].max=({max_daily_candidate_units:1000000,max_route_mbps:100000,max_route_bytes:1e16,max_route_connections:10000})[key]||1000}return()=>Object.fromEntries(Object.entries(fields).map(([key,field])=>[key,Number(field.value)]))}
 window.TPAdmin={async render({api,t,notify,refresh,user,sensitive}){
  const serial=++generation;
  const [workspaces,accounts,plans,payments,requests]=await Promise.all([api('/api/billing/workspaces'),api('/api/accounts'),api('/api/billing/owner/plans'),api('/api/billing/owner/payments'),api('/api/billing/owner/requests')]);

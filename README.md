@@ -1,5 +1,10 @@
 # TunnelPannel
 
+## TehNet engine and traffic expansion
+
+Backhaul TCP, official userspace AmneziaWG and native IPv4-in-IPv6 are under installed acceptance. New gateways enforce cumulative per-route payload/rate/concurrency limits; historical live groups stay unchanged. See [guide and scope](docs/TUNNEL-EXPANSION.md).
+
+
 [Arange-tun design/capability comparison and prioritised gaps](docs/ARANGE-COMPARISON-20261019.md) · [فارسی](docs/ARANGE-COMPARISON-20261019-fa.md). Configured SIT/6in4 and IP6GRE exist; Backhaul, AmneziaWG and native4in6 remain proposed additions, not installed features.
 
 Paid TehNet service: [owner accounts, quotas, plans and manual payments](docs/COMMERCIAL-OWNER.md) · [installed validation](docs/COMMERCIAL-OWNER-VALIDATION.md). Sign in at **https://tehnet.ir/tunnels/** with your assigned username/password. Offline receipts and activation are handled manually by the administrator; no online gateway. The SIT/WG guard fix is installed after successful CI; fresh paired acceptance passed4/4 while existing workers remained intact.

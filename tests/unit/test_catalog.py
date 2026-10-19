@@ -13,7 +13,7 @@ pytestmark = pytest.mark.unit_portable
 class TestCoverage:
     def test_every_registry_method_has_identity(self):
         # The 82 stable identities plus 26 reviewed mesh recipes
-        assert len(CATALOG.identities) == 108
+        assert len(CATALOG.identities) == 111
 
     def test_no_identity_collisions(self):
         seen = {}
@@ -66,7 +66,7 @@ class TestIdentitySplit:
         assert CATALOG.by_legacy("PAQET").legacy_id == "PAQET_SOCKS5"
         assert CATALOG.by_legacy("SIT").legacy_id == "SIT_6IN4"
         # aliases do not inflate the canonical method count
-        assert len(CATALOG.identities) == 108
+        assert len(CATALOG.identities) == 111
 
     def test_resolve_round_trip(self):
         ident = CATALOG.resolve("gost", "grpc")

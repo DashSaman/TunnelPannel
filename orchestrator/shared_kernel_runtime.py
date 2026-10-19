@@ -24,11 +24,11 @@ def normalized(value):
     result=dict(value)
     if not re.fullmatch(r'[0-9]+-[0-9]+-[A-Z0-9_]+',result['owner']):
         raise ValueError('invalid shared carrier owner')
-    if result['kind'] not in {'gre','ip6gre','sit','ipip'}:
+    if result['kind'] not in {'gre','ip6gre','sit','ipip','ip6tnl'}:
         raise ValueError('unsupported shared carrier')
     for key in ('local','remote','peer'):result[key]=str(ipaddress.ip_address(result[key]))
     result['address']=str(ipaddress.ip_interface(result['address']))
-    outer=6 if result['kind']=='ip6gre' else 4
+    outer=6 if result['kind'] in {'ip6gre','ip6tnl'} else 4
     if any(ipaddress.ip_address(result[key]).version!=outer for key in ('local','remote')):
         raise ValueError('invalid outer address family')
     address=ipaddress.ip_interface(result['address'])
@@ -36,6 +36,7 @@ def normalized(value):
     if peer.version!=address.version or peer not in address.network or peer==address.ip:
         raise ValueError('invalid shared peer prefix')
     if result['kind']=='sit' and address.version!=6:raise ValueError('SIT needs IPv6 inside')
+    if result['kind']=='ip6tnl' and address.version!=4:raise ValueError('native4in6 needs IPv4 inside')
     if type(result['mtu']) is not int or not 1280<=result['mtu']<=1480:
         raise ValueError('invalid shared MTU')
     return result
@@ -112,6 +113,8 @@ class SharedKernel:
                 (book.get('ifindex') is not None and link['ifindex']!=book['ifindex'])):
             raise RuntimeError('shared carrier ownership mismatch')
         data=link['linkinfo'].get('info_data',{})
+        if book['kind']=='ip6tnl' and data.get('proto') not in {4,'ipip','ipip6'}:
+            raise RuntimeError('native4in6 protocol ownership mismatch')
         if any(str(ipaddress.ip_address(data.get(key,'0.0.0.0')))!=book[key] for key in ('local','remote')):
             raise RuntimeError('shared carrier endpoint ownership mismatch')
 
@@ -138,7 +141,7 @@ class SharedKernel:
                 info=link.get('linkinfo',{})
                 if info.get('info_kind')!=value['kind']:continue
                 data=info.get('info_data',{})
-                wildcard='::' if value['kind']=='ip6gre' else '0.0.0.0'
+                wildcard='::' if value['kind'] in {'ip6gre','ip6tnl'} else '0.0.0.0'
                 local=str(ipaddress.ip_address(wildcard if data.get('local','any')=='any' else data['local']))
                 remote=str(ipaddress.ip_address(wildcard if data.get('remote','any')=='any' else data['remote']))
                 if local==value['local'] and remote==value['remote'] or (
@@ -154,7 +157,8 @@ class SharedKernel:
             self.write(book_path,book)  # Persist intent before any kernel mutation.
             if not current:
                 self.run(['ip','link','add','name',name,'alias','TunnelPannel:'+identity,
-                          'type',value['kind'],'local',value['local'],'remote',value['remote']])
+                          'type',value['kind'],*(['mode','ipip6'] if value['kind']=='ip6tnl' else []),
+                          'local',value['local'],'remote',value['remote']])
                 # Tunnel-specific iproute drivers can ignore alias on creation.
                 # This command succeeded under our lock; mark that new link explicitly.
                 self.run(['ip','link','set',name,'alias','TunnelPannel:'+identity])

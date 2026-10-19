@@ -5,8 +5,16 @@ from pydantic import BaseModel, Field
 
 from core.models import Job
 from core.security import require_role
+from core.traffic import TrafficPolicy
 from core.workspaces import scope_limits
-from orchestrator.mesh_routes import observe_route, route_job, route_private, route_public, update_route_policy
+from orchestrator.mesh_routes import (
+    observe_route,
+    route_job,
+    route_private,
+    route_public,
+    update_route_policy,
+    update_route_traffic,
+)
 
 
 class DeployRoute(BaseModel):
@@ -15,6 +23,7 @@ class DeployRoute(BaseModel):
     methods: list[str] | None = Field(default=None, max_length=100)
     listen_host: Literal['127.0.0.1', '::1'] = '127.0.0.1'
     mode: Literal['failover', 'balance'] = 'failover'
+    traffic: TrafficPolicy | None = None
 
 
 class RoutePolicyRequest(BaseModel):
@@ -57,6 +66,10 @@ def create_mesh_routes_router(factory, service):
     def policy(route_id: str, body: RoutePolicyRequest, _=Depends(require_role('OPERATOR', 'SUPER_ADMIN'))):
         return update_route_policy(factory, route_id, body.order, body.pin, body.mode,
                                    preserve_pin='pin' not in body.model_fields_set)
+
+    @router.put('/{route_id}/traffic')
+    def traffic(route_id: str, body: TrafficPolicy, _=Depends(require_role('OPERATOR', 'SUPER_ADMIN'))):
+        return update_route_traffic(factory, route_id, body, scope_limits())
 
     @router.delete('/{route_id}', status_code=202)
     def stop(route_id: str, _=Depends(require_role('OPERATOR', 'SUPER_ADMIN'))):

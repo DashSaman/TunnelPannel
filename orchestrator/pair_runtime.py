@@ -23,7 +23,7 @@ from orchestrator.remote_nodes import NodeRemote, node_access
 
 
 def traffic_plan(method):
-    reverse = (method.startswith(("FRP_", "RATHOLE_")) or "REVERSE" in method
+    reverse = (method.startswith(("FRP_", "RATHOLE_", "BACKHAUL_")) or "REVERSE" in method
                or method in {"SSH_REMOTE_FORWARD", "GOST_REMOTE_TCP", "GOST_REMOTE_UDP"})
     return {"initiator": "B" if reverse else "A", "origin_index": 1, "listener_side": "A"}
 
@@ -190,7 +190,7 @@ class RealPairAdapter:
             inner6 = ipaddress.ip_network(unused_prefix(self.remotes, version=6))
             config.update(tunnel_cidr=str(inner6), tunnel_ip_a=f"{inner6[1]}/64",
                           tunnel_ip_b=f"{inner6[2]}/64")
-        if method in {"IP6GRE", "IP6GRETAP", "VTI6"}:
+        if method in {"IP6GRE", "IP6GRETAP", "VTI6", "IP4IN6"}:
             if not all(e.get("ipv6") for e in endpoints):
                 raise RuntimeError("this profile requires actual global IPv6 on both nodes")
             config.update(source_ip_a=endpoints[0]["ipv6"], source_ip_b=endpoints[1]["ipv6"])
@@ -220,9 +220,12 @@ class RealPairAdapter:
             self.target_origin = self.origins[1]
             from engines.gost_pair import deploy_gost_proxy_pair
             self.artifact = deploy_gost_proxy_pair(method, self.run, self.item, config, a, b, *endpoints)
+        elif method == 'AMNEZIAWG':
+            from engines.amneziawg import deploy
+            self.artifact = deploy(self.run, self.item, config, a, b)
         elif method == "WIREGUARD":
             self.artifact = bodies.deploy_wireguard(self.run, self.item, config, a, b)
-        elif method in {"GRE", "GRETAP", "IPIP", "SIT_6IN4", "IP6GRE", "IP6GRETAP", "VXLAN"}:
+        elif method in {"GRE", "GRETAP", "IPIP", "SIT_6IN4", "IP6GRE", "IP6GRETAP", "VXLAN", "IP4IN6"}:
             self.artifact = bodies.deploy_kernel(method, self.run, self.item, config, a, b)
         else:
             self._origins(bodies, http_bind='::' if ipaddress.ip_interface(config['tunnel_ip_b']).version == 6 else '0.0.0.0')
@@ -245,6 +248,11 @@ class RealPairAdapter:
             config.update(target_host="127.0.0.1", target_port=self.target_origin[1],
                           local_port=self.target_origin[1], local_host="127.0.0.1")
             self.prepare_forward_target(config)
+            if method == 'BACKHAUL_TCP':
+                from engines.backhaul import deploy
+                self.artifact = deploy(self.run, self.item, config, a, b, *endpoints)
+                self._check_management_routes()
+                return
             if "UDP" in method:
                 config.update(target_port=self.target_origin[5], local_port=self.target_origin[5])
             if method in {"GOST_TCP_FORWARD", "GOST_UDP_FORWARD"}:

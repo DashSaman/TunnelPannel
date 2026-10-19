@@ -52,7 +52,7 @@ def _validated(model, body):
 
 
 def _plan(row):
-    return {**dict(row), 'enabled':bool(row['enabled']), 'limits':json.loads(row['limits'])}
+    return {**dict(row), 'enabled':bool(row['enabled']), 'limits':validated_limits(json.loads(row['limits']))}
 
 
 class ManualCommerce:
@@ -60,7 +60,7 @@ class ManualCommerce:
         from core.subscriptions import PLAN_LIMITS
         with self._db() as db:
             saved = {r['id']:_plan(r) for r in db.execute('SELECT * FROM commercial_plans ORDER BY id')}
-        plans = {key:{'id':key,'name':key.upper(),'limits':dict(value),'price_minor':None,
+        plans = {key:{'id':key,'name':key.upper(),'limits':validated_limits(value),'price_minor':None,
                      'currency':None,'duration_days':30,'enabled':True} for key,value in PLAN_LIMITS.items()}
         plans.update(saved)
         return [p for p in plans.values() if include_disabled or p['enabled']]

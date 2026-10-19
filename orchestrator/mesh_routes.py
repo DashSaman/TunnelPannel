@@ -80,6 +80,8 @@ class RouteService:
         self._threads, self._lock = {}, threading.Lock()
 
     def create(self, factory, request, limits):
+        from core.traffic import bounded_traffic
+        traffic = bounded_traffic(getattr(request, 'traffic', None), limits)
         factory = freeze_factory(factory)
         with factory() as session:
             if session.bind.dialect.name == 'sqlite':
@@ -112,7 +114,7 @@ class RouteService:
                 'campaign_id': campaign.id, 'campaign_route_id': route['id'],
                 'source': route['source'], 'destination': route['destination'],
                 'methods': methods, 'members': [], 'listen_host': request.listen_host,
-                'mode': request.mode},
+                'mode': request.mode, 'traffic': traffic},
                 timeout_s=600 * len(methods))
             session.add(job)
             session.commit()
@@ -300,6 +302,10 @@ class RouteService:
                       'password': previous_config['password'] if previous_config else secrets.token_urlsafe(32),
                       'upstreams': upstreams, 'probe_interval_s': 2, 'probe_timeout_s': 5,
                       'failures': 3, 'successes': 2, 'hold_down_s': 15}
+            usage_dir = '/var/lib/tunnelpannel/route-usage'
+            remote.run('install -d -m 700 ' + usage_dir, root=True)
+            config.update(traffic=payload.get('traffic') or (previous_config or {}).get('traffic', {}),
+                          usage_path=usage_dir + '/' + route_id + '.sqlite3')
             script = Path(__file__).with_name('mesh_gateway.py').read_text(encoding='utf-8')
             bodies.write_remote_text(remote, directory + '/gateway.py', script, '0600')
             bodies.write_remote_text(remote, directory + '/config.json', json.dumps(config), '0600')
@@ -348,6 +354,7 @@ class RouteService:
         self.kick(factory, route_id)
 
     def reconcile(self, factory, route_id, methods, limits):
+        from core.traffic import bounded_traffic
         factory = freeze_factory(factory)
         lease = route_lease(factory, route_id)
         if not lease.acquire(2):
@@ -375,7 +382,8 @@ class RouteService:
                     methods if methods is not None else job.payload['methods'], limits['max_tunnels_per_route'])
                 if not all(egress_supported(method) for method in selected):
                     raise HTTPException(400, 'selection requires persistent TCP egress support')
-                job.payload = {**job.payload, 'methods': selected}
+                traffic = bounded_traffic(job.payload.get('traffic'), limits)
+                job.payload = {**job.payload, 'methods': selected, 'traffic': traffic}
                 job.state, job.progress, job.error, job.finished_at = 'APPLYING', 0, None, None
                 session.commit()
         finally:
@@ -437,3 +445,42 @@ def _update_route_policy(factory, route_id, order, pin, mode, *, preserve_pin=Fa
     finally:
         remote.close()
     return {'route_id': route_id, 'order': order or list(by_id), 'pin': pin, 'mode': mode}
+
+
+def update_route_traffic(factory, route_id, value, limits):
+    """Change v1 policy without restarting its listener or resetting its ledger."""
+    from core.traffic import bounded_traffic
+    from plan_executor import executor as bodies
+    traffic = bounded_traffic(value, limits)
+    factory = freeze_factory(factory)
+    lease = route_lease(factory, route_id)
+    if not lease.acquire(10):
+        raise HTTPException(409, 'route controller is busy')
+    remote = None
+    try:
+        observed = observe_route(factory, route_id)
+        if not observed.get('observed') or observed.get('runtime', {}).get('traffic_control_version') != 1:
+            raise HTTPException(409, 'this historical worker cannot enforce traffic controls; explicit reconciliation is required')
+        with factory() as session:
+            job = route_job(session, route_id)
+            if job.state not in {'COMMITTED', 'DEGRADED'}:
+                raise HTTPException(409, 'route must be active')
+            runtime = route_private(session, job)
+            endpoint, credentials = node_access(session, job.payload['source'])
+        config = {**runtime['config'], 'traffic': traffic}
+        remote = NodeRemote(endpoint, credentials).connect()
+        target = runtime['directory'] + '/config.json'
+        bodies.write_remote_text(remote, target + '.next', json.dumps(config), '0600')
+        remote.run(f'mv -- {shlex.quote(target + ".next")} {shlex.quote(target)}', root=True)
+        runtime['config'] = config
+        with factory() as session:
+            job = route_job(session, route_id)
+            secret = session.get(SecretReference, job.payload['runtime_secret_id'])
+            secret.ciphertext = encrypt_credentials(runtime)
+            job.payload = {**job.payload, 'traffic': traffic}
+            session.commit()
+        return {'route_id': route_id, 'traffic': traffic, 'usage_reset': False}
+    finally:
+        if remote:
+            remote.close()
+        lease.release()

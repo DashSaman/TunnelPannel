@@ -12,6 +12,19 @@ def test_route_creation_requires_a_customer_visible_completed_campaign(panel):
     assert 'campaign not found' in response.text
 
 
+def test_traffic_edit_rejects_historical_workers_and_cross_customer_access(panel, monkeypatch):
+    client, _, _ = panel
+    monkeypatch.setattr('orchestrator.mesh_routes.observe_route',
+                        lambda *args: {'observed': True, 'runtime': {'worker_pid': 42}})
+    response = client.put('/api/mesh/routes/historical/traffic', headers=HEADERS, json={})
+    assert response.status_code == 409
+    assert 'cannot enforce' in response.text
+    monkeypatch.setattr('orchestrator.mesh_routes.observe_route',
+                        lambda *args: (_ for _ in ()).throw(__import__('fastapi').HTTPException(404, 'route not found')))
+    assert client.put('/api/mesh/routes/foreign/traffic', headers=HEADERS, json={}).status_code == 404
+    assert client.put('/api/mesh/routes/foreign/traffic', headers=HEADERS, json={'quota_bytes': True}).status_code == 422
+
+
 def test_customer_cannot_read_or_stop_an_owner_route(panel):
     from core.models import Job
     client, factory, _ = panel

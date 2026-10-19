@@ -24,14 +24,16 @@ from sqlalchemy.orm import sessionmaker
 workspace_context: ContextVar[dict | None] = ContextVar("workspace", default=None)
 DEFAULT_LIMITS = {"max_nodes": 12, "max_tunnels_per_route": 10,
                   "max_campaign_methods": 160, "max_active_campaigns": 1,
-                  "max_active_routes": 24, "max_daily_candidate_units": 25000}
+                  "max_active_routes": 24, "max_daily_candidate_units": 25000,
+                  "max_route_mbps": 100000, "max_route_bytes": 10**16, "max_route_connections": 10000}
 
 
 def validated_limits(current=None, changes=None):
+    from core.traffic import TRAFFIC_CEILINGS
     configured = {**DEFAULT_LIMITS, **(current or {}), **(changes or {})}
     if set(configured) != set(DEFAULT_LIMITS) or any(
             not isinstance(v, int) or isinstance(v, bool) or v < 1
-            or v > (1000000 if k == 'max_daily_candidate_units' else 1000)
+            or v > TRAFFIC_CEILINGS.get(k, 1000000 if k == 'max_daily_candidate_units' else 1000)
             for k, v in configured.items()):
         raise HTTPException(400, 'invalid workspace limits')
     return configured

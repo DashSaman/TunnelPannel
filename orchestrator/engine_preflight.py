@@ -8,7 +8,7 @@ from orchestrator.remote_nodes import NodeRemote
 
 def prepare_engines(access, candidates, cancelled):
     from engines.waterwall_h import METHODS, install
-    targets = [candidate for candidate in candidates if candidate.legacy_method_id in METHODS]
+    targets = [candidate for candidate in candidates if candidate.legacy_method_id in METHODS or candidate.legacy_method_id == 'AMNEZIAWG']
     if not targets or cancelled():
         return
     leases = sorted([HostLease(endpoint) for endpoint, _ in access], key=lambda lease: lease.key)
@@ -28,8 +28,12 @@ def prepare_engines(access, candidates, cancelled):
             try:
                 if not cancelled():
                     from orchestrator.host_inventory import scan, require_safe
-                    require_safe(scan(remote), 'WATERWALL_H_PREPARATION')
-                    install(remote)
+                    require_safe(scan(remote), 'ENGINE_PREPARATION')
+                    if any(c.legacy_method_id in METHODS for c in targets):
+                        install(remote)
+                    if any(c.legacy_method_id == 'AMNEZIAWG' for c in targets):
+                        from engines.amneziawg import install as install_awg
+                        install_awg(remote)
             finally:
                 remote.close()
         with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
@@ -38,7 +42,7 @@ def prepare_engines(access, candidates, cancelled):
     except Exception as error:
         for candidate in targets:
             candidate.status = 'BLOCKED'
-            candidate.reason = 'pinned WaterWall-H preparation failed (' + type(error).__name__ + '); see owned build log'
+            candidate.reason = 'pinned engine preparation failed (' + type(error).__name__ + '); see owned build log'
     finally:
         for lease in reversed(acquired):
             lease.release()

@@ -44,6 +44,9 @@ _ENGINE_PREFIXES: list[tuple[str, str]] = [
 
 # exact legacy IDs → (engine, profile); entries not matched by prefix rules
 _EXACT: dict[str, tuple[str, str]] = {
+    "BACKHAUL_TCP": ("backhaul", "tcp"),
+    "AMNEZIAWG": ("amneziawg", "default"),
+    "IP4IN6": ("ip4in6", "native"),
     "WIREGUARD": ("wireguard", "default"),
     "GRE": ("gre", "default"),
     "IP6GRE": ("gre", "ip6"),
