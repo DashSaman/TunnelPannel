@@ -1,5 +1,10 @@
 # TunnelPannel
 
+پنل عمومی: **https://tehnet.ir/tunnels/** · منوی سایت: **مدیریت تونل**. [گزارش نصب واقعی](docs/TEHNET-PUBLIC-VALIDATION-fa.md) · [راهنمای کانتینر](docs/TEHNET-CONTAINER-fa.md). سایت فقط رابط و پراکسی را اجرا می‌کند؛ همهٔ پردازش‌ها روی نودهای جدا هستند. حساب‌های قبلی معتبرند؛ پرداخت و ورود یکپارچهٔ وردپرس فعال نشده‌اند.
+
+![منوی عمومی سایت](docs/evidence/commercial/screenshots/tehnet-public-menu.jpg)
+
+
 TunnelPannel بخش **مدیریت تونل خدمات تهران‌نتورک** است. شرایط اجرا کنار سرویس‌های دیگر و تشخیص تداخل: [راهنمای فارسی](docs/SHARED-HOST-fa.md) · [English](docs/SHARED-HOST.md).
 
 [تازه‌ترین گزارش رفع خطا و درگاه نصب‌شده](docs/WATERWALL-GATEWAY-VALIDATION-fa.md): خطای انتهای پاسخ WaterWall بازتولید و رفع شد؛ چهار پروفایل در هر دو جهت از API نصب‌شده موفق شدند. ده عضو آماده، تنظیمات کامل و PIDهای فعلی حفظ شدند. [آزمایش قبلی ۲۱۵ از ۲۱۶](docs/SHARED-HOST-VALIDATION-fa.md) به‌عنوان تاریخچه محفوظ است. سرور سایت فقط درگاه وب است و پردازش‌ها روی سرورهای جدا اجرا می‌شوند.

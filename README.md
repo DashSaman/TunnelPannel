@@ -1,5 +1,10 @@
 # TunnelPannel
 
+Public panel: **https://tehnet.ir/tunnels/** · site menu **مدیریت تونل**. [Installed validation](docs/TEHNET-PUBLIC-VALIDATION.md) · [Container deployment](docs/TEHNET-CONTAINER.md). Only static UI/proxying runs on the website; all application processing stays on other nodes. Existing credentials remain valid; no payment or WordPress SSO is enabled.
+
+![Public site navigation](docs/evidence/commercial/screenshots/tehnet-public-menu.jpg)
+
+
 TunnelPannel is the tunnel-management service for **Tehran Network**. Current service boundaries and shared-host checks: [English](docs/SHARED-HOST.md) · [فارسی](docs/SHARED-HOST-fa.md).
 
 Website-only deployment: [web gateway](docs/WEB-GATEWAY.md) · [راهنمای فارسی درگاه](docs/WEB-GATEWAY-fa.md). The website host runs only isolated nginx/SSH forwarding; the API, customer databases, queues, benchmarks, builds and tunnels remain on separate servers. Future pay-per-use checkout is not enabled by the gateway.
@@ -8,7 +13,7 @@ Website-only deployment: [web gateway](docs/WEB-GATEWAY.md) · [راهنمای �
 
 ![Installed Persian inventory](docs/evidence/commercial/screenshots/installed-fa.png)
 
-[Private two-node test mode, observation summary and connection-quality probe](docs/TEST-ONLY.md). Current owner scope: no domain and no payment processor.
+[Private two-node test mode, observation summary and connection-quality probe](docs/TEST-ONLY.md). Historical private-test scope; public website entry is now authorized as recorded above. Real payment remains disabled.
 
 [Previous installed test report](docs/TEST-ONLY-VALIDATION.md):16.80h of retained observations,2,014 valid paired TCP receipts, preserved12 warm members and700-test Linux suites. The summary reports sampling gaps and probe percentiles; it does not infer continuous uptime.
 
