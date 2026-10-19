@@ -42,7 +42,7 @@
     "Native global IPv6 endpoints required; IPv4 payload only; IPv6 next-header4 must pass",
     "Keyless carriers share only proven-owned endpoints; foreign matching carrier blocks deployment"
   ],
-  "verification": "UNTESTED",
+  "verification": "REAL_PAIR_VERIFIED",
   "supported_os": [
     "linux"
   ],
@@ -50,5 +50,6 @@
     "amd64",
     "arm64"
   ],
-  "implementation_status": "IMPLEMENTED"
+  "implementation_status": "IMPLEMENTED",
+  "verification_evidence": "docs/evidence/commercial/tehnet-expansion-installed.json"
 }

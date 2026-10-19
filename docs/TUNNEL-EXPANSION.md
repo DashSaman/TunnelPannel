@@ -1,6 +1,6 @@
 # TehNet: Backhaul, AmneziaWG, native 4in6 and traffic controls
 
-Implementation and acceptance are in progress. This document describes the contract; an installed evidence report must identify the tested revision and real results before these methods are called verified.
+Installed on both execution nodes and the public website. See [actual acceptance and limits](TUNNEL-EXPANSION-VALIDATION.md): six paired outcomes passed, original routes preserved, source-node limits verified.
 
 | Method | Actual carrier | Requirements | Encryption |
 |---|---|---|---|

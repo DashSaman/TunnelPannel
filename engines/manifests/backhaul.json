@@ -42,7 +42,7 @@
     "TCP reverse transport only; token authentication does not encrypt payload",
     "Peer transport listener and local-only payload listener; no global optimizations"
   ],
-  "verification": "UNTESTED",
+  "verification": "REAL_PAIR_VERIFIED",
   "supported_os": [
     "linux"
   ],
@@ -50,5 +50,6 @@
     "amd64",
     "arm64"
   ],
-  "implementation_status": "IMPLEMENTED"
+  "implementation_status": "IMPLEMENTED",
+  "verification_evidence": "docs/evidence/commercial/tehnet-expansion-installed.json"
 }

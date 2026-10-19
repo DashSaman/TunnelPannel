@@ -2,10 +2,10 @@
 
 ## TehNet engine and traffic expansion
 
-Backhaul TCP, official userspace AmneziaWG and native IPv4-in-IPv6 are under installed acceptance. New gateways enforce cumulative per-route payload/rate/concurrency limits; historical live groups stay unchanged. See [guide and scope](docs/TUNNEL-EXPANSION.md).
+Backhaul TCP, official userspace AmneziaWG and native IPv4-in-IPv6 are installed and passed both directions (6/6). New gateways enforce cumulative per-route payload/rate/concurrency limits; historical live groups stay unchanged. See [guide and scope](docs/TUNNEL-EXPANSION.md).
 
 
-[Arange-tun design/capability comparison and prioritised gaps](docs/ARANGE-COMPARISON-20261019.md) · [فارسی](docs/ARANGE-COMPARISON-20261019-fa.md). Configured SIT/6in4 and IP6GRE exist; Backhaul, AmneziaWG and native4in6 remain proposed additions, not installed features.
+[Arange-tun design/capability comparison and prioritised gaps](docs/ARANGE-COMPARISON-20261019.md) · [فارسی](docs/ARANGE-COMPARISON-20261019-fa.md). This historical review identified the gaps; [installed acceptance](docs/TUNNEL-EXPANSION-VALIDATION.md) now records Backhaul, AmneziaWG and native4in6 passing6/6.
 
 Paid TehNet service: [owner accounts, quotas, plans and manual payments](docs/COMMERCIAL-OWNER.md) · [installed validation](docs/COMMERCIAL-OWNER-VALIDATION.md). Sign in at **https://tehnet.ir/tunnels/** with your assigned username/password. Offline receipts and activation are handled manually by the administrator; no online gateway. The SIT/WG guard fix is installed after successful CI; fresh paired acceptance passed4/4 while existing workers remained intact.
 
@@ -32,17 +32,19 @@ Website-only deployment: [web gateway](docs/WEB-GATEWAY.md) · [راهنمای �
 
 [Complete Persian panel manual](docs/PANEL-GUIDE-fa.md) · [Mesh and connection-sharing validation](docs/MESH-VALIDATION.md) · [Pinned installer](install-one-line.txt)
 
-The `/mesh` panel registers customer servers, tests every directed pair, recommends up to five measured methods per route, and deploys independent warm failover groups. Quality-weighted connection sharing distributes concurrent TCP streams across healthy tunnels. The catalog contains **108 identities: 91 profiles and 17 supported compositions**, with six additional compatibility names. Customers can select their own order and more than five members within their workspace limit. [Full workflow and owner controls](docs/MESH.md).
+The `/mesh` panel registers customer servers, tests every directed pair, recommends up to five measured methods per route, and deploys independent warm failover groups. Quality-weighted connection sharing distributes concurrent TCP streams across healthy tunnels. The catalog contains **111 identities: 94 profiles and 17 supported compositions**, with six additional compatibility names. Customers can select their own order and more than five members within their workspace limit. [Full workflow and owner controls](docs/MESH.md).
 
 The original 82-method remediation of the earlier 23 partial / 27 failed methods remains documented in the [RC3 report](docs/releases/v0.9.0-rc3/REAL_BENCHMARK.md). Current implementation counts and real passing receipts are kept separate.
+
+![Verified TehNet usage controls](docs/screenshots/tehnet-route-usage-20261019.png)
 
 ## Install
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/97b5af8ba33556aadc8ae580271d9692a1ccce2b/install.sh | sudo env TUNNELPANNEL_VERSION=97b5af8ba33556aadc8ae580271d9692a1ccce2b bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/53a72f6ee2c3b675a331ddfaf6bc0052bc02eb71/install.sh | sudo env TUNNELPANNEL_VERSION=53a72f6ee2c3b675a331ddfaf6bc0052bc02eb71 bash
 ```
 
-This installs the complete CI-verified repair, also recorded in `install-one-line.txt`. Both test APIs have been upgraded after draining work; the website-only gateway runs separately. Install this backend on a controller/execution host. Wait for active jobs to drain before any later upgrade. Re-running preserves credentials and data. The installer creates the application account, installs dependencies, migrates the database, starts systemd and verifies HTTP health. It refuses to overwrite local source changes.
+This installs the CI-verified engine and durable traffic-control runtime, also recorded in `install-one-line.txt`. Both test APIs have been upgraded after draining work; the website-only gateway runs separately. Install this backend on a controller/execution host. Wait for active jobs to drain before any later upgrade. Re-running preserves credentials and data. The installer creates the application account, installs dependencies, migrates the database, starts systemd and verifies HTTP health. It refuses to overwrite local source changes.
 
 Real-node validation uses Ubuntu 24.04 amd64. Other environments need their own validation. The API binds to loopback. The default is **127.0.0.1:8080**; a fresh installation can choose a free canonical port when that implicit default is occupied. Explicit/saved port conflicts refuse installation; use the port in the install receipt. From your computer:
 
@@ -83,7 +85,7 @@ Keep `/etc/tunnelpannel/tunnelpannel.env` separately and privately with backups:
 
 [Task ledger](docs/development/TASK_LEDGER.md) · [Catalog](docs/development/CATALOG_INVENTORY.md) · [Historical baseline](docs/releases/v0.9.0-rc2/REAL_VALIDATION.md)
 
-The historical executor catalog contains 77 methods; the preserved base registry has 82 entries and the mesh extension adds 26. The combined catalog has 108 identities. For existing Gen1 Docker installations only, use scripts/export-production-state.sh and scripts/restore-production-state.sh with their documented encrypted PostgreSQL recovery workflow. The canonical installation uses the backup/restore commands above.
+The historical executor catalog contains 77 methods; the preserved base registry has 82 entries and the mesh extension adds 29. The combined catalog has 111 identities. For existing Gen1 Docker installations only, use scripts/export-production-state.sh and scripts/restore-production-state.sh with their documented encrypted PostgreSQL recovery workflow. The canonical installation uses the backup/restore commands above.
 
 ![Real panel benchmark](docs/shots/panel-real-benchmark.jpg)
 

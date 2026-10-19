@@ -8,12 +8,12 @@
 
 ## Tasks
 
-- [ ] Add failing durable usage/rate/concurrency and policy validation tests. Implement standalone gateway ledger and shaping, API caps and old-worker refusal; verify focused tests.
-- [ ] Add failing canonical engine family/config/ownership tests. Implement pinned Backhaul TCP, AmneziaWG and native4in6, registry/manifests/capabilities and persistent egress; verify focused tests and derived inventory.
-- [ ] Complete TehNet staged setup, requirements and route usage controls in FA/EN, mobile and existing subpath. Verify DOM/browser and authorization.
-- [ ] Run appropriate regression suite, publish exact tree to PR2, verify CI.
-- [ ] Fresh drain/baseline/backups, reviewed helper upload hash, install execution nodes with existing workers/configs unchanged. Run new owned canonical campaigns and isolated traffic tests; remove only QA.
-- [ ] Publish dedicated website static container, public UI acceptance; encrypted post backups and bilingual docs/evidence/AGENTS, verified final PR head. Keep main and heartbeat unchanged.
+- [x] Add failing durable usage/rate/concurrency and policy validation tests. Implement standalone gateway ledger and shaping, API caps and old-worker refusal; verify focused tests.
+- [x] Add failing canonical engine family/config/ownership tests. Implement pinned Backhaul TCP, AmneziaWG and native4in6, registry/manifests/capabilities and persistent egress; verify focused tests and derived inventory.
+- [x] Complete TehNet staged setup, requirements and route usage controls in FA/EN, mobile and existing subpath. Verify DOM/browser and authorization.
+- [x] Run appropriate regression suite, publish exact tree to PR2, verify CI.
+- [x] Fresh drain/baseline/backups, reviewed helper upload hash, install execution nodes with existing workers/configs unchanged. Run new owned canonical campaigns and isolated traffic tests; remove only QA.
+- [x] Publish dedicated website static container, public UI acceptance; encrypted post backups and bilingual docs/evidence/AGENTS, verified final PR head. Keep main and heartbeat unchanged.
 
 ## Review focus
 

@@ -2,10 +2,10 @@
 
 ## توسعهٔ موتور و کنترل مصرف TehNet
 
-Backhaul TCP، موتور رسمی AmneziaWG و 4in6 بومی در مرحلهٔ پذیرش نصب هستند. worker جدید محدودیت ماندگار سرعت، حجم و اتصال هر مسیر دارد؛ تونل‌های فعلی حفظ می‌شوند. [راهنما و محدودهٔ قابلیت‌ها](docs/TUNNEL-EXPANSION-fa.md).
+Backhaul TCP، موتور رسمی AmneziaWG و 4in6 بومی نصب شدند و در دو جهت۶/۶ موفق بودند. worker جدید محدودیت ماندگار سرعت، حجم و اتصال هر مسیر دارد؛ تونل‌های فعلی حفظ می‌شوند. [راهنما و محدودهٔ قابلیت‌ها](docs/TUNNEL-EXPANSION-fa.md).
 
 
-[مقایسهٔ طراحی و امکانات Arange و اولویت کمبودها](docs/ARANGE-COMPARISON-20261019-fa.md): SIT/6in4 و IP6GRE موجودند؛ Backhaul، AmneziaWG و4in6 خالص پیشنهاد توسعه‌اند و هنوز نصب نشده‌اند.
+[مقایسهٔ طراحی و امکانات Arange و اولویت کمبودها](docs/ARANGE-COMPARISON-20261019-fa.md): این بررسی تاریخی کمبودها را مشخص کرد؛ [پذیرش نصب جدید](docs/TUNNEL-EXPANSION-VALIDATION-fa.md) موفقیت۶/۶ Backhaul، AmneziaWG و4in6 بومی را ثبت می‌کند.
 
 سرویس اشتراکی تهران‌نتورک: [مدیریت کاربران، سهمیه، پلن و پرداخت دستی](docs/COMMERCIAL-OWNER-fa.md) · [شواهد نصب فعلی](docs/COMMERCIAL-OWNER-VALIDATION-fa.md). ورود با نام کاربری و رمز: **https://tehnet.ir/tunnels/**. ثبت دریافت وجه و فعال‌سازی دستی مدیر؛ بدون درگاه آنلاین. اصلاح کنترل SIT/WG با CI موفق روی هر دو نود نصب و در تست دوطرفه۴/۴ موفق شد؛ workerهای قبلی حفظ شدند.
 
@@ -27,13 +27,17 @@ Backhaul TCP، موتور رسمی AmneziaWG و 4in6 بومی در مرحلهٔ 
 
 گزارش اصلاحات ۸۲ روش قدیمی، شامل مبنای ۲۳ روش ناقص و ۲۷ روش ناموفق، در [گزارش RC3](docs/releases/v0.9.0-rc3/REAL_BENCHMARK.md) محفوظ است. تعداد پیاده‌سازی و تعداد رسید موفق واقعی جدا گزارش می‌شوند.
 
+[راهنمای موتور و سقف سرعت/حجم](docs/TUNNEL-EXPANSION-fa.md) · [پذیرش نصب و شواهد](docs/TUNNEL-EXPANSION-VALIDATION-fa.md)
+
+![کنترل مصرف در تست واقعی](docs/screenshots/tehnet-route-usage-20261019.png)
+
 ## نصب تک‌خطی
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/97b5af8ba33556aadc8ae580271d9692a1ccce2b/install.sh | sudo env TUNNELPANNEL_VERSION=97b5af8ba33556aadc8ae580271d9692a1ccce2b bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/53a72f6ee2c3b675a331ddfaf6bc0052bc02eb71/install.sh | sudo env TUNNELPANNEL_VERSION=53a72f6ee2c3b675a331ddfaf6bc0052bc02eb71 bash
 ```
 
-این دستور نسخهٔ ثابت و تأییدشدهٔ اصلاح WaterWall را روی سرور کنترلر/پردازش نصب می‌کند؛ روی سرور سایت از نصب‌کنندهٔ مستقل درگاه وب استفاده کنید. هر دو API تست ارتقا یافته‌اند. جزئیات در `install-one-line.txt` ثبت شده است. نصب‌کننده وابستگی‌ها، کاربر برنامه، دیتابیس و systemd را آماده و سلامت HTTP را بررسی می‌کند. نصب مجدد اطلاعات ورود و داده‌ها را حفظ می‌کند و سورس دارای تغییرات محلی را بازنویسی نمی‌کند.
+این دستور نسخهٔ ثابت و تأییدشدهٔ موتورها و کنترل مصرف را روی سرور کنترلر/پردازش نصب می‌کند؛ روی سرور سایت از نصب‌کنندهٔ مستقل درگاه وب استفاده کنید. هر دو API تست ارتقا یافته‌اند. جزئیات در `install-one-line.txt` ثبت شده است. نصب‌کننده وابستگی‌ها، کاربر برنامه، دیتابیس و systemd را آماده و سلامت HTTP را بررسی می‌کند. نصب مجدد اطلاعات ورود و داده‌ها را حفظ می‌کند و سورس دارای تغییرات محلی را بازنویسی نمی‌کند.
 
 آزمایش واقعی روی Ubuntu 24.04 با معماری amd64 انجام شده است؛ محیط‌های دیگر به آزمون اختصاصی نیاز دارند. پنل روی **127.0.0.1:8080** گوش می‌دهد. روی رایانهٔ خود اجرا کنید:
 
@@ -74,6 +78,6 @@ CPU و RAM مربوط به کل سرور هستند. تأخیر HTTP با تای
 
 [دفتر وظایف](docs/development/TASK_LEDGER.md) · [کاتالوگ](docs/development/CATALOG_INVENTORY.md) · [گزارش تاریخی مبنا](docs/releases/v0.9.0-rc2/REAL_VALIDATION.md)
 
-کاتالوگ executor قدیمی ۷۷ روش دارد؛ رجیستری پایهٔ ۸۲تایی حفظ شده و افزونهٔ mesh، تعداد ۲۶ شناسه به آن اضافه می‌کند؛ مجموع کاتالوگ ۱۰۸ شناسه است. فقط برای نصب‌های موجود Docker نسل اول، اسکریپت‌های scripts/export-production-state.sh و scripts/restore-production-state.sh و روند رمزگذاری‌شده PostgreSQL آن‌ها را به‌کار ببرید. نصب اصلی از دستورهای پشتیبان‌گیری و بازیابی بالا استفاده می‌کند.
+کاتالوگ executor قدیمی ۷۷ روش دارد؛ رجیستری پایهٔ ۸۲تایی حفظ شده و افزونهٔ mesh، تعداد ۲۹ شناسه به آن اضافه می‌کند؛ مجموع کاتالوگ ۱۱۱ شناسه است. فقط برای نصب‌های موجود Docker نسل اول، اسکریپت‌های scripts/export-production-state.sh و scripts/restore-production-state.sh و روند رمزگذاری‌شده PostgreSQL آن‌ها را به‌کار ببرید. نصب اصلی از دستورهای پشتیبان‌گیری و بازیابی بالا استفاده می‌کند.
 
 ![Real panel benchmark](docs/shots/panel-real-benchmark.jpg)

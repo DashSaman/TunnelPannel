@@ -1,6 +1,6 @@
 # TunnelPannel
 
-[مقایسهٔ طراحی و امکانات Arange و اولویت کمبودها](docs/ARANGE-COMPARISON-20261019-fa.md): SIT/6in4 و IP6GRE موجودند؛ Backhaul، AmneziaWG و4in6 خالص پیشنهاد توسعه‌اند و هنوز نصب نشده‌اند.
+[مقایسهٔ طراحی و امکانات Arange و اولویت کمبودها](docs/ARANGE-COMPARISON-20261019-fa.md): این بررسی تاریخی کمبودها را مشخص کرد؛ [پذیرش نصب جدید](docs/TUNNEL-EXPANSION-VALIDATION-fa.md) موفقیت۶/۶ Backhaul، AmneziaWG و4in6 بومی را ثبت می‌کند.
 
 سرویس اشتراکی تهران‌نتورک: [مدیریت کاربران، سهمیه، پلن و پرداخت دستی](docs/COMMERCIAL-OWNER-fa.md) · [شواهد نصب فعلی](docs/COMMERCIAL-OWNER-VALIDATION-fa.md). ورود با نام کاربری و رمز: **https://tehnet.ir/tunnels/**. ثبت دریافت وجه و فعال‌سازی دستی مدیر؛ بدون درگاه آنلاین. اصلاح کنترل SIT/WG با CI موفق روی هر دو نود نصب و در تست دوطرفه۴/۴ موفق شد؛ workerهای قبلی حفظ شدند.
 
@@ -29,10 +29,14 @@ TunnelPannel بخش **مدیریت تونل خدمات تهران‌نتورک**
 
 گزارش اصلاحات ۸۲ روش قدیمی، شامل مبنای ۲۳ روش ناقص و ۲۷ روش ناموفق، در [گزارش RC3](docs/releases/v0.9.0-rc3/REAL_BENCHMARK.md) محفوظ است. تعداد پیاده‌سازی و تعداد رسید موفق واقعی جدا گزارش می‌شوند.
 
+[راهنمای موتور و سقف سرعت/حجم](docs/TUNNEL-EXPANSION-fa.md) · [پذیرش نصب و شواهد](docs/TUNNEL-EXPANSION-VALIDATION-fa.md)
+
+![کنترل مصرف در تست واقعی](docs/screenshots/tehnet-route-usage-20261019.png)
+
 ## نصب تک‌خطی
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/97b5af8ba33556aadc8ae580271d9692a1ccce2b/install.sh | sudo env TUNNELPANNEL_VERSION=97b5af8ba33556aadc8ae580271d9692a1ccce2b bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/53a72f6ee2c3b675a331ddfaf6bc0052bc02eb71/install.sh | sudo env TUNNELPANNEL_VERSION=53a72f6ee2c3b675a331ddfaf6bc0052bc02eb71 bash
 ```
 
 این دستور نسخهٔ کامل اصلاح‌شده با CI موفق را روی سرور کنترلر/پردازش نصب می‌کند و در `install-one-line.txt` هم ثبت شده است. هر دو API تست پس از تخلیه کارها ارتقا یافته‌اند و درگاه وب مستقل است. پیش از ارتقای بعدی نیز صبر کنید کارهای فعال تمام شوند. نصب‌کننده وابستگی‌ها، کاربر برنامه، دیتابیس و systemd را آماده و سلامت HTTP را بررسی می‌کند. نصب مجدد اطلاعات ورود و داده‌ها را حفظ می‌کند و سورس دارای تغییرات محلی را بازنویسی نمی‌کند.
@@ -76,7 +80,7 @@ CPU و RAM مربوط به کل سرور هستند. تأخیر HTTP با تای
 
 [دفتر وظایف](docs/development/TASK_LEDGER.md) · [کاتالوگ](docs/development/CATALOG_INVENTORY.md) · [گزارش تاریخی مبنا](docs/releases/v0.9.0-rc2/REAL_VALIDATION.md)
 
-کاتالوگ executor قدیمی ۷۷ روش دارد؛ رجیستری پایهٔ ۸۲تایی حفظ شده و افزونهٔ mesh، تعداد ۲۶ شناسه به آن اضافه می‌کند؛ مجموع کاتالوگ ۱۰۸ شناسه است. فقط برای نصب‌های موجود Docker نسل اول، اسکریپت‌های scripts/export-production-state.sh و scripts/restore-production-state.sh و روند رمزگذاری‌شده PostgreSQL آن‌ها را به‌کار ببرید. نصب اصلی از دستورهای پشتیبان‌گیری و بازیابی بالا استفاده می‌کند.
+کاتالوگ executor قدیمی ۷۷ روش دارد؛ رجیستری پایهٔ ۸۲تایی حفظ شده و افزونهٔ mesh، تعداد ۲۹ شناسه به آن اضافه می‌کند؛ مجموع کاتالوگ ۱۱۱ شناسه است. فقط برای نصب‌های موجود Docker نسل اول، اسکریپت‌های scripts/export-production-state.sh و scripts/restore-production-state.sh و روند رمزگذاری‌شده PostgreSQL آن‌ها را به‌کار ببرید. نصب اصلی از دستورهای پشتیبان‌گیری و بازیابی بالا استفاده می‌کند.
 
 ![Real panel benchmark](docs/shots/panel-real-benchmark.jpg)
 
