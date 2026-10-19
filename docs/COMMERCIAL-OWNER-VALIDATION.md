@@ -10,8 +10,8 @@ Credentials are private, hashed on the controller, and absent from this reposito
 
 ## Installed and verified
 
-Both execution nodes and the website static release run `e85b4e660ddd0ae8652cce99e5db753216b7cdc7`.
-Its portable/Linux lifecycle run [39274699149](https://github.com/DashSaman/TunnelPannel/actions/runs/39274699149)
+Both execution nodes now run `97b5af8ba33556aadc8ae580271d9692a1ccce2b` (tree `b1d52d1d6d775fc0dd2de4c99a76a120a4afba65`). The website static release remains `e85b4e660ddd0ae8652cce99e5db753216b7cdc7`; the follow-up contains no frontend change. Runtime portable/Linux lifecycle39279868625 and security39279868600 completed successfully before rollout.
+The original commercial release portable/Linux lifecycle run [39274699149](https://github.com/DashSaman/TunnelPannel/actions/runs/39274699149)
 and security run [39274699132](https://github.com/DashSaman/TunnelPannel/actions/runs/39274699132) succeeded.
 The website hosts only static nginx/proxying; API, databases, account/payment
 state, queues, builds, benchmarks and tunnel execution stay on separate nodes.
@@ -36,7 +36,7 @@ the installation without purchasing a plan.
 Real browser FA/EN owner views and mobile375/375 content/viewport widths passed;
 the temporary viewport override was reset.
 
-## Physical transport evidence and explicit remaining gate
+## Physical transport evidence and completed guard follow-up
 
 New campaign `64e7ccc80f7d4f519315c7baf87b8e5e` retained14 outcomes.
 HTTP2-TLS, WS-TLS, REALITY and VLESS-REALITY each passed both directions:
@@ -47,10 +47,22 @@ routes were available; it does **not** mean14/14 methods succeeded.
 The host-local SIT/WG guard was overly broad: those two adapters do not need
 global forwarding. Regression tests reproduced2 failures, then19 targeted tests
 passed after the narrow fix. Revision `97b5af8ba33556aadc8ae580271d9692a1ccce2b`
-is published but **not yet installed**; its GitHub-hosted jobs39279868625/39279868600
-were queued at this checkpoint. Deployment and fresh paired SIT/WG acceptance
-must wait for successful CI. FULL still correctly refuses to change global
-IPv4 forwarding when disabled; existing host policy is preserved.
+is now installed on BOTH execution nodes after its queued CI completed successfully.
+Fresh preinstall backups/env and the then-current group baseline were rechecked.
+New campaign `257d3f9b7f9c43d198f99fdfde993bf7` passed SIT and WG in both
+directions: **4/4 successful results with receipts**, each30 latency samples,
+measured throughput, recovery and released16/22 owned resources respectively.
+The initial6 guarded failures remain unchanged in their original campaign.
+FULL still correctly refuses to change disabled global IPv4 forwarding.
+
+Installed coexistence canaries passed12 checks on EACH node, including IPv4/IPv6
+TCP/UDP listeners, existing tunnel/service detection, occupied/reserved ports,
+missing-tool refusal, preserved API PID and owned-only cleanup. The former
+unregistered empty QA database was rescued privately only after a drained API
+restart and verification that no process held its file open. No registered
+customer database was removed. Public owner/customer HTTPS sign-in and paid
+admission guards were checked again after the backend upgrade.
+
 
 The [upstream review](UPSTREAM-REVIEW-20261019.md) records T6, Gold and WaterWall-H
 pins. Private T6 source was not copied. Gold packaging claims are not measured
@@ -73,7 +85,7 @@ preserved;10 original unrelated containers stayed unchanged. Final comparison
 preserved all11 then-current unrelated containers,50 links,5 service PIDs and
 nginx files. No host nginx reload or WordPress/menu change was needed.
 
-Fresh before/after archives plus separate env/key material for each installation
+Fresh immediate-preinstall and final after archives, plus separate env/key material for each installation
 were retained privately and encrypted **on each original server** with separate
 root0600 keys. Decryption SHA256 equality passed. Website config and its restricted
 transport identity have their own encrypted rescue. No sensitive server backup

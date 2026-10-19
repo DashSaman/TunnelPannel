@@ -1,6 +1,6 @@
 {
   "date": "2026-10-19",
-  "commercial_runtime": "e85b4e660ddd0ae8652cce99e5db753216b7cdc7",
+  "commercial_runtime": "97b5af8ba33556aadc8ae580271d9692a1ccce2b",
   "frontend": "e85b4e660ddd0ae8652cce99e5db753216b7cdc7",
   "public_url": "https://tehnet.ir/tunnels/",
   "billing_mode": "manual",
@@ -35,8 +35,8 @@
       39279868625,
       39279868600
     ],
-    "installed": false,
-    "status": "WAITING_FOR_GITHUB_HOSTED_RUNNERS"
+    "installed": true,
+    "status": "PASS_INSTALLED_PAIRED_ACCEPTANCE"
   },
   "existing_members": 10,
   "worker_pids_preserved": [
@@ -70,7 +70,8 @@
     "server_resident_encryption": true,
     "separate_keys": true,
     "decrypt_sha256_equal": true,
-    "sensitive_export": false
+    "sensitive_export": false,
+    "fresh_preinstall_env_and_archive": true
   },
   "main_merged": false,
   "online_gateway": false,
@@ -82,5 +83,78 @@
     "release_assets_utf8_rerun": "7 PASS",
     "targeted_forwarding_mtu": "19 PASS",
     "selected_ruff": "PASS"
-  }
+  },
+  "runtime_tree": "b1d52d1d6d775fc0dd2de4c99a76a120a4afba65",
+  "runtime_ci": [
+    39279868625,
+    39279868600
+  ],
+  "runtime_ci_conclusion": "SUCCESS",
+  "installed_canaries": {
+    "controller": 12,
+    "peer": 12
+  },
+  "physical_followup": {
+    "id": "257d3f9b7f9c43d198f99fdfde993bf7",
+    "state": "PASS",
+    "results": [
+      {
+        "direction": 1,
+        "method": "HAJSAMAN_SIT",
+        "status": "PASS",
+        "receipt": true,
+        "metrics": {
+          "rtt_avg": 1.9470666666666667,
+          "jitter": 0.42979310344827587,
+          "throughput_mbps": 1804.8460065901522,
+          "samples": 30,
+          "recovery_ok": true,
+          "cleanup": "released 16"
+        }
+      },
+      {
+        "direction": 1,
+        "method": "HAJSAMAN_WG",
+        "status": "PASS",
+        "receipt": true,
+        "metrics": {
+          "rtt_avg": 2.2250333333333336,
+          "jitter": 0.6934137931034483,
+          "throughput_mbps": 594.3824568315146,
+          "samples": 30,
+          "recovery_ok": true,
+          "cleanup": "released 22"
+        }
+      },
+      {
+        "direction": 2,
+        "method": "HAJSAMAN_SIT",
+        "status": "PASS",
+        "receipt": true,
+        "metrics": {
+          "rtt_avg": 1.8621333333333332,
+          "jitter": 0.39513793103448275,
+          "throughput_mbps": 1768.6138613089117,
+          "samples": 30,
+          "recovery_ok": true,
+          "cleanup": "released 16"
+        }
+      },
+      {
+        "direction": 2,
+        "method": "HAJSAMAN_WG",
+        "status": "PASS",
+        "receipt": true,
+        "metrics": {
+          "rtt_avg": 2.5989666666666666,
+          "jitter": 0.4628965517241379,
+          "throughput_mbps": 531.5719511591527,
+          "samples": 30,
+          "recovery_ok": true,
+          "cleanup": "released 22"
+        }
+      }
+    ]
+  },
+  "final_drained_both": true
 }

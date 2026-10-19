@@ -12,7 +12,7 @@ at immutable revision `f10849338e2b9182f041c5ea14d4d07557925e66`,
 tree `c3be3146ba3468c61b9168f2e2a14b43c3562abe`. Twenty-nine selected source/docs
 files were downloaded for private review and each Git blob SHA was verified.
 The local comparison baseline is TunnelPannel revision
-`8cf24d31dff9ebe471b958255e7604cec3a8218c`; installed commercial runtime is e85.
+`8cf24d31dff9ebe471b958255e7604cec3a8218c`; initial installed commercial runtime was e85; the previously pending97 follow-up was installed and accepted after this comparison, as recorded below.
 
 ## What 6in4, 4in6 and 6to4 mean here
 
@@ -31,10 +31,14 @@ IPv6-over-IPv4 SIT pair obsolete. Native 4in6 would need public IPv6 reachabilit
 address-family checks, owned interface/firewall/routes, MTU/PMTUD handling,
 rollback, restart recovery and real transfer receipts before admission.
 
-The pending fix97 removes an unnecessarily broad forwarding guard for
-host-local HajSaman SIT/WG. Its CI was still queued when this review checked;
-it remains uninstalled. FULL still refuses a disabled global-forwarding change.
-This does not erase existing working SIT/GRE carriers or earlier evidence.
+The previous fix97 removes an unnecessarily broad forwarding guard for
+host-local HajSaman SIT/WG. Its CI completed successfully during this review,
+so the already-authorised follow-up was installed on both execution nodes after
+fresh backup/drain checks. New paired campaign257d3f9b7f9c43d198f99fdfde993bf7
+passed4/4 with receipts, recovery and cleanup;12 coexistence canaries passed per
+node. FULL still refuses a disabled global-forwarding change. Existing workers
+were preserved. This is acceptance of our adapter fix, not an Arange installation.
+
 
 ## Transport and operations gaps
 
@@ -87,8 +91,7 @@ layout and TehNet identity; the source's red theme is not our brand requirement.
 
 ## Priorities and admission criteria
 
-1. **P0 — complete accepted work:** successful CI97, fresh drain/baseline,
-   installed SIT/WG regression acceptance and preserved current groups. Improve
+1. **P0 — preserve accepted coverage:** CI97 and paired SIT/WG follow-up are complete with current groups preserved. Improve
    engine descriptions/6in4 naming and service discovery without inventing IDs.
 2. **P1 — useful new coverage:** independently integrate Backhaul and AWG, then
    native4in6. Each needs a pinned build/hash, actual two-node data transfer,

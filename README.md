@@ -2,7 +2,7 @@
 
 [Arange-tun design/capability comparison and prioritised gaps](docs/ARANGE-COMPARISON-20261019.md) · [فارسی](docs/ARANGE-COMPARISON-20261019-fa.md). Configured SIT/6in4 and IP6GRE exist; Backhaul, AmneziaWG and native4in6 remain proposed additions, not installed features.
 
-Paid TehNet service: [owner accounts, quotas, plans and manual payments](docs/COMMERCIAL-OWNER.md) · [installed validation](docs/COMMERCIAL-OWNER-VALIDATION.md). Sign in at **https://tehnet.ir/tunnels/** with your assigned username/password. Offline receipts and activation are handled manually by the administrator; no online gateway. The latest SIT/WG guard fix is published but awaits CI before rollout.
+Paid TehNet service: [owner accounts, quotas, plans and manual payments](docs/COMMERCIAL-OWNER.md) · [installed validation](docs/COMMERCIAL-OWNER-VALIDATION.md). Sign in at **https://tehnet.ir/tunnels/** with your assigned username/password. Offline receipts and activation are handled manually by the administrator; no online gateway. The SIT/WG guard fix is installed after successful CI; fresh paired acceptance passed4/4 while existing workers remained intact.
 
 Public panel: **https://tehnet.ir/tunnels/** · site menu **مدیریت تونل**. [Installed validation](docs/TEHNET-PUBLIC-VALIDATION.md) · [Container deployment](docs/TEHNET-CONTAINER.md). Only static UI/proxying runs on the website; all application processing stays on other nodes. Existing customer credentials remain valid; manual payment confirmation is enabled; online checkout and WordPress SSO are disabled.
 
@@ -34,7 +34,7 @@ The original 82-method remediation of the earlier 23 partial / 27 failed methods
 ## Install
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/e85b4e660ddd0ae8652cce99e5db753216b7cdc7/install.sh | sudo env TUNNELPANNEL_VERSION=e85b4e660ddd0ae8652cce99e5db753216b7cdc7 bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/97b5af8ba33556aadc8ae580271d9692a1ccce2b/install.sh | sudo env TUNNELPANNEL_VERSION=97b5af8ba33556aadc8ae580271d9692a1ccce2b bash
 ```
 
 This installs the complete CI-verified repair, also recorded in `install-one-line.txt`. Both test APIs have been upgraded after draining work; the website-only gateway runs separately. Install this backend on a controller/execution host. Wait for active jobs to drain before any later upgrade. Re-running preserves credentials and data. The installer creates the application account, installs dependencies, migrates the database, starts systemd and verifies HTTP health. It refuses to overwrite local source changes.

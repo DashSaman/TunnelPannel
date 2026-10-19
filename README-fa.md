@@ -2,7 +2,7 @@
 
 [مقایسهٔ طراحی و امکانات Arange و اولویت کمبودها](docs/ARANGE-COMPARISON-20261019-fa.md): SIT/6in4 و IP6GRE موجودند؛ Backhaul، AmneziaWG و4in6 خالص پیشنهاد توسعه‌اند و هنوز نصب نشده‌اند.
 
-سرویس اشتراکی تهران‌نتورک: [مدیریت کاربران، سهمیه، پلن و پرداخت دستی](docs/COMMERCIAL-OWNER-fa.md) · [شواهد نصب فعلی](docs/COMMERCIAL-OWNER-VALIDATION-fa.md). ورود با نام کاربری و رمز: **https://tehnet.ir/tunnels/**. ثبت دریافت وجه و فعال‌سازی دستی مدیر؛ بدون درگاه آنلاین. اصلاح تازهٔ کنترل SIT/WG تا CI موفق هنوز نصب نشده است.
+سرویس اشتراکی تهران‌نتورک: [مدیریت کاربران، سهمیه، پلن و پرداخت دستی](docs/COMMERCIAL-OWNER-fa.md) · [شواهد نصب فعلی](docs/COMMERCIAL-OWNER-VALIDATION-fa.md). ورود با نام کاربری و رمز: **https://tehnet.ir/tunnels/**. ثبت دریافت وجه و فعال‌سازی دستی مدیر؛ بدون درگاه آنلاین. اصلاح کنترل SIT/WG با CI موفق روی هر دو نود نصب و در تست دوطرفه۴/۴ موفق شد؛ workerهای قبلی حفظ شدند.
 
 [تازه‌ترین شواهد رفع WaterWall و نصب درگاه وب](docs/WATERWALL-GATEWAY-VALIDATION-fa.md): چهار روش در دو جهت موفق؛ حفظ ده عضو فعلی و اجرای همهٔ پردازش‌ها خارج از سرور سایت.
 
@@ -25,7 +25,7 @@
 ## نصب تک‌خطی
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/e85b4e660ddd0ae8652cce99e5db753216b7cdc7/install.sh | sudo env TUNNELPANNEL_VERSION=e85b4e660ddd0ae8652cce99e5db753216b7cdc7 bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/97b5af8ba33556aadc8ae580271d9692a1ccce2b/install.sh | sudo env TUNNELPANNEL_VERSION=97b5af8ba33556aadc8ae580271d9692a1ccce2b bash
 ```
 
 این دستور نسخهٔ ثابت و تأییدشدهٔ اصلاح WaterWall را روی سرور کنترلر/پردازش نصب می‌کند؛ روی سرور سایت از نصب‌کنندهٔ مستقل درگاه وب استفاده کنید. هر دو API تست ارتقا یافته‌اند. جزئیات در `install-one-line.txt` ثبت شده است. نصب‌کننده وابستگی‌ها، کاربر برنامه، دیتابیس و systemd را آماده و سلامت HTTP را بررسی می‌کند. نصب مجدد اطلاعات ورود و داده‌ها را حفظ می‌کند و سورس دارای تغییرات محلی را بازنویسی نمی‌کند.

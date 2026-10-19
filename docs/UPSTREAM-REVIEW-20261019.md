@@ -1,5 +1,7 @@
 # Targeted upstream review — 2026-10-19
 
+Installed follow-up evidence: [English](COMMERCIAL-OWNER-VALIDATION.md) · [فارسی](COMMERCIAL-OWNER-VALIDATION-fa.md). Four WaterWall profiles passed both directions on commercial e85 (8 results); the later CI-approved97 guard fix passed new paired HajSaman SIT/WG acceptance (4 results) with existing workers preserved. The [Arange comparison](ARANGE-COMPARISON-20261019.md) records further proposed coverage; those upstream adapters are not newly installed.
+
 This updates the three requested sources from the historical
 [2026-10-15 inventory](MESH-SOURCES.md); it is not a fresh review of every other
 repository. Current branches were read through the owner's GitHub connection.
