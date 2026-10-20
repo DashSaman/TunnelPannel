@@ -30,7 +30,7 @@ def validate_idle(state, config, pid, now):
         raise ValueError('require fresh matching healthy idle gateway without policy drift')
 
 
-def finish_migration(factory, route_id, original_payload, runtime, config, candidate_id, report):
+def finish_migration(factory, route_id, original_payload, runtime, config, candidate_id, report, operation_id=None):
     from core.models import SecretReference
     from orchestrator.mesh_routes import route_job
     from orchestrator.remote_nodes import encrypt_credentials
@@ -39,14 +39,17 @@ def finish_migration(factory, route_id, original_payload, runtime, config, candi
         if job.payload!=original_payload or job.state not in {'COMMITTED','DEGRADED'}:
             raise ValueError('route changed during migration; retain evidence and investigate')
         secret=session.get(SecretReference,job.payload['runtime_secret_id'])
-        secret.ciphertext=encrypt_credentials({**runtime,'config':config})
+        updated={**runtime,'config':config}
+        if operation_id:
+            updated['accounting_operation']={'id':operation_id,'result':{**report,'controller_backup_verified':True}}
+        secret.ciphertext=encrypt_credentials(updated)
         payload={**job.payload,'monthly_secret_id':candidate_id,'accounting_migrated_at':report['counting_started_at']}
         payload.pop('accounting_migration',None)
         job.payload=payload
         session.commit()
 
 
-def migrate(hooks, workspace, route_id, *, expected_config_sha256, expected_pid, rescue_base):
+def migrate(hooks, workspace, route_id, *, expected_config_sha256, expected_pid, rescue_base, checkpoint=None, operation_id=None):
     """Privileged controller call; caller must first snapshot installation/registry.
 
     The public API cannot request grandfathering or select these root-only flags.
@@ -61,6 +64,8 @@ def migrate(hooks, workspace, route_id, *, expected_config_sha256, expected_pid,
         raise ValueError('exact route and configuration digest required')
     if type(expected_pid) is not int or expected_pid<=1:
         raise ValueError('exact live worker identity required')
+    if operation_id is not None and (not re.fullmatch(r'[0-9a-f]{32}',operation_id) or checkpoint is None):
+        raise ValueError('operator operation requires its durable checkpoint')
     if workspace!='system' and hooks.registry.scope_for(workspace) is None:
         raise ValueError('customer workspace must be enabled')
     callback=validate_url(hooks.callback_url())
@@ -103,6 +108,8 @@ def migrate(hooks, workspace, route_id, *, expected_config_sha256, expected_pid,
         live_config=json.loads(raw)
         if live_config!=runtime['config'] and (not pending or live_config!=config):
             raise ValueError('live and encrypted gateway configuration differ')
+        if checkpoint:
+            checkpoint()
         if not pending:
             digest=remote.run('sha256sum '+runtime['directory']+'/config.json',root=True)['stdout'].split()[0]
             if digest!=expected_config_sha256:raise ValueError('source digest changed before migration intent')
@@ -137,7 +144,10 @@ def migrate(hooks, workspace, route_id, *, expected_config_sha256, expected_pid,
         if report['status']!='PASS':
             raise RuntimeError('gateway migration incomplete ('+report['status']+'); resume the persisted private intent')
         try:
-            finish_migration(factory,route_id,original_payload,runtime,config,candidate_id,report)
+            if operation_id:
+                finish_migration(factory,route_id,original_payload,runtime,config,candidate_id,report,operation_id)
+            else:
+                finish_migration(factory,route_id,original_payload,runtime,config,candidate_id,report)
         except Exception:
             # Keep the new safely metered worker and durable root receipt. Never
             # silently revert live accounting when controller metadata commit is uncertain.

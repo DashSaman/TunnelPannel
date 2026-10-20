@@ -22,8 +22,8 @@ window.TPAdmin={async render({api,t,notify,refresh,user,sensitive}){
  const action=(label,task,cls='')=>{const b=el('button',label,cls);b.type='button';b.onclick=()=>run(b,task);return b};
  const submit=(f,label,task)=>{const b=el('button',label,'primary');b.type='submit';f.append(b);f.onsubmit=e=>{e.preventDefault();run(b,async()=>{try{await task()}finally{f.querySelectorAll('input[type=password]').forEach(x=>x.value='')}})}};
  const money=p=>p.price_minor===null?t('قیمت تعیین نشده','Price not configured'):Number(p.price_minor).toLocaleString()+' '+p.currency;
- function switchTo(tab){active=tab;panel.replaceChildren();for(const b of toolbar.children)b.setAttribute('aria-selected',String(b.dataset.tab===tab));({users:usersView,plans:plansView,payments:paymentsView,workspaces:workspaceView,traffic:trafficView})[tab]()}
- for(const [id,title]of [['users',t('کاربران','Users')],['workspaces',t('دسترسی و سهمیه','Access & quotas')],['traffic',t('مصرف مشترک ماهانه','Shared monthly usage')],['plans',t('پلن‌ها و قیمت','Plans & prices')],['payments',t('پرداخت‌های دستی','Manual payments')]]){const b=action(title,async()=>switchTo(id));b.dataset.tab=id;b.setAttribute('role','tab');toolbar.append(b)}
+ function switchTo(tab){active=tab;panel.replaceChildren();for(const b of toolbar.children)b.setAttribute('aria-selected',String(b.dataset.tab===tab));({users:usersView,plans:plansView,payments:paymentsView,workspaces:workspaceView,traffic:trafficView,migration:migrationView})[tab]()}
+ for(const [id,title]of [['users',t('کاربران','Users')],['workspaces',t('دسترسی و سهمیه','Access & quotas')],['traffic',t('مصرف مشترک ماهانه','Shared monthly usage')],['migration',t('مهاجرت تونل‌های قدیمی','Migrate existing tunnels')],['plans',t('پلن‌ها و قیمت','Plans & prices')],['payments',t('پرداخت‌های دستی','Manual payments')]]){const b=action(title,async()=>switchTo(id));b.dataset.tab=id;b.setAttribute('role','tab');toolbar.append(b)}
  toolbar.setAttribute('role','tablist');toolbar.setAttribute('aria-label',t('مدیریت سامانه','Administration'));
  function usersView(){
   const f=form(panel,t('ساخت کاربر جدید','Create a customer'));
@@ -98,6 +98,45 @@ window.TPAdmin={async render({api,t,notify,refresh,user,sensitive}){
    if(state.periods.length){const history=el('section',undefined,'card');history.append(el('h3',t('سوابق دوره‌ها','Period history')));for(const old of state.periods)add(history,el('p',new Date(old.starts_at*1000).toLocaleString()+(old.ends_at?' → '+new Date(old.ends_at*1000).toLocaleString():'')+' · '+bytes(old.used_bytes)+' / '+bytes(old.quota_bytes)));area.append(history)}
   }
   target.onchange=()=>run(target,load);chooser.append(action(t('بررسی و تازه‌سازی مصرف','Inspect and refresh usage'),load));run(target,load);
+ }
+ function migrationView(){
+  const chooser=form(panel,t('انتقال مسیرهای ثبت‌شده به حسابداری مشترک','Enroll registered routes in shared accounting'));
+  add(chooser,el('p',t('بدون ورود دستی به سرور: تنظیمات و تونل‌های زیرین حفظ می‌شوند؛ فقط دروازه پس از سالم و بیکارشدن جابه‌جا می‌شود. اتصال TCP قبلی ممکن است نیاز به اتصال دوباره داشته باشد.','No manual server login: settings and underlying tunnels are retained. Only the gateway switches after becoming healthy and idle. Existing TCP sessions may need to reconnect.'),'muted'));
+  add(chooser,el('p',t('مصرف از مهاجرت بدون سقف تا تخصیص مدیر ثبت می‌شود؛ مصرف نامعلوم قبلی ساخته نمی‌شود. این کار پلن یا پرداخت مشتری را فعال نمی‌کند.','Usage is recorded from migration without a ceiling until an administrator assigns one. Unknown past usage is not invented; customer payment or plan access is not activated.'),'muted'));
+  const target=select(chooser,'migration_workspace',t('مشتریِ مسیرهای مهاجرت','Migration customer'),[['system',t('مسیرهای خود مدیر','Owner routes')],...workspaces.map(w=>[w.id,w.name])]);
+  const area=el('div',undefined,'admin-list');panel.append(area);let requestGeneration=0;
+  const messages={fresh_preflight_required:t('پیش‌بررسی تازه لازم است؛ از کارت مسیر، بررسی و ادامه را بزنید.','A fresh preflight is required; inspect the route again to continue.'),busy:t('یک مهاجرت در حال اجراست؛ پس از پایان دوباره بررسی کنید.','Another migration is running; inspect again after it finishes.'),already_metered:t('این مسیر قبلاً به حسابداری مجهز شده است.','This route is already accounted.'),workspace_disabled:t('فضای مشتری غیرفعال است.','Customer workspace is disabled.'),existing_ceiling:t('این مشتری سقف فعال دارد؛ برای مهاجرت این وضعیت نیاز به بررسی مدیر دارد.','This customer already has a ceiling; migration requires operator review.'),route_not_live:t('این مسیر در حال اجرا نیست؛ چیزی بازسازی نشد.','This route is not running; nothing was rebuilt.'),config_changed:t('تنظیمات پس از بررسی تغییر کرده‌اند؛ دوباره بررسی کنید.','Configuration changed; inspect again.'),not_idle_healthy:t('مسیر باید سالم و بیکار باشد؛ بعداً دوباره بررسی کنید.','The route must be healthy and idle; inspect again later.'),ownership:t('مالکیت دروازه قابل تأیید نیست؛ تغییری انجام نشد.','Gateway ownership could not be verified; no change was made.'),intent_invalid:t('عملیات ناتمام نیاز به بررسی پشتیبانی دارد.','The pending operation requires support review.'),preflight_unavailable:t('دسترسی امن یا وضعیت دروازه قابل بررسی نیست؛ تغییری انجام نشد.','Secure access or gateway state is unavailable; no change was made.')};
+  const friendly=error=>{const key=Object.keys(messages).find(k=>String(error).includes('migration_'+k));return key?messages[key]:error};
+  async function call(path,body){try{return await api(path,body)}catch(e){throw Error(friendly(e.message))}}
+  async function load(){const selected=target.value,version=++requestGeneration;
+   area.replaceChildren(el('p',t('در حال بررسی وضعیت…','Loading migration state…')));
+   const base='/api/billing/owner/workspaces/'+selected+'/accounting-migrations',data=await call(base);
+   if(version!==requestGeneration||!area.isConnected)return;
+   area.replaceChildren();const operations=el('section',undefined,'card');
+   if(!data.routes.length)area.append(el('p',t('مسیر ثبت‌شده‌ای وجود ندارد.','There are no registered routes.')));
+   for(const route of data.routes){const card=el('article',undefined,'card');add(card,el('h3',t('مسیر ','Route ')+route.id.slice(0,8)),el('p',route.methods.join(' · ')+' · '+route.state));
+    const metered=route.accounting==='metered';card.append(el('p',metered?t('حسابداری فعال؛ مهاجرت دوباره لازم نیست.','Accounting enabled; no repeat migration needed.'):route.accounting==='pending'?t('مهاجرت ناتمام؛ با بررسی تازه ادامه دهید.','Pending migration; continue after a fresh inspection.'):t('فاقد حسابداری مشترک','Shared accounting is not enabled.')));
+    if(!metered&&route.live)card.append(action(t('پیش‌بررسی و آماده‌سازی','Inspect and prepare'),async()=>{await call(base+'/routes/'+route.id+'/preflight',{});await load()}));
+    area.append(card)
+   }
+   operations.append(el('h3',t('نتیجه و تاریخچه مهاجرت','Migration results and history')));area.append(operations);
+   for(const op of data.operations){const card=el('article',undefined,'card'),names={PREPARED:t('پیش‌بررسی موفق؛ آماده اجرا','Preflight passed; ready to execute'),RUNNING:t('مهاجرت در حال اجراست','Migration is running'),PASS:t('مهاجرت موفق','Migration passed'),SUPERSEDED:t('ادامه در عملیات جدید تکمیل شد','Completed by a later recovery operation'),NEEDS_RECOVERY:t('نیاز به بررسی و ادامهٔ امن','Inspection and safe recovery required')};
+    add(card,el('h4',t('مسیر ','Route ')+op.route_id.slice(0,8)+' · '+(names[op.state]||op.state)),el('p',op.methods.join(' · ')+' · '+(op.mode||'')+' · '+t('اولویت: ','Pinned member: ')+(op.pin||t('خودکار','Automatic'))));
+    if(op.error)card.append(el('p',friendly(op.error),'bad'));
+    if(op.state==='PREPARED'){
+     const valid=op.expires_at*1000>Date.now()&&data.routes.find(r=>r.id===op.route_id)?.accounting!=='metered';card.append(el('p',t('اعتبار بررسی تا ','Preflight valid until ')+new Date(op.expires_at*1000).toLocaleTimeString()));
+     const execute=action(op.resume?t('ادامه با حفظ تنظیمات','Resume preserving settings'):t('مهاجرت با حفظ تنظیمات','Migrate preserving settings'),async()=>{await call(base+'/'+op.id+'/execute',{});await load()},'primary');execute.disabled=!valid;card.append(execute);
+     if(!valid)card.append(el('p',data.routes.find(r=>r.id===op.route_id)?.accounting==='metered'?t('این مسیر اکنون حسابداری دارد؛ اجرای دوباره لازم نیست.','This route is already accounted; no repeat execution is needed.'):t('بررسی منقضی شده؛ از کارت مسیر دوباره بررسی کنید.','Preflight expired; inspect the route again.')))
+    }
+    if(op.state==='PASS'){const r=op.result;add(card,el('p',t('تنظیمات و ورودی حفظ شدند؛ بدون بازسازی تونل‌های زیرین.','Settings and entry retained; no underlying tunnel rebuild.')),el('p',op.controller_backup_verified?t('بکاپ رمزگذاری‌شده کنترلر تأیید شد.','Encrypted controller snapshot verified.'):''));
+     if(r.recovered_existing_cutover)card.append(el('p',t('دروازهٔ فعال بدون ری‌استارت دوباره پذیرفته شد.','The running gateway was adopted without another restart.')));
+     if(r.maximum_observed_success_gap_s!==null&&r.maximum_observed_success_gap_s!==undefined)card.append(el('p',t('بیشترین فاصلهٔ مشاهده‌شده بین پاسخ‌های موفق: ','Maximum observed gap between successful responses: ')+Number(r.maximum_observed_success_gap_s).toFixed(3)+' s'))
+    }
+    operations.append(card)
+   }
+   if(data.operations.some(op=>op.state==='RUNNING'))setTimeout(()=>{if(area.isConnected&&target.value===selected&&version===requestGeneration)run(target,load)},3000)
+  }
+  target.onchange=()=>run(target,load);chooser.append(action(t('تازه‌سازی وضعیت مهاجرت','Refresh migration status'),load));run(target,load)
  }
  function plansView(){
   const list=el('div',undefined,'admin-list');panel.append(list);

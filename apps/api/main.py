@@ -64,6 +64,7 @@ def create_app(factory=None) -> FastAPI:
     # factory even if another app instance is constructed in the same process.
     globals()["session_factory"] = session_factory
     def recover_mesh():
+        app.state.accounting_migrations.recover()
         factories = [session_factory.default]
         for workspace in registry.list():
             if workspace['enabled']:
@@ -119,6 +120,10 @@ def create_app(factory=None) -> FastAPI:
     from apps.api.monthly_api import create_monthly_router
     app.state.monthly_usage = MonthlyUsage(registry.directory / 'registry.db')
     monthly_routes = MonthlyRoutes(app.state.monthly_usage, registry, session_factory.default)
+    from orchestrator.admin_accounting import AdminAccounting
+    from apps.api.accounting_migration_api import create_accounting_migration_router
+    app.state.accounting_migrations=AdminAccounting(monthly_routes)
+    app.include_router(create_accounting_migration_router(app.state.accounting_migrations))
     app.include_router(create_monthly_router(app.state.monthly_usage, monthly_routes, app.state.subscriptions))
     from apps.api.body_limit import BodyLimit
     app.add_middleware(BodyLimit, max_bytes=65536)
