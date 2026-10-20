@@ -87,12 +87,16 @@ def test_single_worker_snapshot_roundtrip_and_secret_free_report(panel,monkeypat
     assert client.post(BASE+'/'+first['id']+'/execute',headers=HEADERS,json={}).status_code==202
     assert client.post(BASE+'/'+second['id']+'/execute',headers=HEADERS,json={}).status_code==409
     calls=[]
+    rescue_paths=[]
     def run(*args,**kwargs):
+        rescue_paths.append(kwargs['rescue_base'])
         kwargs['checkpoint']();calls.append(args)
         return {'status':'PASS','maximum_observed_success_gap_s':.7,'password':'never-expose','private_path':'/root/private'}
     monkeypatch.setattr('orchestrator.admin_accounting.migrate',run)
     service.checkpoint('f'*32,'system')
     service.run(first['id']);assert len(calls)==1
+    from pathlib import Path
+    assert Path(rescue_paths[0]).parent==Path('/root'),'source rescue must not require an uncreated parent'
     result=client.get(BASE+'/'+first['id'],headers=HEADERS)
     assert result.json()['state']=='PASS' and result.json()['controller_backup_verified']
     assert 'never-expose' not in result.text and '/root/private' not in result.text

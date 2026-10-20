@@ -191,7 +191,7 @@ class AdminAccounting:
                 self.checkpoint(identity,workspace);verified=True
             result=migrate(self.hooks,workspace,payload['route_id'],expected_pid=payload['expected_pid'],
                            expected_config_sha256=payload['expected_config_sha256'],
-                           rescue_base='/root/tp-accounting-panel/'+identity,checkpoint=checkpoint,operation_id=identity)
+                           rescue_base='/root/tp-accounting-panel-'+identity,checkpoint=checkpoint,operation_id=identity)
             with self.factory() as session:
                 job=session.get(Job,identity);job.state='PASS';job.progress=1
                 job.result={**result,'controller_backup_verified':verified}
