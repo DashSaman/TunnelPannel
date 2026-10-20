@@ -313,7 +313,8 @@ class Gateway:
         self._connections = set()
         validate_traffic(config.get('traffic'))
         self.traffic = TrafficController(TrafficLedger(config.get('usage_path') or
-            str(self.state_path.with_name('usage.sqlite3'))), lambda: self.config.get('traffic', {}))
+            str(self.state_path.with_name('usage.sqlite3'))), lambda: self.config.get('traffic',
+                {'max_connections':self.config.get('max_connections',256)}))
         self.monthly = None
         if config.get('monthly'):
             try:
@@ -451,7 +452,7 @@ class Gateway:
                     'traffic_control_version': 1,
                     'monthly_accounting_version': 1 if self.monthly else 0,
                     'monthly': self.monthly.snapshot() if self.monthly else None,
-                    'traffic': {'limits': validate_traffic(self.config.get('traffic')),
+                    'traffic': {'limits': validate_traffic(self.traffic.policy()),
                                 'used': self.traffic.ledger.snapshot(),
                                 'basis': 'combined payload accepted before forwarding; excludes probes and SOCKS negotiation'},
                     'effective_weights': {key: round(self.effective_weight(key), 3) for key in self.policy.order},
@@ -477,6 +478,7 @@ class Gateway:
 
     async def _run(self, config_path):
         await self.start_listener()
+        startup_rounds = max(1, self.policy.successes)
         async with self.server:
             while True:
                 updated = json.loads(Path(config_path).read_text(encoding='utf-8'))
@@ -497,7 +499,10 @@ class Gateway:
                     self.events.append({'at': time.time(), 'from': previous, 'to': self.policy.active,
                                         'reason': 'verified data-plane health'})
                 self.write_state()
-                await asyncio.sleep(max(1, self.config.get('probe_interval_s', 2)))
+                startup_rounds -= 1
+                # Still require distinct genuine nonce successes, but do not add
+                # a regular sampling interval to an explicitly rolling restart.
+                await asyncio.sleep(0 if startup_rounds > 0 else max(1, self.config.get('probe_interval_s', 2)))
 
 
 if __name__ == '__main__':

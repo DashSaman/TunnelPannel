@@ -43,6 +43,11 @@ def route_private(session, job):
     return decrypt_credentials(secret.ciphertext)
 
 
+def require_accounting_settled(job):
+    if job.payload.get('accounting_migration', {}).get('phase') == 'pending':
+        raise HTTPException(409, 'accounting migration requires source/controller recovery first')
+
+
 def observe_route(factory, route_id):
     with factory() as session:
         job = route_job(session, route_id)
@@ -409,6 +414,7 @@ class RouteService:
                     from sqlalchemy import text
                     session.execute(text('BEGIN IMMEDIATE'))
                 job = route_job(session, route_id)
+                require_accounting_settled(job)
                 if job.state in {'APPLYING', 'STOPPING'}:
                     raise HTTPException(409, 'wait for the route controller')
                 others = session.query(Job).filter(Job.kind == 'mesh_route', Job.id != route_id,
@@ -459,6 +465,7 @@ def _update_route_policy(factory, route_id, order, pin, mode, *, preserve_pin=Fa
     from plan_executor import executor as bodies
     with factory() as session:
         job = route_job(session, route_id)
+        require_accounting_settled(job)
         if job.state not in {'COMMITTED', 'DEGRADED'}:
             raise HTTPException(409, 'route must be active')
         runtime = route_private(session, job)
@@ -504,6 +511,8 @@ def update_route_traffic(factory, route_id, value, limits):
         raise HTTPException(409, 'route controller is busy')
     remote = None
     try:
+        with factory() as session:
+            require_accounting_settled(route_job(session, route_id))
         observed = observe_route(factory, route_id)
         if not observed.get('observed') or observed.get('runtime', {}).get('traffic_control_version') != 1:
             raise HTTPException(409, 'this historical worker cannot enforce traffic controls; explicit reconciliation is required')

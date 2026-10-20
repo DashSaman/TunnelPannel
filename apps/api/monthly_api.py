@@ -67,7 +67,8 @@ def create_monthly_router(store, hooks, subscriptions):
             workspace = store.token_workspace(token)
             active = True
             if workspace != 'system':
-                active = hooks.registry.scope_for(workspace) is not None and subscriptions.status(workspace)['can_start_work']
+                active = hooks.registry.scope_for(workspace) is not None and (
+                    subscriptions.status(workspace)['can_start_work'] or store.preserves_existing(token))
                 if not active and body.request_id:
                     raise HTTPException(403, 'customer traffic entitlement is inactive')
             if not limiter.allow((hashlib.sha256(token.encode()).hexdigest(),))[0]:

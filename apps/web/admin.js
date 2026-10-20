@@ -73,7 +73,7 @@ window.TPAdmin={async render({api,t,notify,refresh,user,sensitive}){
   const chooser=form(panel,t('سهمیه مشترک تمام مسیرهای مشتری','One allowance for every customer route'));
   const target=select(chooser,'workspace',t('مشتری','Customer'),workspaces.map(w=>[w.id,w.name]));
   const area=el('div');panel.append(area);let selectedGeneration=0;
-  const bytes=n=>Number(n).toLocaleString()+' '+t('بایت','bytes');
+  const bytes=n=>n===null?t('بدون سقف','Unlimited'):Number(n).toLocaleString()+' '+t('بایت','bytes');
   async function load(){const selected=target.value,request=++selectedGeneration;if(!selected)return;
    const state=await api('/api/billing/owner/workspaces/'+selected+'/traffic');if(request!==selectedGeneration||!area.isConnected)return;
    area.replaceChildren();const p=state.period,card=el('section',undefined,'card');
@@ -82,11 +82,11 @@ window.TPAdmin={async render({api,t,notify,refresh,user,sensitive}){
     el('p',t('اعتبار رزروشده روی مسیرها: ','Credit held by routes: ')+bytes(state.held_bytes)),
     el('p',t('قابل تخصیص: ','Available to allocate: ')+bytes(state.available_bytes)),
     el('p',t('مسیرهای مجهز به حسابداری: ','Accounting-enabled routes: ')+state.coverage.managed_routes));
-   if(p)add(card,el('p',(p.expired?t('دوره منقضی شده','Period expired'):t('دوره فعال','Active period'))+' · '+new Date(p.starts_at*1000).toLocaleString()+' → '+new Date(p.ends_at*1000).toLocaleString()));
+   if(p)add(card,el('p',p.unlimited?t('ثبت مصرف بدون سقف تا تخصیص مدیر','Recording without a ceiling until the administrator assigns one'):(p.expired?t('دوره منقضی شده','Period expired'):t('دوره فعال','Active period'))+' · '+new Date(p.starts_at*1000).toLocaleString()+(p.ends_at?' → '+new Date(p.ends_at*1000).toLocaleString():'')));
    if(state.coverage.unmetered_routes.length)add(card,el('p',t('مسیر فعال قدیمی وجود دارد. برای حفظ تونل‌ها، سهمیه مشترک فعال نمی‌شود؛ مهاجرت باید جداگانه و صریح توسط مدیر انجام شود.','Active unmetered routes exist. Shared accounting is refused to preserve them; migration requires an explicit separate owner action.'),'bad'));
    add(card,el('p',t('اعتبار در اختیار مسیر، مصرف قطعی نیست. اعتبار استفاده‌نشده پس از بیکارشدن مسیر برمی‌گردد؛ اعتبار سرور قطع‌شده تا تأیید ایمن آزاد نمی‌شود. این سهمیه بین حساب‌های همین مشتری و همه سرورهای مسیر مشترک است.','Held credit is not confirmed usage. Idle routes return unused credit; offline credit stays held until safely reconciled. All accounts and route sources in this customer workspace share this pool.'),'muted'));area.append(card);
    const f=form(area,p?t('ویرایش یا تخصیص دوره جدید','Edit allowance or allocate a new period'):t('تخصیص سهمیه توسط مدیر','Allocate customer allowance'));
-   const initial=p?.quota_bytes||10*1073741824;
+   const initial=p?.quota_bytes||Math.max(10*1073741824,state.used_bytes+state.held_bytes);
    const unit=select(f,'unit',t('واحد حجم','Volume unit'),[['1',t('بایت','Bytes')],['1048576','MiB'],['1073741824','GiB'],['1099511627776','TiB']],initial<1048576?'1':'1073741824');
    const amount=input(f,'quota',t('سقف کل دوره؛ افزایش آن مصرف قبلی را پاک نمی‌کند','Total period ceiling; increasing keeps previous usage'),initial/Number(unit.value),'number');amount.min=0.000001;amount.step='any';amount.max=Number.MAX_SAFE_INTEGER;
    let previousUnit=Number(unit.value);unit.onchange=()=>{amount.value=Number(amount.value)*previousUnit/Number(unit.value);previousUnit=Number(unit.value)};
@@ -95,7 +95,7 @@ window.TPAdmin={async render({api,t,notify,refresh,user,sensitive}){
    const reset=check(f,'new_period',t('دوره جدید؛ سوابق دوره قبلی حفظ می‌شود و اعتبارهای باز باید بسته باشند','New period; preserve previous history, all held credit must be closed'),false);reset.disabled=!p;
    add(f,el('p',t('پیش‌فرض دوره تازه ۳۰ روز است. تمدید، حجم و دوره جدید فقط با ثبت مدیر انجام می‌شود؛ پرداخت یا پاک‌کردن مصرف خودکار نیست.','A new period defaults to 30 days. The administrator grants volume, extensions and new periods; no automatic charge or usage reset.'),'muted'));
    submit(f,t('ثبت سهمیه مشتری','Save customer allowance'),async()=>{const quota=Math.round(Number(amount.value)*Number(unit.value));if(!Number.isSafeInteger(quota)||quota<1)throw Error(t('حجم معتبر وارد کنید.','Enter a valid byte allowance.'));await api('/api/billing/owner/workspaces/'+selected+'/traffic',{quota_bytes:quota,ends_at:new Date(finish.value).getTime()/1000,expected_revision:p?.revision||0,new_period:reset.checked},'PUT');notify(t('سهمیه مشترک ثبت شد؛ سوابق مصرف حفظ شدند.','Shared allowance saved; usage history preserved.'));await load()});
-   if(state.periods.length){const history=el('section',undefined,'card');history.append(el('h3',t('سوابق دوره‌ها','Period history')));for(const old of state.periods)add(history,el('p',new Date(old.starts_at*1000).toLocaleString()+' → '+new Date(old.ends_at*1000).toLocaleString()+' · '+bytes(old.used_bytes)+' / '+bytes(old.quota_bytes)));area.append(history)}
+   if(state.periods.length){const history=el('section',undefined,'card');history.append(el('h3',t('سوابق دوره‌ها','Period history')));for(const old of state.periods)add(history,el('p',new Date(old.starts_at*1000).toLocaleString()+(old.ends_at?' → '+new Date(old.ends_at*1000).toLocaleString():'')+' · '+bytes(old.used_bytes)+' / '+bytes(old.quota_bytes)));area.append(history)}
   }
   target.onchange=()=>run(target,load);chooser.append(action(t('بررسی و تازه‌سازی مصرف','Inspect and refresh usage'),load));run(target,load);
  }

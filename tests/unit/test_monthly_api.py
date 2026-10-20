@@ -82,3 +82,35 @@ def test_new_and_explicitly_reconciled_stopped_routes_inherit_the_pool(panel, mo
             assert app.state.monthly_usage.token_workspace(secret['token'])=='system'
         public=client.get('/api/mesh/routes',headers=HEADERS).text
         assert secret['token'] not in public and 'monthly_secret_id' not in public
+
+
+def test_owner_enrolled_existing_traffic_keeps_entitlement_but_disabled_and_new_routes_do_not(panel,monkeypatch):
+    client,_,app=panel
+    monkeypatch.setenv('TP_MONTHLY_QUOTA_URL','https://tehnet.example/tunnels/quota/credits')
+    customer=client.post('/api/workspaces',headers=HEADERS,json={'name':'Preserved existing traffic'}).json()
+    workspace=customer['id'];pool=app.state.monthly_usage
+    period=pool.ensure_unlimited(workspace,actor='explicit-owner-migration')
+    old=pool.register_route(workspace,'existing',preserve_existing=True)
+    new=pool.register_route(workspace,'new')
+    # Existing traffic is grandfathered; this does not activate an unpaid plan.
+    monkeypatch.setattr(app.state.subscriptions,'status',lambda *args:{'can_start_work':False})
+    def request(token,name):
+        return client.post('/quota/credits',headers={'Authorization':'Bearer '+token},
+                           json={'request_id':name,'amount':100,'period_id':period['id']})
+    assert request(old,'old').status_code==200
+    assert request(new,'new').status_code==403
+    client.patch('/api/workspaces/'+workspace,headers=HEADERS,json={'enabled':False})
+    assert request(old,'disabled').status_code==403
+
+
+def test_pending_migration_fences_ordinary_policy_traffic_and_reconcile_writes(panel):
+    from core.models import Job
+    client,factory,_=panel
+    with factory() as session:
+        session.add(Job(id='pending-migration',kind='mesh_route',state='COMMITTED',payload={
+            'accounting_migration':{'phase':'pending','candidate_secret_id':'private-candidate'},'methods':['GRE']}))
+        session.commit()
+    for suffix,method,body in [('/policy','put',{'mode':'balance'}),('/traffic','put',{'rate_mbps':2}),('/reconcile','post',{})]:
+        response=getattr(client,method)('/api/mesh/routes/pending-migration'+suffix,headers=HEADERS,json=body)
+        assert response.status_code==409,response.text
+        assert 'migration' in response.text
