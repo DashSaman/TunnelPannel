@@ -1,5 +1,11 @@
 # AGENTS.md — Permanent Agent Rules / قوانین همیشگی ایجنت
 
+## 2026-10-20 external TunnelGuard comparison — read-only
+
+Owner supplied ParsDigital video0cT4iHGzk30 and TunnelGuard.txt identifying Mehdi682007/TunnelGuard. Reviewed pinnedf1176f8b7a4d0d75ace30318102ec1ba401269a8 without executing its installer/scripts/tests. One read-only tunnelguard_provenance_map helper used for this NEW request; no further delegation. Exact trackedsourcehash comparison333ours/43reference and nontrivialPythonAST1348/215 foundZEROcomplete matches/no parse errors; not rename-resistant plagiarism detection/authorship proof. Reference rootOct5 versus ourpackageimportOct14 does not establish copying direction. No sufficient evidence to accuse copying; no rootlicense found/referenceGitHublicensenull, no source/assets imported.
+
+docs/TUNNELGUARD-COMPARISON-20261020{,-fa}.md and redactedcomparisonJSON record confirmed per-serviceTCPforwarding productgap and reverseWG/Paqet/Spoof candidates. Canonical productionmesh differs from legacytfd; do not infer oneUI exposesalllegacycapabilities. ProposedmanagedTCPservices is architectural design AWAITING owner review, NOT implemented/installed/physicallyaccepted. Reuseaccounting/tenantadmission/inventory/ownership; neverunmeteredrelay/doublecharge/directfallback/originalworkerrestart. No mutation to any remote tunnel for this review. Previous actual100GiB deployment remains83335745/tree2e83; docs/photos published65a16817/tree3a097 with expectedheadlease, mainunmerged/PR2. Finish exact-headCI/publicationproof separately; no runtime restart for documents.
+
 ## 2026-10-20 independent100GiB and console refresh — INSTALLED authoritative
 
 BOTH execution APIs and own static site83335745ad3e2a75a8c13c43026801c18729c2bc/tree2e83a55ca3e50a2efc9c05c79f391be350787e4e. Exact portable39453399733/security39453399728 SUCCESS before install; observed3.12 root846+TunnelGuard100+backend1 PASS; Linux lifecycle PASS. Fresh Windows813PASS/33POSIXskips; packagefont/theme RED reproduced then14focusedPASS. No runtime failure during new rollout. Initial CLI quoting/missing-path reads failed before mutation, corrected; one replay guard refused overwriting an existing ownership report, original retained. Do not replay any accepted customer/campaign/migration/traffic/restart/origincleanup/rescue helper.
