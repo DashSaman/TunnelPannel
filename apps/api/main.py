@@ -114,6 +114,12 @@ def create_app(factory=None) -> FastAPI:
     directory = os.environ.get("TP_WORKSPACES_DIR") or str(
         Path(session_factory.kw["bind"].url.database or ".").parent / "workspaces")
     registry = install_workspace_boundary(app, session_factory, directory)
+    from core.monthly_usage import MonthlyUsage
+    from orchestrator.monthly_routes import MonthlyRoutes
+    from apps.api.monthly_api import create_monthly_router
+    app.state.monthly_usage = MonthlyUsage(registry.directory / 'registry.db')
+    monthly_routes = MonthlyRoutes(app.state.monthly_usage, registry, session_factory.default)
+    app.include_router(create_monthly_router(app.state.monthly_usage, monthly_routes, app.state.subscriptions))
     from apps.api.body_limit import BodyLimit
     app.add_middleware(BodyLimit, max_bytes=65536)
     app.include_router(create_workspace_router(registry))
@@ -140,7 +146,7 @@ def create_app(factory=None) -> FastAPI:
     app.include_router(create_mesh_router(session_factory, app.state.mesh_campaigns))
     from apps.api.mesh_routes_api import create_mesh_routes_router
     from orchestrator.mesh_routes import RouteService
-    app.state.mesh_routes = RouteService()
+    app.state.mesh_routes = RouteService(monthly=monthly_routes)
     app.include_router(create_mesh_routes_router(session_factory, app.state.mesh_routes))
     from apps.api.operations_api import create_operations_router
     from orchestrator.operations_monitor import OperationsMonitor

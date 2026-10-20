@@ -61,13 +61,15 @@ class TrafficLedger:
         finally:
             db.close()
 
-    def charge(self, direction, size, quota):
+    def charge(self, direction, size, quota, *, monthly=None):
         if direction not in {'upload', 'download'} or type(size) is not int or size < 0:
             raise ValueError('invalid payload debit')
         with self.connection() as db:
             db.execute('BEGIN IMMEDIATE')
             upload, download = db.execute('SELECT upload,download FROM usage WHERE id=1').fetchone()
             allowed = min(size, max(0, quota - upload - download)) if quota else size
+            if monthly:
+                allowed = monthly.charge_in(db, direction, allowed)
             db.execute('UPDATE usage SET ' + direction + '=' + direction + '+? WHERE id=1', (allowed,))
             db.commit()
         return allowed
@@ -79,18 +81,25 @@ class TrafficLedger:
 
 
 class TrafficController:
-    def __init__(self, ledger, policy):
+    def __init__(self, ledger, policy, monthly=None):
         self.ledger, self.policy = ledger, policy
+        self.monthly = monthly
         self.lock = asyncio.Lock()
         self.next_at = 0
 
     async def relay(self, chunk, writer, direction):
         # Small slices bound burst size, cancellation latency and live edits.
-        for offset in range(0, len(chunk), 16384):
+        offset = 0
+        while offset < len(chunk):
             part = chunk[offset:offset + 16384]
             async with self.lock:
                 policy = validate_traffic(self.policy())
-                allowed = self.ledger.charge(direction, len(part), policy['quota_bytes'])
+                if self.monthly and not self.monthly.ready() and not await asyncio.to_thread(self.monthly.ensure):
+                    raise ConnectionError('customer shared allowance exhausted')
+                allowed = self.ledger.charge(direction, len(part), policy['quota_bytes'], monthly=self.monthly)
+                if not allowed and self.monthly and not self.monthly.ready():
+                    if await asyncio.to_thread(self.monthly.ensure):
+                        allowed = self.ledger.charge(direction, len(part), policy['quota_bytes'], monthly=self.monthly)
                 if not allowed:
                     raise ConnectionError('route byte allowance exhausted')
                 rate = policy['rate_mbps'] * 1000000 / 8
@@ -101,7 +110,8 @@ class TrafficController:
                 await asyncio.sleep(deadline - now)
             writer.write(part[:allowed])
             await writer.drain()
-            if allowed < len(part):
+            offset += allowed
+            if allowed < len(part) and not self.monthly:
                 raise ConnectionError('route byte allowance exhausted')
 
 
@@ -304,6 +314,14 @@ class Gateway:
         validate_traffic(config.get('traffic'))
         self.traffic = TrafficController(TrafficLedger(config.get('usage_path') or
             str(self.state_path.with_name('usage.sqlite3'))), lambda: self.config.get('traffic', {}))
+        self.monthly = None
+        if config.get('monthly'):
+            try:
+                from monthly_client import MonthlyClient
+            except ModuleNotFoundError:
+                from orchestrator.monthly_client import MonthlyClient
+            self.monthly = MonthlyClient(self.traffic.ledger, config['monthly'])
+            self.traffic.monthly = self.monthly
 
     def record_probes(self, readings):
         self.probes = readings
@@ -431,13 +449,33 @@ class Gateway:
                     'active_connections': self.active_connections,
                     'connections_by_upstream': self.connections_by_upstream,
                     'traffic_control_version': 1,
+                    'monthly_accounting_version': 1 if self.monthly else 0,
+                    'monthly': self.monthly.snapshot() if self.monthly else None,
                     'traffic': {'limits': validate_traffic(self.config.get('traffic')),
                                 'used': self.traffic.ledger.snapshot(),
                                 'basis': 'combined payload accepted before forwarding; excludes probes and SOCKS negotiation'},
                     'effective_weights': {key: round(self.effective_weight(key), 3) for key in self.policy.order},
                     'capability': 'authenticated TCP SOCKS5; existing sessions reconnect after failure'})
 
+    async def _monthly_loop(self):
+        while True:
+            try:
+                await asyncio.to_thread(self.monthly.tick)
+            except Exception:
+                self.monthly.error = 'accounting unavailable; credits expire closed'
+            await asyncio.sleep(1)
+
     async def run(self, config_path):
+        monthly_task = asyncio.create_task(self._monthly_loop()) if self.monthly else None
+        try:
+            await self._run(config_path)
+        finally:
+            if monthly_task:
+                monthly_task.cancel()
+                with suppress(asyncio.CancelledError):
+                    await monthly_task
+
+    async def _run(self, config_path):
         await self.start_listener()
         async with self.server:
             while True:

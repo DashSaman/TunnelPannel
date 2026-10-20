@@ -76,10 +76,25 @@ def route_lease(factory, route_id):
 
 
 class RouteService:
-    def __init__(self):
+    def __init__(self, monthly=None):
         self._threads, self._lock = {}, threading.Lock()
+        self.monthly = monthly
 
     def create(self, factory, request, limits):
+        if not self.monthly:
+            return self._create(factory, request, limits)
+        workspace = self.monthly.identity()
+        lease = self.monthly.lease(workspace)
+        if not lease.acquire(10):
+            raise HTTPException(409, 'customer allowance admission is busy')
+        try:
+            if self.monthly.store.status(workspace)['period']:
+                self.monthly.callback_url()
+            return self._create(factory, request, limits, workspace)
+        finally:
+            lease.release()
+
+    def _create(self, factory, request, limits, workspace=None):
         from core.traffic import bounded_traffic
         traffic = bounded_traffic(getattr(request, 'traffic', None), limits)
         factory = freeze_factory(factory)
@@ -117,6 +132,9 @@ class RouteService:
                 'mode': request.mode, 'traffic': traffic},
                 timeout_s=600 * len(methods))
             session.add(job)
+            if self.monthly:
+                session.flush()
+                self.monthly.attach(session, job, workspace)
             session.commit()
             route_id = job.id
         self.kick(factory, route_id)
@@ -150,6 +168,8 @@ class RouteService:
                 state, payload = job.state, dict(job.payload)
             if state == 'STOPPING':
                 reconcile_benchmark(factory, route_id)
+                if self.monthly:
+                    self.monthly.retire(factory, route_id)
                 with factory() as session:
                     job = route_job(session, route_id)
                     job.state, job.finished_at = 'STOPPED', dt.datetime.now(dt.timezone.utc)
@@ -159,6 +179,9 @@ class RouteService:
                 return
             # Idempotent restart: remove only this route job's recorded resources.
             reconcile_benchmark(factory, route_id)
+            if self.monthly:
+                self.monthly.retire(factory, route_id)
+                self.monthly.renew(factory, route_id)
             with factory() as session:
                 job = route_job(session, route_id)
                 job.payload = {**job.payload, 'members': []}
@@ -168,6 +191,8 @@ class RouteService:
             cleanup_ok = True
             try:
                 reconcile_benchmark(factory, route_id)
+                if self.monthly:
+                    self.monthly.retire(factory, route_id)
             except Exception:
                 cleanup_ok = False
             with factory() as session:
@@ -306,6 +331,13 @@ class RouteService:
             remote.run('install -d -m 700 ' + usage_dir, root=True)
             config.update(traffic=payload.get('traffic') or (previous_config or {}).get('traffic', {}),
                           usage_path=usage_dir + '/' + route_id + '.sqlite3')
+            if self.monthly:
+                with factory() as session:
+                    monthly_config = self.monthly.config(session, route_job(session, route_id))
+                if monthly_config:
+                    config['monthly'] = monthly_config
+                    bodies.write_remote_text(remote, directory + '/monthly_client.py',
+                        Path(__file__).with_name('monthly_client.py').read_text(encoding='utf-8'), '0600')
             script = Path(__file__).with_name('mesh_gateway.py').read_text(encoding='utf-8')
             bodies.write_remote_text(remote, directory + '/gateway.py', script, '0600')
             bodies.write_remote_text(remote, directory + '/config.json', json.dumps(config), '0600')
@@ -354,6 +386,18 @@ class RouteService:
         self.kick(factory, route_id)
 
     def reconcile(self, factory, route_id, methods, limits):
+        if not self.monthly:
+            return self._reconcile(factory, route_id, methods, limits)
+        workspace = self.monthly.identity()
+        lease = self.monthly.lease(workspace)
+        if not lease.acquire(10):
+            raise HTTPException(409, 'customer allowance admission is busy')
+        try:
+            return self._reconcile(factory, route_id, methods, limits, workspace)
+        finally:
+            lease.release()
+
+    def _reconcile(self, factory, route_id, methods, limits, workspace=None):
         from core.traffic import bounded_traffic
         factory = freeze_factory(factory)
         lease = route_lease(factory, route_id)
@@ -384,6 +428,8 @@ class RouteService:
                     raise HTTPException(400, 'selection requires persistent TCP egress support')
                 traffic = bounded_traffic(job.payload.get('traffic'), limits)
                 job.payload = {**job.payload, 'methods': selected, 'traffic': traffic}
+                if self.monthly and not job.payload.get('monthly_secret_id'):
+                    self.monthly.attach(session, job, workspace)
                 job.state, job.progress, job.error, job.finished_at = 'APPLYING', 0, None, None
                 session.commit()
         finally:
