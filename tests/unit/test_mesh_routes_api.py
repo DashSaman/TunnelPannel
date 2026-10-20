@@ -13,7 +13,12 @@ def test_route_creation_requires_a_customer_visible_completed_campaign(panel):
 
 
 def test_traffic_edit_rejects_historical_workers_and_cross_customer_access(panel, monkeypatch):
-    client, _, _ = panel
+    from core.models import Job
+    client, factory, _ = panel
+    with factory() as session:
+        session.add(Job(id='historical', kind='mesh_route', state='COMMITTED',
+                        payload={'source': 'ir', 'destination': 'de', 'methods': ['GRE']}))
+        session.commit()
     monkeypatch.setattr('orchestrator.mesh_routes.observe_route',
                         lambda *args: {'observed': True, 'runtime': {'worker_pid': 42}})
     response = client.put('/api/mesh/routes/historical/traffic', headers=HEADERS, json={})
