@@ -118,7 +118,7 @@ class SubscriptionStore(ManualCommerce):
                 'limits': {key: min(value, (json.loads(row['entitlement_limits']) if row['entitlement_limits'] else PLAN_LIMITS.get(row['plan'], {})).get(key, value)) for key, value in base.items()},
                 'can_start_work': state not in {'expired', 'cancelled', 'pending_payment'},
                 'stop_on_expiry': bool(row['stop_on_expiry']),
-                'payment_collected': False if row['mode'] == 'sandbox' else None}
+                'payment_collected': False if row['mode'] in {'sandbox','internal_test'} else None}
 
     def authorize_operation(self, workspace_id, method, path):
         if workspace_id == 'system' or method in {'GET', 'HEAD', 'OPTIONS'} or path.startswith('/auth/'):

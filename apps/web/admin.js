@@ -64,10 +64,20 @@ window.TPAdmin={async render({api,t,notify,refresh,user,sensitive}){
   const enabled=check(f,'enabled',t('دسترسی فضای مشتری فعال باشد','Enable customer workspace'),w.enabled);
   const stop=check(f,'stop_on_expiry',t('پس از انقضا، فقط تونل‌های همین مشتری متوقف شوند؛ اختیاری','Optionally stop only this customer’s owned tunnels after expiry'),s.stop_on_expiry);stop.disabled=!s.plan;
   add(f,el('p',(s.plan||t('بدون پلن','No plan'))+' · '+s.state+' · '+(s.paid_through?new Date(s.paid_through*1000).toLocaleDateString():t('نیازمند فعال‌سازی','Activation required')),'muted'));
+  if(s.mode==='internal_test')add(f,el('p',t('آزمایش داخلی؛ بدون دریافت وجه و بدون تمدید خودکار','Internal test; no payment collected and no automatic renewal'),'badge'));
   const readLimits=limitsForm(f,w.limits,t);
   add(f,el('p',t('سهمیهٔ مؤثر، کمترین مقدارِ محدودیت مشتری و پلن فعال است. این سهمیه بین حساب‌های همان فضا مشترک است.','Effective quota is the lower of workspace and subscribed-plan limits, shared by accounts in this workspace.'),'muted'));
   submit(f,t('ذخیره محدودیت‌ها','Save quotas'),async()=>{await api('/api/workspaces/'+w.id,{name:name.value,enabled:enabled.checked,limits:readLimits()},'PATCH');if(s.plan&&stop.checked!==s.stop_on_expiry)await api('/api/billing/workspaces/'+w.id+'/policy',{stop_on_expiry:stop.checked});notify(t('محدودیت‌ها ذخیره شد.','Quotas saved.'));await refresh()});
   const advanced=el('details');advanced.append(el('summary',t('دسترسی API و یکپارچه‌سازی','API access & integration')));advanced.append(action(t('چرخش کلید API همین مشتری','Rotate this customer’s API key'),async()=>sensitive(await api('/api/workspaces/'+w.id+'/rotate-key',{}))));f.parentElement.append(advanced);
+  if(s.state==='pending_payment'&&!s.plan){
+   const trial=el('details');trial.append(el('summary',t('دسترسی آزمایشی داخلی؛ بدون دریافت وجه','Internal test access; no payment collected')));f.parentElement.append(trial);
+   const grant=form(trial,t('تست یک‌باره برای مشتری جدید','One-time test for a new customer'));
+   add(grant,el('p',t('فقط یک بار، حداکثر هفت روز، با محدودیت‌های Starter. رسید مالی ثبت نمی‌شود؛ پس از انقضا فقط مسیرهای همین مشتری متوقف می‌شوند. سهمیهٔ حجم را جداگانه تعیین کنید.','Once only, up to seven days with Starter limits. No payment receipt is recorded. Only this customer’s routes stop after expiry; grant volume separately.'),'muted'));
+   const days=input(grant,'days',t('مهلت آزمایش؛ روز','Test duration; days'),1,'number');days.min=1;days.max=7;
+   const reason=input(grant,'reason',t('دلیل ثبت دسترسی آزمایشی','Reason for test access'),'','text');reason.minLength=8;reason.maxLength=200;
+   const requestId=crypto.randomUUID().replaceAll('-','');
+   submit(grant,t('فعال‌سازی تست بدون پرداخت','Activate test without payment'),async()=>{await api('/api/billing/owner/workspaces/'+w.id+'/test-access',{request_id:requestId,days:Number(days.value),reason:reason.value});notify(t('دسترسی آزمایشی ثبت شد؛ وجهی دریافت نشده است.','Test access granted; no money collected.'));await refresh()});
+  }
  }}
  function trafficView(){
   const chooser=form(panel,t('سهمیه مشترک تمام مسیرهای مشتری','One allowance for every customer route'));
@@ -82,6 +92,7 @@ window.TPAdmin={async render({api,t,notify,refresh,user,sensitive}){
     el('p',t('اعتبار رزروشده روی مسیرها: ','Credit held by routes: ')+bytes(state.held_bytes)),
     el('p',t('قابل تخصیص: ','Available to allocate: ')+bytes(state.available_bytes)),
     el('p',t('مسیرهای مجهز به حسابداری: ','Accounting-enabled routes: ')+state.coverage.managed_routes));
+   if(p&&!p.unlimited){const ceiling=Number(p.quota_bytes)/1073741824;add(card,el('p',t('سقف کل دوره: ','Total period ceiling: ')+ceiling.toLocaleString(undefined,{maximumFractionDigits:3})+' GiB','allowance-ceiling'));const meter=el('progress');meter.max=p.quota_bytes;meter.value=state.used_bytes;meter.setAttribute('aria-label',t('مصرف سهمیه مشترک','Shared allowance usage'));card.append(meter)}
    if(p)add(card,el('p',p.unlimited?t('ثبت مصرف بدون سقف تا تخصیص مدیر','Recording without a ceiling until the administrator assigns one'):(p.expired?t('دوره منقضی شده','Period expired'):t('دوره فعال','Active period'))+' · '+new Date(p.starts_at*1000).toLocaleString()+(p.ends_at?' → '+new Date(p.ends_at*1000).toLocaleString():'')));
    if(state.coverage.unmetered_routes.length)add(card,el('p',t('مسیر فعال قدیمی وجود دارد. برای حفظ تونل‌ها، سهمیه مشترک فعال نمی‌شود؛ مهاجرت باید جداگانه و صریح توسط مدیر انجام شود.','Active unmetered routes exist. Shared accounting is refused to preserve them; migration requires an explicit separate owner action.'),'bad'));
    add(card,el('p',t('اعتبار در اختیار مسیر، مصرف قطعی نیست. اعتبار استفاده‌نشده پس از بیکارشدن مسیر برمی‌گردد؛ اعتبار سرور قطع‌شده تا تأیید ایمن آزاد نمی‌شود. این سهمیه بین حساب‌های همین مشتری و همه سرورهای مسیر مشترک است.','Held credit is not confirmed usage. Idle routes return unused credit; offline credit stays held until safely reconciled. All accounts and route sources in this customer workspace share this pool.'),'muted'));area.append(card);

@@ -1,0 +1,21 @@
+{
+  "source": "rastikerdar/vazirmatn",
+  "version": "v33.003",
+  "license": "SIL OFL 1.1",
+  "files": [
+    {
+      "path": "apps/web/tehnet-vazirmatn.woff2",
+      "source": "https://raw.githubusercontent.com/rastikerdar/vazirmatn/v33.003/fonts/webfonts/Vazirmatn%5Bwght%5D.woff2",
+      "sha256": "4e3fa217d38fdafc1fea4414ceb58ca5e662cf0ab5fa735a8c8c20e8b42cad92",
+      "bytes": 111152
+    },
+    {
+      "path": "docs/third-party/Vazirmatn-OFL.txt",
+      "source": "https://raw.githubusercontent.com/rastikerdar/vazirmatn/v33.003/OFL.txt",
+      "sha256": "e6f4ce7b6c830d5a25a4f8ac777c267cd7d3c180bc2a7150ca57cbb9b280c4b7",
+      "bytes": 4390,
+      "upstream_sha256": "17e355067c8284f47743a1ee3b1ef7ff684ff0601eda357f9353b10b3016ab31",
+      "notice": "Trailing line whitespace normalized; license wording unchanged"
+    }
+  ]
+}

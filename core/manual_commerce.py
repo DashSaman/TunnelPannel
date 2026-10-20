@@ -29,6 +29,13 @@ class ManualPayment(BaseModel):
     reference: str = Field(min_length=3,max_length=120)
 
 
+class OwnerTestGrant(BaseModel):
+    model_config = ConfigDict(extra='forbid',str_strip_whitespace=True)
+    request_id: str = Field(pattern=r'^[0-9a-f]{32}$')
+    days: int = Field(default=1,strict=True,ge=1,le=7)
+    reason: str = Field(min_length=8,max_length=200)
+
+
 def initialize_commerce(db):
     db.executescript('''
         CREATE TABLE IF NOT EXISTS commercial_plans (
@@ -38,6 +45,9 @@ def initialize_commerce(db):
             id TEXT PRIMARY KEY,workspace_id TEXT NOT NULL,plan_id TEXT NOT NULL,
             payload_hash TEXT NOT NULL,reference TEXT UNIQUE NOT NULL,result TEXT NOT NULL,
             actor TEXT NOT NULL,created_at REAL NOT NULL);
+        CREATE TABLE IF NOT EXISTS billing_test_grants (
+            id TEXT PRIMARY KEY,workspace_id TEXT UNIQUE NOT NULL,payload_hash TEXT NOT NULL,
+            result TEXT NOT NULL,actor TEXT NOT NULL,reason TEXT NOT NULL,created_at REAL NOT NULL);
     ''')
     db.execute('BEGIN IMMEDIATE')
     if 'entitlement_limits' not in {r['name'] for r in db.execute('PRAGMA table_info(billing_subscriptions)')}:
@@ -56,6 +66,37 @@ def _plan(row):
 
 
 class ManualCommerce:
+    def grant_test_access(self,workspace_id,body,*,actor):
+        """One explicit audited trial for a new customer; never a payment or renewal."""
+        from core.subscriptions import PLAN_LIMITS
+        values=_validated(OwnerTestGrant,body)
+        if self.mode!='manual':
+            raise HTTPException(409,'internal test access requires manual billing mode')
+        fingerprint=hashlib.sha256(json.dumps({'workspace':workspace_id,**values},sort_keys=True).encode()).hexdigest()
+        with self._db() as db:
+            db.execute('BEGIN IMMEDIATE')
+            prior=db.execute('SELECT * FROM billing_test_grants WHERE id=?',(values['request_id'],)).fetchone()
+            if prior:
+                if prior['payload_hash']!=fingerprint:
+                    raise HTTPException(409,'test grant identity reused with different content')
+                return {**json.loads(prior['result']),'duplicate':True}
+            workspace=db.execute('SELECT enabled FROM workspaces WHERE id=?',(workspace_id,)).fetchone()
+            if not workspace or not workspace['enabled']:
+                raise HTTPException(409,'select an enabled customer workspace')
+            if (db.execute('SELECT 1 FROM billing_subscriptions WHERE workspace_id=?',(workspace_id,)).fetchone()
+                    or db.execute('SELECT 1 FROM billing_test_grants WHERE workspace_id=?',(workspace_id,)).fetchone()):
+                raise HTTPException(409,'test access is only available once for a new customer')
+            now=self.clock();end=now+values['days']*86400
+            result={'id':values['request_id'],'workspace_id':workspace_id,'plan':'starter','mode':'internal_test',
+                    'state':'trial','ends_at':end,'revision':1,'duplicate':False,'payment_collected':False}
+            db.execute('INSERT INTO billing_test_grants VALUES(?,?,?,?,?,?,?)',
+                       (values['request_id'],workspace_id,fingerprint,json.dumps(result),actor,values['reason'],now))
+            db.execute('INSERT INTO billing_subscriptions '
+                       '(workspace_id,plan,revision,state,paid_through,grace_until,mode,stop_on_expiry,entitlement_limits) '
+                       'VALUES(?,?,?,?,?,?,?,?,?)',
+                       (workspace_id,'starter',1,'trial',end,end,'internal_test',1,json.dumps(PLAN_LIMITS['starter'])))
+            return result
+
     def commercial_plans(self, *, include_disabled=False):
         from core.subscriptions import PLAN_LIMITS
         with self._db() as db:

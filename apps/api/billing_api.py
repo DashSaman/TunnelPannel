@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, ConfigDict, Field
 
 from apps.api.accounts_api import AccountSafeRoute
-from core.manual_commerce import CommercialPlan, ManualPayment
+from core.manual_commerce import CommercialPlan, ManualPayment, OwnerTestGrant
 from core.security import current_user, require_role
 
 
@@ -53,6 +53,10 @@ def create_billing_router(store):
     @router.get('/api/billing/owner/requests', dependencies=[Depends(require_role('SUPER_ADMIN'))])
     def owner_requests():
         return store.requests()
+
+    @router.post('/api/billing/owner/workspaces/{workspace_id}/test-access')
+    def test_access(workspace_id: str,body: OwnerTestGrant,user=Depends(require_role('SUPER_ADMIN'))):
+        return store.grant_test_access(workspace_id,body.model_dump(),actor=user.get('account_id') or user['token_hash'])
 
     @router.get('/api/billing/owner/plans', dependencies=[Depends(require_role('SUPER_ADMIN'))])
     def owner_plans():

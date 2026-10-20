@@ -33,10 +33,11 @@ def create_web_router(session_factory) -> APIRouter:
     @router.get('/assets/{name}')
     def portal_asset(name:str):
         types={'portal.js':'application/javascript','portal.css':'text/css','auth.js':'application/javascript','admin.js':'application/javascript',
-               'console.css':'text/css','mesh-controls.js':'application/javascript'}
+               'console.css':'text/css','mesh-controls.js':'application/javascript','theme.css':'text/css',
+               'tehnet-vazirmatn.woff2':'font/woff2'}
         if name not in types:
             raise HTTPException(404,'asset not found')
-        return Response(HTML_PATH.with_name(name).read_text(encoding='utf-8'),media_type=types[name],
+        return Response(HTML_PATH.with_name(name).read_bytes(),media_type=types[name],
                         headers={'Cache-Control':'no-cache','X-Content-Type-Options':'nosniff'})
 
     @router.get("/ranking", response_class=HTMLResponse)

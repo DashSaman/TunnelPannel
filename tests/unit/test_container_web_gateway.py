@@ -20,6 +20,9 @@ def test_package_namespaces_pages_assets_and_inline_code(tmp_path):
         assert '/tunnels/assets/auth.js' in body
         assert '<script>' not in body and '<style>' not in body
     assert (out / 'public/assets/mesh-inline-0.js').is_file()
+    for name in ('theme.css','tehnet-vazirmatn.woff2'):
+        assert (out/'public/assets'/name).read_bytes()==(ROOT/'apps/web'/name).read_bytes()
+    assert '/tunnels/assets/theme.css' in (out/'public/portal.html').read_text(encoding='utf8')
     portal = (out / 'public/assets/portal.js').read_text(encoding='utf8')
     assert "TPAuth.url('/mesh?campaign='" in portal
     assert "TPAuth.url('/portal')" in portal
