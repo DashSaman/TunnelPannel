@@ -1,5 +1,7 @@
 # Installed shared allowance acceptance — 20 October 2026
 
+Historical allowance rollout. The later [explicit existing-gateway migration](LEGACY-ACCOUNTING-VALIDATION.md) supersedes the installed revision and original-worker status below; these earlier receipts remain unchanged.
+
 The public panel at **https://tehnet.ir/tunnels/portal** and both authorized execution APIs run functional source `fb0d553c8c268d444ab6d03470e56f998e9d3707`, tree `2aa6e9137d5c863c0de64a39e15b078271d105c0`. Static bundle SHA256: `dce9c45ac55396caba1eed5ecef5036c9ac47183e2cdeaa29af73104fad03332`. The website serves static assets and proxies requests; all accounting, source ledgers, builds and test traffic run elsewhere.
 
 ## Administrator workflow

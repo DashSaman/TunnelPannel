@@ -1,15 +1,23 @@
 # TunnelPannel
 
+## Existing tunnels migrated — installed
+
+Both original five-member gateways now record usage in their existing customer's shared pool **without a ceiling until the administrator assigns one**. Full settings, entry credentials, member processes and interfaces were preserved. Sequential gateway-only cutovers had observed maximum success gaps of 0.774 / 0.753 seconds; 10 member and 2 stable-entry receipts passed. [Operator guide](docs/LEGACY-ACCOUNTING.md) · [Actual two-node acceptance and limits](docs/LEGACY-ACCOUNTING-VALIDATION.md).
+
+Open **Portal → Users & sales administration → Shared monthly usage**, select the customer and inspect usage. Save a total ceiling/end **without New period** to retain current usage. Unknown pre-migration traffic is not invented. Unpaid new work remains blocked; no account or payment activation was changed.
+
+![Live shared accounting](docs/evidence/commercial/tehnet-legacy-accounting-en.jpg)
+
 ## Shared customer allowance — installed
 
 The administrator can inspect and grant one traffic allowance shared by every account, route and source server in a customer workspace. Open **Portal → Users & sales administration → Shared monthly usage** to set the total ceiling/end, increase allowance without clearing usage, or start a new period with retained history. Customers see their own usage and outstanding credit. Grants and renewals are manual. [Guide](docs/MONTHLY-USAGE.md) · [Real two-node acceptance](docs/MONTHLY-USAGE-VALIDATION.md).
 
-The two-source test stopped exactly at its shared byte ceiling; top-up, expiry, new-period history and QA-only restart passed. Existing ten live members/configurations/workers stayed intact. Historical unmetered active routes must be explicitly migrated before enabling a pool; the feature refuses incomplete coverage instead of restarting them automatically.
+The earlier two-source allowance test stopped exactly at its shared byte ceiling; top-up, expiry, new-period history and QA-only restart passed. Existing ten live members/configurations/workers stayed intact during that rollout. The later explicitly authorized migration is recorded above. Other historical unmetered active routes must be explicitly migrated before enabling a pool; the feature refuses incomplete coverage instead of restarting them automatically.
 
 
 ## TehNet engine and traffic expansion
 
-Backhaul TCP, official userspace AmneziaWG and native IPv4-in-IPv6 are installed and passed both directions (6/6). New gateways enforce cumulative per-route payload/rate/concurrency limits; historical live groups stay unchanged. See [guide and scope](docs/TUNNEL-EXPANSION.md).
+Backhaul TCP, official userspace AmneziaWG and native IPv4-in-IPv6 are installed and passed both directions (6/6). New gateways enforce cumulative per-route payload/rate/concurrency limits; the explicitly authorized original gateways are now enrolled as documented above. See [guide and scope](docs/TUNNEL-EXPANSION.md).
 
 
 [Arange-tun design/capability comparison and prioritised gaps](docs/ARANGE-COMPARISON-20261019.md) · [فارسی](docs/ARANGE-COMPARISON-20261019-fa.md). This historical review identified the gaps; [installed acceptance](docs/TUNNEL-EXPANSION-VALIDATION.md) now records Backhaul, AmneziaWG and native4in6 passing6/6.
@@ -48,7 +56,7 @@ The original 82-method remediation of the earlier 23 partial / 27 failed methods
 ## Install
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/fb0d553c8c268d444ab6d03470e56f998e9d3707/install.sh | sudo env TUNNELPANNEL_VERSION=fb0d553c8c268d444ab6d03470e56f998e9d3707 bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/808b72975fa980a378f42d28b2324606955031d2/install.sh | sudo env TUNNELPANNEL_VERSION=808b72975fa980a378f42d28b2324606955031d2 bash
 ```
 
 This installs the CI-verified engine and durable traffic-control runtime, also recorded in `install-one-line.txt`. Both test APIs have been upgraded after draining work; the website-only gateway runs separately. Install this backend on a controller/execution host. Wait for active jobs to drain before any later upgrade. Re-running preserves credentials and data. The installer creates the application account, installs dependencies, migrates the database, starts systemd and verifies HTTP health. It refuses to overwrite local source changes.

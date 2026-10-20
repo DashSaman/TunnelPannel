@@ -1,6 +1,6 @@
 # Migrate an existing gateway without rebuilding its tunnels
 
-Implementation guide; this new migration has not yet been installed or accepted on live original groups. Read the later installed report before assuming completion.
+Installed and accepted on the two original groups; see [actual evidence](LEGACY-ACCOUNTING-VALIDATION.md).
 
 The owner explicitly chooses **record usage without a ceiling until the administrator assigns one**. The customer pool has no artificial maximum or hidden end date. The existing credit protocol still uses bounded durable reservations and short renewable leases, so callback failure eventually refuses payload rather than silently losing accounting. Administrator first-cap edits retain recorded usage and held credit; a ceiling below their sum is refused. An explicit new period preserves previous history and requires all held credits safely closed.
 
