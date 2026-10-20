@@ -1,5 +1,13 @@
 # TunnelPannel
 
+## Administrator migration — installed
+
+Open **[Portal](https://tehnet.ir/tunnels/portal) → Users & sales administration → Migrate existing tunnels**. Select a customer or Owner routes, inspect a live registered legacy route, then migrate preserving settings. No manual SSH terminal is needed. The panel retains results and supports explicit recovery; already-accounted originals need no repeat migration. Usage starts without a ceiling until the administrator assigns one.
+
+New independent two-node acceptance passed through public API and actual browser controls. Existing ten members, entries, complete settings and worker identities remained unchanged. [Guide](docs/ADMIN-MIGRATION.md) · [Actual results and limits](docs/ADMIN-MIGRATION-VALIDATION.md).
+
+![Actual administrator migration](docs/evidence/commercial/tehnet-admin-migration-en.jpg)
+
 ## Existing tunnels migrated — installed
 
 Both original five-member gateways now record usage in their existing customer's shared pool **without a ceiling until the administrator assigns one**. Full settings, entry credentials, member processes and interfaces were preserved. Sequential gateway-only cutovers had observed maximum success gaps of 0.774 / 0.753 seconds; 10 member and 2 stable-entry receipts passed. [Operator guide](docs/LEGACY-ACCOUNTING.md) · [Actual two-node acceptance and limits](docs/LEGACY-ACCOUNTING-VALIDATION.md).
@@ -56,7 +64,7 @@ The original 82-method remediation of the earlier 23 partial / 27 failed methods
 ## Install
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/808b72975fa980a378f42d28b2324606955031d2/install.sh | sudo env TUNNELPANNEL_VERSION=808b72975fa980a378f42d28b2324606955031d2 bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/2c6974a4989a9fab121d2a2f4c161d81fbf379e9/install.sh | sudo env TUNNELPANNEL_VERSION=2c6974a4989a9fab121d2a2f4c161d81fbf379e9 bash
 ```
 
 This installs the CI-verified engine and durable traffic-control runtime, also recorded in `install-one-line.txt`. Both test APIs have been upgraded after draining work; the website-only gateway runs separately. Install this backend on a controller/execution host. Wait for active jobs to drain before any later upgrade. Re-running preserves credentials and data. The installer creates the application account, installs dependencies, migrates the database, starts systemd and verifies HTTP health. It refuses to overwrite local source changes.

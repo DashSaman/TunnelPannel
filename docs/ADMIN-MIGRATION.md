@@ -1,6 +1,8 @@
 # Migrate an existing gateway from the administrator panel
 
-Implementation prepared; live installation and two-node acceptance are still pending. This guide supersedes the earlier CLI-only restriction for the system administrator. Existing original groups are already accounted and are not migrated again.
+Installed on both execution controllers and the public website. [Actual two-node acceptance](ADMIN-MIGRATION-VALIDATION.md). This guide supersedes the earlier CLI-only restriction for the system administrator. Existing original groups are already accounted and are not migrated again.
+
+![Migration section on the public site](evidence/commercial/tehnet-admin-migration-panel.jpg)
 
 Sign in at **https://tehnet.ir/tunnels/portal** with the system administrator account. Open **Users & sales administration → Migrate existing tunnels**, choose a customer (or **Owner routes**), then choose **Inspect and prepare** on a registered live unmetered route. The preflight checks current configuration, pinned access, gateway ownership, healthy idle state, callback and accounting eligibility. It displays the preserved methods, mode and pin; its ticket expires after two minutes. Already-accounted/stopped routes are clearly labelled. Foreign tunnels outside the panel's ownership are not imported or rewritten.
 
