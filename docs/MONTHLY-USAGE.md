@@ -1,6 +1,6 @@
 # Shared customer traffic allowance
 
-Implementation contract; installed acceptance is recorded separately after rollout. A customer workspace, including all its login accounts and route source servers, shares one administrator-managed allowance. This extends the existing per-route speed, byte and connection ceilings.
+Installed on the two execution nodes and public static website; see [actual acceptance](MONTHLY-USAGE-VALIDATION.md). A customer workspace, including all its login accounts and route source servers, shares one administrator-managed allowance. This extends the existing per-route speed, byte and connection ceilings.
 
 ## Administrator workflow
 

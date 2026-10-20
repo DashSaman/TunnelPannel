@@ -1,5 +1,12 @@
 # TunnelPannel
 
+## Shared customer allowance — installed
+
+The administrator can inspect and grant one traffic allowance shared by every account, route and source server in a customer workspace. Open **Portal → Users & sales administration → Shared monthly usage** to set the total ceiling/end, increase allowance without clearing usage, or start a new period with retained history. Customers see their own usage and outstanding credit. Grants and renewals are manual. [Guide](docs/MONTHLY-USAGE.md) · [Real two-node acceptance](docs/MONTHLY-USAGE-VALIDATION.md).
+
+The two-source test stopped exactly at its shared byte ceiling; top-up, expiry, new-period history and QA-only restart passed. Existing ten live members/configurations/workers stayed intact. Historical unmetered active routes must be explicitly migrated before enabling a pool; the feature refuses incomplete coverage instead of restarting them automatically.
+
+
 ## TehNet engine and traffic expansion
 
 Backhaul TCP, official userspace AmneziaWG and native IPv4-in-IPv6 are installed and passed both directions (6/6). New gateways enforce cumulative per-route payload/rate/concurrency limits; historical live groups stay unchanged. See [guide and scope](docs/TUNNEL-EXPANSION.md).
@@ -41,7 +48,7 @@ The original 82-method remediation of the earlier 23 partial / 27 failed methods
 ## Install
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/53a72f6ee2c3b675a331ddfaf6bc0052bc02eb71/install.sh | sudo env TUNNELPANNEL_VERSION=53a72f6ee2c3b675a331ddfaf6bc0052bc02eb71 bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/fb0d553c8c268d444ab6d03470e56f998e9d3707/install.sh | sudo env TUNNELPANNEL_VERSION=fb0d553c8c268d444ab6d03470e56f998e9d3707 bash
 ```
 
 This installs the CI-verified engine and durable traffic-control runtime, also recorded in `install-one-line.txt`. Both test APIs have been upgraded after draining work; the website-only gateway runs separately. Install this backend on a controller/execution host. Wait for active jobs to drain before any later upgrade. Re-running preserves credentials and data. The installer creates the application account, installs dependencies, migrates the database, starts systemd and verifies HTTP health. It refuses to overwrite local source changes.

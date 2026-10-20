@@ -14,9 +14,11 @@ Manual grants, default30days with explicit end; customer workspace is the pool. 
 
 ## Tasks
 
-- [ ] RED/GREEN central `core/monthly_usage.py`: period revisions/history, atomic reservation/status/report, idempotence, quota bound, route-scoped credential/revocation, corruption/expiry. Tests `tests/unit/test_monthly_usage.py` include concurrent two-node simulations and lost-response replay.
-- [ ] RED/GREEN standalone `orchestrator/monthly_client.py` plus gateway: durable pending requests/credit, online recovery, lease expiry, idle fenced return, same-transaction route/credit debit and usage state. Tests prove exact payload cap and restart/offline behavior.
-- [ ] Wire owner/customer APIs, bounded private callback, route admission/deployment/owned stop. Add positive/negative authorization and historical coverage tests; refuse incomplete monthly configuration before changing remote resources.
-- [ ] Add administrator period/ceiling/history UI and customer usage/held/balance display in FA/EN. Verify actual browser flows/mobile; keep account credentials untouched.
-- [ ] Fresh appropriate regression checks, immutable publication/CI, fresh drained baseline/resident backups, reviewed helper upgrade of own APIs only. Create independent same-customer opposite-source routes on the two test nodes; exercise shared cap, restart/top-up/credit return/expiry and clean only QA.
-- [ ] Publish website static container; authenticate/read owner/customer; encrypt fresh resident after backups and document exact tests/limitations. Final tree/lease/CI/PR2 proof and owner handoff; preserve originals and main.
+- [x] RED/GREEN central `core/monthly_usage.py`: period revisions/history, atomic reservation/status/report, idempotence, quota bound, route-scoped credential/revocation, corruption/expiry. Tests `tests/unit/test_monthly_usage.py` include concurrent two-node simulations and lost-response replay.
+- [x] RED/GREEN standalone `orchestrator/monthly_client.py` plus gateway: durable pending requests/credit, online recovery, lease expiry, idle fenced return, same-transaction route/credit debit and usage state. Tests prove exact payload cap and restart/offline behavior.
+- [x] Wire owner/customer APIs, bounded private callback, route admission/deployment/owned stop. Add positive/negative authorization and historical coverage tests; refuse incomplete monthly configuration before changing remote resources.
+- [x] Add administrator period/ceiling/history UI and customer usage/held/balance display in FA/EN. Verify actual browser flows/mobile; keep account credentials untouched.
+- [x] Fresh appropriate regression checks, immutable publication/CI, fresh drained baseline/resident backups, reviewed helper upgrade of own APIs only. Create independent same-customer opposite-source routes on the two test nodes; exercise shared cap, restart/top-up/credit return/expiry and clean only QA.
+- [x] Publish website static container; authenticate/read owner/customer; encrypt fresh resident after backups and document exact tests/limitations. Final tree/lease/CI/PR2 proof and owner handoff; preserve originals and main.
+
+Installed/runtime acceptance complete; final documentation tree/lease/CI proof is tracked in the private handoff.
