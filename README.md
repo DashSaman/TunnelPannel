@@ -1,5 +1,11 @@
 # TunnelPannel
 
+## Refreshed console and real 100 GiB customer — installed
+
+The [TehNet panel](https://tehnet.ir/tunnels/portal) has a refreshed Persian/English interface and an explicit owner-only internal test grant, separate from manual paid activation. A new isolated customer was created, both real legacy-style routes migrated through the owner GUI, and **100 GiB actually saved**. Concurrent two-node exhaustion, zero further payload and restoring100GiB in the same period passed; all real usage remains. The test account/two routes remain for review; original tunnels and customer policy stayed intact. [Step-by-step guide, actual results and photographs](docs/QA-100GIB.md).
+
+![Installed customer's 100 GiB allowance](docs/evidence/commercial/demo100/07-customer-100gib-en.jpg)
+
 [Illustrated owner walkthrough: customer allowance and legacy migration](docs/ADMIN-WALKTHROUGH.md) — live read-only demonstration; no changes to original routes.
 
 ## Administrator migration — installed
@@ -66,7 +72,7 @@ The original 82-method remediation of the earlier 23 partial / 27 failed methods
 ## Install
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/2c6974a4989a9fab121d2a2f4c161d81fbf379e9/install.sh | sudo env TUNNELPANNEL_VERSION=2c6974a4989a9fab121d2a2f4c161d81fbf379e9 bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/83335745ad3e2a75a8c13c43026801c18729c2bc/install.sh | sudo env TUNNELPANNEL_VERSION=83335745ad3e2a75a8c13c43026801c18729c2bc bash
 ```
 
 This installs the CI-verified engine and durable traffic-control runtime, also recorded in `install-one-line.txt`. Both test APIs have been upgraded after draining work; the website-only gateway runs separately. Install this backend on a controller/execution host. Wait for active jobs to drain before any later upgrade. Re-running preserves credentials and data. The installer creates the application account, installs dependencies, migrates the database, starts systemd and verifies HTTP health. It refuses to overwrite local source changes.

@@ -1,0 +1,1305 @@
+{
+  "status": "PASS",
+  "date": "2026-10-20",
+  "runtime_revision": "83335745ad3e2a75a8c13c43026801c18729c2bc",
+  "runtime_tree": "2e83a55ca3e50a2efc9c05c79f391be350787e4e",
+  "ci": {
+    "portable": 39453399733,
+    "security": 39453399728,
+    "both": "SUCCESS",
+    "python312_root": 846,
+    "tunnelguard": 100,
+    "backend": 1
+  },
+  "test_customer": {
+    "independent_workspace": true,
+    "plan": "starter",
+    "mode": "internal_test",
+    "days": 7,
+    "payment_collected": false,
+    "stop_on_expiry": true,
+    "allowance_bytes": 107374182400,
+    "period_retained": true,
+    "routes_retained": 2,
+    "credentials_published": false
+  },
+  "campaign": {
+    "id": "83b87e1dcb6a43d8b0e0732f85c42df0",
+    "state": "PASS",
+    "directions": [
+      {
+        "source": "qa100-a",
+        "destination": "qa100-b",
+        "method": "IP4IN6",
+        "receipt": true,
+        "http_rtt_avg_ms": 1.9465333333333334,
+        "jitter_ms": 0.5098275862068966,
+        "failed_request_percent": 0.0,
+        "samples": 30,
+        "throughput_mbps": 1453.6182840764866,
+        "throughput_evidence": {
+          "tool": "iperf3",
+          "transport": "TCP",
+          "samples": [
+            {
+              "verified_bytes": 1897136128,
+              "elapsed_s": 10.002478,
+              "throughput_mbps": 1517.33290730557,
+              "direction": "a_to_b"
+            },
+            {
+              "verified_bytes": 1817182208,
+              "elapsed_s": 10.000877,
+              "throughput_mbps": 1453.6182840764866,
+              "direction": "b_to_a"
+            }
+          ]
+        },
+        "recovery_ok": true
+      },
+      {
+        "source": "qa100-b",
+        "destination": "qa100-a",
+        "method": "IP4IN6",
+        "receipt": true,
+        "http_rtt_avg_ms": 1.9645000000000001,
+        "jitter_ms": 0.6848620689655173,
+        "failed_request_percent": 0.0,
+        "samples": 30,
+        "throughput_mbps": 1610.810339356994,
+        "throughput_evidence": {
+          "tool": "iperf3",
+          "transport": "TCP",
+          "samples": [
+            {
+              "verified_bytes": 2014183424,
+              "elapsed_s": 10.00333,
+              "throughput_mbps": 1610.810339356994,
+              "direction": "a_to_b"
+            },
+            {
+              "verified_bytes": 2043019264,
+              "elapsed_s": 10.000721,
+              "throughput_mbps": 1634.2975783446013,
+              "direction": "b_to_a"
+            }
+          ]
+        },
+        "recovery_ok": true
+      }
+    ]
+  },
+  "migrations": {
+    "routes": [
+      {
+        "id": "bde16774b24f41aab57de40c3b50f511",
+        "state": "COMMITTED",
+        "methods": [
+          "IP4IN6"
+        ],
+        "mode": "failover",
+        "accounting": "metered",
+        "live": true
+      },
+      {
+        "id": "46bb305d919a4f9da58a3d6ac725a62b",
+        "state": "COMMITTED",
+        "methods": [
+          "IP4IN6"
+        ],
+        "mode": "failover",
+        "accounting": "metered",
+        "live": true
+      }
+    ],
+    "operations": [
+      {
+        "id": "7b5c227111c043f683eb9b07d2118901",
+        "route_id": "bde16774b24f41aab57de40c3b50f511",
+        "state": "PASS",
+        "error": null,
+        "expires_at": 1792512694.7597003,
+        "methods": [
+          "IP4IN6"
+        ],
+        "mode": "failover",
+        "pin": null,
+        "resume": false,
+        "controller_backup_verified": true,
+        "result": {
+          "status": "PASS",
+          "counting_started_at": 1792512591.7811708,
+          "member_workers_restarted": 0,
+          "member_worker_identities_preserved": true,
+          "interfaces_preserved": true,
+          "source_usage_baseline": {
+            "upload": 198,
+            "download": 699
+          },
+          "entry_credentials_and_settings_preserved": true,
+          "before_idle_samples": 2,
+          "probe_successes": 34,
+          "probe_failures": 5,
+          "maximum_observed_success_gap_s": 0.9350934110116214,
+          "existing_tcp_session_survival_claimed": false
+        }
+      },
+      {
+        "id": "175588bd91d74d1f9d949da75de1c5a5",
+        "route_id": "46bb305d919a4f9da58a3d6ac725a62b",
+        "state": "PASS",
+        "error": null,
+        "expires_at": 1792512667.9591258,
+        "methods": [
+          "IP4IN6"
+        ],
+        "mode": "failover",
+        "pin": null,
+        "resume": false,
+        "controller_backup_verified": true,
+        "result": {
+          "status": "PASS",
+          "counting_started_at": 1792512559.358965,
+          "member_workers_restarted": 0,
+          "member_worker_identities_preserved": true,
+          "interfaces_preserved": true,
+          "source_usage_baseline": {
+            "upload": 198,
+            "download": 699
+          },
+          "entry_credentials_and_settings_preserved": true,
+          "before_idle_samples": 2,
+          "probe_successes": 30,
+          "probe_failures": 5,
+          "maximum_observed_success_gap_s": 0.9268736020894721,
+          "existing_tcp_session_survival_claimed": false
+        }
+      }
+    ]
+  },
+  "traffic": {
+    "qa-small": {
+      "status": "PASS",
+      "routes": [
+        {
+          "route_id": "46bb305d919a4f9da58a3d6ac725a62b",
+          "body_bytes": 1048576,
+          "header_bytes": 117,
+          "expected_body_bytes": 1048576,
+          "complete_payload": true,
+          "payload_verified": true,
+          "before": {
+            "upload": 2046,
+            "download": 7223,
+            "total": 9269
+          },
+          "after": {
+            "upload": 2109,
+            "download": 1055916,
+            "total": 1058025
+          }
+        },
+        {
+          "route_id": "bde16774b24f41aab57de40c3b50f511",
+          "body_bytes": 1048576,
+          "header_bytes": 117,
+          "expected_body_bytes": 1048576,
+          "complete_payload": true,
+          "payload_verified": true,
+          "before": {
+            "upload": 2310,
+            "download": 8155,
+            "total": 10465
+          },
+          "after": {
+            "upload": 2373,
+            "download": 1056848,
+            "total": 1059221
+          }
+        }
+      ],
+      "source_counters": [
+        {
+          "route_id": "46bb305d919a4f9da58a3d6ac725a62b",
+          "used": {
+            "upload": 2109,
+            "download": 1055916,
+            "total": 1058025
+          },
+          "baseline": {
+            "upload": 198,
+            "download": 699
+          },
+          "new_total": 1057128
+        },
+        {
+          "route_id": "bde16774b24f41aab57de40c3b50f511",
+          "used": {
+            "upload": 2373,
+            "download": 1056848,
+            "total": 1059221
+          },
+          "baseline": {
+            "upload": 198,
+            "download": 699
+          },
+          "new_total": 1058324
+        }
+      ],
+      "pool": {
+        "period": {
+          "id": "17f94b694ac5446c8b5bf2905d88832f",
+          "starts_at": 1792512557.4318473,
+          "ends_at": 1795104600.0,
+          "quota_bytes": 107374182400,
+          "revision": 2,
+          "unlimited": false,
+          "expired": false
+        },
+        "used_bytes": 2115452,
+        "held_bytes": 0,
+        "available_bytes": 107372066948,
+        "history": [
+          {
+            "at": 1792512641.3056378,
+            "event": "edit_allowance",
+            "detail": "{\"period\": \"17f94b694ac5446c8b5bf2905d88832f\", \"quota_bytes\": 107374182400, \"ends_at\": 1795104600.0, \"revision\": 2}"
+          },
+          {
+            "at": 1792512557.4318473,
+            "event": "begin_unlimited_accounting",
+            "detail": "{\"period\": \"17f94b694ac5446c8b5bf2905d88832f\"}"
+          }
+        ],
+        "periods": [
+          {
+            "id": "17f94b694ac5446c8b5bf2905d88832f",
+            "starts_at": 1792512557.4318473,
+            "ends_at": 1795104600.0,
+            "quota_bytes": 107374182400,
+            "unlimited": false,
+            "used_bytes": 2115452,
+            "held_bytes": 0
+          }
+        ],
+        "basis": "combined accepted payload; outstanding reserved credit shown separately"
+      }
+    },
+    "qa-restart": {
+      "status": "PASS",
+      "routes": [
+        {
+          "route_id": "46bb305d919a4f9da58a3d6ac725a62b",
+          "qa_worker_only": true,
+          "worker_changed": true,
+          "counter_preserved": true,
+          "used": {
+            "upload": 2109,
+            "download": 1055916,
+            "total": 1058025
+          }
+        },
+        {
+          "route_id": "bde16774b24f41aab57de40c3b50f511",
+          "qa_worker_only": true,
+          "worker_changed": true,
+          "counter_preserved": true,
+          "used": {
+            "upload": 2373,
+            "download": 1056848,
+            "total": 1059221
+          }
+        }
+      ],
+      "pool": {
+        "period": {
+          "id": "17f94b694ac5446c8b5bf2905d88832f",
+          "starts_at": 1792512557.4318473,
+          "ends_at": 1795104600.0,
+          "quota_bytes": 107374182400,
+          "revision": 2,
+          "unlimited": false,
+          "expired": false
+        },
+        "used_bytes": 2115452,
+        "held_bytes": 0,
+        "available_bytes": 107372066948,
+        "history": [
+          {
+            "at": 1792512641.3056378,
+            "event": "edit_allowance",
+            "detail": "{\"period\": \"17f94b694ac5446c8b5bf2905d88832f\", \"quota_bytes\": 107374182400, \"ends_at\": 1795104600.0, \"revision\": 2}"
+          },
+          {
+            "at": 1792512557.4318473,
+            "event": "begin_unlimited_accounting",
+            "detail": "{\"period\": \"17f94b694ac5446c8b5bf2905d88832f\"}"
+          }
+        ],
+        "periods": [
+          {
+            "id": "17f94b694ac5446c8b5bf2905d88832f",
+            "starts_at": 1792512557.4318473,
+            "ends_at": 1795104600.0,
+            "quota_bytes": 107374182400,
+            "unlimited": false,
+            "used_bytes": 2115452,
+            "held_bytes": 0
+          }
+        ],
+        "basis": "combined accepted payload; outstanding reserved credit shown separately"
+      },
+      "counter_preserved": true
+    },
+    "qa-large": {
+      "status": "PASS",
+      "routes": [
+        {
+          "route_id": "46bb305d919a4f9da58a3d6ac725a62b",
+          "body_bytes": 2096988,
+          "header_bytes": 118,
+          "expected_body_bytes": 20971520,
+          "complete_payload": false,
+          "payload_verified": true,
+          "before": {
+            "upload": 2109,
+            "download": 1055916,
+            "total": 1058025
+          },
+          "after": {
+            "upload": 2172,
+            "download": 3153022,
+            "total": 3155194
+          }
+        },
+        {
+          "route_id": "bde16774b24f41aab57de40c3b50f511",
+          "body_bytes": 0,
+          "header_bytes": 0,
+          "expected_body_bytes": 20971520,
+          "complete_payload": false,
+          "payload_verified": false,
+          "before": {
+            "upload": 2373,
+            "download": 1056848,
+            "total": 1059221
+          },
+          "after": {
+            "upload": 2373,
+            "download": 1056848,
+            "total": 1059221
+          }
+        }
+      ],
+      "source_counters": [
+        {
+          "route_id": "46bb305d919a4f9da58a3d6ac725a62b",
+          "used": {
+            "upload": 2172,
+            "download": 3153022,
+            "total": 3155194
+          },
+          "baseline": {
+            "upload": 198,
+            "download": 699
+          },
+          "new_total": 3154297
+        },
+        {
+          "route_id": "bde16774b24f41aab57de40c3b50f511",
+          "used": {
+            "upload": 2373,
+            "download": 1056848,
+            "total": 1059221
+          },
+          "baseline": {
+            "upload": 198,
+            "download": 699
+          },
+          "new_total": 1058324
+        }
+      ],
+      "pool": {
+        "period": {
+          "id": "17f94b694ac5446c8b5bf2905d88832f",
+          "starts_at": 1792512557.4318473,
+          "ends_at": 1795104600.0,
+          "quota_bytes": 4212621,
+          "revision": 3,
+          "unlimited": false,
+          "expired": false
+        },
+        "used_bytes": 4212621,
+        "held_bytes": 0,
+        "available_bytes": 0,
+        "history": [
+          {
+            "at": 1792512680.0439699,
+            "event": "edit_allowance",
+            "detail": "{\"period\": \"17f94b694ac5446c8b5bf2905d88832f\", \"quota_bytes\": 4212621, \"ends_at\": 1795104600.0, \"revision\": 3}"
+          },
+          {
+            "at": 1792512641.3056378,
+            "event": "edit_allowance",
+            "detail": "{\"period\": \"17f94b694ac5446c8b5bf2905d88832f\", \"quota_bytes\": 107374182400, \"ends_at\": 1795104600.0, \"revision\": 2}"
+          },
+          {
+            "at": 1792512557.4318473,
+            "event": "begin_unlimited_accounting",
+            "detail": "{\"period\": \"17f94b694ac5446c8b5bf2905d88832f\"}"
+          }
+        ],
+        "periods": [
+          {
+            "id": "17f94b694ac5446c8b5bf2905d88832f",
+            "starts_at": 1792512557.4318473,
+            "ends_at": 1795104600.0,
+            "quota_bytes": 4212621,
+            "unlimited": false,
+            "used_bytes": 4212621,
+            "held_bytes": 0
+          }
+        ],
+        "basis": "combined accepted payload; outstanding reserved credit shown separately"
+      }
+    },
+    "qa-exhausted": {
+      "status": "PASS",
+      "routes": [
+        {
+          "route_id": "46bb305d919a4f9da58a3d6ac725a62b",
+          "body_bytes": 0,
+          "header_bytes": 0,
+          "expected_body_bytes": 48,
+          "complete_payload": false,
+          "payload_verified": false,
+          "before": {
+            "upload": 2172,
+            "download": 3153022,
+            "total": 3155194
+          },
+          "after": {
+            "upload": 2172,
+            "download": 3153022,
+            "total": 3155194
+          }
+        },
+        {
+          "route_id": "bde16774b24f41aab57de40c3b50f511",
+          "body_bytes": 0,
+          "header_bytes": 0,
+          "expected_body_bytes": 48,
+          "complete_payload": false,
+          "payload_verified": false,
+          "before": {
+            "upload": 2373,
+            "download": 1056848,
+            "total": 1059221
+          },
+          "after": {
+            "upload": 2373,
+            "download": 1056848,
+            "total": 1059221
+          }
+        }
+      ],
+      "source_counters": [
+        {
+          "route_id": "46bb305d919a4f9da58a3d6ac725a62b",
+          "used": {
+            "upload": 2172,
+            "download": 3153022,
+            "total": 3155194
+          },
+          "baseline": {
+            "upload": 198,
+            "download": 699
+          },
+          "new_total": 3154297
+        },
+        {
+          "route_id": "bde16774b24f41aab57de40c3b50f511",
+          "used": {
+            "upload": 2373,
+            "download": 1056848,
+            "total": 1059221
+          },
+          "baseline": {
+            "upload": 198,
+            "download": 699
+          },
+          "new_total": 1058324
+        }
+      ],
+      "pool": {
+        "period": {
+          "id": "17f94b694ac5446c8b5bf2905d88832f",
+          "starts_at": 1792512557.4318473,
+          "ends_at": 1795104600.0,
+          "quota_bytes": 4212621,
+          "revision": 3,
+          "unlimited": false,
+          "expired": false
+        },
+        "used_bytes": 4212621,
+        "held_bytes": 0,
+        "available_bytes": 0,
+        "history": [
+          {
+            "at": 1792512680.0439699,
+            "event": "edit_allowance",
+            "detail": "{\"period\": \"17f94b694ac5446c8b5bf2905d88832f\", \"quota_bytes\": 4212621, \"ends_at\": 1795104600.0, \"revision\": 3}"
+          },
+          {
+            "at": 1792512641.3056378,
+            "event": "edit_allowance",
+            "detail": "{\"period\": \"17f94b694ac5446c8b5bf2905d88832f\", \"quota_bytes\": 107374182400, \"ends_at\": 1795104600.0, \"revision\": 2}"
+          },
+          {
+            "at": 1792512557.4318473,
+            "event": "begin_unlimited_accounting",
+            "detail": "{\"period\": \"17f94b694ac5446c8b5bf2905d88832f\"}"
+          }
+        ],
+        "periods": [
+          {
+            "id": "17f94b694ac5446c8b5bf2905d88832f",
+            "starts_at": 1792512557.4318473,
+            "ends_at": 1795104600.0,
+            "quota_bytes": 4212621,
+            "unlimited": false,
+            "used_bytes": 4212621,
+            "held_bytes": 0
+          }
+        ],
+        "basis": "combined accepted payload; outstanding reserved credit shown separately"
+      }
+    },
+    "qa-restored": {
+      "status": "PASS",
+      "routes": [
+        {
+          "route_id": "46bb305d919a4f9da58a3d6ac725a62b",
+          "body_bytes": 48,
+          "header_bytes": 112,
+          "expected_body_bytes": 48,
+          "complete_payload": true,
+          "payload_verified": true,
+          "before": {
+            "upload": 2172,
+            "download": 3153022,
+            "total": 3155194
+          },
+          "after": {
+            "upload": 2235,
+            "download": 3153182,
+            "total": 3155417
+          }
+        },
+        {
+          "route_id": "bde16774b24f41aab57de40c3b50f511",
+          "body_bytes": 48,
+          "header_bytes": 112,
+          "expected_body_bytes": 48,
+          "complete_payload": true,
+          "payload_verified": true,
+          "before": {
+            "upload": 2373,
+            "download": 1056848,
+            "total": 1059221
+          },
+          "after": {
+            "upload": 2436,
+            "download": 1057008,
+            "total": 1059444
+          }
+        }
+      ],
+      "source_counters": [
+        {
+          "route_id": "46bb305d919a4f9da58a3d6ac725a62b",
+          "used": {
+            "upload": 2235,
+            "download": 3153182,
+            "total": 3155417
+          },
+          "baseline": {
+            "upload": 198,
+            "download": 699
+          },
+          "new_total": 3154520
+        },
+        {
+          "route_id": "bde16774b24f41aab57de40c3b50f511",
+          "used": {
+            "upload": 2436,
+            "download": 1057008,
+            "total": 1059444
+          },
+          "baseline": {
+            "upload": 198,
+            "download": 699
+          },
+          "new_total": 1058547
+        }
+      ],
+      "pool": {
+        "period": {
+          "id": "17f94b694ac5446c8b5bf2905d88832f",
+          "starts_at": 1792512557.4318473,
+          "ends_at": 1795104600.0,
+          "quota_bytes": 107374182400,
+          "revision": 4,
+          "unlimited": false,
+          "expired": false
+        },
+        "used_bytes": 4213067,
+        "held_bytes": 0,
+        "available_bytes": 107369969333,
+        "history": [
+          {
+            "at": 1792512750.7269294,
+            "event": "edit_allowance",
+            "detail": "{\"period\": \"17f94b694ac5446c8b5bf2905d88832f\", \"quota_bytes\": 107374182400, \"ends_at\": 1795104600.0, \"revision\": 4}"
+          },
+          {
+            "at": 1792512680.0439699,
+            "event": "edit_allowance",
+            "detail": "{\"period\": \"17f94b694ac5446c8b5bf2905d88832f\", \"quota_bytes\": 4212621, \"ends_at\": 1795104600.0, \"revision\": 3}"
+          },
+          {
+            "at": 1792512641.3056378,
+            "event": "edit_allowance",
+            "detail": "{\"period\": \"17f94b694ac5446c8b5bf2905d88832f\", \"quota_bytes\": 107374182400, \"ends_at\": 1795104600.0, \"revision\": 2}"
+          },
+          {
+            "at": 1792512557.4318473,
+            "event": "begin_unlimited_accounting",
+            "detail": "{\"period\": \"17f94b694ac5446c8b5bf2905d88832f\"}"
+          }
+        ],
+        "periods": [
+          {
+            "id": "17f94b694ac5446c8b5bf2905d88832f",
+            "starts_at": 1792512557.4318473,
+            "ends_at": 1795104600.0,
+            "quota_bytes": 107374182400,
+            "unlimited": false,
+            "used_bytes": 4213067,
+            "held_bytes": 0
+          }
+        ],
+        "basis": "combined accepted payload; outstanding reserved credit shown separately"
+      },
+      "same_period_usage_preserved": true
+    }
+  },
+  "owned_origin_cleanup": {
+    "status": "PASS",
+    "origins": [
+      {
+        "route_id": "46bb305d919a4f9da58a3d6ac725a62b",
+        "origin_deployment": "0ab34160aab6485a8cc2894ceee06f00",
+        "released": 4,
+        "customer_route_retained": true
+      },
+      {
+        "route_id": "bde16774b24f41aab57de40c3b50f511",
+        "origin_deployment": "4e4458b904c746058f0d0f62fc781eaf",
+        "released": 4,
+        "customer_route_retained": true
+      }
+    ],
+    "only_expendable_origins_removed": true,
+    "test_customer_routes_retained": true
+  },
+  "node_A": {
+    "installed": {
+      "action": "install",
+      "revision": "83335745ad3e2a75a8c13c43026801c18729c2bc",
+      "status": "PASS",
+      "gateways_preserved": true,
+      "members": 5,
+      "identity_preserved": true,
+      "source": "83335745ad3e2a75a8c13c43026801c18729c2bc",
+      "billing_mode": "manual"
+    },
+    "after": {
+      "status": "PASS",
+      "originals_preserved": true,
+      "original_full_configs_gateways_member_snapshots_interfaces_job_payloads_preserved": true,
+      "retained_qa_gateways": 1,
+      "customer_rows_preserved": true,
+      "identity_preserved": true,
+      "drained": true,
+      "fresh_canonical_source_usage_and_separate_env": true
+    },
+    "original-receipts": {
+      "status": "PASS",
+      "original_member_receipts": [
+        {
+          "method": "IP6GRETAP",
+          "receipt": true
+        },
+        {
+          "method": "SIT_OVER_WIREGUARD",
+          "receipt": true
+        },
+        {
+          "method": "HAJSAMAN_WG",
+          "receipt": true
+        },
+        {
+          "method": "GRE",
+          "receipt": true
+        },
+        {
+          "method": "GRETAP",
+          "receipt": true
+        }
+      ],
+      "original_stable_entries_verified": 1,
+      "worker_and_full_config_preserved": true,
+      "readonly": true
+    },
+    "original-services": {
+      "status": "PASS",
+      "nodes": [
+        {
+          "host": "65.109.209.194",
+          "status": "PASS",
+          "services": [
+            {
+              "unit": "netauto-tunnel-759284642-1.service",
+              "pid": 0,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "netauto-tunnel-759284642-2.service",
+              "pid": 0,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "netauto-tunnel-759284642-3.service",
+              "pid": 0,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "netauto-tunnel-759284642-4.service",
+              "pid": 0,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "netauto-tunnel-759284642-5.service",
+              "pid": 0,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "netauto-tunnel-999678571-1.service",
+              "pid": 0,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "netauto-tunnel-999678571-2.service",
+              "pid": 0,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "netauto-tunnel-999678571-331.service",
+              "pid": 0,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "netauto-tunnel-999678571-4.service",
+              "pid": 0,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "netauto-tunnel-999678571-5.service",
+              "pid": 0,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpbench-759284642-1-origin-1.service",
+              "pid": 747114,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpbench-759284642-2-origin-1.service",
+              "pid": 748574,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpbench-759284642-3-origin-1.service",
+              "pid": 749679,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpbench-759284642-4-origin-1.service",
+              "pid": 750670,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpbench-759284642-5-origin-1.service",
+              "pid": 751296,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpbench-999678571-1-origin-0.service",
+              "pid": 1135273,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpbench-999678571-2-origin-0.service",
+              "pid": 1138362,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpbench-999678571-3-origin-0.service",
+              "pid": 1139381,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpbench-999678571-4-origin-0.service",
+              "pid": 1139850,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpbench-999678571-5-origin-0.service",
+              "pid": 1140350,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpmesh-759284642-1-egress.service",
+              "pid": 747317,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpmesh-759284642-2-egress.service",
+              "pid": 748770,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpmesh-759284642-3-egress.service",
+              "pid": 749836,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpmesh-759284642-4-egress.service",
+              "pid": 750882,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpmesh-759284642-5-egress.service",
+              "pid": 752104,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpmesh-999678571-0-gateway.service",
+              "pid": 2587761,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "wg-quick@nwg3b95e26b14c.service",
+              "pid": 0,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "wg-quick@nwg3b95e26b2.service",
+              "pid": 0,
+              "started_before_rollout": true
+            }
+          ],
+          "no_original_service_started_or_restarted_during_rollout": true
+        },
+        {
+          "host": "65.109.213.64",
+          "status": "PASS",
+          "services": [
+            {
+              "unit": "netauto-tunnel-759284642-1.service",
+              "pid": 0,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "netauto-tunnel-759284642-2.service",
+              "pid": 0,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "netauto-tunnel-759284642-3.service",
+              "pid": 0,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "netauto-tunnel-759284642-4.service",
+              "pid": 0,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "netauto-tunnel-759284642-5.service",
+              "pid": 0,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "netauto-tunnel-999678571-1.service",
+              "pid": 0,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "netauto-tunnel-999678571-2.service",
+              "pid": 0,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "netauto-tunnel-999678571-331.service",
+              "pid": 0,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "netauto-tunnel-999678571-4.service",
+              "pid": 0,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "netauto-tunnel-999678571-5.service",
+              "pid": 0,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpbench-759284642-1-origin-0.service",
+              "pid": 871799,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpbench-759284642-2-origin-0.service",
+              "pid": 872231,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpbench-759284642-3-origin-0.service",
+              "pid": 872674,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpbench-759284642-4-origin-0.service",
+              "pid": 873102,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpbench-759284642-5-origin-0.service",
+              "pid": 873356,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpbench-999678571-1-origin-1.service",
+              "pid": 1366340,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpbench-999678571-2-origin-1.service",
+              "pid": 1369524,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpbench-999678571-3-origin-1.service",
+              "pid": 1370729,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpbench-999678571-4-origin-1.service",
+              "pid": 1371333,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpbench-999678571-5-origin-1.service",
+              "pid": 1372027,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpmesh-759284642-0-gateway.service",
+              "pid": 2803136,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpmesh-999678571-1-egress.service",
+              "pid": 1366584,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpmesh-999678571-2-egress.service",
+              "pid": 1370086,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpmesh-999678571-3-egress.service",
+              "pid": 1370882,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpmesh-999678571-4-egress.service",
+              "pid": 1371487,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "tpmesh-999678571-5-egress.service",
+              "pid": 1372185,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "wg-quick@nwg3b95e26b14c.service",
+              "pid": 0,
+              "started_before_rollout": true
+            },
+            {
+              "unit": "wg-quick@nwg3b95e26b2.service",
+              "pid": 0,
+              "started_before_rollout": true
+            }
+          ],
+          "no_original_service_started_or_restarted_during_rollout": true
+        }
+      ]
+    },
+    "local-canary": {
+      "status": "PASS",
+      "checks": [
+        "ipv4_ipv6_tcp_udp_canary_detection",
+        "existing_tun_link_detection",
+        "existing_service_detection",
+        "allocator_skips_foreign_listeners",
+        "explicit_panel_port_conflict_refused",
+        "fresh_panel_default_conflict_selects_free_port",
+        "operator_reserved_range_skipped",
+        "missing_inspection_tool_fails_closed",
+        "existing_ipsec_policy_protected",
+        "existing_api_listener_owner_verified",
+        "foreign_canary_and_original_api_pid_preserved",
+        "owned_canary_cleanup_only"
+      ],
+      "observed_at": 1792512787.1081133,
+      "before": {
+        "tunnels": 21,
+        "listeners": 54,
+        "services": 45,
+        "containers": 0
+      },
+      "after": {
+        "tunnels": 21,
+        "listeners": 54,
+        "services": 45,
+        "containers": 0
+      },
+      "memory_before": {
+        "MemTotal": 977788928,
+        "MemAvailable": 298917888,
+        "SwapTotal": 1073737728,
+        "SwapFree": 774369280
+      },
+      "docker_live_tested": false,
+      "original_tunnels_unchanged": true
+    },
+    "encrypted-rescue": {
+      "status": "PASS",
+      "kind": "controller",
+      "server_resident_only": true,
+      "separate_root0600_key": true,
+      "originals_retained": true,
+      "archive_sha256": "98d0de306f7cdd76141105647b2a48cc34a4d050454b17a6c1530684488a6f8c",
+      "encrypted_sha256": "e192154899ca33acb0e0a69db01ac2da1d19fca7dfa237432ff76c05f6ca24fd",
+      "decrypt_sha256_equal": true,
+      "no_live_restore": true,
+      "no_sensitive_export": true
+    }
+  },
+  "node_B": {
+    "installed": {
+      "action": "install",
+      "revision": "83335745ad3e2a75a8c13c43026801c18729c2bc",
+      "status": "PASS",
+      "gateways_preserved": true,
+      "members": 5,
+      "identity_preserved": true,
+      "source": "83335745ad3e2a75a8c13c43026801c18729c2bc",
+      "billing_mode": "manual"
+    },
+    "after": {
+      "status": "PASS",
+      "originals_preserved": true,
+      "original_full_configs_gateways_member_snapshots_interfaces_job_payloads_preserved": true,
+      "retained_qa_gateways": 1,
+      "customer_rows_preserved": true,
+      "identity_preserved": true,
+      "drained": true,
+      "fresh_canonical_source_usage_and_separate_env": true
+    },
+    "original-receipts": {
+      "status": "PASS",
+      "original_member_receipts": [
+        {
+          "method": "IP6GRE",
+          "receipt": true
+        },
+        {
+          "method": "SIT_6IN4",
+          "receipt": true
+        },
+        {
+          "method": "VXLAN",
+          "receipt": true
+        },
+        {
+          "method": "IPIP",
+          "receipt": true
+        },
+        {
+          "method": "IKEV2_IPSEC",
+          "receipt": true
+        }
+      ],
+      "original_stable_entries_verified": 1,
+      "worker_and_full_config_preserved": true,
+      "readonly": true
+    },
+    "local-canary": {
+      "status": "PASS",
+      "checks": [
+        "ipv4_ipv6_tcp_udp_canary_detection",
+        "existing_tun_link_detection",
+        "existing_service_detection",
+        "allocator_skips_foreign_listeners",
+        "explicit_panel_port_conflict_refused",
+        "fresh_panel_default_conflict_selects_free_port",
+        "operator_reserved_range_skipped",
+        "missing_inspection_tool_fails_closed",
+        "existing_ipsec_policy_protected",
+        "existing_api_listener_owner_verified",
+        "foreign_canary_and_original_api_pid_preserved",
+        "owned_canary_cleanup_only"
+      ],
+      "observed_at": 1792512790.5375724,
+      "before": {
+        "tunnels": 21,
+        "listeners": 39,
+        "services": 42,
+        "containers": 0
+      },
+      "after": {
+        "tunnels": 21,
+        "listeners": 39,
+        "services": 42,
+        "containers": 0
+      },
+      "memory_before": {
+        "MemTotal": 977788928,
+        "MemAvailable": 281325568,
+        "SwapTotal": 0,
+        "SwapFree": 0
+      },
+      "docker_live_tested": false,
+      "original_tunnels_unchanged": true
+    },
+    "encrypted-rescue": {
+      "status": "PASS",
+      "kind": "controller",
+      "server_resident_only": true,
+      "separate_root0600_key": true,
+      "originals_retained": true,
+      "archive_sha256": "20292e096a7bb5a495e0ef6b483c5f011e591ad7bfd8f23240e0688886ed1891",
+      "encrypted_sha256": "75d44f805dba8ef3787d63098885cb7990eafeef3dffcabb6ef9a1fbdd1a002c",
+      "decrypt_sha256_equal": true,
+      "no_live_restore": true,
+      "no_sensitive_export": true
+    }
+  },
+  "website": {
+    "published": {
+      "status": "PASS",
+      "source": "83335745ad3e2a75a8c13c43026801c18729c2bc",
+      "url": "https://tehnet.ir/tunnels/",
+      "container_healthy": true,
+      "container_id": "b104fa726134a08a2056fb296459aeb84bb0513e6230fdd4904a15b0e4733975",
+      "unrelated_containers_preserved": 11,
+      "links_preserved": 50,
+      "service_pids_preserved": 5,
+      "nginx_files_unchanged": true,
+      "wordpress_unchanged": true,
+      "no_host_nginx_reload": true,
+      "old_release_retained": true,
+      "health_wait_budget_seconds": 45.0,
+      "first_readiness": {
+        "docker": "starting",
+        "http": "200"
+      },
+      "last_readiness": {
+        "docker": "healthy",
+        "http": "200"
+      },
+      "original_unchanged_containers": 11,
+      "external_software_update_preserved": false,
+      "preservation_baseline": "then-current accepted state; original baseline and external delta retained"
+    },
+    "encrypted-rescue": {
+      "status": "PASS",
+      "kind": "website",
+      "server_resident_only": true,
+      "separate_root0600_key": true,
+      "originals_retained": true,
+      "archive_sha256": "a2bed0087f654d409d6c668cf995851eca51885babd5255a6d6a5ac9434c31f8",
+      "encrypted_sha256": "64bfdf2e2a6df0375c88400f3c62979f9bf4f13436b25b5e3f25e634f8667f2c",
+      "decrypt_sha256_equal": true,
+      "no_live_restore": true,
+      "no_sensitive_export": true
+    },
+    "final-preservation": {
+      "status": "PASS",
+      "fresh_after_qa": true,
+      "unrelated_containers_unchanged": 11,
+      "links_unchanged": 50,
+      "service_pids_unchanged": 5,
+      "nginx_files_unchanged": true,
+      "owned_static_container_healthy": true,
+      "font_theme_and_pages_200": true,
+      "no_proxy_reload": true
+    }
+  },
+  "auth": {
+    "status": "PASS",
+    "checks": {
+      "tenant_owner_namespace_/traffic": true,
+      "tenant_owner_namespace_/accounting-migrations": true,
+      "tenant_owner_namespace_/test-access": true,
+      "owner_cookie_missing_csrf_refused": true,
+      "customer_test_label": true,
+      "starter_two_node_limits": true,
+      "customer_100GiB_and_exact_usage": true,
+      "no_manual_payment_receipts": true
+    },
+    "usage": 4213067,
+    "quota": 107374182400,
+    "tenant_isolation": true
+  },
+  "original_customer_policy": {
+    "status": "PASS",
+    "original_customer_unlimited": true,
+    "original_customer_still_pending_payment": true,
+    "policy_not_changed": true,
+    "used_bytes": 21809,
+    "held_bytes": 0,
+    "coverage": {
+      "managed_routes": 2,
+      "unmetered_routes": []
+    },
+    "usage_includes_fresh_owned_nonce_receipts": true
+  },
+  "boundaries": [
+    "100GiB allocated; not 100GiB transferred",
+    "Temporary exact-cap test 4212621 bytes, restored100GiB SAME period retaining4213067 actual bytes",
+    "Migration may reconnect old TCP sessions; not a zero-outage claim",
+    "Two datacenter hosts do not establish Iran/geographic redundancy/SLA",
+    "Shared pool measures accepted managed gateway payload, not ISP traffic or root-resistant billing",
+    "Reduced-motion CSS implemented; OS preference emulation not performed",
+    "No live distributed restore performed; verified encrypted backup roundtrip and CI lifecycle only",
+    "Main unmerged, no online payment or SSO; unrelated services preserved"
+  ]
+}
