@@ -1,5 +1,7 @@
 # TunnelPannel
 
+[Illustrated owner walkthrough: customer allowance and legacy migration](docs/ADMIN-WALKTHROUGH.md) — live read-only demonstration; no changes to original routes.
+
 ## Administrator migration — installed
 
 Open **[Portal](https://tehnet.ir/tunnels/portal) → Users & sales administration → Migrate existing tunnels**. Select a customer or Owner routes, inspect a live registered legacy route, then migrate preserving settings. No manual SSH terminal is needed. The panel retains results and supports explicit recovery; already-accounted originals need no repeat migration. Usage starts without a ceiling until the administrator assigns one.

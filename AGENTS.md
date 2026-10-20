@@ -1,5 +1,13 @@
 # AGENTS.md — Permanent Agent Rules / قوانین همیشگی ایجنت
 
+## 2026-10-20 illustrated owner walkthrough — documentation only
+
+Owner requests opening the live panel, step-by-step customer allowance/migration instructions and repository screenshots, with NO changes to originals. Public UI navigated FA: existing customer unlimited21217/held0/two accountedCOMMITTED originals; 100GiB filled ONLY in browser, Newperiodunchecked, SAVE NOT CLICKED, draft discarded. No preflight/migration/route/payment/plan/worker/API installation action. Read-only before/after pool/history/routes/workspace/owneroperations snapshotSHA f50c836f22568cdcf7123af6814064cbc436cd65f7ff5ea199acb99dc7a58d2f identical. No SSH terminal needed by owner; backend storedpinnedprivilegedSSH still required.
+
+Important tutorial order: migrate ALL eligible live unmetered legacy routes BEFORE assigning first real ceiling; alreadyaccounted originals SKIPmigration. Existingrealceiling and partialcoverage guards must not be bypassed by clearingintent/ceiling. Volume is shared across accounts/routes of ONEcustomerworkspace; independentuserpools require separateworkspaces. 100GiB isTOTALperiodceiling, notaddedbytes; NewperiodOFF preservesusage+held. Manual grants/renewal, noautomaticmonthlyreset/paymentactivation. Do not reconstruct STOPPED historical7group or run old QAhelpers for teaching.
+
+Guides docs/ADMIN-WALKTHROUGH{,-fa}.md, four REAL publicscreenshots+redacted beforeafterproof docs/evidence/commercial/walkthrough/. 100GiB image explicitlyUNSAVED; PASSimage isPREVIOUSQA history, no newcutoverclaim. Browservisible/userdeliverable, originalcustomerusage selected, no unsaveddraft. Documentationpublish only using expectedheadlease/exacttree/PR2; mainunmerged, heartbeatPAUSED, installedbackend2c697/site5237unchanged. Prior adminmigration finaldocs baf2efc33914d3eb81c0fe278490231091c6b139 CI39439004982/security39439004925 BOTH SUCCESS, privateadminhandoffCOMPLETE; do not replay runtime work. Current walkthroughpublication proof remains private work/admin-walkthrough-publication.json when available.
+
 ## 2026-10-20 administrator migration — INSTALLED, authoritative
 
 BOTH execution APIs2c6974a4989a9fab121d2a2f4c161d81fbf379e9/treed9f9231c47689998370d0be6f350becaad0c77c7. ExactCI39435909036/security39435909027 SUCCESS before install; Python3.12 root841+TunnelGuard100+backend1 PASS, Linux install/idempotent/restore/safeuninstall PASS. Website static5237cc405d2a15c14f7ffea9ccd157788ab0f2cb/tree9257c68049d77827cba9f114fdbc3d2aa58e44d1, exactCI39434529228/security39434529162 SUCCESS; UIassetsunchangedbybackendfix, no secondstaticcutover. Installerpin2c697 independentofdocshead. Mainunmerged/PR2, heartbeatPAUSED.
@@ -16,7 +24,7 @@ Reviewedhelper initial5b860c1bd995dfb02dc7e0cd855161542c243cf73ffa305f863fce8077
 
 Actualpublicowner/customer auth/securecookie/unpaidguard, customermigrationnamespace403(includingownworkspace), missingCSRF403/extraPOSTfields422/no-storePASS. ActualFA/ENresults and originalslabelledalreadymetered,no repeatmigration. Mobile375overrideclient/scroll360/360both,reset. REALFA/ENscreenshots docs/evidence/commercial/tehnet-admin-migration-{fa,en}.jpg savedandinspected. Localfixture38280gone/owntabclosed; publictabdeliverable. No newaccount/paymentgateway/SSO/domain/serverdeletion.
 
-Guides docs/ADMIN-MIGRATION{,-fa}.md, actualADMIN-MIGRATION-VALIDATION{,-fa}.md, redactedtehnet-admin-migration-installed.json; earlierCLIguide nowlinksownerGUI. Private work/admin-migration-handoff.json is currentcontinuation; olderCOMPLETEDhandoffs are baselineonly, neverreplay. Finaldocs/tree/expectedheadlease/PR2CIproof pending atthiscommit; finishpublicationonly, no extraAPIrestart/migration. BackendrequirespinnedprivilegedSSH; no-manualSSH isnot agent-free orroot-copyprotection.
+Guides docs/ADMIN-MIGRATION{,-fa}.md, actualADMIN-MIGRATION-VALIDATION{,-fa}.md, redactedtehnet-admin-migration-installed.json; earlierCLIguide nowlinksownerGUI. Private work/admin-migration-handoff.json is currentcontinuation; olderCOMPLETEDhandoffs are baselineonly, neverreplay. Finaldocs baf2efc33914d3eb81c0fe278490231091c6b139/tree4ead682fdd607a741d9f91d053f5cded7efafacc publishedwithverifiedexpectedheadlease/PR2; CI39439004982/security39439004925 SUCCESS and privatehandoffCOMPLETE. No extraAPIrestart/migration. BackendrequirespinnedprivilegedSSH; no-manualSSH isnot agent-free orroot-copyprotection.
 
 ## 2026-10-20 legacy accounting INSTALLED — authoritative
 

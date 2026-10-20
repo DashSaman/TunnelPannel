@@ -1,5 +1,7 @@
 # Shared customer traffic allowance
 
+[Step-by-step screenshots: grants without resetting usage](ADMIN-WALKTHROUGH.md)
+
 Installed on the two execution nodes and public static website; see [actual acceptance](MONTHLY-USAGE-VALIDATION.md). A customer workspace, including all its login accounts and route source servers, shares one administrator-managed allowance. This extends the existing per-route speed, byte and connection ceilings.
 
 ## Administrator workflow

@@ -1,5 +1,7 @@
 # Migrate an existing gateway from the administrator panel
 
+[Step-by-step screenshots: migration and granting volume](ADMIN-WALKTHROUGH.md)
+
 Installed on both execution controllers and the public website. [Actual two-node acceptance](ADMIN-MIGRATION-VALIDATION.md). This guide supersedes the earlier CLI-only restriction for the system administrator. Existing original groups are already accounted and are not migrated again.
 
 ![Migration section on the public site](evidence/commercial/tehnet-admin-migration-panel.jpg)
