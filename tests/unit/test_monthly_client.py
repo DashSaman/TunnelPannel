@@ -118,3 +118,26 @@ def test_period_change_between_status_and_reservation_does_not_strand_pending_re
     assert ledger.charge('upload', 3000, 0, monthly=client) == 2000
     client.tick()
     assert pool.status('customer')['used_bytes'] == 2000
+
+
+def test_http_callback_identifies_the_real_service_and_tracks_contact_without_claiming_idle_success(tmp_path, monkeypatch):
+    import io
+    pool, token, ledger = setup(tmp_path)
+    class Opener:
+        def open(self, request, timeout):
+            if request.get_header('User-agent') != 'TehNet-TunnelPannel-Gateway/1.0':
+                raise ConnectionError('unidentified automated client rejected by front door')
+            assert request.get_header('Accept') == 'application/json'
+            return io.BytesIO(b'{"ttl_s":0,"period_id":null}')
+    monkeypatch.setattr('orchestrator.monthly_client.build_opener',lambda *args:Opener())
+    client=MonthlyClient(ledger,{'url':'https://example.invalid/quota/credits','token':token})
+    assert client.snapshot()['callback_available'] is None
+    client.tick()  # no request was made; idle tick cannot claim reachability
+    assert client.snapshot()['callback_available'] is None
+    assert client.ensure() is False
+    assert client.snapshot()['callback_available'] is True
+    def offline(body): raise ConnectionError('fixture transport outage')
+    client.rpc=offline
+    with pytest.raises(ConnectionError):client.ensure()
+    client.tick()
+    assert client.snapshot()['callback_available'] is False

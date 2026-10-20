@@ -34,6 +34,7 @@ class MonthlyClient:
         self.remaining = 0
         self.deadline, self.last_payload = 0, monotonic()
         self.error = None
+        self.callback_ok = None
         with ledger.connection() as db:
             db.executescript('''
                 CREATE TABLE IF NOT EXISTS monthly_local (
@@ -56,7 +57,8 @@ class MonthlyClient:
 
     def _http(self, body):
         request = Request(self.config['url'], json.dumps(body).encode(), headers={
-            'Authorization':'Bearer ' + self.config['token'], 'Content-Type':'application/json'}, method='POST')
+            'Authorization':'Bearer ' + self.config['token'], 'Content-Type':'application/json',
+            'User-Agent':'TehNet-TunnelPannel-Gateway/1.0', 'Accept':'application/json'}, method='POST')
         try:
             with build_opener(ProxyHandler({}), NoRedirect()).open(request, timeout=5) as response:
                 data = response.read(16385)
@@ -68,10 +70,16 @@ class MonthlyClient:
 
     def _call(self, body):
         started = self.monotonic()
-        answer = self.rpc(body)
-        ttl = answer.get('ttl_s', 0)
-        if not isinstance(ttl, (int, float)) or not 0 <= ttl <= 10:
-            raise ConnectionError('invalid monthly accounting lease')
+        try:
+            answer = self.rpc(body)
+            ttl = answer.get('ttl_s', 0)
+            if not isinstance(ttl, (int, float)) or not 0 <= ttl <= 10:
+                raise ConnectionError('invalid monthly accounting lease')
+        except Exception:
+            self.callback_ok = False
+            self.error = 'monthly accounting callback unavailable'
+            raise
+        self.callback_ok, self.error = True, None
         return answer, max(0, started + ttl - 1)
 
     def _pending(self):
@@ -131,7 +139,6 @@ class MonthlyClient:
                         self.remaining = 0
                 else:
                     self.current_id, self.deadline = identity, deadline
-            self.error = None
 
     def ready(self):
         return bool(self.current_id and self.remaining > 0 and self.monotonic() < self.deadline)
@@ -179,5 +186,5 @@ class MonthlyClient:
 
     def snapshot(self):
         return {'accounting_version':1, 'lease_valid': bool(self.current_id and self.monotonic() < self.deadline),
-                'callback_available': self.error is None,
+                'callback_available': self.callback_ok, 'last_error': self.error,
                 'scope':'shared customer allowance; unused credit returned after idle fence'}

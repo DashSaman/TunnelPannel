@@ -24,6 +24,8 @@ Set `TP_MONTHLY_QUOTA_URL=https://YOUR_PUBLIC_PANEL/PREFIX/quota/credits` in the
 
 The callback uses a separate route-scoped credential issued over pinned SSH, never the customer's login/API key. Its hash binds route and workspace. TLS verification is mandatory; URL credentials, query strings, redirects and environment proxies are rejected. Requests are bounded/rate-limited. Credentials stay in private encrypted controller records and root0600 gateway configuration; public route responses contain neither the callback token nor secret reference.
 
+The worker identifies itself as `TehNet-TunnelPannel-Gateway/1.0` and requests JSON. On the real public endpoint, default Python identification received HTTP403/code1010 on both source nodes; the genuine service identification received200. [Cloudflare documents browser-integrity filtering of missing/non-standard User-Agent headers](https://developers.cloudflare.com/waf/tools/browser-integrity-check/). No WAF/TLS settings were relaxed. Callback reachability starts as unknown and changes only after a real request; an idle loop cannot clear a failed contact.
+
 The central tables live in the existing private `registry.db`, included in the canonical workspace snapshot. Preserve it together with every source's durable route-usage SQLite files and each installation's separate encryption environment. Backup/restore of a distributed allowance must fence participating workers first; restoring only the controller while workers retain newer credit can reissue spent allowance. No such live restore is part of acceptance.
 
 ## API surface
