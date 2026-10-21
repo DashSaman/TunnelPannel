@@ -1,5 +1,11 @@
 # TunnelPannel
 
+## Managed TCP services — installed
+
+Open [Portal](https://tehnet.ir/tunnels/portal) → Tunnels & balancing → Port forwards. Fixed TCP forwards use an existing customer route group, shared allowance, rate and failover. Real two-node traffic, TIME_WAIT edit/restart, exact quota exhaustion and same-period restoration passed; original and retained QA parents stayed running. [Illustrated guide and acceptance](docs/MANAGED-TCP-SERVICES.md) · [فارسی](docs/MANAGED-TCP-SERVICES-fa.md). Both APIs and own static site run **e7d79cc8f6b1**; main is unmerged.
+
+![Installed port-forward console](docs/evidence/commercial/screenshots/managed-services-owner-fa.jpg)
+
 ## Refreshed console and real 100 GiB customer — installed
 
 The [TehNet panel](https://tehnet.ir/tunnels/portal) has a refreshed Persian/English interface and an explicit owner-only internal test grant, separate from manual paid activation. A new isolated customer was created, both real legacy-style routes migrated through the owner GUI, and **100 GiB actually saved**. Concurrent two-node exhaustion, zero further payload and restoring100GiB in the same period passed; all real usage remains. The test account/two routes remain for review; original tunnels and customer policy stayed intact. [Step-by-step guide, actual results and photographs](docs/QA-100GIB.md).
@@ -72,7 +78,7 @@ The original 82-method remediation of the earlier 23 partial / 27 failed methods
 ## Install
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/83335745ad3e2a75a8c13c43026801c18729c2bc/install.sh | sudo env TUNNELPANNEL_VERSION=83335745ad3e2a75a8c13c43026801c18729c2bc bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/e7d79cc8f6b136328dcc2cc497b13d366bbb6d4a/install.sh | sudo env TUNNELPANNEL_VERSION=e7d79cc8f6b136328dcc2cc497b13d366bbb6d4a bash
 ```
 
 This installs the CI-verified engine and durable traffic-control runtime, also recorded in `install-one-line.txt`. Both test APIs have been upgraded after draining work; the website-only gateway runs separately. Install this backend on a controller/execution host. Wait for active jobs to drain before any later upgrade. Re-running preserves credentials and data. The installer creates the application account, installs dependencies, migrates the database, starts systemd and verifies HTTP health. It refuses to overwrite local source changes.

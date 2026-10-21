@@ -1,3 +1,7 @@
+<!-- managed-tcp-services-installed -->
+
+فوروارد TCP روی گروه مسیر موجود نصب شده است: [ورود به پنل](https://tehnet.ir/tunnels/portal) ← تونل‌ها و تقسیم بار ← فوروارد پورت. مصرف مشترک، سرعت و فیل‌اور همان گروه اعمال می‌شود. آزمون واقعی دو سرور، ویرایش پس از TIME_WAIT، سقف مصرف و بازگشت سهمیه موفق بود؛ تونل‌های اصلی و والدهای QA حفظ شدند. [راهنمای تصویری و نتیجهٔ کامل](docs/MANAGED-TCP-SERVICES-fa.md). هر دو API و کانتینر مستقل سایت نسخهٔ e7d79cc8f6b1 را دارند؛ main ادغام نشده.
+
 # TunnelPannel
 
 [راهنمای قدم‌به‌قدم با عکس: سهمیهٔ کاربر و مهاجرت تونل قدیمی](docs/ADMIN-WALKTHROUGH-fa.md) — نمایش فقط‌خواندنی؛ تونل‌های اصلی تغییر نکردند.
@@ -61,7 +65,7 @@ TunnelPannel بخش **مدیریت تونل خدمات تهران‌نتورک**
 ## نصب تک‌خطی
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/2c6974a4989a9fab121d2a2f4c161d81fbf379e9/install.sh | sudo env TUNNELPANNEL_VERSION=2c6974a4989a9fab121d2a2f4c161d81fbf379e9 bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/e7d79cc8f6b136328dcc2cc497b13d366bbb6d4a/install.sh | sudo env TUNNELPANNEL_VERSION=e7d79cc8f6b136328dcc2cc497b13d366bbb6d4a bash
 ```
 
 این دستور نسخهٔ کامل اصلاح‌شده با CI موفق را روی سرور کنترلر/پردازش نصب می‌کند و در `install-one-line.txt` هم ثبت شده است. هر دو API تست پس از تخلیه کارها ارتقا یافته‌اند و درگاه وب مستقل است. پیش از ارتقای بعدی نیز صبر کنید کارهای فعال تمام شوند. نصب‌کننده وابستگی‌ها، کاربر برنامه، دیتابیس و systemd را آماده و سلامت HTTP را بررسی می‌کند. نصب مجدد اطلاعات ورود و داده‌ها را حفظ می‌کند و سورس دارای تغییرات محلی را بازنویسی نمی‌کند.

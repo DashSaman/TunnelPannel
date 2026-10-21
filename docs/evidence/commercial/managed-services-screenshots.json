@@ -1,0 +1,64 @@
+{
+  "url": "https://tehnet.ir/tunnels/",
+  "date": "2026-10-22",
+  "capture": "CUA actual authenticated website; no fixture or image edits",
+  "mobile": {
+    "requested_width": 375,
+    "client_width": 360,
+    "scroll_width": 360,
+    "viewport_reset": true
+  },
+  "checks": [
+    "owner login and selected customer allowance",
+    "customer scoped two ready retained parent routes",
+    "two stopped revision4 forward records",
+    "fresh inherited32Mbps/8connections/pool status",
+    "create-similar fills form; apply remains disabled without new proof",
+    "FA/EN service labels",
+    "no observed browser console errors"
+  ],
+  "files": [
+    {
+      "path": "evidence/commercial/screenshots/managed-services-admin-quota-en.jpg",
+      "sha256": "c8578ba39039c5494e76acb95885644a65d54daf6b78811da8bc39397af09643",
+      "actual_public_website": true,
+      "modified_pixels": false
+    },
+    {
+      "path": "evidence/commercial/screenshots/managed-services-admin-quota-fa.jpg",
+      "sha256": "1e114bfeeec291534eac75685fa3d67b4fe946213a89117f0a16d9b256a2323e",
+      "actual_public_website": true,
+      "modified_pixels": false
+    },
+    {
+      "path": "evidence/commercial/screenshots/managed-services-customer-history-en.jpg",
+      "sha256": "fdde66014bec74e384bf58b016ecf71a8c86707e55cad3d6813ca6987642c6af",
+      "actual_public_website": true,
+      "modified_pixels": false
+    },
+    {
+      "path": "evidence/commercial/screenshots/managed-services-customer-history-fa.jpg",
+      "sha256": "1b3542d3be5d72c5340acafb48d2d04ae42e2e440fbeec1797eb15be1421e9cc",
+      "actual_public_website": true,
+      "modified_pixels": false
+    },
+    {
+      "path": "evidence/commercial/screenshots/managed-services-customer-mobile-en.jpg",
+      "sha256": "95ad5053166229b089c8056d7625e4e9086c3ee60008319dd16147ac6772f095",
+      "actual_public_website": true,
+      "modified_pixels": false
+    },
+    {
+      "path": "evidence/commercial/screenshots/managed-services-customer-mobile-fa.jpg",
+      "sha256": "4a70fe18bb0b59c5259b2fa4569ca7fefeae5b8d5368330e420a22263d919b3d",
+      "actual_public_website": true,
+      "modified_pixels": false
+    },
+    {
+      "path": "evidence/commercial/screenshots/managed-services-owner-fa.jpg",
+      "sha256": "5d6138898f1df4290efa63367f994a2a0699fb7da204e711696cc1447ce0ab18",
+      "actual_public_website": true,
+      "modified_pixels": false
+    }
+  ]
+}
