@@ -13,6 +13,7 @@ from typing import Callable
 
 from engines.adapters import ProbeResult, register_adapter
 from engines.adapters.kernel import CommandPlanAdapter
+from engines.adapters import canonical_pair  # noqa: F401 - register owned-pair engines
 
 RUN_DIR = "/run/tunnelpannel"
 CONF_DIR = "/etc/tunnelpannel"

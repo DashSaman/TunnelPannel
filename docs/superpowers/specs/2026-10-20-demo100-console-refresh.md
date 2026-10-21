@@ -1,0 +1,21 @@
+# Real customer QA and TehNet console refresh
+
+The owner authorizes a new independent test customer with a real 100 GiB allowance, gateway-only legacy migration and two-node accounting enforcement tests, plus a substantial visual refresh of the tunnel service using four supplied design references. Original customer routes, settings, member processes/interfaces and credentials must remain intact. This continues the authorized task directly; the earlier read-only walkthrough is historical, not a ban on new isolated QA.
+
+Keep the existing linked worktree. Preserve native authentication and use at most one focused assistant (qa_customer_path read-only mapping already used). Public branch starts at f933d88d513392910f51f75a0b412ca9eacd724f; main stays unmerged, PR2 carries changes. Test and processing remain on the two execution nodes; the website remains an isolated static/proxy container. No payment gateway, SSO, fake financial receipt, source-key export or server deletion.
+
+The manual-sales deployment correctly blocks new unpaid customers. Add an explicit system-owner-only, audited internal test entitlement: enabled new customer only, once, fixed Starter limits, 1–7 days, no collected payment, no replacement of previous subscriptions, idempotent request identity, stop only that customer's routes on expiry. Do not switch global billing mode. Normal unpaid customers and all existing subscriptions retain their policy. Strict owner API and UI under Access & quotas; volume is still assigned separately.
+
+Use a new customer account and two opposite-source native4in6 QA routes. Create before a shared period so they are genuinely unmetered, migrate from the public owner workflow, then actually assign 100 GiB (107374182400 bytes) and verify customer login/usage. Transfer verified bounded payload on both sources. To prove exact exhaustion without manufacturing usage or transferring 100 GiB, temporarily lower ONLY this QA customer's ceiling to used plus a small measured allowance, issue concurrent real transfers and prove exact combined ceiling/zero further payload. Restore 100 GiB in the same period without clearing any real consumption or history; label the transient test honestly. Original routes never participate. Retain the test account/receipts for review; remove only expendable traffic probes/canaries, and explicitly record whether QA routes remain running or are stopped.
+
+Visual direction: charcoal/navy surfaces, restrained warm-gold accents, a self-hosted OFL Persian font, clear spacing and stronger type, simple schematic hero, desktop workspace navigation/mobile horizontal navigation, focused owner cards and legible form states. Retain all account, quota, migration and tunnel actions, keyboard focus, FA/EN and reduced-motion behavior. No third-party JavaScript, analytics or copied proprietary template assets.
+
+References inspected visually and through their public pages on 2026-10-20:
+
+- [Modulify templates](https://modulify.ai/templates): deliberate hierarchy, ample spacing, compact category controls.
+- [WeDoFlow](https://www.wedoflow.com): high-contrast hero and restrained primary action.
+- [Landdding](https://landdding.com): structured overview/cards and readable navigation.
+- [Motion](https://www.motionin.design): sparing motion and clear composition. Use a light schematic trace with a reduced-motion fallback.
+- [Vazirmatn v33.003](https://github.com/rastikerdar/vazirmatn): bundled unmodified WOFF2 and SIL OFL notice; provenance/hashes in docs/third-party/Vazirmatn.json.
+
+Verification: failing-then-passing entitlement/access/expiry/replay/race tests and asset-serving regression; relevant existing commerce/migration tests; full canonical suite and Linux CI before immutable rollout. Disposable local UI fixture for FA/EN, owner/customer/migration forms, mobile overflow, keyboard and reduced motion, then actual installed public screenshots. Fresh per-installation canonical/source-usage backup plus separate environment/key rescue, reviewed uploaded helper hash, drained upgrade, original-only preservation comparison, real nonce receipts/canaries and independently encrypted resident after rescues. Publish exact SHA/tree with expected-head lease and update bilingual real evidence, guide/screenshots/README/AGENTS/PR2; retain actual failures and limits.

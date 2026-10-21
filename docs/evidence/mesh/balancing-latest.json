@@ -1,0 +1,1544 @@
+{
+  "started_at": "2026-10-16T13:06:20.642137+00:00",
+  "status": "PASS",
+  "scope": "two nearby Ubuntu24.04 hosts; eight independent TCP streams, not single-stream bonding",
+  "rounds": [
+    {
+      "round": 1,
+      "route_id": "35c3b76628054350a5f4f94dcd151db8",
+      "status": "PASS",
+      "mode": "failover",
+      "streams": [
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 33.687,
+          "seconds": 0.927248
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 35.147,
+          "seconds": 2.848201
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 35.042,
+          "seconds": 2.800901
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 59.902,
+          "seconds": 2.969911
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 61.185,
+          "seconds": 2.915141
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 60.963,
+          "seconds": 2.960704
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 60.13,
+          "seconds": 2.982506
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 60.259,
+          "seconds": 2.829721
+        }
+      ],
+      "total_bytes": 536870912,
+      "seconds": 2.982537,
+      "aggregate_mbps": 1440.038,
+      "connection_distribution": {
+        "IP6GRE": 8,
+        "VXLAN": 0,
+        "HAJSAMAN_SIT": 0,
+        "IPIP": 0,
+        "IKEV2_IPSEC": 0
+      },
+      "active_during_barrier": {
+        "IP6GRE": 8,
+        "VXLAN": 0,
+        "HAJSAMAN_SIT": 0,
+        "IPIP": 0,
+        "IKEV2_IPSEC": 0
+      },
+      "healthy": {
+        "IP6GRE": true,
+        "VXLAN": true,
+        "HAJSAMAN_SIT": true,
+        "IPIP": true,
+        "IKEV2_IPSEC": true
+      },
+      "effective_weights": {
+        "IP6GRE": 16.804,
+        "VXLAN": 14.983,
+        "HAJSAMAN_SIT": 16.794,
+        "IPIP": 16.804,
+        "IKEV2_IPSEC": 7.54
+      },
+      "stable_port": 22000
+    },
+    {
+      "round": 2,
+      "route_id": "35c3b76628054350a5f4f94dcd151db8",
+      "status": "PASS",
+      "mode": "failover",
+      "streams": [
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 8.628,
+          "seconds": 2.576554
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 9.807,
+          "seconds": 3.157509
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 15.704,
+          "seconds": 2.379225
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 16.703,
+          "seconds": 3.01157
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 38.971,
+          "seconds": 3.208135
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 35.737,
+          "seconds": 3.131388
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 29.158,
+          "seconds": 3.247222
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 38.756,
+          "seconds": 3.230565
+        }
+      ],
+      "total_bytes": 536870912,
+      "seconds": 3.24725,
+      "aggregate_mbps": 1322.647,
+      "connection_distribution": {
+        "IP6GRE": 8,
+        "VXLAN": 0,
+        "HAJSAMAN_SIT": 0,
+        "IPIP": 0,
+        "IKEV2_IPSEC": 0
+      },
+      "active_during_barrier": {
+        "IP6GRE": 8,
+        "VXLAN": 0,
+        "HAJSAMAN_SIT": 0,
+        "IPIP": 0,
+        "IKEV2_IPSEC": 0
+      },
+      "healthy": {
+        "IP6GRE": true,
+        "VXLAN": true,
+        "HAJSAMAN_SIT": true,
+        "IPIP": true,
+        "IKEV2_IPSEC": true
+      },
+      "effective_weights": {
+        "IP6GRE": 10.595,
+        "VXLAN": 10.298,
+        "HAJSAMAN_SIT": 12.109,
+        "IPIP": 13.074,
+        "IKEV2_IPSEC": 5.479
+      },
+      "stable_port": 22000
+    },
+    {
+      "round": 3,
+      "route_id": "35c3b76628054350a5f4f94dcd151db8",
+      "status": "PASS",
+      "mode": "failover",
+      "streams": [
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 4.203,
+          "seconds": 3.185139
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 16.228,
+          "seconds": 3.162521
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 16.253,
+          "seconds": 3.105036
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 27.09,
+          "seconds": 3.138833
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 15.481,
+          "seconds": 2.448792
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 16.395,
+          "seconds": 2.616346
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 26.484,
+          "seconds": 2.432106
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 16.448,
+          "seconds": 3.123309
+        }
+      ],
+      "total_bytes": 536870912,
+      "seconds": 3.185171,
+      "aggregate_mbps": 1348.426,
+      "connection_distribution": {
+        "IP6GRE": 8,
+        "VXLAN": 0,
+        "HAJSAMAN_SIT": 0,
+        "IPIP": 0,
+        "IKEV2_IPSEC": 0
+      },
+      "active_during_barrier": {
+        "IP6GRE": 8,
+        "VXLAN": 0,
+        "HAJSAMAN_SIT": 0,
+        "IPIP": 0,
+        "IKEV2_IPSEC": 0
+      },
+      "healthy": {
+        "IP6GRE": true,
+        "VXLAN": true,
+        "HAJSAMAN_SIT": true,
+        "IPIP": true,
+        "IKEV2_IPSEC": true
+      },
+      "effective_weights": {
+        "IP6GRE": 10.064,
+        "VXLAN": 9.735,
+        "HAJSAMAN_SIT": 10.925,
+        "IPIP": 11.816,
+        "IKEV2_IPSEC": 4.727
+      },
+      "stable_port": 22000
+    },
+    {
+      "round": 1,
+      "route_id": "35c3b76628054350a5f4f94dcd151db8",
+      "status": "PASS",
+      "mode": "balance",
+      "streams": [
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 8.259,
+          "seconds": 2.699496
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 16.255,
+          "seconds": 3.115864
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 55.912,
+          "seconds": 2.750749
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 9.021,
+          "seconds": 3.088279
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 16.671,
+          "seconds": 3.174029
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 27.866,
+          "seconds": 2.672546
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 28.023,
+          "seconds": 3.253557
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 28.75,
+          "seconds": 3.146036
+        }
+      ],
+      "total_bytes": 536870912,
+      "seconds": 3.25359,
+      "aggregate_mbps": 1320.07,
+      "connection_distribution": {
+        "IP6GRE": 1,
+        "VXLAN": 2,
+        "HAJSAMAN_SIT": 2,
+        "IPIP": 2,
+        "IKEV2_IPSEC": 1
+      },
+      "active_during_barrier": {
+        "IP6GRE": 1,
+        "VXLAN": 2,
+        "HAJSAMAN_SIT": 2,
+        "IPIP": 2,
+        "IKEV2_IPSEC": 1
+      },
+      "healthy": {
+        "IP6GRE": true,
+        "VXLAN": true,
+        "HAJSAMAN_SIT": true,
+        "IPIP": true,
+        "IKEV2_IPSEC": true
+      },
+      "effective_weights": {
+        "IP6GRE": 5.434,
+        "VXLAN": 9.5,
+        "HAJSAMAN_SIT": 10.895,
+        "IPIP": 11.746,
+        "IKEV2_IPSEC": 5.258
+      },
+      "stable_port": 22000
+    },
+    {
+      "round": 2,
+      "route_id": "35c3b76628054350a5f4f94dcd151db8",
+      "status": "PASS",
+      "mode": "balance",
+      "streams": [
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 5.622,
+          "seconds": 2.766099
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 15.958,
+          "seconds": 2.90972
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 26.686,
+          "seconds": 3.05575
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 26.384,
+          "seconds": 2.89725
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 26.955,
+          "seconds": 3.036966
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 12.579,
+          "seconds": 2.901679
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 33.544,
+          "seconds": 3.038626
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 38.076,
+          "seconds": 2.825462
+        }
+      ],
+      "total_bytes": 536870912,
+      "seconds": 3.055784,
+      "aggregate_mbps": 1405.521,
+      "connection_distribution": {
+        "IP6GRE": 2,
+        "VXLAN": 2,
+        "HAJSAMAN_SIT": 2,
+        "IPIP": 2,
+        "IKEV2_IPSEC": 0
+      },
+      "active_during_barrier": {
+        "IP6GRE": 2,
+        "VXLAN": 2,
+        "HAJSAMAN_SIT": 2,
+        "IPIP": 2,
+        "IKEV2_IPSEC": 0
+      },
+      "healthy": {
+        "IP6GRE": true,
+        "VXLAN": true,
+        "HAJSAMAN_SIT": true,
+        "IPIP": true,
+        "IKEV2_IPSEC": true
+      },
+      "effective_weights": {
+        "IP6GRE": 4.761,
+        "VXLAN": 4.065,
+        "HAJSAMAN_SIT": 5.0,
+        "IPIP": 4.77,
+        "IKEV2_IPSEC": 2.015
+      },
+      "stable_port": 22000
+    },
+    {
+      "round": 3,
+      "route_id": "35c3b76628054350a5f4f94dcd151db8",
+      "status": "PASS",
+      "mode": "balance",
+      "streams": [
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 5.272,
+          "seconds": 2.721839
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 16.197,
+          "seconds": 2.882411
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 20.159,
+          "seconds": 2.855615
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 20.185,
+          "seconds": 2.779709
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 12.797,
+          "seconds": 2.866828
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 16.371,
+          "seconds": 2.861676
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 4.529,
+          "seconds": 2.595257
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 20.213,
+          "seconds": 2.797175
+        }
+      ],
+      "total_bytes": 536870912,
+      "seconds": 2.882447,
+      "aggregate_mbps": 1490.042,
+      "connection_distribution": {
+        "IP6GRE": 2,
+        "VXLAN": 2,
+        "HAJSAMAN_SIT": 2,
+        "IPIP": 2,
+        "IKEV2_IPSEC": 0
+      },
+      "active_during_barrier": {
+        "IP6GRE": 2,
+        "VXLAN": 2,
+        "HAJSAMAN_SIT": 2,
+        "IPIP": 2,
+        "IKEV2_IPSEC": 0
+      },
+      "healthy": {
+        "IP6GRE": true,
+        "VXLAN": true,
+        "HAJSAMAN_SIT": true,
+        "IPIP": true,
+        "IKEV2_IPSEC": true
+      },
+      "effective_weights": {
+        "IP6GRE": 4.761,
+        "VXLAN": 4.065,
+        "HAJSAMAN_SIT": 5.0,
+        "IPIP": 4.77,
+        "IKEV2_IPSEC": 2.015
+      },
+      "stable_port": 22000
+    },
+    {
+      "round": 1,
+      "route_id": "7812cdf792a84bd18c6993890548c778",
+      "status": "PASS",
+      "mode": "failover",
+      "streams": [
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 7.761,
+          "seconds": 3.132686
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 16.064,
+          "seconds": 2.499989
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 20.893,
+          "seconds": 2.954976
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 38.651,
+          "seconds": 3.087973
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 16.382,
+          "seconds": 2.500059
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 20.759,
+          "seconds": 3.021782
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 43.304,
+          "seconds": 3.098783
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 43.375,
+          "seconds": 2.97924
+        }
+      ],
+      "total_bytes": 536870912,
+      "seconds": 3.132737,
+      "aggregate_mbps": 1370.995,
+      "connection_distribution": {
+        "IP6GRE": 8,
+        "SIT_6IN4": 0,
+        "VXLAN": 0,
+        "IPIP": 0,
+        "IKEV2_IPSEC": 0
+      },
+      "active_during_barrier": {
+        "IP6GRE": 8,
+        "SIT_6IN4": 0,
+        "VXLAN": 0,
+        "IPIP": 0,
+        "IKEV2_IPSEC": 0
+      },
+      "healthy": {
+        "IP6GRE": true,
+        "SIT_6IN4": true,
+        "VXLAN": true,
+        "IPIP": true,
+        "IKEV2_IPSEC": true
+      },
+      "effective_weights": {
+        "IP6GRE": 10.53,
+        "SIT_6IN4": 11.435,
+        "VXLAN": 11.572,
+        "IPIP": 11.574,
+        "IKEV2_IPSEC": 4.689
+      },
+      "stable_port": 22000
+    },
+    {
+      "round": 2,
+      "route_id": "7812cdf792a84bd18c6993890548c778",
+      "status": "PASS",
+      "mode": "failover",
+      "streams": [
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 7.029,
+          "seconds": 2.694818
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 15.108,
+          "seconds": 3.228681
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 15.211,
+          "seconds": 3.231504
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 20.84,
+          "seconds": 3.071143
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 20.711,
+          "seconds": 3.010739
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 20.658,
+          "seconds": 3.233716
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 20.804,
+          "seconds": 3.237048
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 20.766,
+          "seconds": 2.748042
+        }
+      ],
+      "total_bytes": 536870912,
+      "seconds": 3.237081,
+      "aggregate_mbps": 1326.803,
+      "connection_distribution": {
+        "IP6GRE": 8,
+        "SIT_6IN4": 0,
+        "VXLAN": 0,
+        "IPIP": 0,
+        "IKEV2_IPSEC": 0
+      },
+      "active_during_barrier": {
+        "IP6GRE": 8,
+        "SIT_6IN4": 0,
+        "VXLAN": 0,
+        "IPIP": 0,
+        "IKEV2_IPSEC": 0
+      },
+      "healthy": {
+        "IP6GRE": true,
+        "SIT_6IN4": true,
+        "VXLAN": true,
+        "IPIP": true,
+        "IKEV2_IPSEC": true
+      },
+      "effective_weights": {
+        "IP6GRE": 9.579,
+        "SIT_6IN4": 9.448,
+        "VXLAN": 9.525,
+        "IPIP": 9.267,
+        "IKEV2_IPSEC": 3.973
+      },
+      "stable_port": 22000
+    },
+    {
+      "round": 3,
+      "route_id": "7812cdf792a84bd18c6993890548c778",
+      "status": "PASS",
+      "mode": "failover",
+      "streams": [
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 8.729,
+          "seconds": 2.725659
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 7.44,
+          "seconds": 2.849866
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 37.033,
+          "seconds": 2.718035
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 17.372,
+          "seconds": 2.665419
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 36.895,
+          "seconds": 2.644162
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 43.015,
+          "seconds": 2.34135
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 38.98,
+          "seconds": 2.777146
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 35.961,
+          "seconds": 2.670667
+        }
+      ],
+      "total_bytes": 536870912,
+      "seconds": 2.84989,
+      "aggregate_mbps": 1507.064,
+      "connection_distribution": {
+        "IP6GRE": 8,
+        "SIT_6IN4": 0,
+        "VXLAN": 0,
+        "IPIP": 0,
+        "IKEV2_IPSEC": 0
+      },
+      "active_during_barrier": {
+        "IP6GRE": 8,
+        "SIT_6IN4": 0,
+        "VXLAN": 0,
+        "IPIP": 0,
+        "IKEV2_IPSEC": 0
+      },
+      "healthy": {
+        "IP6GRE": true,
+        "SIT_6IN4": true,
+        "VXLAN": true,
+        "IPIP": true,
+        "IKEV2_IPSEC": true
+      },
+      "effective_weights": {
+        "IP6GRE": 4.952,
+        "SIT_6IN4": 9.426,
+        "VXLAN": 9.479,
+        "IPIP": 10.015,
+        "IKEV2_IPSEC": 4.343
+      },
+      "stable_port": 22000
+    },
+    {
+      "round": 1,
+      "route_id": "7812cdf792a84bd18c6993890548c778",
+      "status": "PASS",
+      "mode": "balance",
+      "streams": [
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 30.822,
+          "seconds": 3.578339
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 13.267,
+          "seconds": 3.61401
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 17.951,
+          "seconds": 3.598368
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 17.416,
+          "seconds": 3.584755
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 31.105,
+          "seconds": 3.054541
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 17.177,
+          "seconds": 3.519355
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 13.542,
+          "seconds": 3.469224
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 23.09,
+          "seconds": 3.301263
+        }
+      ],
+      "total_bytes": 536870912,
+      "seconds": 3.614042,
+      "aggregate_mbps": 1188.411,
+      "connection_distribution": {
+        "IP6GRE": 1,
+        "SIT_6IN4": 2,
+        "VXLAN": 2,
+        "IPIP": 2,
+        "IKEV2_IPSEC": 1
+      },
+      "active_during_barrier": {
+        "IP6GRE": 1,
+        "SIT_6IN4": 2,
+        "VXLAN": 2,
+        "IPIP": 2,
+        "IKEV2_IPSEC": 1
+      },
+      "healthy": {
+        "IP6GRE": true,
+        "SIT_6IN4": true,
+        "VXLAN": true,
+        "IPIP": true,
+        "IKEV2_IPSEC": true
+      },
+      "effective_weights": {
+        "IP6GRE": 4.843,
+        "SIT_6IN4": 7.14,
+        "VXLAN": 7.316,
+        "IPIP": 8.218,
+        "IKEV2_IPSEC": 3.622
+      },
+      "stable_port": 22000
+    },
+    {
+      "round": 2,
+      "route_id": "7812cdf792a84bd18c6993890548c778",
+      "status": "PASS",
+      "mode": "balance",
+      "streams": [
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 8.25,
+          "seconds": 3.404046
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 17.295,
+          "seconds": 3.438986
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 13.236,
+          "seconds": 2.910235
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 13.463,
+          "seconds": 3.200664
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 8.405,
+          "seconds": 2.002892
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 17.341,
+          "seconds": 3.129426
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 13.37,
+          "seconds": 3.438444
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 17.439,
+          "seconds": 3.408623
+        }
+      ],
+      "total_bytes": 536870912,
+      "seconds": 3.43902,
+      "aggregate_mbps": 1248.893,
+      "connection_distribution": {
+        "IP6GRE": 2,
+        "SIT_6IN4": 2,
+        "VXLAN": 1,
+        "IPIP": 2,
+        "IKEV2_IPSEC": 1
+      },
+      "active_during_barrier": {
+        "IP6GRE": 2,
+        "SIT_6IN4": 2,
+        "VXLAN": 1,
+        "IPIP": 2,
+        "IKEV2_IPSEC": 1
+      },
+      "healthy": {
+        "IP6GRE": true,
+        "SIT_6IN4": true,
+        "VXLAN": true,
+        "IPIP": true,
+        "IKEV2_IPSEC": true
+      },
+      "effective_weights": {
+        "IP6GRE": 4.843,
+        "SIT_6IN4": 4.395,
+        "VXLAN": 4.197,
+        "IPIP": 5.0,
+        "IKEV2_IPSEC": 2.154
+      },
+      "stable_port": 22000
+    },
+    {
+      "round": 3,
+      "route_id": "7812cdf792a84bd18c6993890548c778",
+      "status": "PASS",
+      "mode": "balance",
+      "streams": [
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 8.292,
+          "seconds": 3.464589
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 29.483,
+          "seconds": 3.682779
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 36.486,
+          "seconds": 3.468176
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 17.946,
+          "seconds": 3.276275
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 12.225,
+          "seconds": 3.470008
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 30.423,
+          "seconds": 3.091911
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 33.609,
+          "seconds": 3.59692
+        },
+        {
+          "bytes": 67108864,
+          "sha256_match": true,
+          "ttfb_ms": 16.488,
+          "seconds": 3.854652
+        }
+      ],
+      "total_bytes": 536870912,
+      "seconds": 3.854727,
+      "aggregate_mbps": 1114.208,
+      "connection_distribution": {
+        "IP6GRE": 2,
+        "SIT_6IN4": 2,
+        "VXLAN": 1,
+        "IPIP": 2,
+        "IKEV2_IPSEC": 1
+      },
+      "active_during_barrier": {
+        "IP6GRE": 2,
+        "SIT_6IN4": 2,
+        "VXLAN": 1,
+        "IPIP": 2,
+        "IKEV2_IPSEC": 1
+      },
+      "healthy": {
+        "IP6GRE": true,
+        "SIT_6IN4": true,
+        "VXLAN": true,
+        "IPIP": true,
+        "IKEV2_IPSEC": true
+      },
+      "effective_weights": {
+        "IP6GRE": 4.843,
+        "SIT_6IN4": 4.395,
+        "VXLAN": 4.197,
+        "IPIP": 5.0,
+        "IKEV2_IPSEC": 2.154
+      },
+      "stable_port": 22000
+    }
+  ],
+  "checks": [
+    {
+      "kind": "real_destination_exit",
+      "route_id": "35c3b76628054350a5f4f94dcd151db8",
+      "status": "PASS",
+      "exit_host": "65.109.213.64",
+      "latency_ms": 6.213,
+      "stable_port": 22000
+    },
+    {
+      "kind": "real_destination_exit",
+      "route_id": "7812cdf792a84bd18c6993890548c778",
+      "status": "PASS",
+      "exit_host": "65.109.209.194",
+      "latency_ms": 5.903,
+      "stable_port": 22000
+    },
+    {
+      "kind": "simultaneous_directed_groups",
+      "measurements": [
+        {
+          "route_id": "35c3b76628054350a5f4f94dcd151db8",
+          "status": "PASS",
+          "mode": "balance",
+          "streams": [
+            {
+              "bytes": 67108864,
+              "sha256_match": true,
+              "ttfb_ms": 6.422,
+              "seconds": 5.57828
+            },
+            {
+              "bytes": 67108864,
+              "sha256_match": true,
+              "ttfb_ms": 22.122,
+              "seconds": 5.487167
+            },
+            {
+              "bytes": 67108864,
+              "sha256_match": true,
+              "ttfb_ms": 7.991,
+              "seconds": 4.886152
+            },
+            {
+              "bytes": 67108864,
+              "sha256_match": true,
+              "ttfb_ms": 14.936,
+              "seconds": 5.586932
+            },
+            {
+              "bytes": 67108864,
+              "sha256_match": true,
+              "ttfb_ms": 18.601,
+              "seconds": 5.627095
+            },
+            {
+              "bytes": 67108864,
+              "sha256_match": true,
+              "ttfb_ms": 21.627,
+              "seconds": 5.592139
+            },
+            {
+              "bytes": 67108864,
+              "sha256_match": true,
+              "ttfb_ms": 22.398,
+              "seconds": 3.806637
+            },
+            {
+              "bytes": 67108864,
+              "sha256_match": true,
+              "ttfb_ms": 14.979,
+              "seconds": 5.63344
+            }
+          ],
+          "total_bytes": 536870912,
+          "seconds": 5.633472,
+          "aggregate_mbps": 762.401,
+          "connection_distribution": {
+            "IP6GRE": 2,
+            "VXLAN": 2,
+            "HAJSAMAN_SIT": 2,
+            "IPIP": 2,
+            "IKEV2_IPSEC": 0
+          },
+          "active_during_barrier": {
+            "IP6GRE": 2,
+            "VXLAN": 2,
+            "HAJSAMAN_SIT": 2,
+            "IPIP": 2,
+            "IKEV2_IPSEC": 0
+          },
+          "healthy": {
+            "IP6GRE": true,
+            "VXLAN": true,
+            "HAJSAMAN_SIT": true,
+            "IPIP": true,
+            "IKEV2_IPSEC": true
+          },
+          "effective_weights": {
+            "IP6GRE": 11.018,
+            "VXLAN": 11.701,
+            "HAJSAMAN_SIT": 12.804,
+            "IPIP": 12.761,
+            "IKEV2_IPSEC": 5.324
+          },
+          "stable_port": 22000
+        },
+        {
+          "route_id": "7812cdf792a84bd18c6993890548c778",
+          "status": "PASS",
+          "mode": "balance",
+          "streams": [
+            {
+              "bytes": 67108864,
+              "sha256_match": true,
+              "ttfb_ms": 7.451,
+              "seconds": 6.832678
+            },
+            {
+              "bytes": 67108864,
+              "sha256_match": true,
+              "ttfb_ms": 23.336,
+              "seconds": 7.747354
+            },
+            {
+              "bytes": 67108864,
+              "sha256_match": true,
+              "ttfb_ms": 13.381,
+              "seconds": 6.341871
+            },
+            {
+              "bytes": 67108864,
+              "sha256_match": true,
+              "ttfb_ms": 11.221,
+              "seconds": 6.526198
+            },
+            {
+              "bytes": 67108864,
+              "sha256_match": true,
+              "ttfb_ms": 39.025,
+              "seconds": 7.662265
+            },
+            {
+              "bytes": 67108864,
+              "sha256_match": true,
+              "ttfb_ms": 43.633,
+              "seconds": 6.791692
+            },
+            {
+              "bytes": 67108864,
+              "sha256_match": true,
+              "ttfb_ms": 13.914,
+              "seconds": 6.390342
+            },
+            {
+              "bytes": 67108864,
+              "sha256_match": true,
+              "ttfb_ms": 17.005,
+              "seconds": 7.001256
+            }
+          ],
+          "total_bytes": 536870912,
+          "seconds": 7.747409,
+          "aggregate_mbps": 554.375,
+          "connection_distribution": {
+            "IP6GRE": 2,
+            "SIT_6IN4": 2,
+            "VXLAN": 1,
+            "IPIP": 2,
+            "IKEV2_IPSEC": 1
+          },
+          "active_during_barrier": {
+            "IP6GRE": 2,
+            "SIT_6IN4": 2,
+            "VXLAN": 1,
+            "IPIP": 2,
+            "IKEV2_IPSEC": 1
+          },
+          "healthy": {
+            "IP6GRE": true,
+            "SIT_6IN4": true,
+            "VXLAN": true,
+            "IPIP": true,
+            "IKEV2_IPSEC": true
+          },
+          "effective_weights": {
+            "IP6GRE": 4.843,
+            "SIT_6IN4": 4.395,
+            "VXLAN": 4.197,
+            "IPIP": 5.0,
+            "IKEV2_IPSEC": 2.154
+          },
+          "stable_port": 22000
+        }
+      ]
+    },
+    {
+      "kind": "failed_engine_excluded_from_balancing",
+      "method": "IP6GRE",
+      "observed_health_filter_s": 21.502,
+      "measurement": {
+        "route_id": "35c3b76628054350a5f4f94dcd151db8",
+        "status": "PASS",
+        "mode": "balance",
+        "streams": [
+          {
+            "bytes": 67108864,
+            "sha256_match": true,
+            "ttfb_ms": 23.531,
+            "seconds": 3.468783
+          },
+          {
+            "bytes": 67108864,
+            "sha256_match": true,
+            "ttfb_ms": 44.169,
+            "seconds": 3.550707
+          },
+          {
+            "bytes": 67108864,
+            "sha256_match": true,
+            "ttfb_ms": 5.972,
+            "seconds": 3.519801
+          },
+          {
+            "bytes": 67108864,
+            "sha256_match": true,
+            "ttfb_ms": 22.44,
+            "seconds": 3.063357
+          },
+          {
+            "bytes": 67108864,
+            "sha256_match": true,
+            "ttfb_ms": 28.571,
+            "seconds": 3.549125
+          },
+          {
+            "bytes": 67108864,
+            "sha256_match": true,
+            "ttfb_ms": 28.851,
+            "seconds": 3.538867
+          },
+          {
+            "bytes": 67108864,
+            "sha256_match": true,
+            "ttfb_ms": 31.523,
+            "seconds": 3.555182
+          },
+          {
+            "bytes": 67108864,
+            "sha256_match": true,
+            "ttfb_ms": 23.755,
+            "seconds": 3.479216
+          }
+        ],
+        "total_bytes": 536870912,
+        "seconds": 3.555221,
+        "aggregate_mbps": 1208.073,
+        "connection_distribution": {
+          "IP6GRE": 0,
+          "VXLAN": 2,
+          "HAJSAMAN_SIT": 2,
+          "IPIP": 3,
+          "IKEV2_IPSEC": 1
+        },
+        "active_during_barrier": {
+          "IP6GRE": 0,
+          "VXLAN": 2,
+          "HAJSAMAN_SIT": 2,
+          "IPIP": 3,
+          "IKEV2_IPSEC": 1
+        },
+        "healthy": {
+          "IP6GRE": false,
+          "VXLAN": true,
+          "HAJSAMAN_SIT": true,
+          "IPIP": true,
+          "IKEV2_IPSEC": true
+        },
+        "effective_weights": {
+          "IP6GRE": 4.761,
+          "VXLAN": 6.68,
+          "HAJSAMAN_SIT": 7.733,
+          "IPIP": 7.968,
+          "IKEV2_IPSEC": 3.471
+        },
+        "stable_port": 22000
+      },
+      "other_group_real_exit": {
+        "route_id": "7812cdf792a84bd18c6993890548c778",
+        "status": "PASS",
+        "exit_host": "65.109.209.194",
+        "latency_ms": 4.976,
+        "stable_port": 22000
+      }
+    },
+    {
+      "kind": "stopped_member_reservation_retained",
+      "fields": {
+        "ports": 2,
+        "prefixes": 1,
+        "identifiers": 0,
+        "interfaces": 0
+      }
+    },
+    {
+      "kind": "healthy_manual_pin",
+      "method": "IKEV2_IPSEC",
+      "measurement": {
+        "route_id": "35c3b76628054350a5f4f94dcd151db8",
+        "status": "PASS",
+        "mode": "balance",
+        "streams": [
+          {
+            "bytes": 67108864,
+            "sha256_match": true,
+            "ttfb_ms": 5.529,
+            "seconds": 2.8794
+          },
+          {
+            "bytes": 67108864,
+            "sha256_match": true,
+            "ttfb_ms": 19.29,
+            "seconds": 3.150635
+          },
+          {
+            "bytes": 67108864,
+            "sha256_match": true,
+            "ttfb_ms": 16.144,
+            "seconds": 2.759909
+          },
+          {
+            "bytes": 67108864,
+            "sha256_match": true,
+            "ttfb_ms": 16.202,
+            "seconds": 2.902132
+          }
+        ],
+        "total_bytes": 268435456,
+        "seconds": 3.150662,
+        "aggregate_mbps": 681.598,
+        "connection_distribution": {
+          "IP6GRE": 0,
+          "VXLAN": 0,
+          "HAJSAMAN_SIT": 0,
+          "IPIP": 0,
+          "IKEV2_IPSEC": 4
+        },
+        "active_during_barrier": {
+          "IP6GRE": 0,
+          "VXLAN": 0,
+          "HAJSAMAN_SIT": 0,
+          "IPIP": 0,
+          "IKEV2_IPSEC": 4
+        },
+        "healthy": {
+          "IP6GRE": true,
+          "VXLAN": true,
+          "HAJSAMAN_SIT": true,
+          "IPIP": true,
+          "IKEV2_IPSEC": true
+        },
+        "effective_weights": {
+          "IP6GRE": 8.349,
+          "VXLAN": 7.149,
+          "HAJSAMAN_SIT": 5.725,
+          "IPIP": 7.073,
+          "IKEV2_IPSEC": 3.893
+        },
+        "stable_port": 22000
+      }
+    },
+    {
+      "kind": "healthy_manual_pin",
+      "method": "IKEV2_IPSEC",
+      "measurement": {
+        "route_id": "7812cdf792a84bd18c6993890548c778",
+        "status": "PASS",
+        "mode": "balance",
+        "streams": [
+          {
+            "bytes": 67108864,
+            "sha256_match": true,
+            "ttfb_ms": 9.562,
+            "seconds": 3.245411
+          },
+          {
+            "bytes": 67108864,
+            "sha256_match": true,
+            "ttfb_ms": 9.711,
+            "seconds": 3.245029
+          },
+          {
+            "bytes": 67108864,
+            "sha256_match": true,
+            "ttfb_ms": 8.662,
+            "seconds": 3.243898
+          },
+          {
+            "bytes": 67108864,
+            "sha256_match": true,
+            "ttfb_ms": 13.454,
+            "seconds": 3.188191
+          }
+        ],
+        "total_bytes": 268435456,
+        "seconds": 3.245443,
+        "aggregate_mbps": 661.692,
+        "connection_distribution": {
+          "IP6GRE": 0,
+          "SIT_6IN4": 0,
+          "VXLAN": 0,
+          "IPIP": 0,
+          "IKEV2_IPSEC": 4
+        },
+        "active_during_barrier": {
+          "IP6GRE": 0,
+          "SIT_6IN4": 0,
+          "VXLAN": 0,
+          "IPIP": 0,
+          "IKEV2_IPSEC": 4
+        },
+        "healthy": {
+          "IP6GRE": true,
+          "SIT_6IN4": true,
+          "VXLAN": true,
+          "IPIP": true,
+          "IKEV2_IPSEC": true
+        },
+        "effective_weights": {
+          "IP6GRE": 21.736,
+          "SIT_6IN4": 20.57,
+          "VXLAN": 22.514,
+          "IPIP": 23.448,
+          "IKEV2_IPSEC": 9.441
+        },
+        "stable_port": 22000
+      }
+    },
+    {
+      "kind": "gateway_restart",
+      "real_exit": {
+        "route_id": "35c3b76628054350a5f4f94dcd151db8",
+        "status": "PASS",
+        "exit_host": "65.109.213.64",
+        "latency_ms": 5.242,
+        "stable_port": 22000
+      },
+      "other_group_real_exit": {
+        "route_id": "7812cdf792a84bd18c6993890548c778",
+        "status": "PASS",
+        "exit_host": "65.109.209.194",
+        "latency_ms": 5.096,
+        "stable_port": 22000
+      }
+    },
+    {
+      "kind": "all_members_restored",
+      "route_id": "35c3b76628054350a5f4f94dcd151db8",
+      "healthy": {
+        "IP6GRE": true,
+        "VXLAN": true,
+        "HAJSAMAN_SIT": true,
+        "IPIP": true,
+        "IKEV2_IPSEC": true
+      }
+    },
+    {
+      "kind": "all_members_restored",
+      "route_id": "7812cdf792a84bd18c6993890548c778",
+      "healthy": {
+        "IP6GRE": true,
+        "SIT_6IN4": true,
+        "VXLAN": true,
+        "IPIP": true,
+        "IKEV2_IPSEC": true
+      }
+    }
+  ],
+  "management_routes_unchanged": true,
+  "proof_resources_released": true,
+  "restoration_errors": []
+}

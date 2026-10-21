@@ -1,0 +1,193 @@
+{
+  "schema": 1,
+  "date": "2026-10-20",
+  "status": "PASS",
+  "public_panel": "https://tehnet.ir/tunnels/portal",
+  "installed": {
+    "backend_revision": "2c6974a4989a9fab121d2a2f4c161d81fbf379e9",
+    "backend_tree": "d9f9231c47689998370d0be6f350becaad0c77c7",
+    "website_revision": "5237cc405d2a15c14f7ffea9ccd157788ab0f2cb",
+    "website_tree": "9257c68049d77827cba9f114fdbc3d2aa58e44d1",
+    "website_bundle_sha256": "21467301b69cd136ee706b58276ee0ff8b000e15c9bc768e5333d3ef9687c37b",
+    "backend_fix_changes_ui_assets": false
+  },
+  "ci": {
+    "backend_portable_run": 39435909036,
+    "backend_security_run": 39435909027,
+    "website_portable_run": 39434529228,
+    "website_security_run": 39434529162,
+    "all_success_before_install": true,
+    "python312_root_pass": 841,
+    "tunnelguard_pass": 100,
+    "backend_smoke_pass": 1,
+    "windows_root_pass": 808,
+    "windows_posix_skip": 33,
+    "focused_migration_pass": 38,
+    "linux_install_restore_uninstall": "PASS"
+  },
+  "two_new_independent_ip4in6_routes": [
+    {
+      "source": "A",
+      "workflow": "public_https",
+      "status": "PASS",
+      "source_usage_baseline_bytes": 897,
+      "probe_successes": 30,
+      "probe_failures": 4,
+      "maximum_observed_success_gap_s": 0.9241892150603235,
+      "member_workers_restarted": 0,
+      "entry_credentials_and_settings_preserved": true,
+      "controller_backup_verified": true,
+      "interfaces_preserved": true,
+      "verified_body_bytes": 1048576,
+      "new_pooled_accepted_bytes": 1057128,
+      "repeat_execute_same_worker": true
+    },
+    {
+      "source": "B",
+      "workflow": "actual_public_browser_fa",
+      "status": "PASS",
+      "source_usage_baseline_bytes": 1196,
+      "probe_successes": 34,
+      "probe_failures": 5,
+      "maximum_observed_success_gap_s": 0.9383792449953035,
+      "member_workers_restarted": 0,
+      "entry_credentials_and_settings_preserved": true,
+      "controller_backup_verified": true,
+      "interfaces_preserved": true,
+      "verified_body_bytes": 1048576,
+      "new_pooled_accepted_bytes": 1058025,
+      "repeat_execute_same_worker": true
+    }
+  ],
+  "first_attempt": {
+    "source": "A",
+    "before_gateway_cutover": true,
+    "fault": "missing_parent_of_nested_rescue_path",
+    "product_fix": "flat_root_private_rescue_directory",
+    "regression_red_then_green": true,
+    "manual_server_directory_workaround": false,
+    "same_pending_candidate_resumed": true,
+    "old_ticket_retained_superseded": true
+  },
+  "shared_usage": {
+    "accepted_bytes": 2115153,
+    "held_bytes": 0,
+    "unlimited": true,
+    "ends_at": null,
+    "qa_only_restart_counter_and_pool_preserved": true
+  },
+  "ticket_recovery": {
+    "status": "PASS",
+    "normal_background_recovery": true,
+    "same_qa_worker": true,
+    "route_config_runtime_and_counters_unchanged": true,
+    "no_source_dispatch_or_api_restart": true,
+    "elapsed_seconds": 30.095399424084462
+  },
+  "cleanup": {
+    "status": "PASS",
+    "owned_routes_stopped": 2,
+    "owned_deployments_rolled_back": 6,
+    "allocations_released": 42,
+    "live_owned_allocations": 0,
+    "owned_fixture_rows_removed": {
+      "monthly_rejections": 0,
+      "monthly_credits": 4,
+      "monthly_routes": 2,
+      "monthly_periods": 1,
+      "monthly_audit": 1
+    },
+    "unrelated_monthly_rows_preserved": true,
+    "stopped_jobs_and_resource_history_retained": true,
+    "source_usage_ledgers_retained": true,
+    "original_system_unlimited_state_restored": true
+  },
+  "originals": {
+    "not_remigrated_or_restarted": true,
+    "full_configs_pids_groups_preserved": true,
+    "original_member_receipts": 10,
+    "stable_entry_receipts": 2,
+    "underlying_workers_interfaces_configs_preserved": true,
+    "customer_identities_and_secrets_preserved": true,
+    "customer_unlimited_used_bytes": 21217,
+    "held_bytes": 0
+  },
+  "coexistence": {
+    "per_node_check_count": [
+      12,
+      12
+    ],
+    "both_drained": true,
+    "docker_live_canary": false
+  },
+  "private_rescues": {
+    "execution_nodes_and_website": [
+      {
+        "host": "execution_A",
+        "status": "PASS",
+        "encrypted_sha256": "816b747f0467dbc34c28883cde6de25ee707076087ac5509b7ababc2029aca44",
+        "separate_root0600_key": true,
+        "decrypt_sha256_equal": true
+      },
+      {
+        "host": "execution_B",
+        "status": "PASS",
+        "encrypted_sha256": "b28c66679b2b982861d019ccf2b71d6204f7169cdbbbc650bfc02dc793bb90e6",
+        "separate_root0600_key": true,
+        "decrypt_sha256_equal": true
+      },
+      {
+        "host": "website",
+        "status": "PASS",
+        "encrypted_sha256": "f372a986be5b89bf88a78cf21851d2751ddcb6b85d7d025ef07d6c96085e03ea",
+        "separate_root0600_key": true,
+        "decrypt_sha256_equal": true
+      }
+    ],
+    "online_before_preinstall_after_and_separate_install_env": true,
+    "controller_snapshots_and_source_receipts_retained": true,
+    "sensitive_export": false,
+    "live_restore": false
+  },
+  "website": {
+    "unrelated_containers_preserved": 11,
+    "links_preserved": 50,
+    "service_pids_preserved": 5,
+    "nginx_files_unchanged": true,
+    "wordpress_unchanged": true,
+    "no_host_nginx_reload": true,
+    "old_release_retained": true
+  },
+  "public_authorization": {
+    "status": "PASS",
+    "public_url": "https://tehnet.ir/tunnels/",
+    "secure_cookies": true,
+    "no_new_customer_work_created": true,
+    "migration_owner_only": true,
+    "cookie_csrf_guard": true,
+    "arbitrary_input_refused": true,
+    "migration_no_store": true
+  },
+  "ui": {
+    "actual_fa_en_results": true,
+    "original_customer_shows_already_accounted": true,
+    "mobile_requested_width": 375,
+    "client_width": 360,
+    "scroll_width": 360,
+    "both_languages": true,
+    "viewport_reset": true,
+    "screenshots": [
+      "tehnet-admin-migration-fa.jpg",
+      "tehnet-admin-migration-en.jpg"
+    ]
+  },
+  "limits": [
+    "registered_panel_owned_routes_only",
+    "no_zero_downtime_or_existing_tcp_survival_claim",
+    "no_iran_performance_or_root_tamper_resistance_claim",
+    "no_physical_forced_rollback_or_distributed_live_restore",
+    "no_customer_payment_plan_or_account_activation",
+    "main_unmerged",
+    "heartbeat_paused"
+  ]
+}

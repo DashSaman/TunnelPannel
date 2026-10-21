@@ -352,9 +352,9 @@ class TestPreflight:
 # ── legacy composite mapping (§18) ────────────────────────────────────
 
 class TestLegacyComposites:
-    def test_all_six_templates_map_and_validate(self):
+    def test_all_reviewed_templates_map_and_validate(self):
         specs = all_legacy_composite_specs()
-        assert len(specs) == 6
+        assert len(specs) == 17
         for legacy, spec in specs.items():
             v = validate_chain(spec)
             assert v.valid, f"{legacy}: {v.reasons}"

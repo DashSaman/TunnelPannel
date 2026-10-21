@@ -1,0 +1,190 @@
+{
+  "started_at": "2026-10-15T18:39:58.387106+00:00",
+  "checks": [
+    {
+      "method": "WATERWALL_H_WS_TLS",
+      "source": "caccf7f1fcdd4e0e8f1df7698ff21309",
+      "destination": "486681f658374b82bcb5de2c00285bfe",
+      "wrong_ca_rejected": true,
+      "correct_ca_restored": true,
+      "large_transfers": [
+        {
+          "verified_bytes": 67108864,
+          "sha256": "65fbd84072a5e59db7371b1856c23db4aac017061701e0974e4f65722be08539"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "65fbd84072a5e59db7371b1856c23db4aac017061701e0974e4f65722be08539"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "65fbd84072a5e59db7371b1856c23db4aac017061701e0974e4f65722be08539"
+        }
+      ],
+      "status": "PASS",
+      "released_resources": 24
+    },
+    {
+      "method": "WATERWALL_H_WS_TLS",
+      "source": "486681f658374b82bcb5de2c00285bfe",
+      "destination": "caccf7f1fcdd4e0e8f1df7698ff21309",
+      "wrong_ca_rejected": true,
+      "correct_ca_restored": true,
+      "large_transfers": [
+        {
+          "verified_bytes": 67108864,
+          "sha256": "92c23706969168fcf2f140a41de77e016a865c6bd0ed82e67c732a77af5e51d6"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "92c23706969168fcf2f140a41de77e016a865c6bd0ed82e67c732a77af5e51d6"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "92c23706969168fcf2f140a41de77e016a865c6bd0ed82e67c732a77af5e51d6"
+        }
+      ],
+      "status": "PASS",
+      "released_resources": 24
+    },
+    {
+      "method": "WATERWALL_H_HTTP2_TLS",
+      "source": "caccf7f1fcdd4e0e8f1df7698ff21309",
+      "destination": "486681f658374b82bcb5de2c00285bfe",
+      "wrong_ca_rejected": true,
+      "correct_ca_restored": true,
+      "large_transfers": [
+        {
+          "verified_bytes": 67108864,
+          "sha256": "1c0e3c4ea03a2732b7fbfb77dc98945cec6985dd9375419e0dec7d0d7a30e6c4"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "1c0e3c4ea03a2732b7fbfb77dc98945cec6985dd9375419e0dec7d0d7a30e6c4"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "1c0e3c4ea03a2732b7fbfb77dc98945cec6985dd9375419e0dec7d0d7a30e6c4"
+        }
+      ],
+      "status": "PASS",
+      "released_resources": 24
+    },
+    {
+      "method": "WATERWALL_H_HTTP2_TLS",
+      "source": "486681f658374b82bcb5de2c00285bfe",
+      "destination": "caccf7f1fcdd4e0e8f1df7698ff21309",
+      "wrong_ca_rejected": true,
+      "correct_ca_restored": true,
+      "large_transfers": [
+        {
+          "verified_bytes": 67108864,
+          "sha256": "62f8323a2750a1440b554131ac6eab0681fba50865afd691ad11a64d7958e631"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "62f8323a2750a1440b554131ac6eab0681fba50865afd691ad11a64d7958e631"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "62f8323a2750a1440b554131ac6eab0681fba50865afd691ad11a64d7958e631"
+        }
+      ],
+      "status": "PASS",
+      "released_resources": 24
+    },
+    {
+      "method": "WATERWALL_H_REALITY",
+      "source": "caccf7f1fcdd4e0e8f1df7698ff21309",
+      "destination": "486681f658374b82bcb5de2c00285bfe",
+      "wrong_ca_rejected": true,
+      "correct_ca_restored": true,
+      "large_transfers": [
+        {
+          "verified_bytes": 67108864,
+          "sha256": "adcbae77fe42aad2078ad15273c6ca253ad949686559d2af4f3903fdc0a7ad0d"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "adcbae77fe42aad2078ad15273c6ca253ad949686559d2af4f3903fdc0a7ad0d"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "adcbae77fe42aad2078ad15273c6ca253ad949686559d2af4f3903fdc0a7ad0d"
+        }
+      ],
+      "status": "PASS",
+      "released_resources": 27
+    },
+    {
+      "method": "WATERWALL_H_REALITY",
+      "source": "486681f658374b82bcb5de2c00285bfe",
+      "destination": "caccf7f1fcdd4e0e8f1df7698ff21309",
+      "wrong_ca_rejected": true,
+      "correct_ca_restored": true,
+      "large_transfers": [
+        {
+          "verified_bytes": 67108864,
+          "sha256": "c751a33da8d23e0f8d862c06fbb6e1457ab3aa51cae60cdab9a5bf4906a84ec1"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "c751a33da8d23e0f8d862c06fbb6e1457ab3aa51cae60cdab9a5bf4906a84ec1"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "c751a33da8d23e0f8d862c06fbb6e1457ab3aa51cae60cdab9a5bf4906a84ec1"
+        }
+      ],
+      "status": "PASS",
+      "released_resources": 27
+    },
+    {
+      "method": "WATERWALL_H_VLESS_REALITY",
+      "source": "caccf7f1fcdd4e0e8f1df7698ff21309",
+      "destination": "486681f658374b82bcb5de2c00285bfe",
+      "wrong_ca_rejected": true,
+      "correct_ca_restored": true,
+      "large_transfers": [
+        {
+          "verified_bytes": 67108864,
+          "sha256": "bf644a83a8965aad82e1fa7db89c3ce62c54df9c1a077583c639bf9c3df65d34"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "bf644a83a8965aad82e1fa7db89c3ce62c54df9c1a077583c639bf9c3df65d34"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "bf644a83a8965aad82e1fa7db89c3ce62c54df9c1a077583c639bf9c3df65d34"
+        }
+      ],
+      "status": "PASS",
+      "released_resources": 27
+    },
+    {
+      "method": "WATERWALL_H_VLESS_REALITY",
+      "source": "486681f658374b82bcb5de2c00285bfe",
+      "destination": "caccf7f1fcdd4e0e8f1df7698ff21309",
+      "wrong_ca_rejected": true,
+      "correct_ca_restored": true,
+      "large_transfers": [
+        {
+          "verified_bytes": 67108864,
+          "sha256": "2a7e9a6f2158a4862c7960805f9ecd1f263998600ecd98b4803e6eadf3319f98"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "2a7e9a6f2158a4862c7960805f9ecd1f263998600ecd98b4803e6eadf3319f98"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "2a7e9a6f2158a4862c7960805f9ecd1f263998600ecd98b4803e6eadf3319f98"
+        }
+      ],
+      "status": "PASS",
+      "released_resources": 27
+    }
+  ],
+  "status": "PASS"
+}

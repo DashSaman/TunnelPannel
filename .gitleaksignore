@@ -9,3 +9,9 @@
 673339d55a0ed5620f710f3f1d635e6b9d072f55:docs/releases/v0.9.0-rc2/REAL_VALIDATION.json:generic-api-key:729
 673339d55a0ed5620f710f3f1d635e6b9d072f55:docs/releases/v0.9.0-rc2/REAL_VALIDATION.json:generic-api-key:754
 673339d55a0ed5620f710f3f1d635e6b9d072f55:docs/releases/v0.9.0-rc2/REAL_VALIDATION.json:generic-api-key:764
+# Exact historical unit-test UUID fixture, never a deployed credential.
+# The test now generates a UUID; this does not exempt any future finding.
+54862622263bd1d6da24c52e7f0a0aea3841fe01:tests/unit/test_singbox_extra.py:generic-api-key:12
+# Exact historical false positive: public installed controller commit SHA,
+# verified through GitHub Git data. No credential or future finding is excluded.
+abe8bb9765f408ecab4ebf90bb2fd2452b1e68f3:docs/WATERWALL-GATEWAY-VALIDATION.md:generic-api-key:11

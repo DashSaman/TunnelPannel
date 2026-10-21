@@ -1,0 +1,23 @@
+{
+  "ours_head": "6c4692d3c9f0aef5d908e3a31ce284764c7dd45a",
+  "reference_head": "f1176f8b7a4d0d75ace30318102ec1ba401269a8",
+  "scope": "Tracked Python/JS/HTML/CSS/shell files >=200 bytes; complete Python function bodies >=80 AST nodes, without docstrings/locations. Not rename-resistant plagiarism detection or proof of authorship.",
+  "source_unique_hashes": {
+    "ours": 333,
+    "reference": 43
+  },
+  "function_unique_hashes": {
+    "ours": 1348,
+    "reference": 215
+  },
+  "exact_source_matches": [],
+  "normalized_function_matches": [],
+  "parse_errors": {
+    "ours": [],
+    "reference": []
+  },
+  "reference_root_commits": [
+    "c333798f56fb631a6f4fe09cfdfa744a8d0f2ec9"
+  ],
+  "reference_root_license_files": []
+}

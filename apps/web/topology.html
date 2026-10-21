@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>TunnelPannel — Topology</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TehNet — Topology</title>
 <style>
 body{font-family:'Segoe UI',Tahoma,sans-serif;margin:0;color:#1c2b3a;background:#fff}
 header{background:#14324f;color:#fff;padding:14px 22px}
@@ -19,25 +20,39 @@ td{border-bottom:1px solid #d8dfe6;padding:6px 9px}
 form{background:#f6f8fa;border:1px solid #d8dfe6;border-radius:8px;padding:12px;font-size:13px}
 input,select{font:inherit;padding:5px 8px;margin:2px 4px 8px 0;border:1px solid #d8dfe6;border-radius:5px}
 button{background:#0e7490;color:#fff;border:0;border-radius:6px;padding:8px 18px;font-weight:600;cursor:pointer}
-</style>
+button:disabled{opacity:.5;cursor:default}#node-list{overflow-wrap:anywhere}.table-wrap{overflow-x:auto}
+</style><link rel="stylesheet" href="/assets/console.css">
 </head>
 <body>
 <header><h1>Topology — nodes, routes & multi-hop paths</h1></header>
 <main>
+<p><a href="/mesh">Mesh / فضای مشتری</a> · <a href="/ranking">Benchmark / بنچمارک</a></p>
+<form id="authentication">
+  <label>API access key / کلید دسترسی <input id="access-key" type="password" autocomplete="off" required></label>
+  <button id="connect">Connect / اتصال</button>
+  <button id="logout" type="button" disabled>Logout / خروج</button>
+</form>
+<p id="feedback" role="status">Connect with your workspace key. / با کلید فضای خود وارد شوید.</p>
+<p class="warn">Planning view: adding edges or finding paths does not deploy tunnels. / این بخش برای طراحی است؛ افزودن یال یا یافتن مسیر، تانل نصب نمی‌کند.</p>
 <form id="add-edge">
   <b>Add edge</b> —
-  from <input id="from" placeholder="node-id" size="8">
-  to <input id="to" placeholder="node-id" size="8">
-  route <input id="route" placeholder="WIREGUARD / chain:x" size="16">
-  <button>Add</button>
-  <button id="search" class="secondary" type="button">Find paths</button>
+  <label>From / مبدأ <input id="from" placeholder="node-id" size="8" required></label>
+  <label>To / مقصد <input id="to" placeholder="node-id" size="8" required></label>
+  <label>Route / روش <input id="route" placeholder="WIREGUARD / chain:x" size="16" required></label>
+  <button id="add" disabled>Add / افزودن</button>
 </form>
+<form id="find-paths">
+  <label>Path source / مبدأ مسیر <input id="path-source" placeholder="node-id" required></label>
+  <label>Path destination / مقصد مسیر <input id="path-destination" placeholder="node-id" required></label>
+  <button id="search" disabled>Find paths / یافتن مسیر</button>
+</form>
+<p id="node-list"></p>
 
 <h2>Edges</h2>
-<table id="edges"><thead><tr>
+<div class="table-wrap"><table id="edges"><thead><tr>
 <th>edge</th><th>from → to</th><th>route</th><th>kind</th><th>RTT</th>
 <th>loss</th><th>throughput</th><th>availability</th><th>MTU</th><th>verification</th>
-</tr></thead><tbody></tbody></table>
+</tr></thead><tbody></tbody></table></div>
 
 <h2>Paths (loop-free, bounded search)</h2>
 <div id="paths"></div>
@@ -45,16 +60,35 @@ button{background:#0e7490;color:#fff;border:0;border-radius:6px;padding:8px 18px
 <h2>Shared failure domains</h2>
 <div id="shared" class="warn" style="display:none"></div>
 </main>
+<script src="/assets/auth.js"></script>
 <script>
 "use strict";
 let topo = {edges: []};
+let apiKey = '';
+let authEpoch = 0;
+const field = id => document.getElementById(id);
+function message(value){field('feedback').textContent=value;}
+async function api(path,options={}){
+  const epoch=authEpoch;
+  const response=await TPAuth.request(path,{...options,headers:{...options.headers,...(apiKey&&apiKey!=='@cookie'?{Authorization:'Bearer '+apiKey}:{})}});
+  const value=await response.json();
+  if(epoch!==authEpoch)throw new Error('Session changed; response ignored.');
+  if(!response.ok)throw new Error(typeof value.detail==='string'?value.detail:'Request failed: '+response.status);
+  return value;
+}
+async function action(button,work){
+  const epoch=authEpoch;
+  button.disabled=true;
+  try{await work();}catch(error){if(epoch===authEpoch)message(error.message);}
+  finally{if(epoch===authEpoch)button.disabled=!apiKey;}
+}
 
 function h(tag, cls, text){const e=document.createElement(tag);if(cls)e.className=cls;
   if(text!==undefined)e.textContent=text;return e;}
 
 async function refresh(){
-  const r = await fetch("/api/topology");
-  topo = await r.json();
+  topo = await api("/api/topology");
+  field('node-list').textContent=(topo.nodes||[]).map(n=>n.name+' · '+n.id).join(' | ');
   const tb = document.querySelector("#edges tbody"); tb.innerHTML = "";
   for (const e of topo.edges){
     const tr = h("tr");
@@ -73,10 +107,13 @@ function renderPaths(paths){
   shared.style.display = "none";
   if (!paths.length){box.textContent = "No paths searched yet."; return;}
   for (const p of paths){
+    const edges=(p.edge_ids||[]).map(id=>topo.edges.find(e=>e.edge_id===id)).filter(Boolean);
+    const nodes=p.nodes||(edges.length?[edges[0].from_node,...edges.map(e=>e.to_node)]:[]);
+    const labels=p.route_labels||edges.map(e=>e.route);
     const div = h("div", "path");
     div.appendChild(h("span", "badge " + (p.state || "PLANNED"), p.state || "PLANNED"));
-    div.appendChild(document.createTextNode("  " + p.nodes.join(" → ") +
-      `   ${p.route_labels.join(" → ")}`));
+    div.appendChild(document.createTextNode("  " + nodes.join(" → ") +
+      `   ${labels.join(" → ")}`));
     const m = p.metrics || {};
     div.appendChild(h("div", "",
       `latency ${m.latency_ms ?? "—"} ms · loss ${m.loss_pct ?? "—"}% · ` +
@@ -97,22 +134,48 @@ function renderPaths(paths){
 
 document.getElementById("add-edge").onsubmit = async (ev) => {
   ev.preventDefault();
-  await fetch("/api/topology/edges", {method: "POST",
+  await action(field('add'),async()=>{
+  await api("/api/topology/edges", {method: "POST",
     headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({from_node: from.value, to_node: to.value, route: route.value})});
-  from.value = to.value = route.value = "";
-  refresh();
+    body: JSON.stringify({from_node: field('from').value, to_node: field('to').value, route: field('route').value})});
+  field('from').value=field('to').value=field('route').value='';
+  await refresh();message('Edge saved as UNTESTED. / یال با وضعیت آزمایش‌نشده ثبت شد.');
+  });
 };
 
-document.getElementById("search").onclick = () => {
-  const src = prompt("Source node id:"), dst = prompt("Destination node id:");
-  if (!src || !dst) return;
-  fetch("/api/topology/paths", {method: "POST",
+field('find-paths').onsubmit=async ev=>{
+  ev.preventDefault();
+  await action(field('search'),async()=>{
+  const result=await api("/api/topology/paths", {method: "POST",
     headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({source: src, destination: dst})}).then(refresh);
+    body: JSON.stringify({source: field('path-source').value, destination: field('path-destination').value})});
+  topo.paths=result.paths;topo.shared=result.shared;renderPaths(topo.paths);
+  message('Paths are PLANNED; real multi-hop deployment is a separate operation. / مسیرها صرفاً طراحی شده‌اند.');
+  });
 };
 
-refresh();
+function clearView(){
+  topo={edges:[],paths:[]};field('edges').querySelector('tbody').replaceChildren();
+  field('node-list').textContent='';renderPaths([]);
+  field('logout').disabled=field('add').disabled=field('search').disabled=true;
+}
+field('authentication').onsubmit=async ev=>{
+  ev.preventDefault();authEpoch++;apiKey=field('access-key').value.trim()||(TPAuth.principal?'@cookie':'');field('access-key').value='';clearView();
+  const epoch=authEpoch;
+  await action(field('connect'),async()=>{
+    try{await refresh();message('Connected / متصل');field('logout').disabled=false;
+      field('add').disabled=field('search').disabled=false;}
+    catch(error){if(epoch===authEpoch)apiKey='';throw error;}
+  });
+  if(epoch===authEpoch)field('connect').disabled=false;
+};
+field('logout').onclick=async()=>{
+  if(apiKey==='@cookie')await TPAuth.logout();
+  authEpoch++;apiKey='';clearView();field('connect').disabled=false;
+  message('Disconnected / خارج شدید');
+};
+TPAuth.ready.then(()=>{if(TPAuth.principal)field('authentication').dispatchEvent(new Event('submit',{cancelable:true}))});
+addEventListener('pagehide',()=>{authEpoch++;apiKey='';clearView()});
 </script>
 </body>
 </html>

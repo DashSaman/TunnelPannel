@@ -42,6 +42,21 @@ NODE = {"name": "test-host", "host": "192.0.2.8", "ssh_username": "root",
 ADMIN = {"Authorization": "Bearer admin-test"}
 
 
+def test_onboarding_pins_first_observed_key_and_never_echoes_password(nodes_api, monkeypatch):
+    client, factory = nodes_api
+    import orchestrator.remote_nodes as remote
+    monkeypatch.setattr(remote, 'observe_host_key', lambda host, port: 'b' * 64)
+    monkeypatch.setattr('apps.api.nodes_api.discover', lambda *args: {'os': 'linux', 'privileged': True})
+    body = {key: value for key, value in NODE.items() if key != 'host_key_fingerprint'}
+    response = client.post('/api/nodes/onboard', headers=ADMIN, json=body)
+    assert response.status_code == 201, response.text
+    assert response.json()['host_key_fingerprint'] == 'b' * 64
+    assert response.json()['trust_basis'] == 'first observed SSH host key'
+    assert NODE['password'] not in response.text
+    with factory() as session:
+        assert session.query(Node).one().host_key_fingerprint == 'b' * 64
+
+
 def test_node_registration_encrypts_and_never_returns_credentials(nodes_api):
     client, factory = nodes_api
     response = client.post("/api/nodes", headers=ADMIN, json=NODE)
@@ -95,6 +110,25 @@ def test_node_list_requires_authentication_and_accepts_viewer(nodes_api):
     response = client.get('/api/nodes', headers={'Authorization': 'Bearer viewer-test'})
     assert response.status_code == 200
     assert response.json() == []
+
+
+def test_cached_inventory_is_authenticated_timestamped_and_read_only(nodes_api, monkeypatch):
+    client, _ = nodes_api
+    created = client.post('/api/nodes',headers=ADMIN,json=NODE).json()
+    path = '/api/nodes/'+created['id']+'/inventory'
+    assert client.get(path).status_code == 401
+    assert client.get(path,headers=ADMIN).json()['coexistence'] is None
+    snapshot = {'os':'linux','coexistence':{'complete':True,'observed_at':1234,
+                                         'listeners':[], 'tunnels':[{'name':'tun9','kind':'tun'}]}}
+    monkeypatch.setattr('apps.api.nodes_api.discover',lambda *a:snapshot)
+    assert client.post('/api/nodes/'+created['id']+'/discover',headers=ADMIN).status_code == 200
+    def forbidden(*args):
+        raise AssertionError('GET must not make an SSH connection')
+    monkeypatch.setattr('apps.api.nodes_api.discover',forbidden)
+    response = client.get(path,headers={'Authorization':'Bearer viewer-test'})
+    assert response.status_code == 200 and response.headers['cache-control']=='no-store'
+    assert response.json()['coexistence'] == snapshot['coexistence']
+    assert client.get('/api/nodes/absent/inventory',headers=ADMIN).status_code == 404
 
 
 def test_node_credentials_can_be_rotated_without_changing_identity(nodes_api):

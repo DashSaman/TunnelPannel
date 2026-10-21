@@ -12,7 +12,7 @@ import pytest
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
-from core.models import Base, BenchmarkReceipt, BenchmarkRun, BenchmarkSample, Event, Job
+from core.models import Base, BenchmarkReceipt, BenchmarkRun, BenchmarkSample, Deployment, Event, Job, ResourceAllocation
 from engines.adapters import ProbeResult
 from orchestrator.benchmarking import (P99_MIN_SAMPLES, NodeCaps, Candidate, resolve_candidates, rtt_stats)
 from orchestrator.benchmarking.runner import BenchmarkRunner, sanitize
@@ -175,6 +175,20 @@ def session():
 
 
 class TestRunner:
+    @pytest.mark.parametrize('behavior', ['ok', 'setup-fail', 'probe-fail'])
+    def test_completed_cleanup_finalizes_temporary_deployment(self, session, behavior):
+        BenchmarkRunner(session, 'a', 'b', 'QUICK',
+                        lambda c: FakeAdapter(c, behavior=behavior), [cand('A')]).run()
+        deployment = session.query(Deployment).one()
+        assert deployment.state == 'ROLLED_BACK'
+        assert session.query(ResourceAllocation).filter_by(released_at=None).count() == 0
+
+    def test_cleanup_failure_retains_allocations_and_marks_deployment_failed(self, session):
+        BenchmarkRunner(session, 'a', 'b', 'QUICK',
+                        lambda c: FakeAdapter(c, fail_cleanup=True), [cand('A')]).run()
+        assert session.query(Deployment).one().state == 'FAILED'
+        assert session.query(ResourceAllocation).filter_by(released_at=None).count() > 0
+
     def test_happy_path_persists_samples_and_receipts(self, session):
         cands = [cand("A"), cand("B")]
         factory = lambda c: FakeAdapter(c)

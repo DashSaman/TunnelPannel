@@ -1,0 +1,1002 @@
+{
+  "status": "PASS",
+  "date": "2026-10-18",
+  "scope": "Two authorized Ubuntu amd64 nodes, private website gateway; no Iran path or scale/SLA claim",
+  "backend_revision": "882e69d8af31616f4022ca5ddabb11f31c5b587d",
+  "backend_tree": "9b2e61253f2cae51e04585f29ea43baafc1ec812",
+  "complete_revision": "d68556d17f8b4a8276bc4c2344139bffc9329042",
+  "complete_tree": "05cecf03ee7293badc10dadb5f4941587b498d96",
+  "engine": {
+    "source": "613bb32c93db40b09cb915070e5f7ff09ad3c81d",
+    "patchset": "ca1-h2drain6",
+    "binary_sha256": "4244a3b394d73a2629d0d2912e5f4ae12acfe1d791e32ce6c116a1b82dc6e9cb",
+    "identical_both_nodes": true
+  },
+  "installed_campaign": {
+    "state": "PASS",
+    "profile": "DEEP",
+    "directions": [
+      {
+        "direction": "A_to_B",
+        "state": "PASS",
+        "results": [
+          {
+            "method": "WATERWALL_H_HTTP2_TLS",
+            "status": "PASS",
+            "metrics": {
+              "rtt_avg": 5.96797,
+              "throughput_mbps": 301.1902785786855,
+              "throughput_evidence": {
+                "tool": "curl",
+                "integrity": "SHA256",
+                "verified_bytes": 2259681280,
+                "elapsed_s": 60.02003227098612,
+                "transfers": 2155,
+                "throughput_mbps": 301.1902785786855
+              },
+              "rtt_p50": 5.7985,
+              "rtt_p95": 8.6084,
+              "rtt_p99": 10.875330000000035,
+              "jitter": 1.3364949494949494,
+              "samples": 100,
+              "rtt_basis": "http_request",
+              "loss_pct": 0.0,
+              "loss_basis": "application request failures, not inferred IP packet loss",
+              "reconnect_s": 0.68,
+              "recovery_ok": true,
+              "cleanup": "released 26"
+            }
+          },
+          {
+            "method": "WATERWALL_H_REALITY",
+            "status": "PASS",
+            "metrics": {
+              "rtt_avg": 6.88885,
+              "throughput_mbps": 397.81179334033186,
+              "throughput_evidence": {
+                "tool": "curl",
+                "integrity": "SHA256",
+                "verified_bytes": 2984247296,
+                "elapsed_s": 60.01324940001359,
+                "transfers": 2846,
+                "throughput_mbps": 397.81179334033186
+              },
+              "rtt_p50": 6.9975000000000005,
+              "rtt_p95": 9.5357,
+              "rtt_p99": 15.452020000000017,
+              "jitter": 1.4294343434343435,
+              "samples": 100,
+              "rtt_basis": "http_request",
+              "loss_pct": 0.0,
+              "loss_basis": "application request failures, not inferred IP packet loss",
+              "reconnect_s": 0.768,
+              "recovery_ok": true,
+              "cleanup": "released 29"
+            }
+          },
+          {
+            "method": "WATERWALL_H_VLESS_REALITY",
+            "status": "PASS",
+            "metrics": {
+              "rtt_avg": 6.147419999999999,
+              "throughput_mbps": 391.3777275380857,
+              "throughput_evidence": {
+                "tool": "curl",
+                "integrity": "SHA256",
+                "verified_bytes": 2936012800,
+                "elapsed_s": 60.013896415999625,
+                "transfers": 2800,
+                "throughput_mbps": 391.3777275380857
+              },
+              "rtt_p50": 5.689,
+              "rtt_p95": 8.7061,
+              "rtt_p99": 10.046140000000019,
+              "jitter": 1.1187474747474748,
+              "samples": 100,
+              "rtt_basis": "http_request",
+              "loss_pct": 0.0,
+              "loss_basis": "application request failures, not inferred IP packet loss",
+              "reconnect_s": 0.758,
+              "recovery_ok": true,
+              "cleanup": "released 29"
+            }
+          },
+          {
+            "method": "WATERWALL_H_WS_TLS",
+            "status": "PASS",
+            "metrics": {
+              "rtt_avg": 5.94754,
+              "throughput_mbps": 402.75178640892767,
+              "throughput_evidence": {
+                "tool": "curl",
+                "integrity": "SHA256",
+                "verified_bytes": 3021996032,
+                "elapsed_s": 60.026967159006745,
+                "transfers": 2882,
+                "throughput_mbps": 402.75178640892767
+              },
+              "rtt_p50": 6.3020000000000005,
+              "rtt_p95": 7.970300000000001,
+              "rtt_p99": 8.71603,
+              "jitter": 1.0473131313131312,
+              "samples": 100,
+              "rtt_basis": "http_request",
+              "loss_pct": 0.0,
+              "loss_basis": "application request failures, not inferred IP packet loss",
+              "reconnect_s": 0.667,
+              "recovery_ok": true,
+              "cleanup": "released 26"
+            }
+          }
+        ]
+      },
+      {
+        "direction": "B_to_A",
+        "state": "PASS",
+        "results": [
+          {
+            "method": "WATERWALL_H_HTTP2_TLS",
+            "status": "PASS",
+            "metrics": {
+              "rtt_avg": 6.50358,
+              "throughput_mbps": 288.9456917058542,
+              "throughput_evidence": {
+                "tool": "curl",
+                "integrity": "SHA256",
+                "verified_bytes": 2167406592,
+                "elapsed_s": 60.00869102298748,
+                "transfers": 2067,
+                "throughput_mbps": 288.9456917058542
+              },
+              "rtt_p50": 6.771,
+              "rtt_p95": 8.221949999999998,
+              "rtt_p99": 9.15232000000001,
+              "jitter": 0.9622020202020202,
+              "samples": 100,
+              "rtt_basis": "http_request",
+              "loss_pct": 0.0,
+              "loss_basis": "application request failures, not inferred IP packet loss",
+              "reconnect_s": 0.695,
+              "recovery_ok": true,
+              "cleanup": "released 26"
+            }
+          },
+          {
+            "method": "WATERWALL_H_REALITY",
+            "status": "PASS",
+            "metrics": {
+              "rtt_avg": 7.5157799999999995,
+              "throughput_mbps": 371.36835861111666,
+              "throughput_evidence": {
+                "tool": "curl",
+                "integrity": "SHA256",
+                "verified_bytes": 2786066432,
+                "elapsed_s": 60.017314181954134,
+                "transfers": 2657,
+                "throughput_mbps": 371.36835861111666
+              },
+              "rtt_p50": 7.742,
+              "rtt_p95": 9.4907,
+              "rtt_p99": 11.717800000000052,
+              "jitter": 1.0859696969696973,
+              "samples": 100,
+              "rtt_basis": "http_request",
+              "loss_pct": 0.0,
+              "loss_basis": "application request failures, not inferred IP packet loss",
+              "reconnect_s": 0.756,
+              "recovery_ok": true,
+              "cleanup": "released 29"
+            }
+          },
+          {
+            "method": "WATERWALL_H_VLESS_REALITY",
+            "status": "PASS",
+            "metrics": {
+              "rtt_avg": 7.74148,
+              "throughput_mbps": 374.2508756644093,
+              "throughput_evidence": {
+                "tool": "curl",
+                "integrity": "SHA256",
+                "verified_bytes": 2807037952,
+                "elapsed_s": 60.00334288098384,
+                "transfers": 2677,
+                "throughput_mbps": 374.2508756644093
+              },
+              "rtt_p50": 7.91,
+              "rtt_p95": 9.993549999999999,
+              "rtt_p99": 20.494100000000024,
+              "jitter": 1.7542525252525252,
+              "samples": 100,
+              "rtt_basis": "http_request",
+              "loss_pct": 0.0,
+              "loss_basis": "application request failures, not inferred IP packet loss",
+              "reconnect_s": 0.758,
+              "recovery_ok": true,
+              "cleanup": "released 29"
+            }
+          },
+          {
+            "method": "WATERWALL_H_WS_TLS",
+            "status": "PASS",
+            "metrics": {
+              "rtt_avg": 6.94782,
+              "throughput_mbps": 368.7222779410261,
+              "throughput_evidence": {
+                "tool": "curl",
+                "integrity": "SHA256",
+                "verified_bytes": 2766143488,
+                "elapsed_s": 60.01576044596732,
+                "transfers": 2638,
+                "throughput_mbps": 368.7222779410261
+              },
+              "rtt_p50": 6.717,
+              "rtt_p95": 8.924599999999996,
+              "rtt_p99": 11.034220000000023,
+              "jitter": 0.9998181818181819,
+              "samples": 100,
+              "rtt_basis": "http_request",
+              "loss_pct": 0.0,
+              "loss_basis": "application request failures, not inferred IP packet loss",
+              "reconnect_s": 0.696,
+              "recovery_ok": true,
+              "cleanup": "released 26"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "physical_acceptance": {
+    "large_transfers": [
+      {
+        "direction": "B_to_A",
+        "variant": "full",
+        "tag": "tpbench-125443174-1",
+        "transfers": {
+          "successes": 3000,
+          "failures": [],
+          "elapsed_s": 87.96845491300337,
+          "attempts": 3000
+        },
+        "released_resources": 26,
+        "cleanup": "PASS"
+      },
+      {
+        "direction": "B_to_A",
+        "variant": "h2_aead",
+        "tag": "tpbench-367376015-1",
+        "transfers": {
+          "successes": 3000,
+          "failures": [],
+          "elapsed_s": 79.59131179301767,
+          "attempts": 3000
+        },
+        "released_resources": 28,
+        "cleanup": "PASS"
+      },
+      {
+        "direction": "A_to_B",
+        "variant": "full",
+        "tag": "tpbench-605632206-1",
+        "transfers": {
+          "successes": 3000,
+          "failures": [],
+          "elapsed_s": 82.20675143401604,
+          "attempts": 3000
+        },
+        "released_resources": 26,
+        "cleanup": "PASS"
+      }
+    ],
+    "profiles": [
+      {
+        "direction": "A_to_B",
+        "variant": "full",
+        "method": "WATERWALL_H_HTTP2_TLS",
+        "tag": "tpbench-181484888-1",
+        "transfers": {
+          "successes": 50,
+          "failures": [],
+          "elapsed_s": 1.3701838579727337,
+          "attempts": 50
+        },
+        "metrics": {
+          "throughput_mbps": 306.0598173141855,
+          "throughput_evidence": {
+            "tool": "curl",
+            "integrity": "SHA256",
+            "verified_bytes": 2296381440,
+            "elapsed_s": 60.02438242698554,
+            "transfers": 2190,
+            "throughput_mbps": 306.0598173141855
+          },
+          "loss_pct": 0.0,
+          "latency_evidence": {
+            "samples_ms": [
+              6.634,
+              8.667,
+              6.854,
+              4.7749999999999995,
+              4.569
+            ],
+            "probes_sent": 5,
+            "probes_failed": 0,
+            "rtt_basis": "http_request",
+            "clock": "remote curl time_total, excludes SSH and process launch"
+          },
+          "reconnect_s": 0.141,
+          "recovery_ok": true
+        },
+        "released_resources": 27,
+        "cleanup": "PASS"
+      },
+      {
+        "direction": "B_to_A",
+        "variant": "full",
+        "method": "WATERWALL_H_REALITY",
+        "tag": "tpbench-389194992-1",
+        "transfers": {
+          "successes": 50,
+          "failures": [],
+          "elapsed_s": 1.1288025919930078,
+          "attempts": 50
+        },
+        "metrics": {
+          "throughput_mbps": 376.0642658366384,
+          "throughput_evidence": {
+            "tool": "curl",
+            "integrity": "SHA256",
+            "verified_bytes": 2820669440,
+            "elapsed_s": 60.003987536008935,
+            "transfers": 2690,
+            "throughput_mbps": 376.0642658366384
+          },
+          "loss_pct": 0.0,
+          "latency_evidence": {
+            "samples_ms": [
+              7.212,
+              5.4879999999999995,
+              7.191000000000001,
+              7.276000000000001,
+              7.104
+            ],
+            "probes_sent": 5,
+            "probes_failed": 0,
+            "rtt_basis": "http_request",
+            "clock": "remote curl time_total, excludes SSH and process launch"
+          },
+          "reconnect_s": 0.755,
+          "recovery_ok": true
+        },
+        "released_resources": 30,
+        "cleanup": "PASS"
+      },
+      {
+        "direction": "B_to_A",
+        "variant": "full",
+        "method": "WATERWALL_H_VLESS_REALITY",
+        "tag": "tpbench-542653337-1",
+        "transfers": {
+          "successes": 50,
+          "failures": [],
+          "elapsed_s": 1.0664579729782417,
+          "attempts": 50
+        },
+        "metrics": {
+          "throughput_mbps": 363.0386782281931,
+          "throughput_evidence": {
+            "tool": "curl",
+            "integrity": "SHA256",
+            "verified_bytes": 2723151872,
+            "elapsed_s": 60.00797238002997,
+            "transfers": 2597,
+            "throughput_mbps": 363.0386782281931
+          },
+          "loss_pct": 0.0,
+          "latency_evidence": {
+            "samples_ms": [
+              8.13,
+              8.496,
+              9.895,
+              7.805999999999999,
+              8.161
+            ],
+            "probes_sent": 5,
+            "probes_failed": 0,
+            "rtt_basis": "http_request",
+            "clock": "remote curl time_total, excludes SSH and process launch"
+          },
+          "reconnect_s": 0.754,
+          "recovery_ok": true
+        },
+        "released_resources": 30,
+        "cleanup": "PASS"
+      },
+      {
+        "direction": "A_to_B",
+        "variant": "full",
+        "method": "WATERWALL_H_VLESS_REALITY",
+        "tag": "tpbench-562345945-1",
+        "transfers": {
+          "successes": 50,
+          "failures": [],
+          "elapsed_s": 1.0716573829995468,
+          "attempts": 50
+        },
+        "metrics": {
+          "throughput_mbps": 407.3983509769484,
+          "throughput_evidence": {
+            "tool": "curl",
+            "integrity": "SHA256",
+            "verified_bytes": 3055550464,
+            "elapsed_s": 60.00123381300364,
+            "transfers": 2914,
+            "throughput_mbps": 407.3983509769484
+          },
+          "loss_pct": 0.0,
+          "latency_evidence": {
+            "samples_ms": [
+              8.059999999999999,
+              9.001,
+              4.813,
+              4.742999999999999,
+              5.699
+            ],
+            "probes_sent": 5,
+            "probes_failed": 0,
+            "rtt_basis": "http_request",
+            "clock": "remote curl time_total, excludes SSH and process launch"
+          },
+          "reconnect_s": 0.756,
+          "recovery_ok": true
+        },
+        "released_resources": 30,
+        "cleanup": "PASS"
+      },
+      {
+        "direction": "B_to_A",
+        "variant": "full",
+        "method": "WATERWALL_H_HTTP2_TLS",
+        "tag": "tpbench-696288552-1",
+        "transfers": {
+          "successes": 50,
+          "failures": [],
+          "elapsed_s": 1.4908178769983351,
+          "attempts": 50
+        },
+        "metrics": {
+          "throughput_mbps": 287.8394681258199,
+          "throughput_evidence": {
+            "tool": "curl",
+            "integrity": "SHA256",
+            "verified_bytes": 2159017984,
+            "elapsed_s": 60.00616935704602,
+            "transfers": 2059,
+            "throughput_mbps": 287.8394681258199
+          },
+          "loss_pct": 0.0,
+          "latency_evidence": {
+            "samples_ms": [
+              5.139,
+              4.382,
+              4.1000000000000005,
+              3.876,
+              4.309
+            ],
+            "probes_sent": 5,
+            "probes_failed": 0,
+            "rtt_basis": "http_request",
+            "clock": "remote curl time_total, excludes SSH and process launch"
+          },
+          "reconnect_s": 0.68,
+          "recovery_ok": true
+        },
+        "released_resources": 27,
+        "cleanup": "PASS"
+      },
+      {
+        "direction": "A_to_B",
+        "variant": "full",
+        "method": "WATERWALL_H_WS_TLS",
+        "tag": "tpbench-796205058-1",
+        "transfers": {
+          "successes": 50,
+          "failures": [],
+          "elapsed_s": 1.0970608590287156,
+          "attempts": 50
+        },
+        "metrics": {
+          "throughput_mbps": 400.0095647755277,
+          "throughput_evidence": {
+            "tool": "curl",
+            "integrity": "SHA256",
+            "verified_bytes": 3001024512,
+            "elapsed_s": 60.01905506802723,
+            "transfers": 2862,
+            "throughput_mbps": 400.0095647755277
+          },
+          "loss_pct": 0.0,
+          "latency_evidence": {
+            "samples_ms": [
+              7.939,
+              6.3709999999999996,
+              7.186,
+              4.4,
+              6.171
+            ],
+            "probes_sent": 5,
+            "probes_failed": 0,
+            "rtt_basis": "http_request",
+            "clock": "remote curl time_total, excludes SSH and process launch"
+          },
+          "reconnect_s": 0.726,
+          "recovery_ok": true
+        },
+        "released_resources": 27,
+        "cleanup": "PASS"
+      },
+      {
+        "direction": "B_to_A",
+        "variant": "full",
+        "method": "WATERWALL_H_WS_TLS",
+        "tag": "tpbench-800591412-1",
+        "transfers": {
+          "successes": 50,
+          "failures": [],
+          "elapsed_s": 1.1797013920149766,
+          "attempts": 50
+        },
+        "metrics": {
+          "throughput_mbps": 373.0605157437209,
+          "throughput_evidence": {
+            "tool": "curl",
+            "integrity": "SHA256",
+            "verified_bytes": 2798649344,
+            "elapsed_s": 60.014913954015356,
+            "transfers": 2669,
+            "throughput_mbps": 373.0605157437209
+          },
+          "loss_pct": 0.0,
+          "latency_evidence": {
+            "samples_ms": [
+              8.600999999999999,
+              6.443,
+              6.276000000000001,
+              6.345,
+              6.438
+            ],
+            "probes_sent": 5,
+            "probes_failed": 0,
+            "rtt_basis": "http_request",
+            "clock": "remote curl time_total, excludes SSH and process launch"
+          },
+          "reconnect_s": 0.695,
+          "recovery_ok": true
+        },
+        "released_resources": 27,
+        "cleanup": "PASS"
+      },
+      {
+        "direction": "A_to_B",
+        "variant": "full",
+        "method": "WATERWALL_H_REALITY",
+        "tag": "tpbench-965998238-1",
+        "transfers": {
+          "successes": 50,
+          "failures": [],
+          "elapsed_s": 0.9660425339825451,
+          "attempts": 50
+        },
+        "metrics": {
+          "throughput_mbps": 398.78095420471294,
+          "throughput_evidence": {
+            "tool": "curl",
+            "integrity": "SHA256",
+            "verified_bytes": 2991587328,
+            "elapsed_s": 60.01464807096636,
+            "transfers": 2853,
+            "throughput_mbps": 398.78095420471294
+          },
+          "loss_pct": 0.0,
+          "latency_evidence": {
+            "samples_ms": [
+              10.179,
+              7.776,
+              8.254,
+              22.186,
+              8.267
+            ],
+            "probes_sent": 5,
+            "probes_failed": 0,
+            "rtt_basis": "http_request",
+            "clock": "remote curl time_total, excludes SSH and process launch"
+          },
+          "reconnect_s": 0.222,
+          "recovery_ok": true
+        },
+        "released_resources": 30,
+        "cleanup": "PASS"
+      }
+    ]
+  },
+  "canaries": {
+    "controller": {
+      "status": "PASS",
+      "checks": [
+        "ipv4_ipv6_tcp_udp_canary_detection",
+        "existing_tun_link_detection",
+        "existing_service_detection",
+        "allocator_skips_foreign_listeners",
+        "explicit_panel_port_conflict_refused",
+        "fresh_panel_default_conflict_selects_free_port",
+        "operator_reserved_range_skipped",
+        "missing_inspection_tool_fails_closed",
+        "existing_ipsec_policy_protected",
+        "existing_api_listener_owner_verified",
+        "foreign_canary_and_original_api_pid_preserved",
+        "owned_canary_cleanup_only"
+      ],
+      "observed_at": 1792344222.1061847,
+      "before": {
+        "tunnels": 20,
+        "listeners": 49,
+        "services": 41,
+        "containers": 0
+      },
+      "after": {
+        "tunnels": 20,
+        "listeners": 49,
+        "services": 41,
+        "containers": 0
+      },
+      "memory_before": {
+        "MemTotal": 977788928,
+        "MemAvailable": 337240064,
+        "SwapTotal": 1073737728,
+        "SwapFree": 773058560
+      },
+      "docker_live_tested": false,
+      "original_tunnels_unchanged": true
+    },
+    "peer": {
+      "status": "PASS",
+      "checks": [
+        "ipv4_ipv6_tcp_udp_canary_detection",
+        "existing_tun_link_detection",
+        "existing_service_detection",
+        "allocator_skips_foreign_listeners",
+        "explicit_panel_port_conflict_refused",
+        "fresh_panel_default_conflict_selects_free_port",
+        "operator_reserved_range_skipped",
+        "missing_inspection_tool_fails_closed",
+        "existing_ipsec_policy_protected",
+        "existing_api_listener_owner_verified",
+        "foreign_canary_and_original_api_pid_preserved",
+        "owned_canary_cleanup_only"
+      ],
+      "observed_at": 1792344223.833358,
+      "before": {
+        "tunnels": 20,
+        "listeners": 34,
+        "services": 37,
+        "containers": 0
+      },
+      "after": {
+        "tunnels": 20,
+        "listeners": 34,
+        "services": 37,
+        "containers": 0
+      },
+      "memory_before": {
+        "MemTotal": 977788928,
+        "MemAvailable": 363372544,
+        "SwapTotal": 0,
+        "SwapFree": 0
+      },
+      "docker_live_tested": false,
+      "original_tunnels_unchanged": true
+    }
+  },
+  "inventory": {
+    "controller": {
+      "complete": true,
+      "observed_at": 1792344222.7235696,
+      "counts": {
+        "tunnels": 20,
+        "listeners": 49,
+        "services": 41,
+        "containers": 0
+      },
+      "fresh_cached_equal": true,
+      "no_store": true
+    },
+    "peer": {
+      "complete": true,
+      "observed_at": 1792344224.4498937,
+      "counts": {
+        "tunnels": 20,
+        "listeners": 34,
+        "services": 37,
+        "containers": 0
+      },
+      "fresh_cached_equal": true,
+      "no_store": true
+    }
+  },
+  "drain": {
+    "controller": {
+      "drained": true,
+      "active": [],
+      "historical_released_benchmarks": 0,
+      "historical_interrupted_runs": 0
+    },
+    "peer": {
+      "drained": true,
+      "active": [],
+      "historical_released_benchmarks": 0,
+      "historical_interrupted_runs": 0
+    }
+  },
+  "identity_preservation": {
+    "controller": {
+      "status": "PASS",
+      "env_key_rbac_root_access_preserved": true
+    },
+    "peer": {
+      "status": "PASS",
+      "env_key_rbac_root_access_preserved": true
+    }
+  },
+  "current_groups": [
+    {
+      "methods": [
+        "IP6GRETAP",
+        "SIT_OVER_WIREGUARD",
+        "HAJSAMAN_WG",
+        "GRE",
+        "GRETAP"
+      ],
+      "pid": 1140595,
+      "mode": "failover",
+      "pin": null,
+      "entry_sha256": "d18f21098bade9fddc63c3f2528670e687677584c0f339374898bb2265831033",
+      "config_sha256": "278069a2a6e9044b5b5c968bda510e1f94d5772df8570faecd8afbfe29097e21"
+    },
+    {
+      "methods": [
+        "IP6GRE",
+        "SIT_6IN4",
+        "VXLAN",
+        "IPIP",
+        "IKEV2_IPSEC"
+      ],
+      "pid": 873935,
+      "mode": "balance",
+      "pin": null,
+      "entry_sha256": "f0dedaa5000f3d8939d9ea8054a87a98c16e0bf0f96a66d51b08e26c7ac2941d",
+      "config_sha256": "c299e13eb96b29882b775da909ece21a2fd373db1c93ea32e256791d1fb368b9"
+    }
+  ],
+  "groups_preserved": true,
+  "healthy_members": 10,
+  "existing_receipts": {
+    "status": "PASS",
+    "count": 20,
+    "routes": [
+      {
+        "methods": [
+          {
+            "method": "IP6GRETAP",
+            "receipts": 2,
+            "latency_ms": [
+              6.265,
+              4.09
+            ]
+          },
+          {
+            "method": "SIT_OVER_WIREGUARD",
+            "receipts": 2,
+            "latency_ms": [
+              5.773,
+              4.156
+            ]
+          },
+          {
+            "method": "HAJSAMAN_WG",
+            "receipts": 2,
+            "latency_ms": [
+              3.58,
+              2.832
+            ]
+          },
+          {
+            "method": "GRE",
+            "receipts": 2,
+            "latency_ms": [
+              3.273,
+              2.631
+            ]
+          },
+          {
+            "method": "GRETAP",
+            "receipts": 2,
+            "latency_ms": [
+              4.892,
+              2.792
+            ]
+          }
+        ]
+      },
+      {
+        "methods": [
+          {
+            "method": "IP6GRE",
+            "receipts": 2,
+            "latency_ms": [
+              4.605,
+              5.611
+            ]
+          },
+          {
+            "method": "SIT_6IN4",
+            "receipts": 2,
+            "latency_ms": [
+              5.434,
+              4.974
+            ]
+          },
+          {
+            "method": "VXLAN",
+            "receipts": 2,
+            "latency_ms": [
+              5.664,
+              5.397
+            ]
+          },
+          {
+            "method": "IPIP",
+            "receipts": 2,
+            "latency_ms": [
+              5.583,
+              5.329
+            ]
+          },
+          {
+            "method": "IKEV2_IPSEC",
+            "receipts": 2,
+            "latency_ms": [
+              6.058,
+              5.177
+            ]
+          }
+        ]
+      }
+    ],
+    "scope": "Two actual nonce receipts per current warm upstream, no config or mode changes"
+  },
+  "website_gateway": {
+    "status": "PASS",
+    "revision": "d68556d17f8b4a8276bc4c2344139bffc9329042",
+    "health": true,
+    "http_port": 21000,
+    "forward_port": 21001,
+    "loopback_only": true,
+    "application_workers": false,
+    "customer_database": false,
+    "baseline": {
+      "status": "PASS",
+      "changed": {
+        "services": [],
+        "containers": [],
+        "links": [],
+        "nginx": []
+      },
+      "counts": {
+        "services": 5,
+        "containers": 11,
+        "links": 50,
+        "nginx": 29
+      }
+    },
+    "units": {
+      "tunnelpannel-web-http": {
+        "MainPID": "1826586",
+        "MemoryCurrent": "1490944",
+        "CPUQuotaPerSecUSec": "100ms",
+        "MemoryMax": "100663296",
+        "ActiveState": "active"
+      },
+      "tunnelpannel-web-transport": {
+        "MainPID": "1826582",
+        "MemoryCurrent": "1679360",
+        "CPUQuotaPerSecUSec": "100ms",
+        "MemoryMax": "67108864",
+        "ActiveState": "active"
+      }
+    },
+    "external_preinstall_drift_recorded": true
+  },
+  "proxy_authentication": {
+    "status": "PASS",
+    "unauthenticated": 401,
+    "invalid_key": 401,
+    "authorized_nodes": 2,
+    "authorized_campaign_state": "RUNNING",
+    "credential_written": false
+  },
+  "ui": {
+    "fa": "PASS",
+    "en": "PASS",
+    "rtl_ltr": "PASS",
+    "viewport": 390,
+    "document_widths": [
+      375,
+      375
+    ],
+    "horizontal_overflow": false,
+    "viewport_reset": true,
+    "console_errors": 0
+  },
+  "tests": {
+    "windows": {
+      "passed": 717,
+      "skipped": 32,
+      "warnings": 2
+    },
+    "linux_each_python": {
+      "versions": [
+        "3.11",
+        "3.12"
+      ],
+      "canonical_passed": 749,
+      "tunnelguard_passed": 100,
+      "backend_passed": 1
+    },
+    "portable_ci": 39147966187,
+    "security_ci": 39147966116,
+    "ci_status": "SUCCESS",
+    "linux_install_backup_restore_uninstall": "PASS"
+  },
+  "metadata_repair": {
+    "released_deployments": 1091,
+    "interrupted_runs": 3,
+    "historical_jobs_samples_receipts_allocations_unchanged": true,
+    "replay_allowed": false
+  },
+  "private_recovery": {
+    "pre_verified": true,
+    "post_verified": true,
+    "per_node_separate_installation_keys": true,
+    "pre_backups": {
+      "controller": {
+        "backup_sha256": "1aef5ccbcf91cdb87cc22e0e67e75cdffc05657339912a926ead28a58a9a088f",
+        "separate_key_present": true
+      },
+      "peer": {
+        "backup_sha256": "7c2618f9a22355949f96e05a5eaaa0c5971e0546bcec5235640e388a2b7d30db",
+        "separate_key_present": true
+      }
+    },
+    "post_backups": {
+      "controller": {
+        "backup_sha256": "4e195b85efd181a742daed10d712a47d00048230bb7243fc8319ddc60681b9e4",
+        "separate_key_present": true
+      },
+      "peer": {
+        "backup_sha256": "a09a95361002e3a1afcd5c6db63d7c2462313d9aa73737e5084c603f42ea764d",
+        "separate_key_present": true
+      }
+    },
+    "gateway_verified_roundtrip": true,
+    "protection": "Windows DPAPI same account/machine; server originals retained",
+    "restored_over_live_data": false
+  },
+  "commercial_boundary": {
+    "website_only_on_tehran_network": true,
+    "actual_payments": false,
+    "domain_or_sso_added": false,
+    "main_merged": false,
+    "single_stream_bonding": false,
+    "no_server_deleted": true
+  }
+}

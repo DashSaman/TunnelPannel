@@ -1,0 +1,80 @@
+{
+  "schema": 1,
+  "date": "2026-10-20",
+  "status": "PASS",
+  "scope": "illustrated read-only owner walkthrough",
+  "url": "https://tehnet.ir/tunnels/portal",
+  "before_after_customer_configuration_sha256": "f50c836f22568cdcf7123af6814064cbc436cd65f7ff5ea199acb99dc7a58d2f",
+  "compared": [
+    "customer pool, period and history",
+    "route inventory and accounting status",
+    "customer workspace settings",
+    "customer and system migration-operation history"
+  ],
+  "unchanged": {
+    "used_bytes": 21217,
+    "held_bytes": 0,
+    "quota_bytes": null,
+    "unlimited": true,
+    "already_accounted_live_original_routes": 2
+  },
+  "submitted": {
+    "allowance_edit": false,
+    "preflight_ticket": false,
+    "migration_execute": false,
+    "route_create_stop_restart": false,
+    "subscription_payment_edit": false,
+    "deployment": false
+  },
+  "browser_only_example": {
+    "quota": 100,
+    "unit": "GiB",
+    "new_period": false,
+    "save_clicked": false,
+    "discarded_before_finish": true
+  },
+  "walkthrough_order": "migrate eligible unmetered live routes first, then assign a real volume ceiling; already-accounted routes skip migration",
+  "screenshot_note": "Live images; result history comes from previous QA. No new cutover or quota grant is claimed.",
+  "images": [
+    {
+      "file": "01-customer-usage.jpg",
+      "description": "Actual customer selection and unlimited usage",
+      "sha256": "828f1fbf07d1805ad8ce87166a5b19e10f38209782eda2e9999f6b4dd24d87e9",
+      "dimensions": [
+        831,
+        868
+      ],
+      "source": "actual public TehNet browser UI"
+    },
+    {
+      "file": "02-allowance-example-unsaved.jpg",
+      "description": "100 GiB entered in the browser form only; not submitted",
+      "sha256": "d74223958c4ced4447e54dd104eabb047eed491d460649c4f42dbe0e331e23b0",
+      "dimensions": [
+        831,
+        868
+      ],
+      "source": "actual public TehNet browser UI"
+    },
+    {
+      "file": "03-originals-already-accounted.jpg",
+      "description": "Original routes COMMITTED/already accounted; no migration executed",
+      "sha256": "a0177c93abc24a8d4a2b36688a15fc30b09466936fbe54bc10005e6cce080db3",
+      "dimensions": [
+        831,
+        868
+      ],
+      "source": "actual public TehNet browser UI"
+    },
+    {
+      "file": "04-previous-qa-result-history.jpg",
+      "description": "Previous QA migration results; no new execution in this walkthrough",
+      "sha256": "ff9c105b62628a6b2d5184fc90fa2d0431545d8fa3feb28275979abea55c0819",
+      "dimensions": [
+        831,
+        868
+      ],
+      "source": "actual public TehNet browser UI"
+    }
+  ]
+}

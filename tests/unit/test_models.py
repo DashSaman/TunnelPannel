@@ -25,6 +25,7 @@ EXPECTED_TABLES = {
     "jobs", "secret_references",
     "component_dependencies", "composition_validations", "composition_templates",
     "topologies", "topology_edges", "topology_paths", "topology_revisions",
+    'operation_policies', 'operation_records',
 }
 
 

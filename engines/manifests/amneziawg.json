@@ -1,0 +1,55 @@
+{
+  "id": "amneziawg",
+  "name": "AmneziaWG",
+  "family": "vpn",
+  "version": "b5928efb6ca19f0153958460c3d141f04abc5c2e",
+  "maturity": "ADVANCED",
+  "layer": "L3",
+  "transport": [
+    "udp"
+  ],
+  "requires": [
+    "UDP_DATAGRAM"
+  ],
+  "provides": [
+    "L3_INTERFACE",
+    "TUN_INTERFACE"
+  ],
+  "required_binaries": [
+    "amneziawg-go"
+  ],
+  "required_kernel_modules": [],
+  "required_privileges": "CAP_NET_ADMIN",
+  "ports": {
+    "udp": "any"
+  },
+  "ip_protocols": [],
+  "ipv4": true,
+  "ipv6": true,
+  "tun": true,
+  "tap": false,
+  "socks": false,
+  "http_proxy": false,
+  "reverse": false,
+  "raw_ip": false,
+  "encryption": "ChaCha20-Poly1305",
+  "mtu_overhead": 120,
+  "can_be_overlay": true,
+  "can_be_underlay": true,
+  "can_be_nested": true,
+  "repeatable": true,
+  "known_limitations": [
+    "Userspace TUN and UDP required; isolated official source build",
+    "No claim of DPI resistance or Iran path quality from lab results"
+  ],
+  "verification": "REAL_PAIR_VERIFIED",
+  "supported_os": [
+    "linux"
+  ],
+  "supported_arch": [
+    "amd64",
+    "arm64"
+  ],
+  "implementation_status": "IMPLEMENTED",
+  "verification_evidence": "docs/evidence/commercial/tehnet-expansion-installed.json"
+}

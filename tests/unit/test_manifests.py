@@ -22,7 +22,7 @@ def all_manifests() -> dict[str, dict]:
 
 class TestManifestValidation:
     def test_all_manifests_load_and_validate(self, all_manifests):
-        assert len(all_manifests) == 21
+        assert len(all_manifests) == 24
 
     def test_catalog_engines_covered_by_manifests(self, all_manifests):
         from core.catalog import CATALOG

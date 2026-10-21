@@ -111,7 +111,8 @@ class BenchmarkRunner:
         with self._db_lock:
             deployment = Deployment(node_a=self.node_a_id, node_b=self.node_b_id,
                                     state="APPLYING",
-                                    desired_state={"benchmark": True, "candidate": cand.legacy_method_id})
+                                    desired_state={"benchmark": True, "candidate": cand.legacy_method_id,
+                                                   "job_id": self.job.id if self.job else None})
             self.session.add(deployment)
             self.session.flush()
         rm = ResourceManager(self.session)
@@ -197,11 +198,13 @@ class BenchmarkRunner:
                     adapter.rollback()
                 with self._db_lock:
                     n = rm.release_deployment(deployment.id)
+                    deployment.state = "ROLLED_BACK"
                     self.session.commit()
                 metrics["cleanup"] = f"released {n}"
             except Exception as e:
                 with self._db_lock:
                     self.orphaned.append(cand.legacy_method_id)
+                    deployment.state = "FAILED"
                     self.session.add(Event(severity="critical", source="benchmark",
                                            message=f"ORPHANED_RESOURCE after {cand.legacy_method_id}: {str(e)[:200]}",
                                            context={"candidate": cand.legacy_method_id}))
@@ -238,6 +241,14 @@ class BenchmarkRunner:
     # ── bounded scheduling ──
     def run(self) -> list[ScoredSample]:
         self._set_job("RUNNING", 0.0)
+        if hasattr(self.adapter_factory, 'prepare'):
+            if self.job:
+                self.job.payload = {**(self.job.payload or {}), 'stage': 'PREPARING_ENGINES'}
+                self.session.commit()
+            self.adapter_factory.prepare(self.candidates, self._cancel.is_set)
+            if self.job:
+                self.job.payload = {**(self.job.payload or {}), 'stage': 'MEASURING'}
+                self.session.commit()
         self._run = BenchmarkRun(node_a=self.node_a_id, node_b=self.node_b_id,
                                  profile=self.profile.name,
                                  methodology=self.profile.methodology,

@@ -1,0 +1,136 @@
+{
+  "status": "PASS",
+  "date": "2026-10-20",
+  "runtime": "fb0d553c8c268d444ab6d03470e56f998e9d3707",
+  "tree": "2aa6e9137d5c863c0de64a39e15b078271d105c0",
+  "website_source": "fb0d553c8c268d444ab6d03470e56f998e9d3707",
+  "website_bundle_sha256": "dce9c45ac55396caba1eed5ecef5036c9ac47183e2cdeaa29af73104fad03332",
+  "runtime_ci": {
+    "portable": 39414814113,
+    "security": 39414814111,
+    "status": "SUCCESS",
+    "python312_root_passed": 818,
+    "tunnelguard_passed": 100,
+    "backend_passed": 1
+  },
+  "two_source_acceptance": {
+    "method": "IP4IN6",
+    "independent_opposite_sources": 2,
+    "same_customer_pool": true,
+    "small": {
+      "verified_body_bytes_each": 1048576,
+      "central_used_bytes": 2097512,
+      "held_bytes": 0
+    },
+    "qa_worker_restart": {
+      "workers_restarted": 2,
+      "counters_preserved": true,
+      "original_workers_restarted": 0
+    },
+    "simultaneous_cap": {
+      "quota_bytes": 33554555,
+      "used_bytes": 33554555,
+      "held_bytes": 0,
+      "source_totals": [
+        15728583,
+        17825972
+      ],
+      "partial_payload_sha256_verified": true
+    },
+    "topup": {
+      "added_bytes": 1048593,
+      "previous_usage_preserved": true,
+      "new_used_bytes": 34603148,
+      "new_ceiling_bytes": 34603148,
+      "served_by_second_source": true
+    },
+    "expiry": {
+      "unspent_bytes": 65536,
+      "both_sources_payload_bytes": 0,
+      "used_bytes_unchanged": 34603148
+    },
+    "new_period": {
+      "quota_bytes": 2097165,
+      "used_bytes": 2097165,
+      "held_bytes": 0,
+      "prior_used_bytes_preserved": 34603148,
+      "source_lifetime_totals": [
+        17825748,
+        18874565
+      ]
+    },
+    "exhausted_recheck": {
+      "both_sources_payload_bytes": 0,
+      "counters_unchanged": true
+    }
+  },
+  "cleanup": {
+    "owned_routes_stopped": 2,
+    "owned_deployments_rolled_back": 6,
+    "allocations_released": 42,
+    "live_owned_allocations": 0,
+    "temporary_allowance_fixture_archived_and_removed": true,
+    "source_counters_and_stopped_history_retained": true,
+    "customer_account_plan_payment_changes": 0
+  },
+  "preservation": {
+    "original_groups": 2,
+    "original_members": 10,
+    "member_nonce_receipts": 10,
+    "stable_entry_receipts": 2,
+    "full_configuration_order_mode_pin_entry_and_workers_preserved": true,
+    "customer_and_installation_identities_preserved": true,
+    "coexistence_canaries_each_node": 12
+  },
+  "website": {
+    "url": "https://tehnet.ir/tunnels/",
+    "static_and_proxy_only": true,
+    "healthy": true,
+    "unrelated_containers_preserved": 11,
+    "links_preserved": 50,
+    "selected_service_pids_preserved": 5,
+    "nginx_and_wordpress_unchanged": true,
+    "old_release_retained": true,
+    "health_wait_seconds": 45
+  },
+  "ui": {
+    "installed_fa_en": true,
+    "owner_allowance_fields": true,
+    "customer_usage_card": true,
+    "mobile_client_and_scroll_width": [
+      375,
+      375
+    ],
+    "desktop_client_and_scroll_width": [
+      1265,
+      1265
+    ],
+    "viewport_reset": true,
+    "new_screenshot_exported": false
+  },
+  "public_auth": {
+    "owner_and_existing_customer_login": true,
+    "secure_cookies": true,
+    "unpaid_customer_guard": true,
+    "no_new_customer_work": true
+  },
+  "rescue": {
+    "fresh_canonical_and_source_usage_before_immediate_preinstall_after": true,
+    "separate_environment_each_install": true,
+    "three_original_hosts_independently_encrypted": true,
+    "separate_root0600_keys": true,
+    "decrypt_sha256_equal": true,
+    "originals_retained": true,
+    "private_export": false,
+    "live_restore": false
+  },
+  "boundaries": [
+    "Administrator-managed periods and grants; no automatic reset or payment",
+    "Managed accepted payload, not ISP billing or root tamper resistance",
+    "Held offline credit is never optimistically refunded",
+    "Live unmetered historical workers require explicit migration",
+    "Two-source test does not establish Iran connectivity, geographic redundancy or long-term SLA",
+    "Documentation publication head is independent of installed runtime pin",
+    "Main remains unmerged; heartbeat remains paused"
+  ]
+}

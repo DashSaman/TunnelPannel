@@ -11,7 +11,6 @@ import json
 import re
 import secrets
 import shlex
-import threading
 import time
 
 from fastapi import HTTPException
@@ -22,8 +21,11 @@ from engines.adapters import ProbeResult
 from orchestrator.benchmarking import PROFILES, Candidate, NodeCaps
 from orchestrator.remote_nodes import NodeRemote, node_access
 
-_locks_guard = threading.Lock()
-_locks = {}
+
+def traffic_plan(method):
+    reverse = (method.startswith(("FRP_", "RATHOLE_", "BACKHAUL_")) or "REVERSE" in method
+               or method in {"SSH_REMOTE_FORWARD", "GOST_REMOTE_TCP", "GOST_REMOTE_UDP"})
+    return {"initiator": "B" if reverse else "A", "origin_index": 1, "listener_side": "A"}
 
 
 def carrier_details(artifact):
@@ -86,15 +88,18 @@ def prepare_benchmark(session_factory):
         def factory(candidate):
             return RealPairAdapter(candidate, access, req.profile, nonce,
                                    numbers[candidate.legacy_method_id])
+        from orchestrator.engine_preflight import prepare_engines
+        factory.prepare = lambda candidates, cancelled: prepare_engines(access, candidates, cancelled)
         return caps[0], caps[1], candidates, factory
     return prepare
 
 
 class RealPairAdapter:
-    def __init__(self, candidate, access, profile, nonce, item):
+    def __init__(self, candidate, access, profile, nonce, item, *, persistent=False):
         self.candidate, self.access = candidate, access
+        self.persistent = persistent
         self.profile = PROFILES[profile]
-        self.run, self.item = {"id": nonce}, {"id": item, "initiator": "A"}
+        self.run, self.item = {"id": nonce}, {"id": item, **traffic_plan(candidate.legacy_method_id)}
         self.tag = f"tpbench-{nonce}-{item}"
         self.remotes = []
         self.acquired = []
@@ -118,9 +123,10 @@ class RealPairAdapter:
     def configure(self):
         from plan_executor import executor as bodies
         endpoints = [v[0] for v in self.access]
-        with _locks_guard:
-            locks = [_locks.setdefault(e["id"], threading.Lock()) for e in
-                     sorted(endpoints, key=lambda e: e["id"])]
+        from orchestrator.host_lease import HostLease, unused_prefix
+        locks = sorted({HostLease(e).key: HostLease(e) for e in endpoints}.values(), key=lambda l: l.key)
+        if len(locks) != 2:
+            raise RuntimeError("benchmark endpoints must be distinct physical hosts")
         for lock in locks:
             deadline = time.monotonic() + self.profile.setup_timeout_s
             while not lock.acquire(timeout=.5):
@@ -133,14 +139,21 @@ class RealPairAdapter:
         for endpoint, credentials in self.access:
             remote = NodeRemote(endpoint, credentials, deadline=deadline, cancelled=self.cancelled).connect()
             self.remotes.append(remote)
+            from orchestrator.host_inventory import scan, require_safe
+            require_safe(scan(remote), self.candidate.legacy_method_id)
+        # Inspect BOTH hosts before creating the first owned reservation journal.
+        for remote, (endpoint, _) in zip(self.remotes, self.access):
             from orchestrator.remote_journal import RemoteJournal
             journal = RemoteJournal(remote, self.run["id"], self.item["id"], endpoint["id"],
                                     self.persist_resource)
             self.journals.append(journal)
             remote.journal = journal
             remote.observer = journal.observe
+            from orchestrator.host_reservations import initialize
+            initialize(remote, journal, self.run['id'], self.item['id'])
         a, b = self.remotes
         for remote, peer in ((a, endpoints[1]['host']), (b, endpoints[0]['host'])):
+            remote.firewall_peer = peer
             targets = {peer}
             ssh = remote.run("printf '%s' \"$SSH_CONNECTION\"")['stdout'].split()
             if ssh:
@@ -148,10 +161,10 @@ class RealPairAdapter:
             for target in targets:
                 self.management_routes.append((remote, target, self._route(remote, target)))
         # Safe dedicated ranges: no default routes and no existing-resource removal.
-        subnet = secrets.randbelow(200) + 20
+        prefix = ipaddress.ip_network(unused_prefix(self.remotes))
         config = {"source_ip_a": endpoints[0]["host"], "source_ip_b": endpoints[1]["host"],
-                  "tunnel_cidr": f"10.246.{subnet}.0/30", "tunnel_ip_a": f"10.246.{subnet}.1/30",
-                  "tunnel_ip_b": f"10.246.{subnet}.2/30", "bind_address": "127.0.0.1",
+                  "tunnel_cidr": str(prefix), "tunnel_ip_a": f"{prefix[1]}/30",
+                  "tunnel_ip_b": f"{prefix[2]}/30", "bind_address": "127.0.0.1",
                   "remote_bind_host": "127.0.0.1", "listen_host": "127.0.0.1",
                   "benchmark_size_mb": 1 if self.profile.name == "QUICK" else 8,
                   "benchmark_enabled": False, "route_cidrs": [endpoints[1]["host"] + "/32"]}
@@ -164,24 +177,41 @@ class RealPairAdapter:
             prefix, indexes = implicit[method]
             for index in indexes:
                 self.journals[index].claim_interface(bodies.short_name(prefix, self.run['id'], self.item['id']))
-        if method in {'SSH_TUN_L3', 'SSH_TAP_L2', 'GRE_OVER_SSH', 'SIT_OVER_SSH'}:
+        if method in {'SSH_TUN_L3', 'SSH_TAP_L2'} or method.endswith('_OVER_SSH'):
+            from orchestrator.host_reservations import free_tun_id
+            config['ssh_tunnel_id'] = free_tun_id(self.remotes, config['ssh_tunnel_id'])
             name = ('tap' if method == 'SSH_TAP_L2' else 'tun') + str(config['ssh_tunnel_id'])
             for journal in self.journals:
                 journal.claim_interface(name)
         if method.endswith('_OVER_GOST'):
             for journal in self.journals:
                 journal.claim_interface(bodies.short_name('ngc', self.run['id'], self.item['id']))
-        if method in {"SIT_6IN4", "SIT_OVER_GOST", "SIT_OVER_SSH"}:
-            config.update(tunnel_cidr=f"fd45:246:{subnet}::/64",
-                          tunnel_ip_a=f"fd45:246:{subnet}::1/64", tunnel_ip_b=f"fd45:246:{subnet}::2/64")
-        if method in {"IP6GRE", "IP6GRETAP", "VTI6"}:
+        if method == 'SIT_6IN4' or method.startswith('SIT_OVER_'):
+            inner6 = ipaddress.ip_network(unused_prefix(self.remotes, version=6))
+            config.update(tunnel_cidr=str(inner6), tunnel_ip_a=f"{inner6[1]}/64",
+                          tunnel_ip_b=f"{inner6[2]}/64")
+        if method in {"IP6GRE", "IP6GRETAP", "VTI6", "IP4IN6"}:
             if not all(e.get("ipv6") for e in endpoints):
                 raise RuntimeError("this profile requires actual global IPv6 on both nodes")
             config.update(source_ip_a=endpoints[0]["ipv6"], source_ip_b=endpoints[1]["ipv6"])
         self.config = config
-        if method not in bodies.SUPPORTED and not method.startswith(("HEDIOUM_", "HAJSAMAN_")):
+        self.prepare_deployment(config, bodies)
+        from engines.singbox_extra import METHODS as extra_protocols
+        canonical_extensions = {'BACKHAUL_TCP', 'AMNEZIAWG', 'IP4IN6'}
+        if method not in bodies.SUPPORTED and method not in extra_protocols and method not in canonical_extensions and not method.startswith(("HEDIOUM_", "HAJSAMAN_", "WATERWALL_H_")):
             raise RuntimeError(f"real deployment body is required for {method}")
-        if method.startswith("HAJSAMAN_"):
+        if method in extra_protocols:
+            from engines.singbox_extra import deploy
+            self._origins(bodies)
+            self.artifact = deploy(method, self.run, self.item, config, a, b, *endpoints)
+        elif method.startswith('WATERWALL_H_'):
+            from engines.waterwall_h import deploy
+            self._origins(bodies)
+            self.target_origin = self.origins[1]
+            config.update(target_port=self.target_origin[1])
+            self.prepare_forward_target(config)
+            self.artifact = deploy(method, self.run, self.item, config, a, b, *endpoints)
+        elif method.startswith("HAJSAMAN_"):
             from engines.hajsaman_pair import deploy_hajsaman
             self.artifact = deploy_hajsaman(method, self.run, self.item, config, a, b,
                                             *endpoints, self.journals)
@@ -191,12 +221,15 @@ class RealPairAdapter:
             self.target_origin = self.origins[1]
             from engines.gost_pair import deploy_gost_proxy_pair
             self.artifact = deploy_gost_proxy_pair(method, self.run, self.item, config, a, b, *endpoints)
+        elif method == 'AMNEZIAWG':
+            from engines.amneziawg import deploy
+            self.artifact = deploy(self.run, self.item, config, a, b)
         elif method == "WIREGUARD":
             self.artifact = bodies.deploy_wireguard(self.run, self.item, config, a, b)
-        elif method in {"GRE", "GRETAP", "IPIP", "SIT_6IN4", "IP6GRE", "IP6GRETAP", "VXLAN"}:
+        elif method in {"GRE", "GRETAP", "IPIP", "SIT_6IN4", "IP6GRE", "IP6GRETAP", "VXLAN", "IP4IN6"}:
             self.artifact = bodies.deploy_kernel(method, self.run, self.item, config, a, b)
         else:
-            self._origins(bodies)
+            self._origins(bodies, http_bind='::' if ipaddress.ip_interface(config['tunnel_ip_b']).version == 6 else '0.0.0.0')
             if method in {"VLESS_REALITY", "VLESS_VISION_REALITY", "VLESS_XHTTP_REALITY"}:
                 cover_port = bodies.free_port(b, "tcp", 23000)
                 cover_dir = f"/etc/netauto/reality/{self.tag}"
@@ -212,16 +245,21 @@ class RealPairAdapter:
                     f"-cert {cover_dir}/cert.pem -key {cover_dir}/key.pem -alpn h2,http/1.1 -www -quiet")
                 bodies.wait_listener(b, "tcp", cover_port)
                 config.update(reality_target=f"127.0.0.1:{cover_port}", reality_server_name="cover.test")
-            reverse = (method.startswith(("FRP_", "RATHOLE_")) or "REVERSE" in method
-                       or method in {"SSH_REMOTE_FORWARD", "GOST_REMOTE_TCP", "GOST_REMOTE_UDP"})
-            self.target_origin = self.origins[0 if reverse else 1]
+            self.target_origin = self.origins[1]
             config.update(target_host="127.0.0.1", target_port=self.target_origin[1],
                           local_port=self.target_origin[1], local_host="127.0.0.1")
+            self.prepare_forward_target(config)
+            if method == 'BACKHAUL_TCP':
+                from engines.backhaul import deploy
+                self.artifact = deploy(self.run, self.item, config, a, b, *endpoints)
+                self._check_management_routes()
+                return
             if "UDP" in method:
                 config.update(target_port=self.target_origin[5], local_port=self.target_origin[5])
             if method in {"GOST_TCP_FORWARD", "GOST_UDP_FORWARD"}:
-                config.update(target_host=endpoints[1]["host"],
-                              target_port=self.origins[1][5 if "UDP" in method else 1])
+                if not self.persistent:
+                    config.update(target_host=endpoints[1]["host"],
+                                  target_port=self.origins[1][5 if "UDP" in method else 1])
             for family, deploy in [(bodies.SSH_METHODS, bodies.deploy_ssh_method),
                 (bodies.GOST_METHODS, bodies.deploy_gost_method),
                 (bodies.VPN_METHODS, bodies.deploy_vpn_method),
@@ -253,7 +291,13 @@ class RealPairAdapter:
             if self._route(remote, target) != before:
                 raise RuntimeError("deployment changed a management route; rollback required")
 
-    def _origins(self, bodies):
+    def prepare_deployment(self, config, bodies):
+        """Persistent subclasses may provision an owned forwarding target."""
+
+    def prepare_forward_target(self, config):
+        """Persistent subclasses may forward a stream to an authenticated egress."""
+
+    def _origins(self, bodies, http_bind="0.0.0.0"):
         for index, remote in enumerate(self.remotes):
             payload = secrets.token_hex(24)
             port = bodies.free_port(remote, "tcp", 25000)
@@ -262,10 +306,18 @@ class RealPairAdapter:
             service = f"{self.tag}-origin-{index}"
             command = (f"install -d -m 700 {directory}; printf '%s' {payload} > {directory}/index.html; "
                        f"systemd-run --unit={service} --collect --property=RuntimeMaxSec=3600 "
-                       f"python3 -m http.server {port} --bind 0.0.0.0 --directory {directory}")
+                       f"python3 -m http.server {port} --bind {shlex.quote(http_bind)} --directory {directory}")
             self.origins.append((remote, port, payload, service, directory, udp_port))
-            remote.run(command, root=True)
+            if self.persistent:
+                remote.run(f"install -d -m 700 {directory}; printf '%s' {payload} > {directory}/index.html", root=True)
+                health_bind = '0.0.0.0' if self.candidate.legacy_method_id.startswith('HEDIOUM_') else '127.0.0.1'
+                bodies.persistent_service(remote, service,
+                    f"exec python3 -m http.server {port} --bind {health_bind} --directory {directory}")
+            else:
+                remote.run(command, root=True)
             bodies.wait_listener(remote, "tcp", port)
+            if self.persistent:
+                continue
             udp_service = service + "-udp"
             script = ("import socket; s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM); "
                       f"s.bind(('0.0.0.0',{udp_port})); "
@@ -320,7 +372,7 @@ class RealPairAdapter:
             self.observations = {"scope": "REAL_PAIR", "proxy_transfer": proxy}
             self.measurements["throughput_mbps"] = proxy.get("mbps") or proxy.get("throughput_mbps")
             return ProbeResult(True, "received measured payload through the real-pair proxy")
-        if self.candidate.legacy_method_id == "HEDIOUM_POOL_SOCKS":
+        if self.candidate.legacy_method_id.startswith("HEDIOUM_POOL_"):
             origin = self.origins[1]
             url = f"http://{self.access[1][0]['host']}:{origin[1]}/"
             result = a.run(f"curl --noproxy '' -fsS --socks5-hostname 127.0.0.1:{artifact['local_socks_port']} "
@@ -373,8 +425,10 @@ class RealPairAdapter:
         result = remote.run(command, root=True, check=False)
         ok = result["code"] == 0 and result["stdout"].strip() == origin[2]
         self.measurements["rtt_avg"] = (time.monotonic() - t0) * 1000
-        self.observations = {"scope": "REAL_PAIR", "payload_matched": ok}
-        return ProbeResult(ok, "unique HTTP payload through real-pair forward" if ok else "forward payload mismatch")
+        self.observations = {"scope": "REAL_PAIR", "payload_matched": ok,
+                             'curl_exit_code': result['code']}
+        return ProbeResult(ok, "unique HTTP payload through real-pair forward" if ok else
+                           'forward payload mismatch (curl ' + str(result['code']) + ': ' + result['stderr'][:160] + ')')
 
     def _probe_scoped_tun(self):
         """Route only our HTTP origin port; never route a node's SSH control traffic."""
@@ -546,17 +600,23 @@ class RealPairAdapter:
                 self.measurements.update(measure_l3(self))
             else:
                 raise RuntimeError('profile requires an actual throughput measurement path')
-        if self.http_flow and self.profile.name != 'QUICK':
-            from orchestrator.benchmarking import rtt_stats
-            remote, command, _, _, nonce = self.http_flow
-            samples = []
-            for _ in range(self.profile.rtt_probes):
-                started = time.monotonic()
-                response = remote.run(command, root=True, check=False)
-                if response['code'] or response['stdout'].strip() != nonce:
-                    raise RuntimeError('repeated real data-plane probe failed')
-                samples.append((time.monotonic() - started) * 1000)
-            self.measurements.update(rtt_stats(samples))
+        if not self.http_flow and self.artifact.get('tunnel_ip_b'):
+            # Use the same application request basis for L3 and stream tunnels.
+            # Keep ICMP evidence separately; never mix SSH latency into the score.
+            from plan_executor import executor as bodies
+            self.measurements['icmp_metrics'] = dict(self.measurements)
+            if not self.origins:
+                self._origins(bodies, http_bind="::")
+            origin = self.origins[1]
+            target = ipaddress.ip_interface(self.artifact['tunnel_ip_b']).ip
+            host = f'[{target}]' if target.version == 6 else str(target)
+            command = f"curl --noproxy '*' -fsS --max-time 15 http://{host}:{origin[1]}/"
+            self.http_flow = (self.remotes[0], command, origin[0], origin[4], origin[2])
+        if self.http_flow:
+            from orchestrator.pair_metrics import measure_http_latency
+            self.measurements.update(measure_http_latency(self))
+        elif self.udp_flow:
+            self.measurements['rtt_basis'] = 'udp_echo'
         if self.profile.restart_test:
             baseline_metrics = dict(self.measurements)
             baseline_evidence = self.observations

@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "stable_entry_preserved": true,
+  "methods": [
+    "SSH_REMOTE_FORWARD",
+    "IPIP",
+    "SIT_6IN4",
+    "WIREGUARD",
+    "GOST_SOCKS5",
+    "WATERWALL_H_HTTP2_TLS",
+    "VMESS_TCP_TLS"
+  ],
+  "healthy": {
+    "SSH_REMOTE_FORWARD": true,
+    "IPIP": true,
+    "SIT_6IN4": true,
+    "WIREGUARD": true,
+    "GOST_SOCKS5": true,
+    "WATERWALL_H_HTTP2_TLS": true,
+    "VMESS_TCP_TLS": true
+  },
+  "route_id": "35c3b76628054350a5f4f94dcd151db8"
+}

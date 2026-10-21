@@ -7,6 +7,7 @@ import hmac
 import json
 import os
 import time
+import socket
 
 from cryptography.fernet import Fernet
 import paramiko
@@ -33,6 +34,21 @@ def verify_host_key(expected: str, raw: bytes):
              if expected.startswith("SHA256:") else bytes.fromhex(expected))
     if not value or not hmac.compare_digest(value, actual):
         raise ValueError("SSH host key does not match the pinned fingerprint")
+
+
+def observe_host_key(host: str, port: int) -> str:
+    """Initial trust only; no credentials are sent during key observation.
+
+    The subsequent authenticated connection verifies this exact key again.
+    Operators may instead supply a fingerprint verified out of band.
+    """
+    with socket.create_connection((host, port), timeout=10) as connection:
+        transport = paramiko.Transport(connection)
+        try:
+            transport.start_client(timeout=10)
+            return hashlib.sha256(transport.get_remote_server_key().asbytes()).hexdigest()
+        finally:
+            transport.close()
 
 
 class _PinnedPolicy(paramiko.MissingHostKeyPolicy):
@@ -128,9 +144,12 @@ def discover(endpoint, credentials):
                               "do command -v \"$b\" >/dev/null && echo \"$b\"; done; true")["stdout"].split()
         modules = remote.run("ls /sys/module")["stdout"].split()
         ipv6 = remote.run("ip -6 -o addr show scope global")["stdout"]
+        from orchestrator.host_inventory import scan
+        coexistence = scan(remote)
         return {"node_id": endpoint["id"], "os": os_name,
                 "arch": {"x86_64": "amd64", "aarch64": "arm64"}.get(machine, machine),
                 "privileged": privileged, "binaries": binaries,
-                "kernel_modules": modules, "ipv6_addresses": ipv6.strip()}
+                "kernel_modules": modules, "ipv6_addresses": ipv6.strip(),
+                "coexistence": coexistence}
     finally:
         remote.close()
