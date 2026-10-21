@@ -442,3 +442,20 @@ def test_parent_probe_binds_pid_config_and_existing_accounting_without_returning
     (directory / 'config.json').write_text('{"password":"changed"}')
     with pytest.raises(ValueError):
         helper.probe_parent(parent, systemd=systemd)
+
+
+@pytest.mark.skipif(os.name != 'posix', reason='installed POSIX env permission contract')
+def test_resident_control_port_accepts_installer_root_group_read_but_refuses_group_write(tmp_path, monkeypatch):
+    from orchestrator import service_forward_node_helper as helper
+    path = tmp_path / 'installed.env'
+    path.write_text('TP_SECRET_KEY=resident-secret-never-returned\nTUNNELPANNEL_PORT=18080\n')
+    path.chmod(0o640)  # install.sh: root:tunnelpannel, no group write.
+    original_read = helper.OwnedResources.read
+    def installed_read(requested, **kwargs):
+        assert requested == '/etc/tunnelpannel/tunnelpannel.env'
+        return original_read(str(path), **kwargs)
+    monkeypatch.setattr(helper.OwnedResources, 'read', staticmethod(installed_read))
+    assert helper.resident_controls() == [18080]
+    path.chmod(0o660)
+    with pytest.raises(ValueError, match='unsafe service artifact'):
+        helper.resident_controls()

@@ -427,7 +427,9 @@ def probe_parent(parent, *, systemd=None):
 def resident_controls():
     path = '/etc/tunnelpannel/tunnelpannel.env'
     try:
-        data = OwnedResources.read(path, limit=65536).decode()
+        # install.sh intentionally uses root:tunnelpannel 0640. Observe only
+        # root-owned, non-writable regular bytes; return the port, never secrets.
+        data = OwnedResources.read(path, private=False, limit=65536).decode()
     except FileNotFoundError:
         return []
     ports = []
