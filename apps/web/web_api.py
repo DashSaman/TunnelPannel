@@ -33,7 +33,7 @@ def create_web_router(session_factory) -> APIRouter:
     @router.get('/assets/{name}')
     def portal_asset(name:str):
         types={'portal.js':'application/javascript','portal.css':'text/css','auth.js':'application/javascript','admin.js':'application/javascript',
-               'console.css':'text/css','mesh-controls.js':'application/javascript','theme.css':'text/css',
+               'console.css':'text/css','mesh-controls.js':'application/javascript','mesh-services.js':'application/javascript','theme.css':'text/css',
                'tehnet-vazirmatn.woff2':'font/woff2'}
         if name not in types:
             raise HTTPException(404,'asset not found')

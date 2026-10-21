@@ -33,6 +33,33 @@ def test_package_namespaces_pages_assets_and_inline_code(tmp_path):
         package(ROOT, out, '/tunnels', 'https://tehnet.ir', 21100, 21001, IMAGE)
 
 
+def test_managed_services_ship_in_real_static_bundle_and_mesh_bootstrap(tmp_path):
+    from scripts.container_web_gateway import package
+    out = tmp_path / 'services-gateway'
+    package(ROOT, out, '/tunnels', 'https://tehnet.ir', 21100, 21001, IMAGE)
+    asset = out / 'public/assets/mesh-services.js'
+    assert asset.is_file()
+    assert asset.read_bytes() == (ROOT / 'apps/web/mesh-services.js').read_bytes()
+    body = (out / 'public/mesh.html').read_text(encoding='utf8')
+    assert '/tunnels/assets/mesh-services.js' in body and 'id="services"' in body
+    bootstrap = (out / 'public/assets/mesh-inline-0.js').read_text(encoding='utf8')
+    assert 'TPServices.bindServices' in bootstrap
+
+
+def test_managed_service_browser_asset_uses_exact_public_whitelist():
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+    from apps.web.web_api import create_web_router
+    app = FastAPI()
+    app.include_router(create_web_router(None))
+    client = TestClient(app)
+    response = client.get('/assets/mesh-services.js')
+    assert response.status_code == 200
+    assert 'javascript' in response.headers['content-type']
+    assert response.headers['x-content-type-options'] == 'nosniff'
+    assert client.get('/assets/service_forward_node_helper.py').status_code == 404
+
+
 def test_container_only_binds_loopback_and_preserves_https_cookie_scope(tmp_path):
     from scripts.container_web_gateway import package
     out = tmp_path / 'gateway'

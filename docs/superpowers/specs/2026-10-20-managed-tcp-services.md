@@ -1,7 +1,7 @@
 # Managed TCP services over existing route groups
 
-Status: **direction selected by owner; written specification awaiting owner review**.
-Date: 2026-10-20. No product code or remote forward has been installed for this feature.
+Status: **owner approved direction, specification and plan; direct execution authorized**.
+Date: 2026-10-20. Implementation underway locally; no remote forward installed yet.
 
 ## Intent and selected approach
 
@@ -135,10 +135,14 @@ loopback from loopback on the destination node.
 
 New orchestrator module owns preflight, idempotence, installation and reconciliation.
 A small new source-node Python relay imports or receives the verified first-party
-SOCKS helper; the installer packages the helper explicitly. Runtime files live under
-an ID-scoped `/var/lib/tunnelpannel` directory, with root-owned private config and
+SOCKS helper; the installer packages the helper explicitly. Root-private configuration
+lives under `/etc/tunnelpannel-forwards/{id}`, code under `/opt/tunnelpannel-forwards/{id}`
+and dynamic-user state under `/var/lib/tunnelpannel-forward-{id}`, with private config and
 systemd service resources journaled before creation. Do not replace any old gateway
 script, reuse its service name, alter its config, rotate its credentials or restart it.
+Execution ruling: the existing installer recursively chowns `/var/lib/tunnelpannel`
+to the API account; new root-private files therefore stay outside that tree. This
+preserves the approved least-privilege intent across upgrades without changing old data.
 
 Run the relay with least privilege under a dedicated service account/group. Obtain
 private config through an ID-scoped controlled file/directory or systemd credentials;
@@ -227,5 +231,6 @@ existing authenticated gateway, not bypass or duplicate its debit. Addressed abo
 Existing groups must not be fault-injected/restarted; path-failure tests therefore
 require separate QA resources or a local isolated gateway. Public port exposure is
 explicit and default loopback. No implementation placeholders, invented receipts or
-claims of deployed forwarding remain. The next gate is owner review of this written
-specification; only then create the detailed implementation plan and choose execution.
+claims of deployed forwarding remain. The owner subsequently approved this written
+specification and the linked implementation plan, choosing direct execution. No further
+design/execution confirmation is required; follow the plan and preservation constraints.

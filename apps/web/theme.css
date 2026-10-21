@@ -134,3 +134,36 @@
  .tehnet-console .hero-actions a{padding:9px 14px}
 }
 @media(prefers-reduced-motion:reduce){.tehnet-console *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Managed TCP services reuse the route debit point and the TehNet console. */
+.managed-services .service-layout{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:28px;margin-top:24px;align-items:start}
+.managed-services .service-editor,.managed-services .service-directory{min-width:0}
+.managed-services .service-editor{padding:20px;border:1px solid var(--line);border-radius:14px;background:#0c1118}
+.managed-services .service-editor h3{margin-top:0;color:var(--accent)}
+.managed-services fieldset{border:0;padding:0;margin:0;min-width:0}
+.managed-services fieldset:disabled{opacity:.62}
+.managed-services .form{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.managed-services .service-wide{grid-column:1/-1}
+.managed-services input,.managed-services select,.managed-services textarea{min-width:0;max-width:100%;box-sizing:border-box}
+.managed-services textarea{resize:vertical;width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;color:var(--ink);background:#0b1017}
+.managed-services .service-exposure{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid #e8be7d35;border-radius:10px;font-size:12px;background:#e8be7d06}
+.managed-services .service-exposure input{width:18px!important;height:18px;max-width:18px;flex:0 0 18px;margin-top:5px;accent-color:var(--accent)}
+.managed-services .service-actions{flex-wrap:wrap;gap:8px;margin-top:16px}
+.managed-services .service-actions button{white-space:normal;font-size:12px;padding:9px 13px}
+.managed-services .service-proof{padding:12px;margin-top:16px;border:1px solid #94d5bc45;border-radius:10px;background:#94d5bc0a;color:var(--green);font-size:13px}
+.managed-services .service-proof:empty{display:none}
+.managed-services .service-card{padding:18px;margin-bottom:14px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(135deg,#1b2028,#12171e)}
+.managed-services .service-card h4{margin:0;min-width:0;overflow-wrap:anywhere}
+.managed-services .service-card>.row{flex-wrap:wrap}
+.managed-services .service-card>.row h4{flex:1 1 150px}
+.managed-services .service-endpoints{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:center;padding:15px 0}
+.managed-services .service-endpoints>div{min-width:0}
+.managed-services .service-endpoints small{display:block;color:var(--muted);font-size:11px}
+.managed-services .service-endpoints code{display:block;overflow-wrap:anywhere;color:var(--accent);font-size:12px;margin:6px 0}
+.managed-services .service-endpoints>span{color:var(--muted)}
+[dir=rtl] .managed-services .service-endpoints>span{transform:rotate(180deg)}
+.managed-services .service-inherits{display:flex;flex-wrap:wrap;gap:7px;font-size:11px}
+.managed-services .service-inherits span{padding:4px 8px;border:1px solid #394235;border-radius:7px;color:#bdd4c6;background:#94d5bc06}
+.managed-services .service-empty{padding:32px 20px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);font-size:13px}
+@media(max-width:1050px){.managed-services .service-layout{grid-template-columns:1fr}}
+@media(max-width:600px){.managed-services .form{grid-template-columns:1fr}.managed-services .service-editor{padding:14px}.managed-services .service-card{padding:14px}.managed-services .service-actions button{flex:1 1 140px}.managed-services .section-head{align-items:flex-start;gap:12px;flex-wrap:wrap}}

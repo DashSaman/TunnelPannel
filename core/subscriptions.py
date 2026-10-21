@@ -125,6 +125,7 @@ class SubscriptionStore(ManualCommerce):
             return
         permitted = (path in {'/api/billing/requests', '/api/mesh/estimate', '/api/operations/policy'} or
                      method == 'DELETE' and re.fullmatch(r'/api/mesh/routes/[^/]+', path) or
+                     method == 'DELETE' and re.fullmatch(r'/api/mesh/services/[0-9a-f]{32}', path) or
                      method == 'POST' and re.fullmatch(r'(?:/benchmarks/[^/]+|/api/mesh/campaigns/[^/]+)/cancel', path) or
                      method == 'POST' and re.fullmatch(r'/api/nodes/[^/]+/managed-key(?:/revoke)?', path) or
                      method == 'DELETE' and re.fullmatch(r'/api/nodes/[^/]+/agent', path) or

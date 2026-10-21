@@ -23,7 +23,8 @@ def test_hysteresis_order_pin_and_restart_do_not_claim_unprobed_health():
     assert restored.update({'a': False, 'b': True, 'c': True}, now=0) is None
 
 
-def test_authenticated_stable_socks_forwards_and_switches_between_real_upstreams(tmp_path):
+@pytest.mark.parametrize('managed_forward', [False, True])
+def test_authenticated_stable_socks_forwards_and_switches_between_real_upstreams(tmp_path, managed_forward):
     from orchestrator.mesh_gateway import Gateway, socks_connect
 
     async def exercise():
@@ -53,8 +54,18 @@ def test_authenticated_stable_socks_forwards_and_switches_between_real_upstreams
         await gateway.start_listener()
         stable = {'host': '127.0.0.1', 'port': gateway.server.sockets[0].getsockname()[1],
                   'username': 'client', 'password': 'test-gateway-password'}
+        relay = None
+        if managed_forward:
+            from orchestrator.service_forward_runtime import ForwardRelay
+            from test_service_forward_runtime import configuration
+            relay = ForwardRelay({**configuration(stable['port'], port), 'upstream': stable})
+            await relay.start()
+            relay_port = relay.config['listen_port']
         async def roundtrip(nonce):
-            reader, writer = await socks_connect(stable, '127.0.0.1', port)
+            if relay:
+                reader, writer = await asyncio.open_connection('127.0.0.1', relay_port)
+            else:
+                reader, writer = await socks_connect(stable, '127.0.0.1', port)
             writer.write(nonce)
             await writer.drain()
             assert await reader.readexactly(len(nonce)) == nonce
@@ -72,6 +83,9 @@ def test_authenticated_stable_socks_forwards_and_switches_between_real_upstreams
         state = json.loads((tmp_path / 'state.json').read_text())
         assert state['active'] == 'two'
         assert 'test-gateway-password' not in json.dumps(state)
+        if relay:
+            assert relay.snapshot()['listening'] and relay.config['listen_port'] == relay_port
+            await relay.close()
         for server in (gateway.server, second, origin):
             server.close()
             await server.wait_closed()

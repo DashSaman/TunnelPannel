@@ -84,6 +84,7 @@ class RouteService:
     def __init__(self, monthly=None):
         self._threads, self._lock = {}, threading.Lock()
         self.monthly = monthly
+        self.forward_dependencies = None
 
     def create(self, factory, request, limits):
         if not self.monthly:
@@ -165,14 +166,19 @@ class RouteService:
             self._threads[key] = thread
             thread.start()
 
-    def _run(self, factory, route_id):
+    def _cleanup_owned(self, factory, route_id):
         from orchestrator.mesh_reconcile import reconcile_benchmark
+        if self.forward_dependencies:
+            self.forward_dependencies.stop_for_route(factory, route_id)
+        reconcile_benchmark(factory, route_id)
+
+    def _run(self, factory, route_id):
         try:
             with factory() as session:
                 job = route_job(session, route_id)
                 state, payload = job.state, dict(job.payload)
             if state == 'STOPPING':
-                reconcile_benchmark(factory, route_id)
+                self._cleanup_owned(factory, route_id)
                 if self.monthly:
                     self.monthly.retire(factory, route_id)
                 with factory() as session:
@@ -183,7 +189,7 @@ class RouteService:
             if state != 'APPLYING':
                 return
             # Idempotent restart: remove only this route job's recorded resources.
-            reconcile_benchmark(factory, route_id)
+            self._cleanup_owned(factory, route_id)
             if self.monthly:
                 self.monthly.retire(factory, route_id)
                 self.monthly.renew(factory, route_id)
@@ -195,7 +201,7 @@ class RouteService:
         except Exception:
             cleanup_ok = True
             try:
-                reconcile_benchmark(factory, route_id)
+                self._cleanup_owned(factory, route_id)
                 if self.monthly:
                     self.monthly.retire(factory, route_id)
             except Exception:

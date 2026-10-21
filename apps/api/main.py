@@ -78,6 +78,7 @@ def create_app(factory=None) -> FastAPI:
                 recover_managed_keys(scoped)
                 app.state.benchmarks.recover(scoped)
                 app.state.mesh_campaigns.recover(scoped)
+                app.state.mesh_services.recover(scoped)
                 app.state.mesh_routes.recover(scoped)
                 app.state.operations_monitor.tick(scoped)
             except Exception as error:
@@ -152,7 +153,12 @@ def create_app(factory=None) -> FastAPI:
     from apps.api.mesh_routes_api import create_mesh_routes_router
     from orchestrator.mesh_routes import RouteService
     app.state.mesh_routes = RouteService(monthly=monthly_routes)
+    from apps.api.service_forwards_api import create_service_forwards_router
+    from orchestrator.service_forwards import ServiceForwardService
+    app.state.mesh_services = ServiceForwardService(app.state.mesh_routes, subscriptions=app.state.subscriptions)
+    app.state.mesh_routes.forward_dependencies = app.state.mesh_services
     app.include_router(create_mesh_routes_router(session_factory, app.state.mesh_routes))
+    app.include_router(create_service_forwards_router(session_factory, app.state.mesh_services))
     from apps.api.operations_api import create_operations_router
     from orchestrator.operations_monitor import OperationsMonitor
     app.state.operations_monitor = OperationsMonitor()
