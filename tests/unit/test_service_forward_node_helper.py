@@ -459,3 +459,20 @@ def test_resident_control_port_accepts_installer_root_group_read_but_refuses_gro
     path.chmod(0o660)
     with pytest.raises(ValueError, match='unsafe service artifact'):
         helper.resident_controls()
+
+
+@pytest.mark.skipif(os.name != 'posix', reason='owned POSIX creation modes')
+@pytest.mark.parametrize('kind', ['directory', 'program'])
+def test_new_public_code_modes_are_explicit_even_with_private_caller_umask(tmp_path, kind):
+    from orchestrator.service_forward_node_helper import OwnedResources
+    path = tmp_path / kind
+    previous = os.umask(0o077)
+    try:
+        if kind == 'directory':
+            OwnedResources.directory(str(path), private=False)
+            assert stat.S_IMODE(path.stat().st_mode) == 0o755
+        else:
+            OwnedResources.exclusive(str(path), b'pass\n', 0o644)
+            assert stat.S_IMODE(path.stat().st_mode) == 0o644
+    finally:
+        os.umask(previous)

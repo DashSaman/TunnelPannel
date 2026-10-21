@@ -158,7 +158,14 @@ class OwnedResources:
         try:
             os.mkdir(path, 0o700 if private else 0o755)
         except FileExistsError:
-            pass
+            require_owned(os.lstat(path), directory=True, private=private)
+            return  # Never widen permissions on an existing/foreign directory.
+        descriptor = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        try:
+            require_owned(os.fstat(descriptor), directory=True, private=private)
+            os.fchmod(descriptor, 0o700 if private else 0o755)
+        finally:
+            os.close(descriptor)
         require_owned(os.lstat(path), directory=True, private=private)
 
     @staticmethod
@@ -166,6 +173,7 @@ class OwnedResources:
         descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, mode)
         try:
             with os.fdopen(descriptor, 'wb') as stream:
+                os.fchmod(stream.fileno(), mode)  # Explicit mode despite caller umask.
                 stream.write(data)
                 stream.flush()
                 os.fsync(stream.fileno())

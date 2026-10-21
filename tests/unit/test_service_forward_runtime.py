@@ -2,6 +2,7 @@
 import asyncio
 from contextlib import asynccontextmanager, suppress
 import json
+import os
 import socket
 
 import pytest
@@ -52,7 +53,7 @@ def test_runtime_only_accepts_authenticated_owned_loopback_upstream_and_bounded_
 
 
 @asynccontextmanager
-async def live_stack(tmp_path, *, quota=None, response=None):
+async def live_stack(tmp_path, *, quota=None, response=None, server_first=False):
     from orchestrator.mesh_gateway import Gateway, direct_connect, serve_socks
     from orchestrator.service_forward_runtime import ForwardRelay
     tasks, relays = set(), []
@@ -62,7 +63,7 @@ async def live_stack(tmp_path, *, quota=None, response=None):
         task = asyncio.current_task()
         tasks.add(task)
         try:
-            data = await reader.read()
+            data = await reader.read(1) if server_first else await reader.read()
             target_uploads.append(data)
             writer.write(data[::-1] if response is None else response)
             await writer.drain()
@@ -309,3 +310,28 @@ def test_standalone_runtime_stops_listening_if_its_owned_status_cannot_be_writte
         with pytest.raises(OSError):
             await asyncio.open_connection('127.0.0.1', config['listen_port'])
     asyncio.run(exercise())
+
+
+@pytest.mark.skipif(os.name != 'posix', reason='Linux deployment TCP TIME_WAIT restart contract')
+def test_owned_relay_rebinds_after_server_first_eof_without_changing_its_port(tmp_path):
+    from orchestrator.service_forward_runtime import ForwardRelay
+    async def run():
+        async with live_stack(tmp_path, server_first=True) as stack:
+            relay = await stack['relay']()
+            reader, writer = await asyncio.open_connection('127.0.0.1', relay.config['listen_port'])
+            writer.write(b'x'); await writer.drain()
+            assert await asyncio.wait_for(reader.readexactly(1), 2) == b'x'
+            # The service sends FIN while the client remains open. Closing the
+            # client afterwards leaves the source port in TIME_WAIT on Linux.
+            assert await asyncio.wait_for(reader.read(), 2) == b''
+            assert not writer.is_closing()
+            writer.close(); await writer.wait_closed()
+            await asyncio.wait_for(asyncio.gather(*tuple(relay.tasks)), 2)
+            await relay.close()
+            replacement = ForwardRelay(dict(relay.config))
+            try:
+                await replacement.start()
+                assert replacement.config['listen_port'] == relay.config['listen_port']
+            finally:
+                await replacement.close()
+    asyncio.run(run())

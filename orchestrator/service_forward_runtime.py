@@ -109,7 +109,10 @@ class ForwardRelay:
             raise RuntimeError('service listener already started')
         self.closing = False
         self.server = await asyncio.start_server(self.handle, self.config['listen_host'],
-            self.config['listen_port'], limit=65536, reuse_address=False, backlog=128)
+            # Rebind our stopped listener after accepted TCP sessions enter
+            # TIME_WAIT. SO_REUSEPORT stays off; a live foreign listener still
+            # fails bind and is also refused by controller/source ownership checks.
+            self.config['listen_port'], limit=65536, reuse_address=os.name == 'posix', backlog=128)
         self.started_at = time.time()
         if self.state_path:
             self.reporter = asyncio.create_task(self.report())
