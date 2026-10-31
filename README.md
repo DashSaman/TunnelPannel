@@ -2,7 +2,7 @@
 
 ## Current recovery: permanent management
 
-The owner removed the two original test nodes. Their October22 deployment/traffic receipts below are historical. The October31 recovery candidate places lightweight management in a separate permanent TehNet container; all tunnel/test payloads remain on registered customer nodes. It fixes HTML502 being parsed as JSON and labels the restored October18 snapshot honestly. [Deployment/recovery guide](docs/CONTROL-PLANE.md) · [فارسی](docs/CONTROL-PLANE-fa.md). Native CI and actual rollout remain release gates; main stays unmerged.
+The owner removed the two original test nodes. Their October22 deployment/traffic receipts below are historical. The installed October31 recovery places lightweight management in a separate permanent TehNet container; all tunnel/test payloads remain on registered customer nodes. It fixes HTML502 being parsed as JSON and labels the restored October18 snapshot honestly. [Deployment/recovery guide](docs/CONTROL-PLANE.md) · [فارسی](docs/CONTROL-PLANE-fa.md). Functional **c0291d65750483a1782d0e81affe4117479a66a1** is installed after successful native CI; actual public HTTPS login, JSON failure handling and coexistence checks passed. [Acceptance](docs/evidence/commercial/control-plane-installed.json). Main stays unmerged; new browser photographs and real two-node tests remain unavailable.
 
 Managed TCP forwards, shared allowances, manual billing and safe legacy migration remain part of the product. [Historical illustrated acceptance](docs/MANAGED-TCP-SERVICES.md) · [Portal](https://tehnet.ir/tunnels/portal). A new real two-node test requires live customer/test nodes.
 
@@ -80,10 +80,10 @@ The original 82-method remediation of the earlier 23 partial / 27 failed methods
 ## Install
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/e7d79cc8f6b136328dcc2cc497b13d366bbb6d4a/install.sh | sudo env TUNNELPANNEL_VERSION=e7d79cc8f6b136328dcc2cc497b13d366bbb6d4a bash
+curl -fsSL https://raw.githubusercontent.com/DashSaman/TunnelPannel/c0291d65750483a1782d0e81affe4117479a66a1/install.sh | sudo env TUNNELPANNEL_VERSION=c0291d65750483a1782d0e81affe4117479a66a1 bash
 ```
 
-This installs the CI-verified engine and durable traffic-control runtime, also recorded in `install-one-line.txt`. Both test APIs have been upgraded after draining work; the website-only gateway runs separately. Install this backend on a controller/execution host. Wait for active jobs to drain before any later upgrade. Re-running preserves credentials and data. The installer creates the application account, installs dependencies, migrates the database, starts systemd and verifies HTTP health. It refuses to overwrite local source changes.
+This installs the CI-verified engine and durable traffic-control runtime, also recorded in `install-one-line.txt`. This is the canonical backend installer for a controller/execution host. The original test APIs were upgraded historically and later removed by the owner. Permanent TehNet management now uses the separate, unprivileged container described in the control-plane guide; customer tunnel execution stays remote. Wait for active jobs to drain before any later upgrade. Re-running preserves credentials and data. The installer creates the application account, installs dependencies, migrates the database, starts systemd and verifies HTTP health. It refuses to overwrite local source changes.
 
 Real-node validation uses Ubuntu 24.04 amd64. Other environments need their own validation. The API binds to loopback. The default is **127.0.0.1:8080**; a fresh installation can choose a free canonical port when that implicit default is occupied. Explicit/saved port conflicts refuse installation; use the port in the install receipt. From your computer:
 

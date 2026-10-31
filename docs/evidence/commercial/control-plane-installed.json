@@ -1,0 +1,98 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "status": "INSTALLED",
+  "url": "https://tehnet.ir/tunnels/portal",
+  "runtime": {
+    "sha": "c0291d65750483a1782d0e81affe4117479a66a1",
+    "tree": "d134d4dc18192153aa71c0e039ec18ba0871f4c9",
+    "management_container": true,
+    "website_container": true,
+    "management_only": true,
+    "tunnel_and_benchmark_payload_execution": "registered customer nodes only",
+    "controller_user": "10001:10001",
+    "read_only_rootfs": true,
+    "cap_drop_all": true,
+    "host_network": false,
+    "loopback_published_port": 21001,
+    "website_existing_port": 21002,
+    "memory_limit_bytes": 536870912,
+    "cpu_limit_cores": 0.5,
+    "observed_idle_memory_mib": 84.38,
+    "idle_observation_is_load_benchmark": false
+  },
+  "ci": [
+    {"id": 41227301471, "name": "portable-tests", "conclusion": "success"},
+    {"id": 41227301476, "name": "security", "conclusion": "success"}
+  ],
+  "ci_scope": [
+    "Python 3.11 and 3.12 root suites",
+    "TunnelGuard and backend smoke",
+    "real isolated management container login, account creation, CSRF refusal and durable restart",
+    "fresh install, idempotence, backup, restore and safe uninstall"
+  ],
+  "local_windows": {"passed": 935, "posix_skipped": 52, "existing_deprecation_warnings": 2},
+  "actual_https": {
+    "public_plan_json": 200,
+    "unauthenticated_session_json": 401,
+    "unauthenticated_quota_callback_json": 401,
+    "owner_login_and_logout": true,
+    "admin_account_and_plan_reads": true,
+    "unauthenticated_account_read_refused": true,
+    "origin_certificate_validation": true,
+    "page_and_assets_200": true,
+    "browser_visual_acceptance": false,
+    "visual_blocker": "No connected browser surface in this session; opening queued for the owner. No new screenshots claimed."
+  },
+  "error_regression": {
+    "html_502_reproduced_before_fix": true,
+    "browser_regression_red_then_green": true,
+    "real_isolated_nginx_upstream_failure": {"status": 503, "json": true, "no_store": true},
+    "live_api_stopped_for_fault_test": false,
+    "owned_canary_cleaned": true
+  },
+  "recovery": {
+    "original_test_nodes_removed_by_owner": true,
+    "snapshot_created_at": "2026-10-18T17:24:57Z",
+    "snapshot_workspaces": 5,
+    "snapshot_accounts": 6,
+    "accounts_after_named_owner_initialization": 7,
+    "later_changes_recovered": false,
+    "snapshot_date_exposed_to_owner": true,
+    "job_payloads_and_encrypted_node_credentials_preserved": true,
+    "pending_historical_work_interrupted": true,
+    "old_monitoring_disabled": true,
+    "old_deployments_replayed": false,
+    "retired_and_controller_endpoints_denied_before_credentials": true,
+    "new_actual_two_node_tests": false
+  },
+  "coexistence": {
+    "other_running_containers_preserved": 14,
+    "nginx_config_hashes_preserved": 20,
+    "baseline_interface_records_preserved": 34,
+    "service_pid_records_preserved": 5,
+    "host_nginx_reload": false,
+    "manual_host_firewall_toggle": false,
+    "live_bridge_countdowns_excluded_from_config_comparison": ["gc_timer", "hello_timer", "tcn_timer", "topology_change_timer"],
+    "raw_baselines_retained": true,
+    "old_own_web_container_retained_stopped": true
+  },
+  "backups": {
+    "resident_encrypted_before_and_final_after": true,
+    "independent_separate_root_only_keys": true,
+    "decrypt_and_sha_verified": true,
+    "final_sqlite_integrity_check": true,
+    "final_after_encrypted_sha256": "4d06a41e728da1ac9c79087737b80bfabbdfe5e2089b13ea1049c992f8b127d8",
+    "new_sensitive_exports": false,
+    "off_host_copy_of_new_database_claimed": false
+  },
+  "diagnostics_retained": [
+    "first API harness asserted Secure flags on an expired logout cookie; corrected harness and reverified without restarting API",
+    "unused first web artifact assumed legacy port21000; pre-cutover refusal exposed actual existing port21002; corrected artifact published without changing host proxy",
+    "first preservation comparison treated bridge gc_timer as configuration; raw evidence retained and only live countdown fields normalized",
+    "default Python user agent receives edge403; actual public HTTPS checks used the application's declared gateway user agent"
+  ],
+  "resource_firewall_features": "Separate local work remains uninstalled pending acceptance",
+  "main_merged": false,
+  "heartbeat": "PAUSED"
+}
