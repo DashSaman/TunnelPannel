@@ -22,8 +22,16 @@
     "idle_observation_is_load_benchmark": false
   },
   "ci": [
-    {"id": 41227301471, "name": "portable-tests", "conclusion": "success"},
-    {"id": 41227301476, "name": "security", "conclusion": "success"}
+    {
+      "id": 41227301471,
+      "name": "portable-tests",
+      "conclusion": "success"
+    },
+    {
+      "id": 41227301476,
+      "name": "security",
+      "conclusion": "success"
+    }
   ],
   "ci_scope": [
     "Python 3.11 and 3.12 root suites",
@@ -31,7 +39,11 @@
     "real isolated management container login, account creation, CSRF refusal and durable restart",
     "fresh install, idempotence, backup, restore and safe uninstall"
   ],
-  "local_windows": {"passed": 935, "posix_skipped": 52, "existing_deprecation_warnings": 2},
+  "local_windows": {
+    "passed": 935,
+    "posix_skipped": 52,
+    "existing_deprecation_warnings": 2
+  },
   "actual_https": {
     "public_plan_json": 200,
     "unauthenticated_session_json": 401,
@@ -47,7 +59,11 @@
   "error_regression": {
     "html_502_reproduced_before_fix": true,
     "browser_regression_red_then_green": true,
-    "real_isolated_nginx_upstream_failure": {"status": 503, "json": true, "no_store": true},
+    "real_isolated_nginx_upstream_failure": {
+      "status": 503,
+      "json": true,
+      "no_store": true
+    },
     "live_api_stopped_for_fault_test": false,
     "owned_canary_cleaned": true
   },
@@ -73,7 +89,12 @@
     "service_pid_records_preserved": 5,
     "host_nginx_reload": false,
     "manual_host_firewall_toggle": false,
-    "live_bridge_countdowns_excluded_from_config_comparison": ["gc_timer", "hello_timer", "tcn_timer", "topology_change_timer"],
+    "live_bridge_countdowns_excluded_from_config_comparison": [
+      "gc_timer",
+      "hello_timer",
+      "tcn_timer",
+      "topology_change_timer"
+    ],
     "raw_baselines_retained": true,
     "old_own_web_container_retained_stopped": true
   },
@@ -94,5 +115,16 @@
   ],
   "resource_firewall_features": "Separate local work remains uninstalled pending acceptance",
   "main_merged": false,
-  "heartbeat": "PAUSED"
+  "heartbeat": "PAUSED",
+  "ci_harness_followup": {
+    "initial_documentation_run": 41230365068,
+    "initial_result": "986 passed; one flaky positive receipt test failed; second matrix job cancelled",
+    "cause": "Receipt-correctness fixture used a140ms network deadline on a shared CI runner",
+    "deterministic_reproduction": "200ms delayed local origin with140ms fixture deadline failed; same real SOCKS/nonce exchange with2s fixture deadline passed",
+    "fix": "Only correctness fixture deadline increased; both correct/wrong nonce cases assert ten actual responses. Separate stalled-exchange regression asserts cancellation, failure and100% loss.",
+    "production_probe_default_changed": false,
+    "production_probe_default_seconds": 15,
+    "followup_local_checks": "27PASS including real nonce, wrong nonce, explicit timeout, release assets and control-plane boundaries",
+    "live_api_restarted_for_test_fix": false
+  }
 }

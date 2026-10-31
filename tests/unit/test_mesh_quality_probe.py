@@ -12,10 +12,15 @@ def test_quality_probe_checks_real_nonce_and_reports_loss_without_credentials(tm
     from scripts.mesh_quality_probe import run_probe
 
     async def exercise():
+        responses=[]
         async def origin(reader, writer):
             await reader.readuntil(b'\r\n\r\n')
+            # This is receipt correctness, not a sub-140ms loopback SLA.
+            # Deterministic delay exposes an accidentally tiny fixture budget.
+            await asyncio.sleep(.2)
             writer.write(b'HTTP/1.0 200 OK\r\n\r\n'+(b'owned-nonce' if valid else b'wrong-nonce'))
             await writer.drain()
+            responses.append(True)
             writer.close()
             await writer.wait_closed()
         async def proxy(reader, writer):
@@ -28,7 +33,8 @@ def test_quality_probe_checks_real_nonce_and_reports_loss_without_credentials(tm
             'upstreams':[{'id':'WIREGUARD','probe':{'host':'127.0.0.1',
                 'port':server.sockets[0].getsockname()[1], 'nonce':'owned-nonce'}}]}))
         try:
-            result = await run_probe(config, levels=[1,4], rounds=2, interval=0, timeout=.14)
+            result = await run_probe(config, levels=[1,4], rounds=2, interval=0, timeout=2)
+            assert len(responses)==10  # Wrong nonce must fail after a real response, not a timeout.
             assert result['status'] == ('PASS' if valid else 'FAILED')
             assert result['attempts'] == 10
             assert result['successes'] == (10 if valid else 0)
@@ -40,6 +46,29 @@ def test_quality_probe_checks_real_nonce_and_reports_loss_without_credentials(tm
         finally:
             socks.close(); server.close()
             await socks.wait_closed(); await server.wait_closed()
+    asyncio.run(exercise())
+
+
+def test_quality_probe_deadline_cancels_a_stalled_exchange_and_reports_loss(tmp_path,monkeypatch):
+    from scripts import mesh_quality_probe
+    entered=[];cancelled=[]
+    async def exercise():
+        gate=asyncio.Event()
+        async def stalled(*args):
+            entered.append(True)
+            try:await gate.wait()
+            finally:cancelled.append(True)
+        monkeypatch.setattr(mesh_quality_probe,'socks_connect',stalled)
+        config=tmp_path/'stalled.json'
+        config.write_text(json.dumps({'listen_host':'127.0.0.1','listen_port':12345,
+            'username':'fixture','password':'SECRET_CANARY','upstreams':[{'probe':{
+                'host':'127.0.0.1','port':12346,'nonce':'owned-nonce'}}]}))
+        result=await asyncio.wait_for(mesh_quality_probe.run_probe(config,levels=[1],rounds=1,
+            interval=0,timeout=.1),2)
+        assert entered==[True] and cancelled==[True]
+        assert result['status']=='FAILED' and result['attempts']==1 and result['successes']==0
+        assert result['loss_pct']==100 and result['config_unchanged'] is True
+        assert 'SECRET_CANARY' not in json.dumps(result)
     asyncio.run(exercise())
 
 
