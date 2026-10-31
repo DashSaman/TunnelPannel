@@ -1,4 +1,5 @@
 from plan_executor import executor as bodies
+import pytest
 
 
 def test_route_based_selectors_cannot_install_default_routes(monkeypatch):
@@ -53,3 +54,34 @@ def test_ipsec_interface_mtu_reserves_space_for_esp_payloads():
         interface_create='ip link add nvtowned type vti local 192.0.2.1 remote 192.0.2.2 key 91',
         interface_name='nvtowned',address='10.246.30.1/30',peer_inner='10.246.30.2',initiate=True,vti=True)
     assert 'ip link set nvtowned mtu 1400' in script
+
+
+@pytest.mark.parametrize('method', ['IKEV2_IPSEC', 'VTI', 'VTI6'])
+def test_different_warm_runs_do_not_reuse_global_xfrm_ids_or_vti_keys(monkeypatch, method):
+    class Remote:
+        def run(self, command, **kwargs):
+            return {'code': 0, 'stdout': 'ESTABLISHED' if 'swanctl --list-sas' in command else '', 'stderr': ''}
+    for name in ('install_strongswan', 'ensure_source', 'oneshot_service', 'write_remote_text'):
+        monkeypatch.setattr(bodies, name, lambda *args, **kwargs: None)
+    ipv6 = method == 'VTI6'
+    config = {'source_ip_a': '2001:db8::1' if ipv6 else '192.0.2.1',
+        'source_ip_b': '2001:db8::2' if ipv6 else '192.0.2.2', 'tunnel_cidr': '10.246.30.0/30',
+        'tunnel_ip_a': '10.246.30.1/30', 'tunnel_ip_b': '10.246.30.2/30'}
+    first, second = [bodies.deploy_strongswan_route_based(method, {'id': identity}, {'id': 3},
+        config, Remote(), Remote(), {}, {}) for identity in [123456789, 123456790]]
+    field = 'xfrm_interface_id' if method == 'IKEV2_IPSEC' else 'vti_mark'
+    assert first[field] != second[field]
+
+
+def test_xfrm_allocation_respects_ids_and_marks_already_present_on_either_peer():
+    class Remote:
+        def __init__(self, occupied=''): self.occupied, self.commands = occupied, []
+        def run(self, command, **kwargs):
+            self.commands.append(command)
+            return {'code': 0, 'stdout': self.occupied, 'stderr': ''}
+    seed = bodies.free_xfrm_identifiers([Remote(), Remote()], 123456789, 3, 'VTI')
+    a, b = Remote(), Remote('if_id '+str(seed[0])+' mark '+hex(seed[1]))
+    allocated = bodies.free_xfrm_identifiers([a,b], 123456789, 3, 'VTI')
+    assert set(seed).isdisjoint(allocated)
+    assert len(set(allocated)) == 2 and all(0 < value < 2**31 for value in allocated)
+    assert all('ip xfrm state' in remote.commands and 'ip -j -d link show' in remote.commands for remote in [a,b])

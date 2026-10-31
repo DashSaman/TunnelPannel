@@ -1,0 +1,36 @@
+{
+  "checked_code_sha": "a115027e357f5ea5ce279445e40a678a06949c5b",
+  "portable_run_id": 38914599544,
+  "security_run_id": 38914599641,
+  "portable_url": "https://github.com/DashSaman/TunnelPannel/actions/runs/38914599544",
+  "security_url": "https://github.com/DashSaman/TunnelPannel/actions/runs/38914599641",
+  "conclusion": "success",
+  "python_versions": [
+    "3.11",
+    "3.12"
+  ],
+  "per_version": {
+    "canonical": 643,
+    "tunnelguard": 100,
+    "backend": 1
+  },
+  "portable_job_ids": [
+    117018716479,
+    117018716670
+  ],
+  "linux_install_job_id": 117018716291,
+  "checks": [
+    "canonical_ruff",
+    "catalog_invariants",
+    "portable_suites",
+    "linux_tunnelguard",
+    "shellcheck",
+    "bash_syntax",
+    "fresh_install_health",
+    "idempotent_install",
+    "backup_mutate_restore",
+    "owned_only_uninstall",
+    "security_workflow"
+  ],
+  "note": "Suite counts verified from decoded job logs. These are software tests, separate from the physical campaign receipts."
+}

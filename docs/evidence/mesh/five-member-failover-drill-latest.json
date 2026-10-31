@@ -1,0 +1,69 @@
+{
+  "route_id": "11787f3b076a44e69c3cc69babab538d",
+  "started_at": "2026-10-15T15:07:55.713925+00:00",
+  "capability": "TCP SOCKS egress",
+  "checks": [
+    {
+      "kind": "initial_real_exit",
+      "matched": true,
+      "sha256": "c3b7937dd4f1217a747b16a6c4dda51fae204d87dced021e931c895abb203c0a",
+      "exit_host": "65.109.213.64",
+      "stable_port": 22001
+    },
+    {
+      "kind": "gateway_restart_real_exit",
+      "matched": true,
+      "sha256": "c3b7937dd4f1217a747b16a6c4dda51fae204d87dced021e931c895abb203c0a",
+      "exit_host": "65.109.213.64",
+      "stable_port": 22001
+    }
+  ],
+  "failovers": [
+    {
+      "from": "GRE",
+      "to": "IPIP",
+      "observed_switch_s": 21.424,
+      "matched": true,
+      "sha256": "c3b7937dd4f1217a747b16a6c4dda51fae204d87dced021e931c895abb203c0a",
+      "exit_host": "65.109.213.64",
+      "stable_port": 22001
+    },
+    {
+      "from": "IPIP",
+      "to": "SIT_6IN4",
+      "observed_switch_s": 20.821,
+      "matched": true,
+      "sha256": "c3b7937dd4f1217a747b16a6c4dda51fae204d87dced021e931c895abb203c0a",
+      "exit_host": "65.109.213.64",
+      "stable_port": 22001
+    },
+    {
+      "from": "SIT_6IN4",
+      "to": "WIREGUARD",
+      "observed_switch_s": 20.927,
+      "matched": true,
+      "sha256": "c3b7937dd4f1217a747b16a6c4dda51fae204d87dced021e931c895abb203c0a",
+      "exit_host": "65.109.213.64",
+      "stable_port": 22001
+    },
+    {
+      "from": "WIREGUARD",
+      "to": "GOST_GRPC",
+      "observed_switch_s": 20.928,
+      "matched": true,
+      "sha256": "c3b7937dd4f1217a747b16a6c4dda51fae204d87dced021e931c895abb203c0a",
+      "exit_host": "65.109.213.64",
+      "stable_port": 22001
+    }
+  ],
+  "management_route_unchanged": true,
+  "status": "PASS",
+  "restoration_errors": [],
+  "restored_healthy": {
+    "GRE": true,
+    "IPIP": true,
+    "SIT_6IN4": true,
+    "WIREGUARD": true,
+    "GOST_GRPC": true
+  }
+}

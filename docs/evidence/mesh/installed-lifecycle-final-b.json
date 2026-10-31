@@ -1,0 +1,11 @@
+{
+  "version": "a115027e357f5ea5ce279445e40a678a06949c5b",
+  "status": "PASS",
+  "checks": [
+    "pinned_upgrade_preserves_identity_and_data",
+    "idempotent_second_install",
+    "installed_backup_restore_registry_key_node_and_encrypted_secret",
+    "uninstall_preserves_config_databases_unrelated_interface_and_remote_engine_units",
+    "pinned_reinstall_recovers_same_identity_and_customer_data"
+  ]
+}

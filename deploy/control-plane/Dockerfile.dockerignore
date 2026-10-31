@@ -1,0 +1,12 @@
+.git
+.env
+.env.*
+.superpowers
+.pytest_cache
+.ruff_cache
+work
+**/__pycache__
+**/*.pyc
+**/*.db
+**/*.sqlite3
+**/node_modules

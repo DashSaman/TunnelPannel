@@ -1,0 +1,169 @@
+/* TehNet console. Original interface; self-hosted OFL font, no external requests. */
+@font-face{font-family:TehNetVazir;src:url('tehnet-vazirmatn.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
+:root{--bg:#0b0e13;--panel:#13181f;--line:#303640;--ink:#f2f3f5;--text:#f2f3f5;--muted:#adb6c3;--accent:#e8be7d;--green:#94d5bc;--blue:#b2cbec;--bad:#ffafb9;--red:#ffafb9}
+.tehnet-console{background:radial-gradient(ellipse at 85% 0,#b48b4b0c,transparent 48%),var(--bg);font:15px/1.85 TehNetVazir,Tahoma,system-ui,sans-serif;color:var(--ink);min-width:0}
+.tehnet-console button,.tehnet-console input,.tehnet-console select,.tehnet-console textarea{font:inherit}
+.tehnet-console a{color:var(--blue);text-underline-offset:4px}
+.tehnet-console header{background:#0b0e13f2;border-color:#303640;backdrop-filter:blur(16px);box-shadow:none}
+.tehnet-console nav{max-width:1440px;padding:18px 32px;gap:18px;min-height:82px}
+.tehnet-console .brand{font-size:20px;gap:12px;letter-spacing:0;color:var(--ink)}
+.tehnet-console .brand svg{color:var(--accent)}
+.tehnet-console .badge{background:#1a2029;border-color:#343d49;color:#c8d2df;font-size:12px;padding:3px 11px}
+.tehnet-console main{max-width:1440px;padding:24px 32px 40px}
+.tehnet-console h1{font-size:clamp(32px,4.3vw,56px);line-height:1.38;font-weight:800;letter-spacing:-1.2px;max-width:790px;margin:16px 0}
+.tehnet-console h2{font-size:22px;line-height:1.6;font-weight:750}
+.tehnet-console h3{font-size:17px;font-weight:700;line-height:1.8}
+.tehnet-console h4{font-size:16px;line-height:1.8;margin:8px 0 12px}
+.tehnet-console .hero{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(240px,.65fr);align-items:center;gap:48px;padding:52px 0 48px}
+.tehnet-console .lead{font-size:17px;color:var(--muted);line-height:2;max-width:700px}
+.tehnet-console .eyebrow{display:flex;align-items:center;gap:10px;color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.8px}
+.tehnet-console .eyebrow::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 5px #e8be7d0b}
+.tehnet-console .hero-actions{display:flex;align-items:center;gap:12px;margin-top:24px;flex-wrap:wrap}
+.tehnet-console .hero-actions a{padding:11px 20px;border:1px solid #46413a;border-radius:10px;text-decoration:none;color:var(--accent);font-size:13px}
+.tehnet-console .scope-note{max-width:730px;margin-top:22px;font-size:12px}
+.tehnet-console .scope-note .note{background:#141a22;border-color:var(--line);color:var(--muted)}
+.tehnet-console summary{color:#c1cddd}
+.tehnet-console .network-preview{position:relative;padding:26px;border:1px solid #4b4130;background:linear-gradient(150deg,#1c1c18,#11161e);border-radius:24px;overflow:hidden;box-shadow:0 24px 90px #0003}
+.tehnet-console .network-preview::before{content:'';position:absolute;inset:0;background-image:linear-gradient(#e8be7d05 1px,transparent 1px),linear-gradient(90deg,#e8be7d05 1px,transparent 1px);background-size:24px 24px;pointer-events:none}
+.tehnet-console .network-preview svg{width:100%;max-height:190px;display:block;position:relative;color:var(--accent)}
+.tehnet-console .network-preview figcaption{position:relative;color:var(--muted);font-size:11px;border-top:1px solid #3a352b;padding-top:13px;margin-top:12px}
+.tehnet-console .network-trace{stroke-dasharray:6 8;animation:tehnet-flow 8s linear infinite}
+@keyframes tehnet-flow{to{stroke-dashoffset:-56}}
+.tehnet-console .card{background:#141a23;border-color:var(--line);border-radius:18px;box-shadow:0 3px 0 #0001;padding:26px;margin-bottom:22px}
+.tehnet-console .card .card{background:#10161e;border-radius:13px;box-shadow:none}
+.tehnet-console .grid{gap:20px}
+.tehnet-console .form,.tehnet-console .admin-form{gap:18px}
+.tehnet-console label{font-size:12px;gap:8px;color:#bdc7d4;min-width:0}
+.tehnet-console input,.tehnet-console select,.tehnet-console textarea{border:1px solid #424c5b;border-radius:9px;background:#0d131b;color:var(--ink);padding:12px 13px;min-height:46px;max-width:100%;box-shadow:inset 0 1px 0 #0002}
+.tehnet-console input:hover,.tehnet-console select:hover,.tehnet-console textarea:hover{border-color:#657185}
+.tehnet-console input[type=checkbox]{min-height:18px;width:18px;height:18px;box-shadow:none;accent-color:var(--accent)}
+.tehnet-console button,.tehnet-console .button{border:1px solid #424c5b;border-radius:10px;background:#222c39;color:#edf1f7;min-height:44px;padding:10px 17px;font-size:13px;box-shadow:none;transition:background .16s,border-color .16s,transform .16s}
+.tehnet-console button:hover,.tehnet-console .button:hover{background:#2c3849;border-color:#6d7a8f}
+.tehnet-console button.primary,.tehnet-console .button.primary{background:var(--accent);color:#211b12;border-color:var(--accent);font-weight:750}
+.tehnet-console button.primary:hover,.tehnet-console .button.primary:hover{background:#f5d49e;border-color:#f5d49e}
+.tehnet-console button:active:not(:disabled){transform:translateY(1px)}
+.tehnet-console button:disabled{opacity:.45;cursor:not-allowed}
+.tehnet-console :is(button,a,input,select,textarea,summary):focus-visible{outline:3px solid var(--accent);outline-offset:4px}
+.tehnet-console .nav-login{background:var(--accent);color:#211b12;border:1px solid var(--accent);border-radius:9px;padding:8px 16px;text-decoration:none;font-size:12px}
+.console-signed .nav-login,.console-signed .hero-actions{display:none}
+.tehnet-console .login-shell{max-width:620px;margin:0 auto 40px}
+.tehnet-console .login-shell>div:first-child{border-top:1px solid #6c5736;background:linear-gradient(155deg,#1c232d,#131920)}
+.tehnet-console .login-shell h2{font-size:24px}
+.tehnet-console .login-shell .form{margin-top:24px}
+.tehnet-console .step{border:0;padding:0;font-size:20px}
+.tehnet-console .steps{display:flex;gap:10px;padding:10px;background:#111720;border:1px solid var(--line);border-radius:14px;margin:0 0 24px}
+.tehnet-console .steps a{border:0;border-radius:8px;padding:10px 14px;color:#bac7d8;display:flex;align-items:center;gap:10px;text-decoration:none;font-size:13px}
+.tehnet-console .steps a:hover,.tehnet-console .steps a:focus-visible{background:#242c36;color:var(--accent)}
+.tehnet-console .steps .side-label{font-size:10px;color:#818fa2;padding:12px 14px;letter-spacing:1px}
+.tehnet-console .admin-tabs{gap:6px;border-bottom:1px solid var(--line);padding-bottom:14px;margin-block:24px}
+.tehnet-console .admin-tabs button{background:transparent;border:1px solid transparent;color:#b7c4d5;padding:10px 13px;font-size:12px}
+.tehnet-console .admin-tabs button:hover{background:#222c39}
+.tehnet-console .admin-tabs button[aria-selected=true]{background:#e8be7d17;border-color:#77613f;color:#f1d1a0}
+.tehnet-console .admin-stats{gap:14px;margin:24px 0}
+.tehnet-console .admin-stats .card{padding:20px 24px;border-inline-start:2px solid #675437;margin:0;background:#10161e}
+.tehnet-console .admin-stats strong{font-size:34px;font-weight:700;line-height:1.4;color:var(--accent);font-variant-numeric:tabular-nums}
+.tehnet-console .admin-stats span{font-size:11px;color:var(--muted)}
+.tehnet-console.owner-console #owner{border-top:1px solid #655338}
+.tehnet-console .steps a[aria-current=location]{background:#e8be7d12;color:var(--accent);border-inline-start-color:var(--accent)}
+.tehnet-console .allowance-ceiling{font-size:25px;font-weight:750;color:var(--accent);font-variant-numeric:tabular-nums}
+.tehnet-console progress{accent-color:var(--accent);height:9px;border-radius:9px;overflow:hidden}
+.tehnet-console .admin-list{gap:16px}
+.tehnet-console .admin-list>.card{margin:0}
+.tehnet-console .admin-list>section{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.tehnet-console .admin-list>section>h3{grid-column:1/-1}
+.tehnet-console .admin-list>section>.card{margin:0}
+.tehnet-console .admin-panel>form{background:#10161e;border:1px solid #343e4b;border-radius:14px;padding:24px;margin-top:20px}
+.tehnet-console .note{background:#1d251f;border-color:#3e584d;border-radius:12px;color:#c8e1d4;font-size:13px;line-height:1.9}
+.tehnet-console .good{color:var(--green)}
+.tehnet-console .bad{color:var(--bad)}
+.tehnet-console .metric,.tehnet-console .usage-grid strong{color:var(--accent);font-variant-numeric:tabular-nums}
+.tehnet-console .table{border:1px solid var(--line);border-radius:12px}
+.tehnet-console table{font-size:12px}
+.tehnet-console th{background:#1b2330;font-size:11px;letter-spacing:.1px}
+.tehnet-console td,.tehnet-console th{padding:13px 15px;border-color:#2d3541}
+.tehnet-console tbody tr:hover{background:#1e2835}
+.tehnet-console pre{background:#0c1118;border-color:var(--line);font-size:12px}
+.tehnet-console .usage-grid>div,.tehnet-console .traffic-form,.tehnet-console .requirement{background:#10161e;border-color:var(--line)}
+.tehnet-console .workspace-nav{background:#111720;border-color:var(--line)}
+.tehnet-console .workspace-nav a:hover{background:#222c39}
+.tehnet-console .stat{background:#141a23;border-color:var(--line)}
+.tehnet-console .notice{background:#203b30;border-color:#5f927a;box-shadow:0 10px 60px #0006}
+.tehnet-console .notice.error{background:#40262c;border-color:#ad7a86}
+.console-signed .hero{padding:22px 0 30px;gap:24px;grid-template-columns:minmax(0,1fr) 230px}
+.console-signed .hero h1{font-size:32px;letter-spacing:-.7px}
+.console-signed .hero .lead{font-size:14px}
+.console-signed .network-preview{padding:16px;border-radius:16px;margin:0}
+.console-signed .network-preview svg{max-height:110px}
+.console-signed .scope-note{margin:8px 0 0}
+.tehnet-console footer{font-size:12px;border-color:var(--line);color:var(--muted)}
+@media(min-width:1120px){
+ .console-signed main{padding-inline-start:272px}
+ .console-signed .steps{position:fixed;inset-inline-start:max(24px,calc((100vw - 1440px)/2 + 24px));top:112px;width:210px;flex-direction:column;align-items:stretch;padding:14px;max-height:calc(100vh - 150px);overflow:auto}
+ .console-signed .steps a{border-inline-start:2px solid transparent;justify-content:flex-start}
+ .console-signed .steps a:hover{border-inline-start-color:var(--accent)}
+}
+@media(max-width:1119px){
+ .tehnet-console .steps{flex-wrap:nowrap;overflow-x:auto;align-items:center}
+ .tehnet-console .steps a{flex:0 0 auto;white-space:nowrap}
+ .tehnet-console .steps .side-label{display:none}
+}
+@media(max-width:760px){
+ .tehnet-console nav{padding:12px 18px;gap:10px;min-height:72px;flex-wrap:wrap}
+ .tehnet-console main{padding:18px}
+ .tehnet-console .brand{font-size:17px}
+ .tehnet-console nav .badge{display:none}
+ .tehnet-console nav .space{display:none}
+ .tehnet-console #identity{font-size:9px;flex:1;min-width:80px;text-align:center}
+ .tehnet-console #language{font-size:11px;padding:8px 10px;min-width:108px}
+ .tehnet-console #logout{font-size:11px;padding:8px 10px}
+ .tehnet-console .hero,.console-signed .hero{grid-template-columns:1fr;padding:24px 0;gap:18px}
+ .tehnet-console h1,.console-signed .hero h1{font-size:30px;letter-spacing:-.6px}
+ .tehnet-console .lead{font-size:14px}
+ .tehnet-console .network-preview{margin:0;max-width:none;padding:16px}
+ .tehnet-console .network-preview svg{max-height:110px}
+ .console-signed .network-preview{display:none}
+ .tehnet-console .card{padding:19px;border-radius:14px}
+ .tehnet-console .admin-panel>form{padding:18px}
+ .tehnet-console .form,.tehnet-console .grid,.tehnet-console .admin-form,.tehnet-console .admin-list,.tehnet-console .admin-list>section{grid-template-columns:1fr}
+ .tehnet-console .admin-tabs{display:flex;gap:6px}
+ .tehnet-console .admin-tabs button{flex:1 1 40%;font-size:12px;padding:10px 6px}
+ .tehnet-console .admin-stats{gap:8px}
+ .tehnet-console .admin-stats .card{padding:12px}
+ .tehnet-console .admin-stats strong{font-size:25px}
+ .tehnet-console .admin-stats span{font-size:10px}
+ .tehnet-console .hero-actions a{padding:9px 14px}
+}
+@media(prefers-reduced-motion:reduce){.tehnet-console *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Managed TCP services reuse the route debit point and the TehNet console. */
+.managed-services .service-layout{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:28px;margin-top:24px;align-items:start}
+.managed-services .service-editor,.managed-services .service-directory{min-width:0}
+.managed-services .service-editor{padding:20px;border:1px solid var(--line);border-radius:14px;background:#0c1118}
+.managed-services .service-editor h3{margin-top:0;color:var(--accent)}
+.managed-services fieldset{border:0;padding:0;margin:0;min-width:0}
+.managed-services fieldset:disabled{opacity:.62}
+.managed-services .form{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.managed-services .service-wide{grid-column:1/-1}
+.managed-services input,.managed-services select,.managed-services textarea{min-width:0;max-width:100%;box-sizing:border-box}
+.managed-services textarea{resize:vertical;width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;color:var(--ink);background:#0b1017}
+.managed-services .service-exposure{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid #e8be7d35;border-radius:10px;font-size:12px;background:#e8be7d06}
+.managed-services .service-exposure input{width:18px!important;height:18px;max-width:18px;flex:0 0 18px;margin-top:5px;accent-color:var(--accent)}
+.managed-services .service-actions{flex-wrap:wrap;gap:8px;margin-top:16px}
+.managed-services .service-actions button{white-space:normal;font-size:12px;padding:9px 13px}
+.managed-services .service-proof{padding:12px;margin-top:16px;border:1px solid #94d5bc45;border-radius:10px;background:#94d5bc0a;color:var(--green);font-size:13px}
+.managed-services .service-proof:empty{display:none}
+.managed-services .service-card{padding:18px;margin-bottom:14px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(135deg,#1b2028,#12171e)}
+.managed-services .service-card h4{margin:0;min-width:0;overflow-wrap:anywhere}
+.managed-services .service-card>.row{flex-wrap:wrap}
+.managed-services .service-card>.row h4{flex:1 1 150px}
+.managed-services .service-endpoints{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:center;padding:15px 0}
+.managed-services .service-endpoints>div{min-width:0}
+.managed-services .service-endpoints small{display:block;color:var(--muted);font-size:11px}
+.managed-services .service-endpoints code{display:block;overflow-wrap:anywhere;color:var(--accent);font-size:12px;margin:6px 0}
+.managed-services .service-endpoints>span{color:var(--muted)}
+[dir=rtl] .managed-services .service-endpoints>span{transform:rotate(180deg)}
+.managed-services .service-inherits{display:flex;flex-wrap:wrap;gap:7px;font-size:11px}
+.managed-services .service-inherits span{padding:4px 8px;border:1px solid #394235;border-radius:7px;color:#bdd4c6;background:#94d5bc06}
+.managed-services .service-empty{padding:32px 20px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);font-size:13px}
+@media(max-width:1050px){.managed-services .service-layout{grid-template-columns:1fr}}
+@media(max-width:600px){.managed-services .form{grid-template-columns:1fr}.managed-services .service-editor{padding:14px}.managed-services .service-card{padding:14px}.managed-services .service-actions button{flex:1 1 140px}.managed-services .section-head{align-items:flex-start;gap:12px;flex-wrap:wrap}}

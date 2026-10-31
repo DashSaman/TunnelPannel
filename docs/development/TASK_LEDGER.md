@@ -52,10 +52,12 @@ no duplicate tables exist.
 | T-P13-003 | P13 | — | install.sh (canonical app, Ubuntu/Debian, idempotent, generated RBAC tokens shown once, install receipt) + upgrade.sh (backup→migrate→health, rollback hint) + uninstall.sh (owned-only removal) | PASS | install.sh · scripts/{upgrade,uninstall}.sh · requirements-canonical.txt · requirements-dev.txt | bash -n all; contract test; CI install acceptance job | legacy Gen1 installer preserved in git history · (P13.2 commit) |
 | T-P13-004 | P13 | — | Canonical backup (VACUUM INTO/pg_dump, manifests, checksummed, secret-free) + restore (checksum gate, double-confirm, safety copy, health) | PASS | scripts/{backup,restore}.sh | CI backup→mutate→restore round-trip job | restore proven: mutation rolled back, health OK · (P13.2 commit) |
 | T-P14-PREP | P14 | T-P13-001 | P14-PREP: real-validation runner (`scripts/p14_validate.py`), gitignored node-config + credential-free template, report generator, 31 prep tests | PASS | scripts/p14_validate.py · scripts/generate_real_validation_report.py · tests/e2e/p14-nodes.example.yml · tests/unit/test_p14_prep.py (31) | preflight zero-mutation (allowlist+verb-blocklist) · mgmt-route gate · resume · run-scoped cleanup + ORPHANED_RESOURCE · finite statuses · redaction · 3rd-node handling | (this commit) |
-| T-P14-001 | P14 | T-P14-PREP | Real-node validation (E2E receipts) | BLOCKED | — | — | **REAL_EXECUTOR_WIRING_AND_PROFILE_REMEDIATION_REQUIRED** — fresh two-node access supplied and tested 2026-10-13; 6 kernel real-pair PASS plus WG→GRE drill, 82-method isolated lab 32P/23PA/27F; full multi-hop needs a third node and a real path driver. See docs/releases/v0.9.0-rc2/REAL_VALIDATION.md. |
-| T-P15-001 | P15 | T-P14-001 | Production release (tag, matrices, acceptance) | TODO | — | — | — |
+| T-P14-001 | P14 | T-P14-PREP | Real-node validation (two-node E2E receipts) | PASS | docs/releases/v0.9.0-rc3/REAL_BENCHMARK.md; docs/MESH-VALIDATION.md | Original82 remediation; current216/216 directed NORMAL outcomes and targeted follow-ups | Two-node scope validated. Historical32P/23PA/27F was the old isolated baseline, not current status. Real three-server multi-hop remains unverified. |
+| T-P15-001 | P15 | T-P14-001 | Broader production release (tag, environment matrices, acceptance) | PARTIAL | docs/MESH-VALIDATION.md; install-one-line.txt | Pinned Ubuntu installation/lifecycle and Python3.11/3.12 CI accepted | Tested two-host release documented; semver tag, other physical environments and commercial signup/payment integration are not established by this acceptance. |
 
-## Canonical counts (single source: core/counts.py — invariant-tested)
+## Preserved base counts (core/counts.py — invariant-tested)
+
+These are the historical/base registry counts. The current mesh catalog adds26 identities: combined108 =91 profiles +17 compositions across21 families, plus6 aliases. See MESH-SOURCES.md and the Mesh report.
 
 LEGACY_METHOD_IDS **82** · CANONICAL_ENGINES **21** · ENGINE_PROFILES **76** ·
 COMPOSITE_TEMPLATES **6** · ALIASES **6** · TOTAL_RESOLVABLE_LEGACY_IDS **88**.
@@ -79,8 +81,8 @@ Historical discrepancies resolved: "77" = Gen1 executor/catalog (subset, interna
 
 ## Standing blockers
 
-- OPERATOR_ACTION_REQUIRED: rotate the two exposed passwords + GitHub token (history retains them).
-- linux_privileged / real_node_e2e tiers require a Linux host (CI in P13, validation in P14).
+- OPERATOR_ACTION_REQUIRED: review rotation of historically exposed credentials/tokens. One endpoint SSH credential was refreshed and verified on2026-10-16; that does not establish rotation of all previous credentials or GitHub tokens. No secret values belong in source or public evidence.
+- linux_privileged / real_node_e2e tiers require the corresponding Linux/physical environment. Ubuntu two-host acceptance is now recorded; do not extrapolate it to other environments.
 
 
 ## 2026-10-13 corrective acceptance
@@ -95,3 +97,10 @@ Historical discrepancies resolved: "77" = Gen1 executor/catalog (subset, interna
 Latest two-node NORMAL results: 82 PASS, derived from the full matrix (76 PASS/6 FAILED) and explicit corrected-profile reruns. Fresh software suites: 533 canonical + 100 TunnelGuard + 1 backend PASS. Real canonical node registration, pinned SSH, encrypted credentials and panel jobs are wired. See docs/releases/v0.9.0-rc3/REAL_BENCHMARK.md. Latest five selected DEEP profiles PASS (initial 4 PASS/1 FAILED retained; unchanged sing-box rerun PASS). Public pinned install on both nodes and full node-B lifecycle PASS. Python 3.11/3.12, Linux installer, security and shell CI PASS at e6a2c419; final delivery commit verification follows. Zero live ownership allocations; historical orphan receipt preserved. Native Hedioum rapid short-connection churn remains a documented diagnostic limitation; sustained TUN speed uses bidirectional iperf3. Supplied credentials never belong in tracked files.
 
 The former canonical executor/profile blockers are resolved for the tested two-node benchmark. A three-server path and arbitrary production environments remain outside this evidence.
+
+
+## 2026-10-16 customer Mesh acceptance
+
+Functional source a115027e357f5ea5ce279445e40a678a06949c5b:108 identities,216/216 directed NORMAL outcomes; targeted XFRM6/6 and affected shared-kernel18/18 passes; final occupied dotted-key proof. Both pinned Ubuntu installations/lifecycles accepted, independent encryption identities preserved. Real concurrent5+5 groups,128 verified64MiB streams (8GiB), failure exclusion, pins and gateway restart passed; final UI7+5 members observed healthy after stable-entry-preserving rebuild. Connection sharing improved one measured direction and reduced throughput in the other; it is not single-stream bonding.
+
+Fresh immutable-source CI:643 canonical +100 TunnelGuard +1 backend passed separately on Python3.11/3.12; Linux installer/lifecycle, canonical lint/catalog/shell and security workflows succeeded. See [full report](../MESH-VALIDATION.md), [Persian panel manual](../PANEL-GUIDE-fa.md) and [Mesh ledger](MESH_LEDGER.md) for chronology, scope, failed attempts and future sales integration boundaries. Physical Iran/three-server/NAT or arbitrary platform results are not claimed.

@@ -1,0 +1,31 @@
+{
+  "status": "PASS",
+  "created_at": 1792182265.5982397,
+  "tables": {
+    "workspaces": {
+      "count": 2,
+      "sha256": "a27bc1b62e1ebfd9c8e9a5b8039cfd37df3eca27c22c28f092166795f0c8a048"
+    },
+    "accounts": {
+      "count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "account_sessions": {
+      "count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "billing_subscriptions": {
+      "count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "system_nodes": {
+      "count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+  },
+  "mutate_restore_verified": true,
+  "installation_secret_unchanged": true,
+  "backup_sha256": "734b339938feb2c5bdfe1f8db252e1e7803de401a1b93642721c078687de5b26",
+  "health_recovered": true,
+  "integrity_checks_passed": true
+}

@@ -1,0 +1,121 @@
+{
+  "status": "PASS",
+  "date": "2026-10-19",
+  "url": "https://tehnet.ir/tunnels/",
+  "authorization": "Owner explicitly requested a dedicated container on tehnet.ir and integration into the site menus; supersedes private preview restrictions.",
+  "frontend_revision": "76c53947acef5e8192cffb73561fc76480eb1c20",
+  "frontend_tree": "46b146cd1cc40609ef3fd6ee53e134ddb35c05c7",
+  "backend_revision_unchanged": "882e69d8af31616f4022ca5ddabb11f31c5b587d",
+  "ci": {
+    "portable": 39265390395,
+    "security": 39265390524,
+    "conclusion": "success",
+    "head": "76c53947acef5e8192cffb73561fc76480eb1c20"
+  },
+  "focused_tests": {
+    "container_package": 9,
+    "combined_portal_and_gateway": 16,
+    "status": "PASS"
+  },
+  "container": {
+    "name": "tunnelpannel-tehnet-web",
+    "web_only": true,
+    "image": "nginx@sha256:970364228b1e4f932abc22d321932816782cca8a20b85a77552a7cfe9acfb3b5",
+    "readonly": true,
+    "uid": "101:101",
+    "cap_drop": [
+      "ALL"
+    ],
+    "no_new_privileges": true,
+    "memory_mib": 96,
+    "cpu": 0.2,
+    "pids": 32,
+    "network": "host; listener loopback only; shared network namespace",
+    "port_selected_by_fresh_canonical_inventory": true,
+    "healthy": true,
+    "ssh_or_database_mounts": false
+  },
+  "public_checks": {
+    "verified_tls": true,
+    "pages": [
+      "portal",
+      "mesh",
+      "ranking",
+      "topology"
+    ],
+    "anonymous_api": 401,
+    "foreign_origin": 403,
+    "missing_csrf": 403,
+    "cookie_flags": [
+      "Secure",
+      "HttpOnly",
+      "SameSite=Strict",
+      "Path=/tunnels/"
+    ],
+    "existing_owner_and_demo_login_logout": true,
+    "workspace_isolation": true,
+    "each_account_node_count": 2,
+    "read_existing_history_only": true
+  },
+  "ui": {
+    "desktop_menu_link": true,
+    "mobile_menu_link": true,
+    "persian_english_portal_mesh": true,
+    "authenticated_topology_ranking": true,
+    "portal_mobile_fa_en_widths": [
+      375,
+      375
+    ],
+    "mesh_mobile_en_widths": [
+      375,
+      375
+    ],
+    "viewport_reset": true,
+    "no_new_campaign_or_route_created": true
+  },
+  "menu": {
+    "primary_id": 2,
+    "new_item_id": 190,
+    "label": "مدیریت تونل",
+    "url": "https://tehnet.ir/tunnels/",
+    "nine_existing_items_ids_order_urls_parents_preserved": true
+  },
+  "preservation": {
+    "existing_containers": 11,
+    "service_pids": 5,
+    "network_links": 50,
+    "all_preserved": true,
+    "site_paths_http_200": [
+      "/",
+      "/services/",
+      "/software/",
+      "/tunnels/"
+    ],
+    "tunnel_members": 10,
+    "tunnel_worker_pids": [
+      1140595,
+      873935
+    ],
+    "route_configurations_and_modes_unchanged": true,
+    "backend_source_keys_and_other_env_unchanged": true,
+    "only_controller_api_restarted_after_all_work_drained": true
+  },
+  "backup": {
+    "fresh_before_after_site_and_controller": true,
+    "controller_env_key_separate": true,
+    "server_resident_encryption": "AES-256-CBC / PBKDF2-SHA256 200000 iterations; separate root-only random key; decrypt SHA256 equality verified",
+    "originals_retained": true,
+    "new_offsite_copy": false,
+    "local_transfer": "Automatic approval review rejected sensitive backup download; safer server-resident encryption used. No bypass or export."
+  },
+  "retained_diagnostics": [
+    "First nginx reload acceptance checked too soon, returned404 and rolled back only owned changes. Bounded readiness then observed404->200 and passed.",
+    "Default Python HTTP client rejected by edge with1010 before application authentication; browser-compatible acceptance client and real browser succeeded."
+  ],
+  "boundaries": [
+    "All APIs/databases/queues/builds/benchmarks/tunnels remain on other servers.",
+    "No real payment, WordPress SSO or public signup enabled.",
+    "No server deletion, existing tunnel rebuild or main merge.",
+    "Connection sharing does not imply single-stream bonding or Iran-route SLA."
+  ]
+}

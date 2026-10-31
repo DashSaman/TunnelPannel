@@ -1,0 +1,39 @@
+{
+  "status": "PASS",
+  "created_at": 1792182094.0476267,
+  "tables": {
+    "workspaces": {
+      "count": 5,
+      "sha256": "ed09b76e406726e2bf35d737d967ea3cf2b5bc560ddf2fd2b696143ed5fe2de4"
+    },
+    "accounts": {
+      "count": 4,
+      "sha256": "70fe89fac93aa8c6418f6421af4582cf90b7e527b788b7aa04f87b555e9700e3"
+    },
+    "account_sessions": {
+      "count": 5,
+      "sha256": "57f49645740d704635bef19e67e196912a17f15377b10fd2897a9ba18c761735"
+    },
+    "billing_subscriptions": {
+      "count": 1,
+      "sha256": "8d152b1506cb4734c67f1b0b9995e05ea3975dd9a25fc8f1b838c705e64f57f3"
+    },
+    "agent_authority": {
+      "count": 1,
+      "sha256": "b6428acef117ac361a818788b90a38d9df7bcdbffed9e5ea18710a02e6a04d5b"
+    },
+    "agent_identities": {
+      "count": 2,
+      "sha256": "d293c1fdc3f51c3150ebcdd9a6b4a8a27e06a9f99133587f766382ac8795d967"
+    },
+    "system_nodes": {
+      "count": 2,
+      "sha256": "6d01c39a61a1c5d115c0a98e1ebb9858001e0db26df4b703c81294044436216e"
+    }
+  },
+  "mutate_restore_verified": true,
+  "installation_secret_unchanged": true,
+  "backup_sha256": "0b575d2d8c704d4ab48c185201789ca46871c39774159a8ace85089c9625437f",
+  "health_recovered": true,
+  "integrity_checks_passed": true
+}

@@ -5,6 +5,37 @@ import json
 import shlex
 
 
+def latency_script(command, nonce, probes):
+    arguments = shlex.split(command) + ['--write-out', '\\n%{time_total}']
+    return f'''import json,subprocess
+arguments={arguments!r}
+samples=[]; failed=0
+for _ in range({int(probes)}):
+ p=subprocess.run(arguments,capture_output=True,timeout=25)
+ try:
+  body,seconds=p.stdout.rsplit(b'\\n',1)
+  if p.returncode or body.strip()!={nonce.encode()!r}: raise ValueError('payload mismatch')
+  samples.append(float(seconds)*1000)
+ except (ValueError,TypeError): failed+=1
+print(json.dumps({{'samples_ms':samples,'probes_sent':{int(probes)},'probes_failed':failed,
+ 'rtt_basis':'http_request','clock':'remote curl time_total, excludes SSH and process launch'}}))
+'''
+
+
+def measure_http_latency(adapter):
+    from orchestrator.benchmarking import rtt_stats
+    remote, command, _, _, nonce = adapter.http_flow
+    script = latency_script(command, nonce, adapter.profile.rtt_probes)
+    receipt = json.loads(remote.run('python3 -c ' + shlex.quote(script), root=True,
+                                   timeout=adapter.profile.rtt_probes * 25 + 10)['stdout'])
+    if not receipt['samples_ms']:
+        raise RuntimeError('all repeated real data-plane probes failed')
+    return {**rtt_stats(receipt['samples_ms']), 'rtt_basis': receipt['rtt_basis'],
+            'loss_pct': 100 * receipt['probes_failed'] / receipt['probes_sent'],
+            'loss_basis': 'application request failures, not inferred IP packet loss',
+            'latency_evidence': receipt}
+
+
 def resource_snapshot(remote):
     script = """import pathlib,json
 cpu=list(map(int,pathlib.Path('/proc/stat').read_text().splitlines()[0].split()[1:9]))

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>TunnelPannel — Benchmark &amp; Ranking</title>
+<title>TehNet — Benchmark &amp; Ranking</title>
 <style>
 :root{--navy:#14324f;--teal:#0e7490;--ok:#1a7f4e;--bad:#b03a34;--warn:#96690f;--line:#d8dfe6;--soft:#f6f8fa}
 *{box-sizing:border-box}
@@ -42,11 +42,11 @@ details summary{cursor:pointer;color:var(--teal)}
 .toolbar .sel{font-size:13px;color:#54636f}
 .error{color:var(--bad);font-weight:600;display:none;margin-top:10px}
 .empty{color:#7c8894;font-style:italic;margin-top:22px}
-</style>
+</style><link rel="stylesheet" href="/assets/console.css">
 </head>
 <body>
 <header>
-  <h1>TunnelPannel — Benchmark &amp; Ranking</h1>
+  <h1>TehNet — Benchmark &amp; Ranking</h1>
   <span class="badge" id="mode-badge">idle</span>
 </header>
 <main>
@@ -109,6 +109,7 @@ details summary{cursor:pointer;color:var(--teal)}
     <span class="sel" id="sel-info">Selection is input to Failover Groups (P10) — deploying is a separate explicit action.</span>
   </div>
 </main>
+<script src="/assets/auth.js"></script>
 <script>
 "use strict";
 const COLUMNS = [
@@ -126,8 +127,8 @@ function $(id){return document.getElementById(id)}
 function setBadge(t){$("mode-badge").textContent = t}
 
 async function api(path, options={}){
-  const headers={...(options.headers||{}), Authorization: "Bearer " + apiToken};
-  const response=await fetch(path,{...options,headers});
+  const headers={...(options.headers||{}), ...(apiToken&&apiToken!=='@cookie'?{Authorization:'Bearer '+apiToken}:{})};
+  const response=await TPAuth.request(path,{...options,headers});
   if(!response.ok){let detail=response.statusText;try{detail=(await response.json()).detail||detail}catch{}throw new Error(typeof detail === "string"?detail:JSON.stringify(detail))}
   return response;
 }
@@ -148,7 +149,7 @@ async function loadNodes(){
 }
 
 $("connect").onclick=async()=>{try{
-  apiToken=$("access-token").value.trim();
+  apiToken=$("access-token").value.trim()||(TPAuth.principal?'@cookie':'');
   const user=await (await api("/api/whoami")).json();
   $("auth-status").textContent=user.role;
   $("access-token").value="";
@@ -336,7 +337,7 @@ $("create-group").onclick = async () => {
   const members = order.map((cand, i) => ({
       candidate: cand, priority: i + 1,
       kind: cand.startsWith("chain:") ? "chain" : "single"}));
-  const r = await fetch("/failover-groups", {
+  const r = await api("/failover-groups", {
     method: "POST", headers: {"Content-Type": "application/json"},
     body: JSON.stringify({name: `from-benchmark-${jobId.slice(0, 8)}`,
                           members: members, mode: "MANUAL_PRIORITY"}),
@@ -350,7 +351,8 @@ $("create-group").onclick = async () => {
   }
 };
 
-loadNodes();
+TPAuth.ready.then(()=>{if(TPAuth.principal)$("connect").click()});
+addEventListener('pagehide',()=>{apiToken=''});
 </script>
 </body>
 </html>

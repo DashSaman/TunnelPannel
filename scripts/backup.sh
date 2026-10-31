@@ -3,6 +3,7 @@
 # metadata + resource-ownership ledger, checksummed, secret-safe.
 #   scripts/backup.sh [output.tar.gz]     (default: /var/lib/tunnelpannel/backups/…)
 set -Eeuo pipefail
+umask 077
 
 CONF_DIR="/etc/tunnelpannel"
 DATA_DIR="/var/lib/tunnelpannel"
@@ -29,7 +30,12 @@ fi
 # 2. state + metadata (secret-safe: the env file is deliberately EXCLUDED)
 cp -a "$DATA_DIR/install-receipt.json" "$WORK/" 2>/dev/null || true
 cp -a "$INSTALL_DIR/engines/manifests" "$WORK/manifests"
-printf '%s\n' "$DATABASE_URL" > "$WORK/db-url.txt"
+cd "$INSTALL_DIR"
+"$INSTALL_DIR/.venv/bin/python" - "${TP_WORKSPACES_DIR:-$DATA_DIR/workspaces}" "$WORK/workspaces" <<'PY'
+from core.workspace_backup import snapshot_workspaces
+import sys
+snapshot_workspaces(sys.argv[1], sys.argv[2])
+PY
 SCHEMA_REV="$(cd "$INSTALL_DIR" && sudo -u tunnelpannel env DATABASE_URL="$DATABASE_URL" \
   "$INSTALL_DIR/.venv/bin/python" -m alembic -c "$INSTALL_DIR/alembic.ini" current 2>/dev/null \
   | tail -1 | awk '{print $1}')"
@@ -38,8 +44,10 @@ cat > "$WORK/backup-receipt.json" <<RECEIPT
   "product": "TunnelPannel",
   "kind": "backup",
   "created_at": "$(date -u +%FT%TZ)",
-  "included": ["database", "install-receipt", "engine-manifests", "db-url"],
+  "included": ["database", "workspaces", "install-receipt", "engine-manifests"],
   "secrets_included": false,
+  "hashed_api_keys_and_encrypted_credentials_included": true,
+  "installation_encryption_key_included": false,
   "schema_revision": "${SCHEMA_REV:-unknown}"
 }
 RECEIPT

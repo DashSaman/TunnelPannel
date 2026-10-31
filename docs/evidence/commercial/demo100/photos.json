@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-20",
+  "screenshots": [
+    {
+      "file": "01-guest-fa.jpg",
+      "sha256": "b9c85a3dcdcbf7d3057c5e8b5fab6954c697f544a42e6b7061af0b826ed64920",
+      "bytes": 62525,
+      "capture": "actual installed https://tehnet.ir/tunnels/ through CUA; unmodified JPEG"
+    },
+    {
+      "file": "02-test-customer-fa.jpg",
+      "sha256": "648a2392e2d6da159657a5c1449e56e87ee1912e5577fe9b78eae75b5117a1d9",
+      "bytes": 68165,
+      "capture": "actual installed https://tehnet.ir/tunnels/ through CUA; unmodified JPEG"
+    },
+    {
+      "file": "03-migration-pass-fa.jpg",
+      "sha256": "ad73de95cfe00f8965211184cb9cca221ff9035bbede7ca84ce814180bbd98d1",
+      "bytes": 71711,
+      "capture": "actual installed https://tehnet.ir/tunnels/ through CUA; unmodified JPEG"
+    },
+    {
+      "file": "04-temporary-cap-exhausted-fa.jpg",
+      "sha256": "6bc27ebf8f667be5e42b254341af673d4157707d71ceb9c15435c9e9bd668ed0",
+      "bytes": 80793,
+      "capture": "actual installed https://tehnet.ir/tunnels/ through CUA; unmodified JPEG"
+    },
+    {
+      "file": "05-owner-100gib-fa.jpg",
+      "sha256": "eea1669f3b991d22638429c20ea976402215ac655a3a308491fcd1fe34868b14",
+      "bytes": 80163,
+      "capture": "actual installed https://tehnet.ir/tunnels/ through CUA; unmodified JPEG"
+    },
+    {
+      "file": "06-owner-100gib-en.jpg",
+      "sha256": "35e2ede1d006081f3093717f53e4afc9675cfc8a7db36edabac32bf56cc1d342",
+      "bytes": 70604,
+      "capture": "actual installed https://tehnet.ir/tunnels/ through CUA; unmodified JPEG"
+    },
+    {
+      "file": "07-customer-100gib-en.jpg",
+      "sha256": "5c5d10cf4e44aa615bd66d10627923768b77fa17137d700712ffe217eedea974",
+      "bytes": 90876,
+      "capture": "actual installed https://tehnet.ir/tunnels/ through CUA; unmodified JPEG"
+    },
+    {
+      "file": "08-customer-mobile-fa.jpg",
+      "sha256": "4eea1caea903b3515cc23311629b0afd77b895b436a5f35d1557e4c97832a14d",
+      "bytes": 33350,
+      "capture": "actual installed https://tehnet.ir/tunnels/ through CUA; unmodified JPEG"
+    },
+    {
+      "file": "09-customer-live-routes-fa.jpg",
+      "sha256": "ce586c777c61ef997590ac81021d3b1368504119bf81bfd4c86508cda98421a2",
+      "bytes": 82379,
+      "capture": "actual installed https://tehnet.ir/tunnels/ through CUA; unmodified JPEG"
+    }
+  ],
+  "no_mockups": true,
+  "secrets_not_displayed": true
+}

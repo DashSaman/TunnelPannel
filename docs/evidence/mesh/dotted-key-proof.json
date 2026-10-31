@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "allocator_blob_sha": "592da105663e7f2a336dae8b7ba65934c8770ba6",
+  "existing_key": 1351096776,
+  "rendered_keys": {
+    "ikey": "80.136.25.200",
+    "okey": "80.136.25.200"
+  },
+  "allocated": [
+    1351096778,
+    1351096779
+  ],
+  "owned_proof_cleaned": true
+}

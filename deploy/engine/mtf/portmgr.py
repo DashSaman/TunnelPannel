@@ -22,7 +22,6 @@ import threading
 import time
 
 from . import state
-from .servertunnels import Side, SCAN_FILE
 
 BASE = "/opt/multitunnel"
 DATA = f"{BASE}/data"
@@ -100,6 +99,9 @@ def _scan_local() -> dict:
     try:
         import subprocess
         p = subprocess.run(["ss", "-tulnpH"], capture_output=True, text=True, timeout=20)
+        if p.returncode:
+            out['err'] = 'socket scan failed'
+            return out
         out["listeners"] = _parse_ss(p.stdout or "")
         # ip protocol space: read /proc/net/snmp for rough conflict awareness
         out["ip_proto"] = _ip_proto_in_use_local()
@@ -136,10 +138,14 @@ def _ip_proto_in_use_local() -> list:
 
 
 def _scan_remote(spec: dict) -> dict:
+    from .servertunnels import Side
     s = Side(spec)
     out = {"listeners": [], "ip_proto": [], "err": ""}
     try:
-        rc, raw = s.run("ss -tulnpH 2>/dev/null || netstat -tulnpH 2>/dev/null", 40)
+        rc, raw = s.run("ss -tulnpH", 40)
+        if rc:
+            out['err'] = 'socket scan failed'
+            return out
         out["listeners"] = _parse_ss(raw or "")
         rc2, raw2 = s.run("ip xfrm policy list 2>/dev/null | head -5; "
                           "ls /proc/net/ip_gre /proc/net/ipip /proc/net/ip6_tunnel "
@@ -220,6 +226,10 @@ def free_port(report: dict, proto: str, side_ids: list, start: int = None,
               reserved: set = None) -> int:
     """Find a port free on ALL given sides (and in NEVER/RANGE rules)."""
     proto = (proto or "tcp").upper()
+    sides = report.get('sides') or {}
+    if not side_ids or any(sid not in sides or sides[sid].get('err') or
+                          sides[sid].get('complete') is False for sid in side_ids):
+        return 0  # An unavailable scan is not evidence that a port is free.
     occ = occupied_set(report)
     lo, hi = RANGES.get(proto.lower(), (21000, 29999))
     cand = start if (start and lo <= start <= hi) else lo
@@ -232,6 +242,9 @@ def free_port(report: dict, proto: str, side_ids: list, start: int = None,
                 taken.add(v)
     for port in range(cand, hi + 1):
         if port in NEVER or port in taken:
+            continue
+        if any(lo <= port <= hi for sid in side_ids
+               for lo, hi in sides[sid].get('reserved_ranges', {}).get(proto, [])):
             continue
         if all((proto, port) not in occ.get(sid, set()) for sid in side_ids):
             return port

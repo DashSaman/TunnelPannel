@@ -1,0 +1,469 @@
+{
+  "status": "PASS",
+  "data_plane_runtime_during_main_workload": "d757fa836db2ddf838bb1f6897fbb3e30cde3a9c",
+  "installed_summary_and_final_cli_runtime": "c300a4a9b2036b9701c8dcebdcc9b3be06676f86",
+  "main_workload": {
+    "status": "PASS",
+    "started_at": 1792241837.5923204,
+    "routes": [
+      {
+        "route_id": "35c3b76628054350a5f4f94dcd151db8",
+        "runs": {
+          "ramp": {
+            "schema": "tunnelpannel-mesh-quality-v1",
+            "started_at": 1792241714.952351,
+            "finished_at": 1792241748.1352174,
+            "elapsed_s": 33.183,
+            "status": "PASS",
+            "attempts": 525,
+            "successes": 525,
+            "loss_pct": 0.0,
+            "phases": [
+              {
+                "concurrency": 1,
+                "rounds": 5,
+                "attempts": 5,
+                "successes": 5,
+                "failures": 0,
+                "latency_ms": {
+                  "samples": 5,
+                  "p50": 8.06,
+                  "p95": 8.803,
+                  "max": 8.803
+                },
+                "elapsed_s": 4.799
+              },
+              {
+                "concurrency": 8,
+                "rounds": 5,
+                "attempts": 40,
+                "successes": 40,
+                "failures": 0,
+                "latency_ms": {
+                  "samples": 40,
+                  "p50": 26.542,
+                  "p95": 37.356,
+                  "max": 39.637
+                },
+                "elapsed_s": 4.925
+              },
+              {
+                "concurrency": 32,
+                "rounds": 5,
+                "attempts": 160,
+                "successes": 160,
+                "failures": 0,
+                "latency_ms": {
+                  "samples": 160,
+                  "p50": 86.196,
+                  "p95": 1157.028,
+                  "max": 1366.002
+                },
+                "elapsed_s": 10.945
+              },
+              {
+                "concurrency": 64,
+                "rounds": 5,
+                "attempts": 320,
+                "successes": 320,
+                "failures": 0,
+                "latency_ms": {
+                  "samples": 320,
+                  "p50": 1119.028,
+                  "p95": 1417.758,
+                  "max": 1988.981
+                },
+                "elapsed_s": 12.513
+              }
+            ],
+            "config_unchanged": true,
+            "same_gateway_worker": true,
+            "gateway_observation_fresh": true,
+            "healthy_members": 7,
+            "total_members": 7,
+            "connections_by_upstream_delta": {
+              "SSH_REMOTE_FORWARD": 6,
+              "IPIP": 245,
+              "SIT_6IN4": 112,
+              "WIREGUARD": 81,
+              "GOST_SOCKS5": 36,
+              "WATERWALL_H_HTTP2_TLS": 20,
+              "VMESS_TCP_TLS": 25
+            },
+            "host_cpu_pct": {
+              "samples": 20,
+              "p50": 11.966,
+              "p95": 17.409,
+              "max": 21.19
+            },
+            "host_min_available_ram_mb": 260.15234375,
+            "scope": "bounded short TCP nonce requests through existing warm entry; latency excludes deliberate150ms hold; not throughput, public exit proof, ICMP or SLA",
+            "adopted_completed_ramp": true
+          },
+          "soak": {
+            "schema": "tunnelpannel-mesh-quality-v1",
+            "started_at": 1792241838.2249155,
+            "finished_at": 1792242448.262937,
+            "elapsed_s": 610.038,
+            "status": "PASS",
+            "attempts": 480,
+            "successes": 480,
+            "loss_pct": 0.0,
+            "phases": [
+              {
+                "concurrency": 8,
+                "rounds": 60,
+                "attempts": 480,
+                "successes": 480,
+                "failures": 0,
+                "latency_ms": {
+                  "samples": 480,
+                  "p50": 33.203,
+                  "p95": 48.907,
+                  "max": 1084.098
+                },
+                "elapsed_s": 610.037
+              }
+            ],
+            "config_unchanged": true,
+            "same_gateway_worker": true,
+            "gateway_observation_fresh": true,
+            "healthy_members": 7,
+            "total_members": 7,
+            "connections_by_upstream_delta": {
+              "SSH_REMOTE_FORWARD": 0,
+              "IPIP": 233,
+              "SIT_6IN4": 123,
+              "WIREGUARD": 73,
+              "GOST_SOCKS5": 43,
+              "WATERWALL_H_HTTP2_TLS": 0,
+              "VMESS_TCP_TLS": 0
+            },
+            "host_cpu_pct": {
+              "samples": 60,
+              "p50": 5.336,
+              "p95": 9.98,
+              "max": 21.053
+            },
+            "host_min_available_ram_mb": 247.28125,
+            "scope": "bounded short TCP nonce requests through existing warm entry; latency excludes deliberate150ms hold; not throughput, public exit proof, ICMP or SLA",
+            "command_exit_code": 0
+          }
+        }
+      },
+      {
+        "route_id": "7812cdf792a84bd18c6993890548c778",
+        "runs": {
+          "ramp": {
+            "schema": "tunnelpannel-mesh-quality-v1",
+            "started_at": 1792241715.2054133,
+            "finished_at": 1792241753.8411207,
+            "elapsed_s": 38.636,
+            "status": "PASS",
+            "attempts": 525,
+            "successes": 525,
+            "loss_pct": 0.0,
+            "phases": [
+              {
+                "concurrency": 1,
+                "rounds": 5,
+                "attempts": 5,
+                "successes": 5,
+                "failures": 0,
+                "latency_ms": {
+                  "samples": 5,
+                  "p50": 7.883,
+                  "p95": 31.811,
+                  "max": 31.811
+                },
+                "elapsed_s": 4.823
+              },
+              {
+                "concurrency": 8,
+                "rounds": 5,
+                "attempts": 40,
+                "successes": 40,
+                "failures": 0,
+                "latency_ms": {
+                  "samples": 40,
+                  "p50": 32.491,
+                  "p95": 41.863,
+                  "max": 1084.035
+                },
+                "elapsed_s": 6.006
+              },
+              {
+                "concurrency": 32,
+                "rounds": 5,
+                "attempts": 160,
+                "successes": 160,
+                "failures": 0,
+                "latency_ms": {
+                  "samples": 160,
+                  "p50": 1062.849,
+                  "p95": 1313.826,
+                  "max": 1524.345
+                },
+                "elapsed_s": 11.488
+              },
+              {
+                "concurrency": 64,
+                "rounds": 5,
+                "attempts": 320,
+                "successes": 320,
+                "failures": 0,
+                "latency_ms": {
+                  "samples": 320,
+                  "p50": 1155.319,
+                  "p95": 1977.341,
+                  "max": 2813.874
+                },
+                "elapsed_s": 16.318
+              }
+            ],
+            "config_unchanged": true,
+            "same_gateway_worker": true,
+            "gateway_observation_fresh": true,
+            "healthy_members": 5,
+            "total_members": 5,
+            "connections_by_upstream_delta": {
+              "IP6GRE": 109,
+              "SIT_6IN4": 86,
+              "VXLAN": 104,
+              "IPIP": 118,
+              "IKEV2_IPSEC": 44
+            },
+            "host_cpu_pct": {
+              "samples": 20,
+              "p50": 11.304,
+              "p95": 18.909,
+              "max": 19.298
+            },
+            "host_min_available_ram_mb": 192.49609375,
+            "scope": "bounded short TCP nonce requests through existing warm entry; latency excludes deliberate150ms hold; not throughput, public exit proof, ICMP or SLA",
+            "adopted_completed_ramp": true
+          },
+          "soak": {
+            "schema": "tunnelpannel-mesh-quality-v1",
+            "started_at": 1792241838.5019414,
+            "finished_at": 1792242465.465021,
+            "elapsed_s": 626.963,
+            "status": "PASS",
+            "attempts": 480,
+            "successes": 480,
+            "loss_pct": 0.0,
+            "phases": [
+              {
+                "concurrency": 8,
+                "rounds": 60,
+                "attempts": 480,
+                "successes": 480,
+                "failures": 0,
+                "latency_ms": {
+                  "samples": 480,
+                  "p50": 29.156,
+                  "p95": 1020.227,
+                  "max": 1107.25
+                },
+                "elapsed_s": 626.962
+              }
+            ],
+            "config_unchanged": true,
+            "same_gateway_worker": true,
+            "gateway_observation_fresh": true,
+            "healthy_members": 5,
+            "total_members": 5,
+            "connections_by_upstream_delta": {
+              "IP6GRE": 111,
+              "SIT_6IN4": 96,
+              "VXLAN": 111,
+              "IPIP": 121,
+              "IKEV2_IPSEC": 41
+            },
+            "host_cpu_pct": {
+              "samples": 60,
+              "p50": 4.644,
+              "p95": 8.876,
+              "max": 9.199
+            },
+            "host_min_available_ram_mb": 193.515625,
+            "scope": "bounded short TCP nonce requests through existing warm entry; latency excludes deliberate150ms hold; not throughput, public exit proof, ICMP or SLA",
+            "command_exit_code": 0
+          }
+        }
+      }
+    ],
+    "finished_at": 1792242465.5829878
+  },
+  "final_installed_cli_smoke": {
+    "status": "PASS",
+    "runtime": "c300a4a9b2036b9701c8dcebdcc9b3be06676f86",
+    "routes": [
+      {
+        "route_id": "35c3b76628054350a5f4f94dcd151db8",
+        "status": "PASS",
+        "config_overwrite_refused": true,
+        "existing_report_overwrite_refused": true,
+        "network_deadline_s": 0.14,
+        "probe": {
+          "schema": "tunnelpannel-mesh-quality-v1",
+          "started_at": 1792242666.3407495,
+          "finished_at": 1792242666.663989,
+          "elapsed_s": 0.323,
+          "status": "PASS",
+          "attempts": 2,
+          "successes": 2,
+          "loss_pct": 0.0,
+          "phases": [
+            {
+              "concurrency": 1,
+              "rounds": 2,
+              "attempts": 2,
+              "successes": 2,
+              "failures": 0,
+              "latency_ms": {
+                "samples": 2,
+                "p50": 8.732,
+                "p95": 11.68,
+                "max": 11.68
+              },
+              "elapsed_s": 0.323
+            }
+          ],
+          "config_unchanged": true,
+          "same_gateway_worker": true,
+          "gateway_observation_fresh": true,
+          "healthy_members": 7,
+          "total_members": 7,
+          "connections_by_upstream_delta": {
+            "SSH_REMOTE_FORWARD": 0,
+            "IPIP": 0,
+            "SIT_6IN4": 0,
+            "WIREGUARD": 0,
+            "GOST_SOCKS5": 0,
+            "WATERWALL_H_HTTP2_TLS": 0,
+            "VMESS_TCP_TLS": 0
+          },
+          "host_cpu_pct": {
+            "samples": 2,
+            "p50": 0.0,
+            "p95": 12.5,
+            "max": 12.5
+          },
+          "host_min_available_ram_mb": 305.67578125,
+          "scope": "bounded short TCP nonce requests through existing warm entry; latency excludes deliberate150ms hold; not throughput, public exit proof, ICMP or SLA"
+        }
+      },
+      {
+        "route_id": "7812cdf792a84bd18c6993890548c778",
+        "status": "PASS",
+        "config_overwrite_refused": true,
+        "existing_report_overwrite_refused": true,
+        "network_deadline_s": 0.14,
+        "probe": {
+          "schema": "tunnelpannel-mesh-quality-v1",
+          "started_at": 1792242668.6695926,
+          "finished_at": 1792242668.985082,
+          "elapsed_s": 0.315,
+          "status": "PASS",
+          "attempts": 2,
+          "successes": 2,
+          "loss_pct": 0.0,
+          "phases": [
+            {
+              "concurrency": 1,
+              "rounds": 2,
+              "attempts": 2,
+              "successes": 2,
+              "failures": 0,
+              "latency_ms": {
+                "samples": 2,
+                "p50": 4.676,
+                "p95": 7.163,
+                "max": 7.163
+              },
+              "elapsed_s": 0.314
+            }
+          ],
+          "config_unchanged": true,
+          "same_gateway_worker": true,
+          "gateway_observation_fresh": true,
+          "healthy_members": 5,
+          "total_members": 5,
+          "connections_by_upstream_delta": {
+            "IP6GRE": 0,
+            "SIT_6IN4": 0,
+            "VXLAN": 0,
+            "IPIP": 0,
+            "IKEV2_IPSEC": 0
+          },
+          "host_cpu_pct": {
+            "samples": 2,
+            "p50": 0.0,
+            "p95": 12.5,
+            "max": 12.5
+          },
+          "host_min_available_ram_mb": 218.70703125,
+          "scope": "bounded short TCP nonce requests through existing warm entry; latency excludes deliberate150ms hold; not throughput, public exit proof, ICMP or SLA"
+        }
+      }
+    ]
+  },
+  "destination_localhost_control": {
+    "status": "PASS",
+    "routes": [
+      {
+        "route_id": "35c3b76628054350a5f4f94dcd151db8",
+        "destination_localhost_control": {
+          "status": "PASS",
+          "localhost_only": true,
+          "http_server_default_backlog": 5,
+          "phases": [
+            {
+              "concurrency": 8,
+              "receipts": 40,
+              "p50_ms": 6.0092530329711735,
+              "p95_ms": 1009.6014540176839,
+              "max_ms": 1021.4633260038681
+            },
+            {
+              "concurrency": 64,
+              "receipts": 320,
+              "p50_ms": 43.710559024475515,
+              "p95_ms": 1462.5468869926408,
+              "max_ms": 2712.0187480468303
+            }
+          ]
+        }
+      },
+      {
+        "route_id": "7812cdf792a84bd18c6993890548c778",
+        "destination_localhost_control": {
+          "status": "PASS",
+          "localhost_only": true,
+          "http_server_default_backlog": 5,
+          "phases": [
+            {
+              "concurrency": 8,
+              "receipts": 40,
+              "p50_ms": 7.104140997398645,
+              "p95_ms": 1022.7608360000886,
+              "max_ms": 1062.4167540227063
+            },
+            {
+              "concurrency": 64,
+              "receipts": 320,
+              "p50_ms": 57.58409597910941,
+              "p95_ms": 1470.6816870020702,
+              "max_ms": 4373.911298054736
+            }
+          ]
+        }
+      }
+    ],
+    "scope": "same health origins over destination localhost, no tunnel, five rounds each8/64; no service changed"
+  },
+  "main_receipts": 2010,
+  "final_installed_receipts": 4,
+  "note": "Ramp files were completed before the private aggregator adopted them; per-phase timestamps are authoritative. No transport/gateway code changed in this release."
+}

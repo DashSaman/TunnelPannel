@@ -1,6 +1,8 @@
 {
   "generated_by": "scripts/generate_engine_profile_matrix.py",
   "engines": [
+    "amneziawg",
+    "backhaul",
     "chisel",
     "frp",
     "gost",
@@ -8,6 +10,7 @@
     "gretap",
     "hajsaman",
     "hedioum",
+    "ip4in6",
     "ipip",
     "ipsec",
     "openvpn",
@@ -23,14 +26,26 @@
     "wstunnel",
     "xray"
   ],
-  "engine_count": 21,
-  "profile_count": 76,
-  "adapter_coverage": "76/76",
+  "engine_count": 24,
+  "profile_count": 94,
+  "adapter_coverage": "94/94",
   "composites": [
     {
       "legacy_method_id": "GRETAP_OVER_GOST",
       "overlay_engine": "gretap",
       "underlay_engine": "gost",
+      "canonical_home": "P8 composition engine (compatibility template until then)"
+    },
+    {
+      "legacy_method_id": "GRETAP_OVER_SSH",
+      "overlay_engine": "gretap",
+      "underlay_engine": "ssh",
+      "canonical_home": "P8 composition engine (compatibility template until then)"
+    },
+    {
+      "legacy_method_id": "GRETAP_OVER_WIREGUARD",
+      "overlay_engine": "gretap",
+      "underlay_engine": "wireguard",
       "canonical_home": "P8 composition engine (compatibility template until then)"
     },
     {
@@ -52,6 +67,24 @@
       "canonical_home": "P8 composition engine (compatibility template until then)"
     },
     {
+      "legacy_method_id": "IPIP_OVER_GOST",
+      "overlay_engine": "ipip",
+      "underlay_engine": "gost",
+      "canonical_home": "P8 composition engine (compatibility template until then)"
+    },
+    {
+      "legacy_method_id": "IPIP_OVER_SSH",
+      "overlay_engine": "ipip",
+      "underlay_engine": "ssh",
+      "canonical_home": "P8 composition engine (compatibility template until then)"
+    },
+    {
+      "legacy_method_id": "IPIP_OVER_WIREGUARD",
+      "overlay_engine": "ipip",
+      "underlay_engine": "wireguard",
+      "canonical_home": "P8 composition engine (compatibility template until then)"
+    },
+    {
       "legacy_method_id": "SIT_OVER_GOST",
       "overlay_engine": "sit",
       "underlay_engine": "gost",
@@ -62,9 +95,98 @@
       "overlay_engine": "sit",
       "underlay_engine": "ssh",
       "canonical_home": "P8 composition engine (compatibility template until then)"
+    },
+    {
+      "legacy_method_id": "SIT_OVER_WIREGUARD",
+      "overlay_engine": "sit",
+      "underlay_engine": "wireguard",
+      "canonical_home": "P8 composition engine (compatibility template until then)"
+    },
+    {
+      "legacy_method_id": "VXLAN_OVER_GOST",
+      "overlay_engine": "vxlan",
+      "underlay_engine": "gost",
+      "canonical_home": "P8 composition engine (compatibility template until then)"
+    },
+    {
+      "legacy_method_id": "VXLAN_OVER_SSH",
+      "overlay_engine": "vxlan",
+      "underlay_engine": "ssh",
+      "canonical_home": "P8 composition engine (compatibility template until then)"
+    },
+    {
+      "legacy_method_id": "VXLAN_OVER_WIREGUARD",
+      "overlay_engine": "vxlan",
+      "underlay_engine": "wireguard",
+      "canonical_home": "P8 composition engine (compatibility template until then)"
+    },
+    {
+      "legacy_method_id": "WIREGUARD_OVER_GOST",
+      "overlay_engine": "wireguard",
+      "underlay_engine": "gost",
+      "canonical_home": "P8 composition engine (compatibility template until then)"
+    },
+    {
+      "legacy_method_id": "WIREGUARD_OVER_SSH",
+      "overlay_engine": "wireguard",
+      "underlay_engine": "ssh",
+      "canonical_home": "P8 composition engine (compatibility template until then)"
     }
   ],
   "matrix": [
+    {
+      "engine_id": "amneziawg",
+      "profile_id": "default",
+      "legacy_method_ids": [
+        "AMNEZIAWG"
+      ],
+      "family": "AMNEZIAWG",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "ICMP",
+      "requirements": {
+        "binaries": [
+          "amneziawg-go"
+        ],
+        "kernel_modules": [],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "Userspace TUN and UDP required; isolated official source build",
+        "No claim of DPI resistance or Iran path quality from lab results"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_PAIR_VERIFIED: docs/evidence/commercial/tehnet-expansion-installed.json (NORMAL, both directions)"
+    },
+    {
+      "engine_id": "singbox",
+      "profile_id": "anytls",
+      "legacy_method_ids": [
+        "ANYTLS"
+      ],
+      "family": "SINGBOX",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "sing-box"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun profile needs CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "tun profile needs root; protocol matrix is wide"
+      ],
+      "existing_test_evidence": "NONE",
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
+    },
     {
       "engine_id": "ssh",
       "profile_id": "reverse",
@@ -89,7 +211,34 @@
         "per-connection TCP overhead; tun profiles need PermitTun"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
+    },
+    {
+      "engine_id": "backhaul",
+      "profile_id": "tcp",
+      "legacy_method_ids": [
+        "BACKHAUL_TCP"
+      ],
+      "family": "BACKHAUL",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "TCP",
+      "requirements": {
+        "binaries": [
+          "backhaul"
+        ],
+        "kernel_modules": [],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "TCP reverse transport only; token authentication does not encrypt payload",
+        "Peer transport listener and local-only payload listener; no global optimizations"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_PAIR_VERIFIED: docs/evidence/commercial/tehnet-expansion-installed.json (NORMAL, both directions)"
     },
     {
       "engine_id": "chisel",
@@ -115,7 +264,7 @@
         "HTTP-based: long-lived connections may be proxied by CDNs"
       ],
       "existing_test_evidence": "NONE",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "chisel",
@@ -141,7 +290,7 @@
         "HTTP-based: long-lived connections may be proxied by CDNs"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "chisel",
@@ -167,7 +316,7 @@
         "HTTP-based: long-lived connections may be proxied by CDNs"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "chisel",
@@ -193,7 +342,7 @@
         "HTTP-based: long-lived connections may be proxied by CDNs"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "chisel",
@@ -219,7 +368,7 @@
         "HTTP-based: long-lived connections may be proxied by CDNs"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "chisel",
@@ -245,7 +394,7 @@
         "HTTP-based: long-lived connections may be proxied by CDNs"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "frp",
@@ -272,7 +421,7 @@
         "server/client roles must be provisioned as a pair"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "frp",
@@ -299,7 +448,7 @@
         "server/client roles must be provisioned as a pair"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "frp",
@@ -326,7 +475,7 @@
         "server/client roles must be provisioned as a pair"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "frp",
@@ -353,7 +502,7 @@
         "server/client roles must be provisioned as a pair"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "frp",
@@ -380,7 +529,7 @@
         "server/client roles must be provisioned as a pair"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "frp",
@@ -407,7 +556,7 @@
         "server/client roles must be provisioned as a pair"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "gost",
@@ -433,7 +582,7 @@
         "15 profiles differ in transport; tun/tap profiles need root"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "gost",
@@ -459,7 +608,7 @@
         "15 profiles differ in transport; tun/tap profiles need root"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "gost",
@@ -485,7 +634,7 @@
         "15 profiles differ in transport; tun/tap profiles need root"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "gost",
@@ -511,7 +660,7 @@
         "15 profiles differ in transport; tun/tap profiles need root"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "gost",
@@ -537,7 +686,7 @@
         "15 profiles differ in transport; tun/tap profiles need root"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "gost",
@@ -563,7 +712,7 @@
         "15 profiles differ in transport; tun/tap profiles need root"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "gost",
@@ -589,7 +738,7 @@
         "15 profiles differ in transport; tun/tap profiles need root"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "gost",
@@ -615,7 +764,7 @@
         "15 profiles differ in transport; tun/tap profiles need root"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "gost",
@@ -641,7 +790,7 @@
         "15 profiles differ in transport; tun/tap profiles need root"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "gost",
@@ -667,7 +816,7 @@
         "15 profiles differ in transport; tun/tap profiles need root"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "gost",
@@ -693,7 +842,7 @@
         "15 profiles differ in transport; tun/tap profiles need root"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "gost",
@@ -719,7 +868,7 @@
         "15 profiles differ in transport; tun/tap profiles need root"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "gost",
@@ -745,7 +894,7 @@
         "15 profiles differ in transport; tun/tap profiles need root"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "gost",
@@ -771,7 +920,7 @@
         "15 profiles differ in transport; tun/tap profiles need root"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "gost",
@@ -797,7 +946,7 @@
         "15 profiles differ in transport; tun/tap profiles need root"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "gre",
@@ -825,7 +974,7 @@
         "no encryption by itself"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "gretap",
@@ -853,7 +1002,7 @@
         "bridging requires care on some distros"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "hajsaman",
@@ -882,7 +1031,7 @@
         "slot-based custom transport"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "hajsaman",
@@ -911,7 +1060,7 @@
         "slot-based custom transport"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "hajsaman",
@@ -940,7 +1089,147 @@
         "slot-based custom transport"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
+    },
+    {
+      "engine_id": "hedioum",
+      "profile_id": "pool_imap",
+      "legacy_method_ids": [
+        "HEDIOUM_POOL_IMAP"
+      ],
+      "family": "HEDIOUM",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "MULTI_SIGNAL",
+      "requirements": {
+        "binaries": [
+          "hedioum"
+        ],
+        "kernel_modules": [
+          "tun"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "pairing-token flow; pool_socks profile differs"
+      ],
+      "existing_test_evidence": "NONE",
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
+    },
+    {
+      "engine_id": "hedioum",
+      "profile_id": "pool_mixed",
+      "legacy_method_ids": [
+        "HEDIOUM_POOL_MIXED"
+      ],
+      "family": "HEDIOUM",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "MULTI_SIGNAL",
+      "requirements": {
+        "binaries": [
+          "hedioum"
+        ],
+        "kernel_modules": [
+          "tun"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "pairing-token flow; pool_socks profile differs"
+      ],
+      "existing_test_evidence": "NONE",
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
+    },
+    {
+      "engine_id": "hedioum",
+      "profile_id": "pool_mysql",
+      "legacy_method_ids": [
+        "HEDIOUM_POOL_MYSQL"
+      ],
+      "family": "HEDIOUM",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "MULTI_SIGNAL",
+      "requirements": {
+        "binaries": [
+          "hedioum"
+        ],
+        "kernel_modules": [
+          "tun"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "pairing-token flow; pool_socks profile differs"
+      ],
+      "existing_test_evidence": "NONE",
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
+    },
+    {
+      "engine_id": "hedioum",
+      "profile_id": "pool_postgres",
+      "legacy_method_ids": [
+        "HEDIOUM_POOL_POSTGRES"
+      ],
+      "family": "HEDIOUM",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "MULTI_SIGNAL",
+      "requirements": {
+        "binaries": [
+          "hedioum"
+        ],
+        "kernel_modules": [
+          "tun"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "pairing-token flow; pool_socks profile differs"
+      ],
+      "existing_test_evidence": "NONE",
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
+    },
+    {
+      "engine_id": "hedioum",
+      "profile_id": "pool_smtp",
+      "legacy_method_ids": [
+        "HEDIOUM_POOL_SMTP"
+      ],
+      "family": "HEDIOUM",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "MULTI_SIGNAL",
+      "requirements": {
+        "binaries": [
+          "hedioum"
+        ],
+        "kernel_modules": [
+          "tun"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "pairing-token flow; pool_socks profile differs"
+      ],
+      "existing_test_evidence": "NONE",
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "hedioum",
@@ -968,7 +1257,35 @@
         "pairing-token flow; pool_socks profile differs"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
+    },
+    {
+      "engine_id": "hedioum",
+      "profile_id": "pool_ssh",
+      "legacy_method_ids": [
+        "HEDIOUM_POOL_SSH"
+      ],
+      "family": "HEDIOUM",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "MULTI_SIGNAL",
+      "requirements": {
+        "binaries": [
+          "hedioum"
+        ],
+        "kernel_modules": [
+          "tun"
+        ],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "pairing-token flow; pool_socks profile differs"
+      ],
+      "existing_test_evidence": "NONE",
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "hedioum",
@@ -996,7 +1313,7 @@
         "pairing-token flow; pool_socks profile differs"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "singbox",
@@ -1022,7 +1339,7 @@
         "tun profile needs root; protocol matrix is wide"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "ipsec",
@@ -1052,7 +1369,34 @@
         "IKE daemon config complexity"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
+    },
+    {
+      "engine_id": "ip4in6",
+      "profile_id": "native",
+      "legacy_method_ids": [
+        "IP4IN6"
+      ],
+      "family": "KERNEL",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "REAL_PAIR_VERIFIED",
+      "implementation_source": "combination",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "ICMP",
+      "requirements": {
+        "binaries": [
+          "ip"
+        ],
+        "kernel_modules": [],
+        "privileges": "CAP_NET_ADMIN"
+      },
+      "known_limitations": [
+        "Native global IPv6 endpoints required; IPv4 payload only; IPv6 next-header4 must pass",
+        "Keyless carriers share only proven-owned endpoints; foreign matching carrier blocks deployment"
+      ],
+      "existing_test_evidence": "PASS",
+      "real_verification": "REAL_PAIR_VERIFIED: docs/evidence/commercial/tehnet-expansion-installed.json (NORMAL, both directions)"
     },
     {
       "engine_id": "gre",
@@ -1080,7 +1424,7 @@
         "no encryption by itself"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "gretap",
@@ -1108,7 +1452,7 @@
         "bridging requires care on some distros"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "ipip",
@@ -1136,7 +1480,7 @@
         "IPv4 only; no encryption"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "ipsec",
@@ -1166,7 +1510,33 @@
         "IKE daemon config complexity"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
+    },
+    {
+      "engine_id": "singbox",
+      "profile_id": "https",
+      "legacy_method_ids": [
+        "NAIVE_HTTPS"
+      ],
+      "family": "SINGBOX",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "sing-box"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun profile needs CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "tun profile needs root; protocol matrix is wide"
+      ],
+      "existing_test_evidence": "NONE",
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "openvpn",
@@ -1194,7 +1564,7 @@
         "higher CPU than WireGuard at same throughput"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "paqet",
@@ -1220,7 +1590,7 @@
         "needs NOTRACK iptables rules; root required"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "paqet",
@@ -1246,7 +1616,7 @@
         "needs NOTRACK iptables rules; root required"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "rathole",
@@ -1272,7 +1642,7 @@
         "TCP-oriented; UDP support is limited"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "rathole",
@@ -1298,7 +1668,7 @@
         "TCP-oriented; UDP support is limited"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "rathole",
@@ -1324,7 +1694,7 @@
         "TCP-oriented; UDP support is limited"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "rathole",
@@ -1350,7 +1720,7 @@
         "TCP-oriented; UDP support is limited"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "rathole",
@@ -1376,7 +1746,7 @@
         "TCP-oriented; UDP support is limited"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "singbox",
@@ -1402,7 +1772,33 @@
         "tun profile needs root; protocol matrix is wide"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
+    },
+    {
+      "engine_id": "singbox",
+      "profile_id": "3_ss2022",
+      "legacy_method_ids": [
+        "SHADOWTLS3_SS2022"
+      ],
+      "family": "SINGBOX",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "sing-box"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun profile needs CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "tun profile needs root; protocol matrix is wide"
+      ],
+      "existing_test_evidence": "NONE",
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "singbox",
@@ -1428,7 +1824,7 @@
         "tun profile needs root; protocol matrix is wide"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "sit",
@@ -1456,7 +1852,7 @@
         "carries IPv6 inside IPv4; no encryption"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "ssh",
@@ -1482,7 +1878,7 @@
         "per-connection TCP overhead; tun profiles need PermitTun"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "ssh",
@@ -1508,7 +1904,7 @@
         "per-connection TCP overhead; tun profiles need PermitTun"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "ssh",
@@ -1534,7 +1930,7 @@
         "per-connection TCP overhead; tun profiles need PermitTun"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "ssh",
@@ -1560,7 +1956,7 @@
         "per-connection TCP overhead; tun profiles need PermitTun"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "ssh",
@@ -1586,7 +1982,7 @@
         "per-connection TCP overhead; tun profiles need PermitTun"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "singbox",
@@ -1612,7 +2008,7 @@
         "tun profile needs root; protocol matrix is wide"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "singbox",
@@ -1638,7 +2034,7 @@
         "tun profile needs root; protocol matrix is wide"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "xray",
@@ -1664,7 +2060,7 @@
         "carrier-class proxy: needs a real peer for full verification"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "xray",
@@ -1690,7 +2086,7 @@
         "carrier-class proxy: needs a real peer for full verification"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "xray",
@@ -1716,7 +2112,7 @@
         "carrier-class proxy: needs a real peer for full verification"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "xray",
@@ -1742,7 +2138,7 @@
         "carrier-class proxy: needs a real peer for full verification"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "xray",
@@ -1768,7 +2164,7 @@
         "carrier-class proxy: needs a real peer for full verification"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "xray",
@@ -1794,7 +2190,7 @@
         "carrier-class proxy: needs a real peer for full verification"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "xray",
@@ -1820,7 +2216,59 @@
         "carrier-class proxy: needs a real peer for full verification"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
+    },
+    {
+      "engine_id": "singbox",
+      "profile_id": "tcp_tls",
+      "legacy_method_ids": [
+        "VMESS_TCP_TLS"
+      ],
+      "family": "SINGBOX",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "sing-box"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun profile needs CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "tun profile needs root; protocol matrix is wide"
+      ],
+      "existing_test_evidence": "NONE",
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
+    },
+    {
+      "engine_id": "singbox",
+      "profile_id": "ws_tls",
+      "legacy_method_ids": [
+        "VMESS_WS_TLS"
+      ],
+      "family": "SINGBOX",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "sing-box"
+        ],
+        "kernel_modules": [],
+        "privileges": "none (tun profile needs CAP_NET_ADMIN)"
+      },
+      "known_limitations": [
+        "tun profile needs root; protocol matrix is wide"
+      ],
+      "existing_test_evidence": "NONE",
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "vti",
@@ -1850,7 +2298,7 @@
         "requires strongSwan IKE on both ends"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "vti",
@@ -1880,7 +2328,7 @@
         "requires strongSwan IKE on both ends"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "vxlan",
@@ -1908,7 +2356,7 @@
         "default port 4789 must be open"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "waterwall",
@@ -1934,7 +2382,111 @@
         "config-driven; fewer distro packages"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
+    },
+    {
+      "engine_id": "waterwall",
+      "profile_id": "h_http2_tls",
+      "legacy_method_ids": [
+        "WATERWALL_H_HTTP2_TLS"
+      ],
+      "family": "WATERWALL",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "waterwall"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "config-driven; fewer distro packages"
+      ],
+      "existing_test_evidence": "NONE",
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
+    },
+    {
+      "engine_id": "waterwall",
+      "profile_id": "h_reality",
+      "legacy_method_ids": [
+        "WATERWALL_H_REALITY"
+      ],
+      "family": "WATERWALL",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "waterwall"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "config-driven; fewer distro packages"
+      ],
+      "existing_test_evidence": "NONE",
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
+    },
+    {
+      "engine_id": "waterwall",
+      "profile_id": "h_vless_reality",
+      "legacy_method_ids": [
+        "WATERWALL_H_VLESS_REALITY"
+      ],
+      "family": "WATERWALL",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "waterwall"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "config-driven; fewer distro packages"
+      ],
+      "existing_test_evidence": "NONE",
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
+    },
+    {
+      "engine_id": "waterwall",
+      "profile_id": "h_ws_tls",
+      "legacy_method_ids": [
+        "WATERWALL_H_WS_TLS"
+      ],
+      "family": "WATERWALL",
+      "implementation_status": "IMPLEMENTED",
+      "verification_status": "UNTESTED",
+      "implementation_source": "gen2",
+      "adapter_status": "COMPLETE",
+      "adapter_class": "canonical (command-plan)",
+      "probe_type": "SOCKS5",
+      "requirements": {
+        "binaries": [
+          "waterwall"
+        ],
+        "kernel_modules": [],
+        "privileges": "none"
+      },
+      "known_limitations": [
+        "config-driven; fewer distro packages"
+      ],
+      "existing_test_evidence": "NONE",
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "waterwall",
@@ -1960,7 +2512,7 @@
         "config-driven; fewer distro packages"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "waterwall",
@@ -1986,7 +2538,7 @@
         "config-driven; fewer distro packages"
       ],
       "existing_test_evidence": "PARTIAL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "wireguard",
@@ -2015,7 +2567,7 @@
         "needs kernel >= 5.6 or DKMS"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "wstunnel",
@@ -2041,7 +2593,7 @@
         "UDP-over-WS adds overhead and jitter"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "wstunnel",
@@ -2067,7 +2619,7 @@
         "UDP-over-WS adds overhead and jitter"
       ],
       "existing_test_evidence": "PASS",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     },
     {
       "engine_id": "wstunnel",
@@ -2093,7 +2645,7 @@
         "UDP-over-WS adds overhead and jitter"
       ],
       "existing_test_evidence": "FAIL",
-      "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)"
+      "real_verification": "Historical TEST-REPORT evidence only; consult later installed acceptance reports"
     }
   ]
 }

@@ -1,0 +1,11 @@
+{
+  "customer_cannot_read_owner_registry": true,
+  "separate_customer_databases": true,
+  "key_rotation_and_limits": true,
+  "onboarding_quota_blocks_before_remote_connection": true,
+  "online_backup_restores_customer_auth_nodes_and_encrypted_credentials": true,
+  "snapshot_workspace_count": 3,
+  "tampered_snapshot_rejected": true,
+  "disable_revokes_api_access": true,
+  "status": "PASS"
+}

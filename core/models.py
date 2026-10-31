@@ -387,6 +387,22 @@ class SecretReference(Base):
     rotated_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
 
 
+class OperationPolicy(Base):
+    __tablename__ = 'operation_policies'
+    id: Mapped[str] = mapped_column(String(16), primary_key=True, default='monitor')
+    enabled: Mapped[bool] = mapped_column(Boolean, default=False)
+    interval_s: Mapped[int] = mapped_column(Integer, default=60)
+
+
+class OperationRecord(Base):
+    __tablename__ = 'operation_records'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    route_id: Mapped[str] = mapped_column(String(32), index=True)
+    ts: Mapped[float] = mapped_column(Float, index=True)
+    kind: Mapped[str] = mapped_column(String(16), index=True)  # sample|transition
+    document: Mapped[dict] = mapped_column(JSON)
+
+
 class ComponentDependency(Base):
     """Explicit edge beyond parentage: overlay binds to underlay resources."""
     __tablename__ = "component_dependencies"

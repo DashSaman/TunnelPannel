@@ -1,0 +1,94 @@
+{
+  "schema": 1,
+  "date": "2026-10-22",
+  "scope": "Actual same two execution nodes; own static website container",
+  "runtime": {
+    "sha": "e7d79cc8f6b136328dcc2cc497b13d366bbb6d4a",
+    "tree": "8ac2b8a08d9759c08f621bfb14a2a103b038a291",
+    "both_nodes_installed": true,
+    "website_installed": true,
+    "website_static_proxy_only": true
+  },
+  "ci": [
+    {
+      "id": 39676022496,
+      "name": "portable-tests",
+      "conclusion": "success"
+    },
+    {
+      "id": 39676022423,
+      "name": "security",
+      "conclusion": "success"
+    }
+  ],
+  "python312_tests": {
+    "root_pass": 972,
+    "tunnelguard_pass": 100,
+    "backend_pass": 1,
+    "linux_install_idempotence_backup_restore_uninstall": "PASS"
+  },
+  "physical": {
+    "forwards": 2,
+    "loopback_source_port": 25310,
+    "inherited_rate_mbps": 32,
+    "inherited_shared_connections": 8,
+    "real_four_stream_mib_round_single_debit": 4195048,
+    "time_wait_observed_each_source": true,
+    "two_api_edits_total_seconds": 21.157,
+    "final_revision_each": 4,
+    "forward_only_restart_parent_config_pid_usage_preserved": true,
+    "occupied_listener_and_management_target_refused": true,
+    "same_request_same_id": true,
+    "quota": {
+      "used_before_cap_test": 18895380,
+      "temporary_cap": 20992549,
+      "used_at_exhaustion": 20992549,
+      "four_subsequent_direct_forward_requests_zero_headers_body": true,
+      "restored_quota_bytes": 107374182400,
+      "same_period": true,
+      "usage_not_reset": true,
+      "final_used": 20993465,
+      "final_held": 0,
+      "full_100GiB_transferred": false
+    },
+    "installed_coexistence_canaries_per_host": 12,
+    "original_member_plus_entry_receipts": 12,
+    "original_active_units_per_host": 28,
+    "original_and_retained_parent_configs_pids_interfaces_credentials_preserved": true,
+    "qa_forward_only_stop_count": 2,
+    "qa_origin_only_cleanup_count": 2,
+    "retained_qa_parents_remain": true
+  },
+  "recovery": {
+    "fresh_before_preinstall_after_each_host": true,
+    "resident_encrypted_decrypt_sha_verified": true,
+    "independent_separate_root0600_keys": true,
+    "additional_source_checkpoint_history_rescue_each_host": true,
+    "sensitive_exports": false
+  },
+  "website_preservation": {
+    "other_containers": 11,
+    "links": 50,
+    "service_pids": 5,
+    "nginx_wordpress_unchanged": true,
+    "host_nginx_reload": false
+  },
+  "diagnostics": {
+    "reproduced_and_fixed": [
+      "official_root_owned_0640_control_env",
+      "server_first_FIN_TIME_WAIT_same_port_edit",
+      "strict_umask_new_public_code_paths_DynamicUser"
+    ],
+    "initial_failure_records_retained": true,
+    "first_quota_harness_stale_sample": "100GiB restored in finally; fresh-idle-sample harness then complete repeat passed"
+  },
+  "limits": [
+    "TCP only",
+    "existing TCP sessions reconnect",
+    "no single-stream bonding",
+    "two datacenter hosts do not establish Iran performance or geographic redundancy",
+    "root can inspect execution runtime"
+  ],
+  "main_merged": false,
+  "heartbeat": "PAUSED"
+}

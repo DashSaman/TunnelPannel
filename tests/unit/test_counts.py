@@ -14,22 +14,22 @@ pytestmark = pytest.mark.unit_portable
 
 class TestCanonicalCounts:
     def test_legacy_method_ids(self):
-        assert COUNTS.legacy_method_ids == 82          # registry incl. 6 composites
+        assert COUNTS.legacy_method_ids == 111          # base registry + mesh extension, incl. 17 composites
 
     def test_canonical_engines(self):
-        assert COUNTS.canonical_engines == 21          # real engines, pseudo excluded
+        assert COUNTS.canonical_engines == 24          # real engines, pseudo excluded
 
     def test_engine_profiles(self):
-        assert COUNTS.engine_profiles == 76
+        assert COUNTS.engine_profiles == 94
 
     def test_composite_templates(self):
-        assert COUNTS.composite_templates == 6
+        assert COUNTS.composite_templates == 17
 
     def test_aliases(self):
         assert COUNTS.aliases == 6                     # Gen3 bare adapter names
 
     def test_total_resolvable_legacy_ids(self):
-        assert COUNTS.total_resolvable_legacy_ids == 88
+        assert COUNTS.total_resolvable_legacy_ids == 117
 
     def test_arithmetic_consistency(self):
         assert COUNTS.engine_profiles + COUNTS.composite_templates \

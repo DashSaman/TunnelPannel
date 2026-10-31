@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "status": "PASS",
+  "collected_at": "2026-10-16T20:40:52.656457+00:00",
+  "customer_owner_sessions_scoped": true,
+  "owner_registry_guard": true,
+  "original_routes": [
+    {
+      "id": "7812cdf792a84bd18c6993890548c778",
+      "state": "COMMITTED",
+      "members": 5,
+      "mode": "balance",
+      "all_healthy": true,
+      "updated_at": 1792183207.692797,
+      "connections_total": 73,
+      "connections_by_upstream": {
+        "IP6GRE": 35,
+        "SIT_6IN4": 10,
+        "VXLAN": 7,
+        "IPIP": 11,
+        "IKEV2_IPSEC": 10
+      },
+      "probe_latency_ms": {
+        "IP6GRE": 11.3,
+        "SIT_6IN4": 10.548,
+        "VXLAN": 12.064,
+        "IPIP": 11.826,
+        "IKEV2_IPSEC": 10.579
+      }
+    },
+    {
+      "id": "35c3b76628054350a5f4f94dcd151db8",
+      "state": "COMMITTED",
+      "members": 7,
+      "mode": "balance",
+      "all_healthy": true,
+      "updated_at": 1792183206.940854,
+      "connections_total": 14,
+      "connections_by_upstream": {
+        "SSH_REMOTE_FORWARD": 2,
+        "IPIP": 2,
+        "SIT_6IN4": 2,
+        "WIREGUARD": 2,
+        "GOST_SOCKS5": 2,
+        "WATERWALL_H_HTTP2_TLS": 2,
+        "VMESS_TCP_TLS": 2
+      },
+      "probe_latency_ms": {
+        "SSH_REMOTE_FORWARD": 32.95,
+        "IPIP": 30.143,
+        "SIT_6IN4": 28.282,
+        "WIREGUARD": 32.204,
+        "GOST_SOCKS5": 40.057,
+        "WATERWALL_H_HTTP2_TLS": 46.361,
+        "VMESS_TCP_TLS": 52.21
+      }
+    }
+  ],
+  "agent_fresh_after_upgrade_restore": true,
+  "original_monitor": {
+    "enabled": true,
+    "interval_s": 60,
+    "samples": 28,
+    "events": 6,
+    "elapsed_s": 858.1
+  },
+  "public_https_domain_configured": false,
+  "payment_collected": false,
+  "iran_path_tested": false,
+  "seven_day_sla_verified": false
+}

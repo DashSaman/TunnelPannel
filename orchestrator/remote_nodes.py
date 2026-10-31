@@ -7,6 +7,7 @@ import hmac
 import json
 import os
 import time
+import socket
 
 from cryptography.fernet import Fernet
 import paramiko
@@ -35,6 +36,22 @@ def verify_host_key(expected: str, raw: bytes):
         raise ValueError("SSH host key does not match the pinned fingerprint")
 
 
+def observe_host_key(host: str, port: int) -> str:
+    """Initial trust only; no credentials are sent during key observation.
+
+    The subsequent authenticated connection verifies this exact key again.
+    Operators may instead supply a fingerprint verified out of band.
+    """
+    from core.control_plane import remote_target
+    with socket.create_connection((remote_target(host, port), port), timeout=10) as connection:
+        transport = paramiko.Transport(connection)
+        try:
+            transport.start_client(timeout=10)
+            return hashlib.sha256(transport.get_remote_server_key().asbytes()).hexdigest()
+        finally:
+            transport.close()
+
+
 class _PinnedPolicy(paramiko.MissingHostKeyPolicy):
     def __init__(self, fingerprint):
         self.fingerprint = fingerprint
@@ -56,7 +73,9 @@ class NodeRemote:
 
     def connect(self):
         from plan_executor.executor import load_private_key
-        options = {"hostname": self.endpoint["host"], "port": self.endpoint["port"],
+        from core.control_plane import remote_target
+        target = remote_target(self.endpoint['host'], self.endpoint['port'])
+        options = {"hostname": target, "port": self.endpoint["port"],
                    "username": self.endpoint["ssh_username"], "timeout": 15,
                    "auth_timeout": 15, "banner_timeout": 15,
                    "look_for_keys": False, "allow_agent": False}
@@ -108,6 +127,8 @@ def node_access(session, node_id):
     node = session.get(Node, node_id)
     if node is None:
         raise ValueError("registered node was not found")
+    from core.control_plane import remote_target
+    remote_target(node.host, node.ssh_port)
     secret = session.get(SecretReference, node.secret_ref) if node.secret_ref else None
     if secret is None or not node.host_key_fingerprint:
         raise ValueError("node credentials and pinned host key are required")
@@ -128,9 +149,12 @@ def discover(endpoint, credentials):
                               "do command -v \"$b\" >/dev/null && echo \"$b\"; done; true")["stdout"].split()
         modules = remote.run("ls /sys/module")["stdout"].split()
         ipv6 = remote.run("ip -6 -o addr show scope global")["stdout"]
+        from orchestrator.host_inventory import scan
+        coexistence = scan(remote)
         return {"node_id": endpoint["id"], "os": os_name,
                 "arch": {"x86_64": "amd64", "aarch64": "arm64"}.get(machine, machine),
                 "privileged": privileged, "binaries": binaries,
-                "kernel_modules": modules, "ipv6_addresses": ipv6.strip()}
+                "kernel_modules": modules, "ipv6_addresses": ipv6.strip(),
+                "coexistence": coexistence}
     finally:
         remote.close()

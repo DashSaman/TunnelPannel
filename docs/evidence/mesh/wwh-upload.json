@@ -1,0 +1,197 @@
+{
+  "checks": [
+    {
+      "method": "WATERWALL_H_WS_TLS",
+      "source": "caccf7f1fcdd4e0e8f1df7698ff21309",
+      "destination": "486681f658374b82bcb5de2c00285bfe",
+      "baseline_client_rss_kib": 28092,
+      "client_rss_limit_kib": 159164,
+      "uploads": [
+        {
+          "verified_bytes": 67108864,
+          "sha256": "c392a0262e7b2e2d6ab13a3dab9a0c75484281ebba74988ab306d52b6ffd2f97"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "c392a0262e7b2e2d6ab13a3dab9a0c75484281ebba74988ab306d52b6ffd2f97"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "c392a0262e7b2e2d6ab13a3dab9a0c75484281ebba74988ab306d52b6ffd2f97"
+        }
+      ],
+      "peak_client_rss_kib": 36284,
+      "status": "PASS",
+      "released_resources": 23
+    },
+    {
+      "method": "WATERWALL_H_WS_TLS",
+      "source": "486681f658374b82bcb5de2c00285bfe",
+      "destination": "caccf7f1fcdd4e0e8f1df7698ff21309",
+      "baseline_client_rss_kib": 28092,
+      "client_rss_limit_kib": 159164,
+      "uploads": [
+        {
+          "verified_bytes": 67108864,
+          "sha256": "0e29fad6e7a0dca6350ee584f598c03d7361ea861448b05f425bb37538af6c62"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "0e29fad6e7a0dca6350ee584f598c03d7361ea861448b05f425bb37538af6c62"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "0e29fad6e7a0dca6350ee584f598c03d7361ea861448b05f425bb37538af6c62"
+        }
+      ],
+      "peak_client_rss_kib": 42428,
+      "status": "PASS",
+      "released_resources": 23
+    },
+    {
+      "method": "WATERWALL_H_HTTP2_TLS",
+      "source": "caccf7f1fcdd4e0e8f1df7698ff21309",
+      "destination": "486681f658374b82bcb5de2c00285bfe",
+      "baseline_client_rss_kib": 28228,
+      "client_rss_limit_kib": 159300,
+      "uploads": [
+        {
+          "verified_bytes": 67108864,
+          "sha256": "4757463c7d7ff9fb934ca684258a094b4d63ba371464c6c7c0c71c0ab3466692"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "4757463c7d7ff9fb934ca684258a094b4d63ba371464c6c7c0c71c0ab3466692"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "4757463c7d7ff9fb934ca684258a094b4d63ba371464c6c7c0c71c0ab3466692"
+        }
+      ],
+      "peak_client_rss_kib": 30296,
+      "status": "PASS",
+      "released_resources": 23
+    },
+    {
+      "method": "WATERWALL_H_HTTP2_TLS",
+      "source": "486681f658374b82bcb5de2c00285bfe",
+      "destination": "caccf7f1fcdd4e0e8f1df7698ff21309",
+      "baseline_client_rss_kib": 28224,
+      "client_rss_limit_kib": 159296,
+      "uploads": [
+        {
+          "verified_bytes": 67108864,
+          "sha256": "8c37fc9c3eaa11696c6dc9bc095745aab1d8dc98af57d0d7147c6a91f49b5ba9"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "8c37fc9c3eaa11696c6dc9bc095745aab1d8dc98af57d0d7147c6a91f49b5ba9"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "8c37fc9c3eaa11696c6dc9bc095745aab1d8dc98af57d0d7147c6a91f49b5ba9"
+        }
+      ],
+      "peak_client_rss_kib": 30292,
+      "status": "PASS",
+      "released_resources": 23
+    },
+    {
+      "method": "WATERWALL_H_REALITY",
+      "source": "caccf7f1fcdd4e0e8f1df7698ff21309",
+      "destination": "486681f658374b82bcb5de2c00285bfe",
+      "baseline_client_rss_kib": 28088,
+      "client_rss_limit_kib": 159160,
+      "uploads": [
+        {
+          "verified_bytes": 67108864,
+          "sha256": "0d9f2d2e129ebb9b4f10999cd61c75989eb2817a1aecda54ea80eb7415636f5a"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "0d9f2d2e129ebb9b4f10999cd61c75989eb2817a1aecda54ea80eb7415636f5a"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "0d9f2d2e129ebb9b4f10999cd61c75989eb2817a1aecda54ea80eb7415636f5a"
+        }
+      ],
+      "peak_client_rss_kib": 30136,
+      "status": "PASS",
+      "released_resources": 26
+    },
+    {
+      "method": "WATERWALL_H_REALITY",
+      "source": "486681f658374b82bcb5de2c00285bfe",
+      "destination": "caccf7f1fcdd4e0e8f1df7698ff21309",
+      "baseline_client_rss_kib": 28088,
+      "client_rss_limit_kib": 159160,
+      "uploads": [
+        {
+          "verified_bytes": 67108864,
+          "sha256": "69ee06aea7ce024ec67ff0518f55cf5d291e12e32cce3a27db8beaa1d4e5eece"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "69ee06aea7ce024ec67ff0518f55cf5d291e12e32cce3a27db8beaa1d4e5eece"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "69ee06aea7ce024ec67ff0518f55cf5d291e12e32cce3a27db8beaa1d4e5eece"
+        }
+      ],
+      "peak_client_rss_kib": 30136,
+      "status": "PASS",
+      "released_resources": 26
+    },
+    {
+      "method": "WATERWALL_H_VLESS_REALITY",
+      "source": "caccf7f1fcdd4e0e8f1df7698ff21309",
+      "destination": "486681f658374b82bcb5de2c00285bfe",
+      "baseline_client_rss_kib": 28092,
+      "client_rss_limit_kib": 159164,
+      "uploads": [
+        {
+          "verified_bytes": 67108864,
+          "sha256": "7c5048cf98154d31bd76fd65a23f172067372f65c65d16ef4e250e6f1ce10006"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "7c5048cf98154d31bd76fd65a23f172067372f65c65d16ef4e250e6f1ce10006"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "7c5048cf98154d31bd76fd65a23f172067372f65c65d16ef4e250e6f1ce10006"
+        }
+      ],
+      "peak_client_rss_kib": 30140,
+      "status": "PASS",
+      "released_resources": 26
+    },
+    {
+      "method": "WATERWALL_H_VLESS_REALITY",
+      "source": "486681f658374b82bcb5de2c00285bfe",
+      "destination": "caccf7f1fcdd4e0e8f1df7698ff21309",
+      "baseline_client_rss_kib": 28092,
+      "client_rss_limit_kib": 159164,
+      "uploads": [
+        {
+          "verified_bytes": 67108864,
+          "sha256": "9789eab291c036478aa52e46f24afff139c16477613430b281b8e432c64045fa"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "9789eab291c036478aa52e46f24afff139c16477613430b281b8e432c64045fa"
+        },
+        {
+          "verified_bytes": 67108864,
+          "sha256": "9789eab291c036478aa52e46f24afff139c16477613430b281b8e432c64045fa"
+        }
+      ],
+      "peak_client_rss_kib": 30140,
+      "status": "PASS",
+      "released_resources": 26
+    }
+  ],
+  "status": "PASS"
+}

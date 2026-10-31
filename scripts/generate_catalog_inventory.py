@@ -49,6 +49,9 @@ def gen1_executor() -> set[str]:
 def gen2_registry() -> dict[str, dict]:
     reg = json.loads((ROOT / "deploy/methods_registry.json").read_text(encoding="utf-8"))
     methods = reg["methods"] if isinstance(reg, dict) else reg
+    extension = ROOT / 'deploy/mesh_methods.json'
+    if extension.exists():
+        methods = methods + json.loads(extension.read_text(encoding='utf-8'))['methods']
     return {m["id"]: m for m in methods}
 
 
@@ -113,7 +116,7 @@ def main() -> int:
         "",
         f"- Gen1 backend catalog (`backend/app/tunnel_catalog.py`): **{len(cat)}**",
         f"- Gen1 executor SUPPORTED (`plan_executor/executor.py`): **{len(exe)}**",
-        f"- Gen2 MTF registry (`deploy/methods_registry.json`): **{len(reg)}**",
+        f"- Base registry + reviewed mesh extension (`deploy/methods_registry.json`, `deploy/mesh_methods.json`): **{len(reg)}**",
         f"- Gen3 TunnelGuard engines (`tunnelguard/tfd/engines/`): **{len(tg)}** → "
         + ", ".join(f"`{i}`" for i in sorted(tg)),
         f"- **Union of all method IDs: {len(all_ids)}**",

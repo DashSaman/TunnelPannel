@@ -1,0 +1,142 @@
+{
+  "status": "PASS",
+  "collected_at": 1792242896.9968052,
+  "runtime": "c300a4a9b2036b9701c8dcebdcc9b3be06676f86",
+  "both_nodes_installed": true,
+  "summary_http_windows_verified": [
+    "3600",
+    "21600",
+    "86400",
+    "604800"
+  ],
+  "unauthenticated_rejected": true,
+  "invalid_window_rejected": true,
+  "safe_support_summary_verified": true,
+  "stable_entries_methods_modes_workers_preserved": true,
+  "all_twelve_healthy": true,
+  "no_public_domain": true,
+  "payment_collected": false,
+  "summary_24h": {
+    "generated_at": 1792242896.6262283,
+    "window_s": 86400,
+    "interval_s": 60,
+    "monitor_enabled": true,
+    "routes": [
+      {
+        "route_id": "7812cdf792a84bd18c6993890548c778",
+        "samples": 987,
+        "first_at": 1792182405.3022208,
+        "last_at": 1792242878.3459814,
+        "span_s": 60473.0437605381,
+        "last_age_s": 18.28024697303772,
+        "fresh": true,
+        "latest_health": "UP",
+        "health_counts": {
+          "UP": 987,
+          "DEGRADED": 0,
+          "DOWN": 0,
+          "UNAVAILABLE": 0
+        },
+        "up_sample_pct": 100.0,
+        "gap_count": 0,
+        "max_gap_s": 82.8753764629364,
+        "probe_latency_ms": {
+          "IKEV2_IPSEC": {
+            "samples": 987,
+            "p50": 19.168,
+            "p95": 26.479,
+            "max": 51.974
+          },
+          "IP6GRE": {
+            "samples": 987,
+            "p50": 18.874,
+            "p95": 26.564,
+            "max": 56.118
+          },
+          "IPIP": {
+            "samples": 987,
+            "p50": 18.423,
+            "p95": 25.88,
+            "max": 52.344
+          },
+          "SIT_6IN4": {
+            "samples": 987,
+            "p50": 18.581,
+            "p95": 25.834,
+            "max": 55.691
+          },
+          "VXLAN": {
+            "samples": 987,
+            "p50": 18.655,
+            "p95": 25.238,
+            "max": 52.395
+          }
+        }
+      },
+      {
+        "route_id": "35c3b76628054350a5f4f94dcd151db8",
+        "samples": 987,
+        "first_at": 1792182405.0055976,
+        "last_at": 1792242877.4873726,
+        "span_s": 60472.481775045395,
+        "last_age_s": 19.138855695724487,
+        "fresh": true,
+        "latest_health": "UP",
+        "health_counts": {
+          "UP": 987,
+          "DEGRADED": 0,
+          "DOWN": 0,
+          "UNAVAILABLE": 0
+        },
+        "up_sample_pct": 100.0,
+        "gap_count": 0,
+        "max_gap_s": 83.1262423992157,
+        "probe_latency_ms": {
+          "GOST_SOCKS5": {
+            "samples": 987,
+            "p50": 35.989,
+            "p95": 45.701,
+            "max": 58.99
+          },
+          "IPIP": {
+            "samples": 987,
+            "p50": 25.917,
+            "p95": 34.953,
+            "max": 51.511
+          },
+          "SIT_6IN4": {
+            "samples": 987,
+            "p50": 26.114,
+            "p95": 35.449,
+            "max": 51.24
+          },
+          "SSH_REMOTE_FORWARD": {
+            "samples": 987,
+            "p50": 33.743,
+            "p95": 43.14,
+            "max": 64.085
+          },
+          "VMESS_TCP_TLS": {
+            "samples": 987,
+            "p50": 50.714,
+            "p95": 59.612,
+            "max": 79.03
+          },
+          "WATERWALL_H_HTTP2_TLS": {
+            "samples": 987,
+            "p50": 43.351,
+            "p95": 52.133,
+            "max": 58.812
+          },
+          "WIREGUARD": {
+            "samples": 987,
+            "p50": 27.859,
+            "p95": 37.704,
+            "max": 50.939
+          }
+        }
+      }
+    ],
+    "scope": "latest100 workspace routes, latest5000 retained samples within window; point observations, not continuous uptime or SLA"
+  }
+}

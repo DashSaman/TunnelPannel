@@ -19,6 +19,7 @@ sys.path.insert(0, str(ROOT))
 
 from core.catalog import CATALOG                       # noqa: E402
 from engines.manifests import load_all                 # noqa: E402
+from scripts.accepted_expansion_receipts import EVIDENCE_PATH, load_accepted  # noqa: E402
 
 PROBE_BY_FAMILY = {
     "kernel": "ICMP", "vpn": "ICMP", "custom": "MULTI_SIGNAL",
@@ -27,6 +28,7 @@ PROBE_BY_FAMILY = {
 
 # engine-specific probe types where the family default is wrong
 PROBE_OVERRIDE = {
+    ("backhaul", "tcp"): "TCP",
     ("gost", "http"): "HTTP",
     ("gost", "http2"): "HTTP",
     ("gost", "tcp_forward"): "TCP",
@@ -88,6 +90,7 @@ def main() -> int:
 
     manifests = load_all()
     evidence = parse_test_report()
+    installed = load_accepted(ROOT)
     adapter_keys = set(registered())
 
     matrix = []
@@ -97,7 +100,7 @@ def main() -> int:
         m = manifests.get(ident.engine, {})
         has_adapter = (ident.engine, ident.profile) in adapter_keys or \
                       any(e == ident.engine for e, _p in adapter_keys)
-        ev = ("PASS" if legacy_id in evidence["PASS"] else
+        ev = ("PASS" if legacy_id in installed or legacy_id in evidence["PASS"] else
               "PARTIAL" if legacy_id in evidence["PARTIAL"] else
               "FAIL" if legacy_id in evidence["FAIL"] else "NONE")
         matrix.append({
@@ -125,7 +128,10 @@ def main() -> int:
             },
             "known_limitations": m.get("known_limitations", []),
             "existing_test_evidence": ev,
-            "real_verification": "REAL_VERIFICATION_BLOCKED until P14 (Windows dev host)",
+            "real_verification": (
+                f"REAL_PAIR_VERIFIED: {EVIDENCE_PATH} (NORMAL, both directions)"
+                if legacy_id in installed else
+                "Historical TEST-REPORT evidence only; consult later installed acceptance reports"),
         })
 
     composites = [

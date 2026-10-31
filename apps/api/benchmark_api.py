@@ -15,7 +15,7 @@ from __future__ import annotations
 import threading
 
 from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from core.models import BenchmarkReceipt, BenchmarkSample, Job
 from core.security import require_role
@@ -27,7 +27,7 @@ class StartRequest(BaseModel):
     node_a: dict            # NodeCaps-like snapshot (binaries, modules, ...)
     node_b: dict
     profile: str = "NORMAL"
-    max_parallel: int = 2
+    max_parallel: int = Field(default=2, ge=1, le=2)
     methods: list[str] | None = None
 
 
@@ -37,6 +37,9 @@ def create_router(session_factory, caps_from_dict, adapter_factory,
     router = APIRouter(prefix="/benchmarks", tags=["benchmark"])
     runners: dict[str, BenchmarkRunner] = {}
     lock = threading.Lock()
+    from orchestrator.standalone_benchmarks import StandaloneBenchmarkService
+    service = StandaloneBenchmarkService(lambda: BenchmarkRunner) if secure else None
+    router.service = service
 
     mutations = [Depends(require_role("SUPER_ADMIN", "OPERATOR"))] if secure else []
     reads = [Depends(require_role("SUPER_ADMIN", "OPERATOR", "VIEWER"))] if secure else []
@@ -44,8 +47,14 @@ def create_router(session_factory, caps_from_dict, adapter_factory,
     @router.get("/methods", dependencies=reads)
     def methods():
         from core.catalog import CATALOG
+        from orchestrator.mesh_campaign import capability, failure_domain
+        from orchestrator.mesh_persistent import egress_supported
+        from orchestrator.mesh_quality import encryption
         return [{"id": i.legacy_id, "engine": i.engine, "profile": i.profile,
-                 "composite": i.is_composite} for i in CATALOG.identities.values()]
+                 "composite": i.is_composite, "capability": capability(i.legacy_id),
+                 "failure_domain": failure_domain(i.legacy_id),
+                 'encryption': encryption(i.legacy_id),
+                 "persistent_tcp_egress": egress_supported(i.legacy_id)} for i in CATALOG.identities.values()]
 
     @router.get("", dependencies=reads)
     def history():
@@ -60,6 +69,14 @@ def create_router(session_factory, caps_from_dict, adapter_factory,
             raise HTTPException(503, "real-node benchmark execution is not configured; no job was started")
         if req.profile not in PROFILES:
             raise HTTPException(400, f"profile must be one of {sorted(PROFILES)}")
+        from core.workspaces import active_test_count, scope_limits, workspace_context
+        scope = workspace_context.get()
+        customer = scope and scope['id'] != 'system'
+        limits = scope_limits()
+        if customer and (limits['max_nodes'] < 2 or req.methods is not None and (
+                not req.methods or len(req.methods) != len(set(req.methods)) or
+                len(req.methods) > limits['max_campaign_methods'])):
+            raise HTTPException(400, 'workspace method or node limit exceeded')
         if prepare:
             caps_a, caps_b, candidates, factory = prepare(req)
         else:
@@ -67,7 +84,17 @@ def create_router(session_factory, caps_from_dict, adapter_factory,
             caps_b = caps_from_dict(req.node_b)
             candidates = resolve_candidates(caps_a, caps_b)
             factory = adapter_factory
+        if customer and len(candidates) > limits['max_campaign_methods']:
+            raise HTTPException(400, 'workspace method limit exceeded')
+        if service:
+            return service.create(session_factory, req, caps_a, caps_b, candidates, limits)
         with session_factory() as session:
+            if customer:
+                if session.bind.dialect.name == 'sqlite':
+                    from sqlalchemy import text
+                    session.execute(text('BEGIN IMMEDIATE'))
+                if active_test_count(session) >= limits['max_active_campaigns']:
+                    raise HTTPException(409, 'workspace already has its allowed active tests')
             job = Job(kind="benchmark",
                       payload={"node_a": caps_a.node_id, "node_b": caps_b.node_id,
                                "profile": req.profile,
@@ -84,9 +111,12 @@ def create_router(session_factory, caps_from_dict, adapter_factory,
         with lock:
             runners[job_id] = runner
 
+        from core.workspaces import freeze_factory
+        worker_factory = freeze_factory(session_factory)
+
         def _run():
             # the worker thread owns its own session + job instance
-            with session_factory() as s:
+            with worker_factory() as s:
                 runner.session = s
                 runner.job = s.get(Job, job_id)
                 try:
@@ -110,7 +140,7 @@ def create_router(session_factory, caps_from_dict, adapter_factory,
 
     def _job(job_id: str, session):
         job = session.get(Job, job_id)
-        if job is None:
+        if job is None or job.kind != 'benchmark':
             raise HTTPException(404, "no such benchmark job")
         return job
 
@@ -124,6 +154,13 @@ def create_router(session_factory, caps_from_dict, adapter_factory,
 
     @router.post("/{job_id}/cancel", dependencies=mutations)
     def cancel(job_id: str):
+        if service:
+            return service.cancel(session_factory, job_id)
+        # Ownership must precede access to the process-wide runner registry.
+        with session_factory() as session:
+            job = _job(job_id, session)
+            if (job.payload or {}).get('campaign_id'):
+                raise HTTPException(409, 'cancel the parent mesh campaign')
         with lock:
             runner = runners.get(job_id)
         if runner is None:

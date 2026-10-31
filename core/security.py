@@ -58,6 +58,8 @@ def _unauthorized() -> HTTPException:
 
 
 def current_user(request: Request) -> dict:
+    if getattr(request.state, "principal", None):
+        return request.state.principal
     auth = request.headers.get("authorization", "")
     token = auth.removeprefix("Bearer ").strip()
     if not token:

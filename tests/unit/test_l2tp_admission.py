@@ -4,6 +4,7 @@ from plan_executor import executor
 
 
 def test_named_lns_admits_only_the_configured_peer(monkeypatch):
+    monkeypatch.setattr(executor, 'free_port', lambda *args: 27000)
     files = []
     class Remote:
         def run(self, command, **kwargs):

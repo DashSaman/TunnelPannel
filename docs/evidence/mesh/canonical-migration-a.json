@@ -1,0 +1,59 @@
+{
+  "status": "PASS",
+  "version": "eb3f1bf0d3fcb6a46e9447e7bf4d602337f19835",
+  "same_host_encryption_key": true,
+  "checks": [
+    "private_consistent_snapshots_and_history_superset",
+    "pinned_unprivileged_api_preserves_identity_history_and_warm_groups",
+    "existing_preview_url_preserved_with_loopback_socket_bridge"
+  ],
+  "root_history_before": {
+    "nodes": 2,
+    "runs": 0,
+    "run_items": 0,
+    "jobs": 44,
+    "deployments": 381,
+    "resource_allocations": 6682,
+    "secret_references": 3
+  },
+  "routes": [
+    {
+      "id": "7812cdf792a84bd18c6993890548c778",
+      "methods": [
+        "IP6GRE",
+        "SIT_6IN4",
+        "VXLAN",
+        "IPIP",
+        "IKEV2_IPSEC"
+      ],
+      "healthy": {
+        "IP6GRE": true,
+        "SIT_6IN4": true,
+        "VXLAN": true,
+        "IPIP": true,
+        "IKEV2_IPSEC": true
+      }
+    },
+    {
+      "id": "35c3b76628054350a5f4f94dcd151db8",
+      "methods": [
+        "SSH_REMOTE_FORWARD",
+        "IPIP",
+        "SIT_6IN4",
+        "WIREGUARD",
+        "GOST_SOCKS5",
+        "WATERWALL_H_HTTP2_TLS",
+        "VMESS_TCP_TLS"
+      ],
+      "healthy": {
+        "SSH_REMOTE_FORWARD": true,
+        "IPIP": true,
+        "SIT_6IN4": true,
+        "WIREGUARD": true,
+        "GOST_SOCKS5": true,
+        "WATERWALL_H_HTTP2_TLS": true,
+        "VMESS_TCP_TLS": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "rollout": {
+    "status": "PASS",
+    "peer": {
+      "status": "PASS",
+      "runtime": "c300a4a9b2036b9701c8dcebdcc9b3be06676f86",
+      "identity_preserved": true,
+      "loopback_http_health": true
+    },
+    "controller": {
+      "status": "PASS",
+      "runtime": "c300a4a9b2036b9701c8dcebdcc9b3be06676f86",
+      "identity_preserved": true,
+      "loopback_http_health": true
+    }
+  },
+  "backups": {
+    "status": "PASS",
+    "controller_checksum_verified": true,
+    "peer_checksum_verified": true,
+    "new_snapshots_restored": false,
+    "previous_two_node_restore_test_retained": true
+  }
+}

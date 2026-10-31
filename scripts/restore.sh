@@ -3,6 +3,7 @@
 # verifies schema, health-checks. Double confirmation required.
 #   scripts/restore.sh <backup.tar.gz>
 set -Eeuo pipefail
+umask 077
 
 CONF_DIR="/etc/tunnelpannel"
 INSTALL_DIR="/opt/tunnelpannel"
@@ -29,6 +30,15 @@ trap 'rm -rf "$WORK"' EXIT
 tar -xzf "$ARCHIVE" -C "$WORK"
 
 set -a; . "$CONF_DIR/tunnelpannel.env"; set +a
+# Validate every customer database before interrupting the API.
+if [[ -d "$WORK/workspaces" ]]; then
+  cd "$INSTALL_DIR"
+  "$INSTALL_DIR/.venv/bin/python" - "$WORK/workspaces" <<'PY'
+from core.workspace_backup import validate_snapshot
+import sys
+validate_snapshot(sys.argv[1])
+PY
+fi
 systemctl stop "$SERVICE"
 
 # 3. restore database
@@ -39,6 +49,17 @@ if [[ "$DATABASE_URL" == sqlite:///* ]]; then
 else
   command -v pg_restore >/dev/null || { echo "pg_restore required"; exit 1; }
   pg_restore --clean --if-exists "$DATABASE_URL" < "$WORK/database.sql"
+fi
+
+if [[ -d "$WORK/workspaces" ]]; then
+  WORKSPACE_DIR="${TP_WORKSPACES_DIR:-/var/lib/tunnelpannel/workspaces}"
+  if [[ -e "$WORKSPACE_DIR" ]]; then
+    mv -- "$WORKSPACE_DIR" "$WORKSPACE_DIR.pre-restore.$(date +%s)"
+  fi
+  install -d -o tunnelpannel -g tunnelpannel -m 700 "$WORKSPACE_DIR"
+  cp -a "$WORK/workspaces/." "$WORKSPACE_DIR/"
+  chown -R tunnelpannel:tunnelpannel "$WORKSPACE_DIR"
+  chmod 700 "$WORKSPACE_DIR"
 fi
 
 # 4. schema + health verification

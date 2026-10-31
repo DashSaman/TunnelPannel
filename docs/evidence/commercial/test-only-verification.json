@@ -1,0 +1,36 @@
+{
+  "runtime": "c300a4a9b2036b9701c8dcebdcc9b3be06676f86",
+  "portable_run": 39035240610,
+  "security_run": 39035240599,
+  "status": "PASS",
+  "python_3_11": {
+    "canonical_passed": 700,
+    "tunnelguard_passed": 100,
+    "backend_passed": 1,
+    "job": 117403613617
+  },
+  "python_3_12": {
+    "canonical_passed": 700,
+    "tunnelguard_passed": 100,
+    "backend_passed": 1,
+    "job": 117403613848
+  },
+  "linux_installer_job": 117403613924,
+  "fresh_idempotent_backup_restore_uninstall": true,
+  "windows": {
+    "canonical_passed": 678,
+    "platform_skipped": 22
+  },
+  "required_ruff": true,
+  "portal_js_syntax": true,
+  "ui": {
+    "live_installed_server": true,
+    "fa_en": true,
+    "one_hour_window_checked": true,
+    "viewport_width": 390,
+    "fa_content_width": 375,
+    "en_content_width": 375,
+    "client_width": 375,
+    "viewport_reset": true
+  }
+}

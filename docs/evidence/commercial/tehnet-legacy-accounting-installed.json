@@ -1,0 +1,146 @@
+{
+  "date": "2026-10-20",
+  "functional_revision": "808b72975fa980a378f42d28b2324606955031d2",
+  "tree": "55f0a2af421e331e155cb9276c93e09bc817a1cb",
+  "status": "PASS",
+  "scope": "two explicitly authorized original five-member gateways; sequential gateway-only migration",
+  "policy": {
+    "record_without_ceiling": true,
+    "quota": null,
+    "end": null,
+    "unknown_historical_usage_invented": false,
+    "original_source_baselines": [
+      0,
+      0
+    ]
+  },
+  "originals": [
+    {
+      "group": "A",
+      "mode": "failover",
+      "methods": [
+        "IP6GRETAP",
+        "SIT_OVER_WIREGUARD",
+        "HAJSAMAN_WG",
+        "GRE",
+        "GRETAP"
+      ],
+      "successes": 37,
+      "failed_samples": 3,
+      "maximum_observed_success_gap_s": 0.7744442588882521
+    },
+    {
+      "group": "B",
+      "mode": "balance",
+      "methods": [
+        "IP6GRE",
+        "SIT_6IN4",
+        "VXLAN",
+        "IPIP",
+        "IKEV2_IPSEC"
+      ],
+      "successes": 37,
+      "failed_samples": 4,
+      "maximum_observed_success_gap_s": 0.7526306010549888
+    }
+  ],
+  "preserved": {
+    "old_configuration_values": true,
+    "entry_credentials": true,
+    "member_process_identities": true,
+    "interfaces": true,
+    "customer_install_root_identities": true,
+    "plans_and_payment_state": true,
+    "unrelated_historical_job": true
+  },
+  "receipts": {
+    "direct_members_pass": 10,
+    "stable_entries_pass": 2,
+    "source_lifetime_bytes": [
+      10163,
+      10462
+    ],
+    "shared_used_bytes": 20625,
+    "held_bytes": 0,
+    "managed_routes": 2,
+    "unmetered_routes": 0
+  },
+  "isolated_qa": {
+    "routes": 2,
+    "known_baseline_per_source": 897,
+    "metadata_commit_failure_recovered_same_worker": true,
+    "small_verified_body_bytes_each": 1048576,
+    "unlimited_shared_usage": 2115751,
+    "restart_preserved": true,
+    "public_admin_first_cap_preserved_usage": true,
+    "exact_shared_cap": 35670306,
+    "exhausted_payload_each": [
+      0,
+      0
+    ],
+    "stopped_routes": 2,
+    "rolled_back_deployments": 6,
+    "released_allocations": 42,
+    "live_allocations": 0,
+    "temporary_pool_removed_after_rescue": true
+  },
+  "canaries_each": 12,
+  "both_drained": true,
+  "website": {
+    "static_proxy_only": true,
+    "unrelated_containers_preserved": 11,
+    "links_preserved": 50,
+    "selected_service_pids_preserved": 5,
+    "nginx_unchanged": true,
+    "old_release_retained": true,
+    "bundle_sha256": "937b18232a4d1681449514e32413ea9af17e5b58e1ce1f1d0491f338834bab54"
+  },
+  "ui": {
+    "public_fa_en_unlimited": true,
+    "screenshots": [
+      "tehnet-legacy-accounting-fa.jpg",
+      "tehnet-legacy-accounting-en.jpg"
+    ],
+    "mobile_override_px": 375,
+    "client_scroll_widths_each": [
+      360,
+      360
+    ],
+    "viewport_reset": true,
+    "public_owner_customer_auth_unpaid_guards": true
+  },
+  "recovery": {
+    "fresh_per_install_before_immediate_preinstall_premigration_after_backups": true,
+    "separate_env_each": true,
+    "independent_resident_encryption_keys": true,
+    "decrypt_sha_equal_each_node_and_website": true,
+    "sensitive_export": false,
+    "live_restore": false,
+    "physical_forced_rollback_tested": false
+  },
+  "ci": {
+    "portable": 39423550160,
+    "security": 39423550271,
+    "conclusion": "success",
+    "observed_py312_passes": {
+      "root": 831,
+      "tunnelguard": 100,
+      "backend": 1
+    },
+    "prior_candidate_root": {
+      "passed": 830,
+      "failed": 1,
+      "cause": "historical observation fixture omitted real Job",
+      "never_installed": true
+    },
+    "focused_regression_passed": 25
+  },
+  "boundaries": {
+    "existing_tcp_session_survival_claimed": false,
+    "sample_interval_s": 0.05,
+    "sample_deadline_s": 0.6,
+    "main_merged": false,
+    "heartbeat": "PAUSED",
+    "online_payment_or_sso": false
+  }
+}
