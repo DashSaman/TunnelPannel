@@ -1,8 +1,10 @@
 # TunnelPannel
 
-## Managed TCP services — installed
+## Current recovery: permanent management
 
-Open [Portal](https://tehnet.ir/tunnels/portal) → Tunnels & balancing → Port forwards. Fixed TCP forwards use an existing customer route group, shared allowance, rate and failover. Real two-node traffic, TIME_WAIT edit/restart, exact quota exhaustion and same-period restoration passed; original and retained QA parents stayed running. [Illustrated guide and acceptance](docs/MANAGED-TCP-SERVICES.md) · [فارسی](docs/MANAGED-TCP-SERVICES-fa.md). Both APIs and own static site run **e7d79cc8f6b1**; main is unmerged.
+The owner removed the two original test nodes. Their October22 deployment/traffic receipts below are historical. The October31 recovery candidate places lightweight management in a separate permanent TehNet container; all tunnel/test payloads remain on registered customer nodes. It fixes HTML502 being parsed as JSON and labels the restored October18 snapshot honestly. [Deployment/recovery guide](docs/CONTROL-PLANE.md) · [فارسی](docs/CONTROL-PLANE-fa.md). Native CI and actual rollout remain release gates; main stays unmerged.
+
+Managed TCP forwards, shared allowances, manual billing and safe legacy migration remain part of the product. [Historical illustrated acceptance](docs/MANAGED-TCP-SERVICES.md) · [Portal](https://tehnet.ir/tunnels/portal). A new real two-node test requires live customer/test nodes.
 
 ![Installed port-forward console](docs/evidence/commercial/screenshots/managed-services-owner-fa.jpg)
 

@@ -6,6 +6,18 @@ on:
   pull_request:
 
 jobs:
+  management-container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build isolated management image
+        run: docker build -f deploy/control-plane/Dockerfile -t tehnet-controller-ci:${{ github.sha }} .
+      - name: Real management container acceptance
+        run: python scripts/test_control_plane_container.py --image tehnet-controller-ci:${{ github.sha }}
+
   portable:
     runs-on: ubuntu-latest
     strategy:

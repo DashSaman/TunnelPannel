@@ -42,7 +42,8 @@ def observe_host_key(host: str, port: int) -> str:
     The subsequent authenticated connection verifies this exact key again.
     Operators may instead supply a fingerprint verified out of band.
     """
-    with socket.create_connection((host, port), timeout=10) as connection:
+    from core.control_plane import remote_target
+    with socket.create_connection((remote_target(host, port), port), timeout=10) as connection:
         transport = paramiko.Transport(connection)
         try:
             transport.start_client(timeout=10)
@@ -72,7 +73,9 @@ class NodeRemote:
 
     def connect(self):
         from plan_executor.executor import load_private_key
-        options = {"hostname": self.endpoint["host"], "port": self.endpoint["port"],
+        from core.control_plane import remote_target
+        target = remote_target(self.endpoint['host'], self.endpoint['port'])
+        options = {"hostname": target, "port": self.endpoint["port"],
                    "username": self.endpoint["ssh_username"], "timeout": 15,
                    "auth_timeout": 15, "banner_timeout": 15,
                    "look_for_keys": False, "allow_agent": False}
@@ -124,6 +127,8 @@ def node_access(session, node_id):
     node = session.get(Node, node_id)
     if node is None:
         raise ValueError("registered node was not found")
+    from core.control_plane import remote_target
+    remote_target(node.host, node.ssh_port)
     secret = session.get(SecretReference, node.secret_ref) if node.secret_ref else None
     if secret is None or not node.host_key_fingerprint:
         raise ValueError("node credentials and pinned host key are required")

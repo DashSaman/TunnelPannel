@@ -71,7 +71,7 @@ function message(value){field('feedback').textContent=value;}
 async function api(path,options={}){
   const epoch=authEpoch;
   const response=await TPAuth.request(path,{...options,headers:{...options.headers,...(apiKey&&apiKey!=='@cookie'?{Authorization:'Bearer '+apiKey}:{})}});
-  const value=await response.json();
+  const value=await TPAuth.readJSON(response);
   if(epoch!==authEpoch)throw new Error('Session changed; response ignored.');
   if(!response.ok)throw new Error(typeof value.detail==='string'?value.detail:'Request failed: '+response.status);
   return value;

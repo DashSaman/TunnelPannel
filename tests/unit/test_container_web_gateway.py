@@ -99,7 +99,7 @@ const fs=require('fs'),vm=require('vm'),assert=require('assert');
 const base=process.argv[1],calls=[];
 const context={URL,Headers,window:{location:{origin:'https://tehnet.ir'}},
 document:{currentScript:{src:'https://tehnet.ir'+base+'/assets/auth.js'},querySelectorAll:()=>[]},
-fetch:async(path,options)=>{calls.push(path);return{ok:true,json:async()=>({principal:null,csrf:''})}},addEventListener:()=>{}};
+fetch:async(path,options)=>{calls.push(path);return{ok:true,status:200,headers:new Headers({'Content-Type':'application/json'}),json:async()=>({principal:null,csrf:''})}},addEventListener:()=>{}};
 vm.runInNewContext(fs.readFileSync(process.argv[2],'utf8'),context);
 (async()=>{const a=context.window.TPAuth;await a.ready;assert.equal(calls[0],base+'/auth/session');a.setKey('test-only-marker');await a.request('/api/nodes');assert.equal(calls.at(-1),base+'/api/nodes');assert.equal(a.url('/mesh?campaign=abc'),base+'/mesh?campaign=abc');for(const p of ['https://evil.invalid/','//evil.invalid/','/../outside','/\\evil.invalid/']){let rejected=false;try{await a.request(p)}catch{rejected=true}assert(rejected,'unsafe path '+p)}assert.equal(calls.length,2)})().catch(e=>{console.error(e);process.exitCode=1});
 '''

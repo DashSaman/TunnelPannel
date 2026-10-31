@@ -71,7 +71,15 @@ http {{
 {locations}
         location ^~ {prefix}/assets/ {{ alias /usr/share/nginx/html/assets/; }}
         location / {{ return 404; }}
+        location @controller_unavailable {{
+            default_type application/json;
+            add_header Cache-Control "no-store" always;
+            add_header Retry-After "30" always;
+            add_header X-Content-Type-Options "nosniff" always;
+            return 503 '{{"code":"CONTROLLER_UNAVAILABLE","detail":"The management service is temporarily unavailable. Please retry shortly."}}';
+        }}
         location {prefix}/ {{
+            error_page 502 503 504 =503 @controller_unavailable;
             rewrite ^{prefix}/(.*)$ /$1 break;
             proxy_pass http://127.0.0.1:{upstream_port};
             proxy_http_version 1.1;

@@ -53,6 +53,8 @@ def demo_adapter_factory(cand):
 
 
 def create_app(factory=None) -> FastAPI:
+    from core.control_plane import configuration
+    configuration()  # Refuse an incomplete management-only deployment at boot.
     import asyncio
     from contextlib import asynccontextmanager, suppress
     import logging
@@ -216,6 +218,12 @@ def create_app(factory=None) -> FastAPI:
     @app.get("/api/whoami")
     def whoami(user=Depends(require_role("VIEWER", "OPERATOR", "SUPER_ADMIN"))):
         return user
+
+    @app.get('/api/deployment')
+    def deployment(_user=Depends(require_role('VIEWER', 'OPERATOR', 'SUPER_ADMIN'))):
+        return {'management_only': configuration() is not None,
+                'execution': 'registered_remote_nodes',
+                'recovered_snapshot_at': os.environ.get('TP_RECOVERED_SNAPSHOT_AT') or None}
 
     return app
 
